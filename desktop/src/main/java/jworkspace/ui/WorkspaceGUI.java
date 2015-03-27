@@ -411,10 +411,6 @@ public class WorkspaceGUI implements GUI {
 
             fileName = Workspace.getUserHome() + "texture.jpg";
             /**
-             * Read texture show or hide flag
-             */
-            setTextureVisible(isTextureVisible);
-            /**
              * Read texture
              */
             texture = Imaging.getBufferedImage(new File(fileName));
@@ -425,6 +421,11 @@ public class WorkspaceGUI implements GUI {
 
         } catch (ImageReadException | IOException e) {
             Workspace.getLogger().log(Level.WARNING, "Cannot set texture", e);
+        } finally {
+            /**
+             * Read texture show or hide flag
+             */
+            setTextureVisible(isTextureVisible);
         }
 
         // SET LAF
@@ -529,11 +530,11 @@ public class WorkspaceGUI implements GUI {
         this.isTextureVisible = isTextureVisible;
         if (isTextureVisible && texture != null) {
             UIChangeManager.setDefaultTexture(texture);
+            ((WorkspaceFrame) getFrame()).setTexture(texture);
         } else {
             UIChangeManager.setDefaultTexture(null);
+            ((WorkspaceFrame) getFrame()).setTexture(null);
         }
-        ((WorkspaceFrame) getFrame()).getMainContainer().revalidate();
-        ((WorkspaceFrame) getFrame()).getMainContainer().repaint();
     }
 
     /**
@@ -578,29 +579,32 @@ public class WorkspaceGUI implements GUI {
         /**
          * Write texture on disk
          */
-        try
-        {
-            fileName = Workspace.getUserHome() + "texture.jpg";
-            OutputStream os = new FileOutputStream(fileName);
-            ImageIcon textureIcon = new ImageIcon(texture);
+        if (texture != null) {
 
-            BufferedImage bi = new BufferedImage(
-                    textureIcon.getIconWidth(),
-                    textureIcon.getIconHeight(),
-                    BufferedImage.TYPE_INT_RGB);
-            Graphics g = bi.createGraphics();
-            // paint the Icon to the BufferedImage.
-            textureIcon.paintIcon(null, g, 0,0);
-            g.dispose();
-
-            if (textureIcon.getIconHeight() > 0 && textureIcon.getIconWidth() > 0)
+            try
             {
-                Imaging.writeImage(bi, os, ImageFormats.JPEG, null);
-            }
+                fileName = Workspace.getUserHome() + "texture.jpg";
+                OutputStream os = new FileOutputStream(fileName);
+                ImageIcon textureIcon = new ImageIcon(texture);
 
-        } catch (ImageWriteException | IOException e) {
-            WorkspaceError.exception
-                    (LangResource.getString("WorkspaceGUI.saveTexture.failed"), e);
+                BufferedImage bi = new BufferedImage(
+                        textureIcon.getIconWidth(),
+                        textureIcon.getIconHeight(),
+                        BufferedImage.TYPE_INT_RGB);
+                Graphics g = bi.createGraphics();
+                // paint the Icon to the BufferedImage.
+                textureIcon.paintIcon(null, g, 0,0);
+                g.dispose();
+
+                if (textureIcon.getIconHeight() > 0 && textureIcon.getIconWidth() > 0)
+                {
+                    Imaging.writeImage(bi, os, ImageFormats.JPEG, null);
+                }
+
+            } catch (ImageWriteException | IOException e) {
+                WorkspaceError.exception
+                        (LangResource.getString("WorkspaceGUI.saveTexture.failed"), e);
+            }
         }
         /**
          * Save all other info
@@ -613,8 +617,8 @@ public class WorkspaceGUI implements GUI {
         /**
          * Dispose opened frames
          */
-        for (int i = 0; i < displayedFrames.size(); i++) {
-            ((Frame) displayedFrames.get(i)).dispose();
+        for (Object displayedFrame : displayedFrames) {
+            ((Frame) displayedFrame).dispose();
         }
         /**
          * Recreate array of opened frames

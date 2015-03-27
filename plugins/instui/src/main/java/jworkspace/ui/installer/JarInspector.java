@@ -269,10 +269,10 @@ public class JarInspector extends KPanel
            tmp = (Vector) listeners.clone();
         }
         TableModelFilterEvent event = new TableModelFilterEvent (this);
-        for (Enumeration enum = tmp.elements();
-                         enum.hasMoreElements(); )
+        for (Enumeration e = tmp.elements();
+                         e.hasMoreElements(); )
         {
-          ((TableModelFilterListener) enum.nextElement()).filterChanged(event);
+          ((TableModelFilterListener) e.nextElement()).filterChanged(event);
         }
      }
    }

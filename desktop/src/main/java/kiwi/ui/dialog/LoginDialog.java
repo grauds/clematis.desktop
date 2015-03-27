@@ -132,7 +132,7 @@ public class LoginDialog extends ComponentDialog
         setTopIcon(icon);
     }
     setComment(comment);
-    setIcon(KiwiUtils.getResourceManager().getIcon("keylock.gif"));
+    setIcon(KiwiUtils.getResourceManager().getIcon("key.png"));
     setOpaque(true);
   }
   protected JComponent buildDialogUI()

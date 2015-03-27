@@ -88,57 +88,50 @@ public class SearchDialog extends KDialog
     setContentPane(jOptionPane);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-    addWindowListener(new WindowAdapter()
-    {
-      public void windowClosing(WindowEvent we)
-        {
-          jOptionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
+    addWindowListener(new WindowAdapter() {
+        public void windowClosing(WindowEvent we) {
+            jOptionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
         }
     });
 
-    jOptionPane.addPropertyChangeListener(new PropertyChangeListener()
-    {
-      public void propertyChange(PropertyChangeEvent e)
-      {
-        String prop = e.getPropertyName();
-        if(isVisible()
-          && (e.getSource() == jOptionPane)
-          && (prop.equals(JOptionPane.VALUE_PROPERTY) ||
-                   prop.equals(JOptionPane.INPUT_VALUE_PROPERTY)))
-        {
-          Object value = jOptionPane.getValue();
-          if (value == JOptionPane.UNINITIALIZED_VALUE)
-          {
-            return;
-          }
-          jOptionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-          if(value.equals(buttonLabels[0]))
-          {
-            inputFindTerm  = jtxfFindTerm.getText();
-            bCaseSensitive = jchkCase.isSelected();
-            bStartAtTop    = jchkTop.isSelected();
-            if(isReplaceDialog)
-            {
-              inputReplaceTerm = jtxfReplaceTerm.getText();
-              bReplaceAll      = jchkAll.isSelected();
+    jOptionPane.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
+            String prop = e.getPropertyName();
+            if (isVisible()
+                    && (e.getSource() == jOptionPane)
+                    && (prop.equals(JOptionPane.VALUE_PROPERTY) ||
+                    prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
+                Object value = jOptionPane.getValue();
+                if (value == JOptionPane.UNINITIALIZED_VALUE) {
+                    return;
+                }
+                jOptionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
+                if (value.equals(buttonLabels[0])) {
+                    inputFindTerm = jtxfFindTerm.getText();
+                    bCaseSensitive = jchkCase.isSelected();
+                    bStartAtTop = jchkTop.isSelected();
+                    if (isReplaceDialog) {
+                        inputReplaceTerm = jtxfReplaceTerm.getText();
+                        bReplaceAll = jchkAll.isSelected();
+                    }
+                    setVisible(false);
+                } else {
+                    inputFindTerm = null;
+                    inputReplaceTerm = null;
+                    bCaseSensitive = false;
+                    bStartAtTop = false;
+                    bReplaceAll = false;
+                    setVisible(false);
+                }
             }
-            setVisible(false);
-          }
-          else
-          {
-            inputFindTerm    = null;
-            inputReplaceTerm = null;
-            bCaseSensitive   = false;
-            bStartAtTop      = false;
-            bReplaceAll      = false;
-            setVisible(false);
-          }
         }
-       }
-      });
+    });
       this.pack();
-      this.centerDialog();
-      this.show();
+      if (getParent()!= null) {
+
+          setLocationRelativeTo(getParent());
+      }
+      this.setVisible(true);
       jtxfFindTerm.requestFocus();
     }
 

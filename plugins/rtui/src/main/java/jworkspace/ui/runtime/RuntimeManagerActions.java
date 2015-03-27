@@ -195,7 +195,6 @@ public class RuntimeManagerActions {
         public void actionPerformed(ActionEvent evt) {
             ApplicationChooserDialog dlg =
                     new ApplicationChooserDialog(Workspace.getUI().getFrame());
-            dlg.centerDialog();
             dlg.setVisible(true);
             if (dlg.getSelectedApplication() != null) {
                 Workspace.getRuntimeManager().

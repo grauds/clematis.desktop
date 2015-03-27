@@ -21,6 +21,14 @@ $RECYCLE.BIN/
 ## Idea
 #################
 
+config
+users
+bin
+
+#################
+## Idea
+#################
+
 .idea/
 *.iml
 target/

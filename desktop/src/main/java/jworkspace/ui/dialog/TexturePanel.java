@@ -205,16 +205,21 @@ class TexturePanel extends KPanel implements ActionListener
          * Set texture
          */
         Image imtexture = l_image.getImage();
-        ImageIcon textureIcon = new ImageIcon(imtexture);
-        BufferedImage bi = new BufferedImage(
-                textureIcon.getIconWidth(),
-                textureIcon.getIconHeight(),
-                BufferedImage.TYPE_INT_RGB);
-        Graphics g = bi.createGraphics();
-        // paint the Icon to the BufferedImage.
-        textureIcon.paintIcon(null, g, 0,0);
-        g.dispose();
-        ((WorkspaceGUI) Workspace.getUI()).setTexture(bi);
+
+        if (imtexture != null && Workspace.getUI() instanceof WorkspaceGUI) {
+
+            ImageIcon textureIcon = new ImageIcon(imtexture);
+            BufferedImage bi = new BufferedImage(
+                    textureIcon.getIconWidth(),
+                    textureIcon.getIconHeight(),
+                    BufferedImage.TYPE_INT_RGB);
+            Graphics g = bi.createGraphics();
+            // paint the Icon to the BufferedImage.
+            textureIcon.paintIcon(null, g, 0,0);
+            g.dispose();
+
+            ((WorkspaceGUI) Workspace.getUI()).setTexture(bi);
+        }
 
         if (Workspace.getUI() instanceof WorkspaceGUI)
         {
