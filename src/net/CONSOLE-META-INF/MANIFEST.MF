@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+
+Name: jworkspace/ui/network/NetworkConsoleShell.class
+Version: 1.0.3
+IconFile: jworkspace/ui/network/images/network.png
+BigIconFile: jworkspace/ui/network/images/network_big.png
+Type: XShell
+PluginName: Network Console Shell
+

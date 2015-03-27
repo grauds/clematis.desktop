@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+
+Name: jworkspace/network/server/Server.class
+Version: 0.90
+PluginName: Group Server
+Type: XPlugin
+

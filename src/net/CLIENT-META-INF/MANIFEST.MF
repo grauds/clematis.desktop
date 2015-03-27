@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+
+Name: jworkspace/network/user/User.class
+Version: 0.90
+PluginName: Network Client
+Type: XPlugin
+

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+*******************************************************************************
+
+  Ant script for the Clematis Launcher utility.
+
+  General targets:
+  clean         - cleans all build products.
+  compile       - compiles Java sources.
+  pack          - creates the application archives.
+  doc           - builds the project documentation.
+  rebuild-all   - cleans all build products and re-builds the project.
+  
+  Misc. targets:
+  jw-deploy  - deploys library into Clematis Installation.
+  
+  Author: Anton Troshin (tysinsh@comail.ru)
+
+*******************************************************************************
+-->
+
+<project name="Clematis Launcher" default="jw-deploy" basedir="./">
+    <!--
+    ***************************************************************************
+    Initialization
+    ***************************************************************************
+    -->
+    <target name="init">
+        <property file="build.properties"/>
+        <path id="project.class.path">
+            <fileset dir="${lib.dir}" includes="*.jar"/>
+        </path>
+    </target>
+    <!--
+    ***************************************************************************
+    Cleans all build products.
+    ***************************************************************************
+    -->
+    <target name="clean" depends="init"
+        description="Cleans all build products.">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${build.doc.dir}"/>
+        <delete dir="${build.archives.dir}"/>
+    </target>
+    <!--
+    ***************************************************************************
+    Compiles Java sources.
+    ***************************************************************************
+    -->
+    <target name="compile" depends="init" description="Compiles Java sources.">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+            classpathref="project.class.path"
+            compiler="${compile.compiler}"
+            fork="${compile.fork}"
+            debug="${compile.debug}"
+            optimize="${compile.optimize}"
+            target="${compile.target}">
+        </javac>
+    </target>
+    <!--
+    ***************************************************************************
+    Creates the application archive.
+    ***************************************************************************
+    -->
+    <target name="pack" depends="compile" description="Creates the library archive.">
+
+        <mkdir dir="${build.archives.dir}"/>
+
+    <!-- launcher.jar -->
+        <jar jarfile="${build.archives.dir}/launcher.jar">
+            <fileset dir="${build.classes.dir}">
+                <include name="**/jworkspace/**"/>
+            </fileset>
+        </jar>
+    </target>
+    <!--
+    ***************************************************************************
+    Builds the project documentation.
+    ***************************************************************************
+    -->
+    <target name="doc" depends="init" description="Builds the project documentation.">
+
+        <mkdir dir="${build.doc.dir}"/>
+
+        <copy todir="${build.doc.dir}">
+            <fileset dir="${doc.dir}" includes="**/*.html"/>
+        </copy>
+
+        <javadoc destdir="${build.doc.api.dir}"
+            access="${javadoc.access}"
+            author="true"
+            version="true"
+            use="true"
+            windowtitle="Clematis Launcher API"
+            classpathref="project.class.path">
+
+            <packageset dir="${src.dir}" defaultexcludes="yes">
+                <include name="jworkspace/**"/>
+            </packageset>
+        </javadoc>
+    </target>
+    <!--
+    ***************************************************************************
+    Cleans all build products and re-builds the project.
+    ***************************************************************************
+    -->
+    <target name="rebuild-all" depends="clean, pack, doc"
+        description="Cleans all build products and re-builds the project.">
+    </target>
+    <!--
+    ***************************************************************************
+    Deploys library into Java Workspace.
+    ***************************************************************************
+    -->
+    <target name="jw-deploy" depends="pack"
+        description="Deploys library into Java Workspace.">
+        <property file="jw.properties"/>
+        <antcall target="check-jw"/>
+        <copy file="${build.archives.dir}/launcher.jar"
+            todir="${jw.home}"/>
+    </target>
+
+    <target name="check-jw" unless="jw.home">
+        <fail message="Java Workspace NOT FOUND!">
+            ===================================================================
+            The application couldn't be deployed! Property jw.home is
+            undefined! Create jw.properties file in the project root
+            directory with the following string:
+
+            jw.home=&lt;path to the Java Workspace&gt;
+
+            Example:
+
+            jw.home=d:\\JavaWorkspace\\
+            ===================================================================
+        </fail>
+    </target>
+</project>

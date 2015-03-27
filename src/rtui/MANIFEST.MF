@@ -1,0 +1,7 @@
+
+Name: jworkspace/ui/runtime/RuntimeManagerWindow.class
+PluginName: Runtime Manager Shell
+IconFile: jworkspace/ui/runtime/images/runtime.png
+BigIconFile: jworkspace/ui/runtime/images/runtime_big.png
+Type: XShell
+Version: 0.90
