@@ -1,0 +1,72 @@
+# These are general-purpose locale-specific messages, for use in things like
+# buttons, common dialog boxes, tooltips, and so on. Most of these are used by
+# the Kiwi Toolkit itself, but many can be used by an application.
+# Locale: French
+# Author: David Bernard
+#
+kiwi.button.ok=OK
+kiwi.button.cancel=Annuler
+kiwi.button.yes=Oui
+kiwi.button.no=Non
+kiwi.button.new=Nouveau
+kiwi.button.edit=Editer
+kiwi.button.copy=Copier
+kiwi.button.delete=Supprimer
+kiwi.button.save=Enregistrer
+kiwi.button.next=Suivant
+kiwi.button.back=Precedent
+kiwi.button.finish=Finir
+kiwi.button.home=Home
+kiwi.button.undo=Annuler
+kiwi.button.close=Fermer
+kiwi.button.dismiss=Oublier
+kiwi.button.clear=Nettoyer
+kiwi.button.browse=Parcourir
+kiwi.button.start=Demarrer
+kiwi.button.stop=Stopper
+kiwi.button.help=Aide
+kiwi.button.search=Rechercher
+kiwi.button.detail=Détail
+kiwi.dialog.prompt.date_select=Choisir une date:
+kiwi.dialog.title.date_select=Choisir une Date
+kiwi.dialog.prompt=Demander.
+kiwi.dialog.prompt.input=Saisir:
+kiwi.dialog.prompt.message=Message.
+kiwi.dialog.prompt.question=Question?
+kiwi.dialog.title.input=Saisie
+kiwi.dialog.title.message=Message
+kiwi.dialog.title.question=Question
+kiwi.dialog.prompt.directory_select=Choisir un repertoire:
+kiwi.dialog.title.directory_select=Choisir un Repertoire
+kiwi.dialog.title.login=Login
+kiwi.dialog.prompt.login=Veuillez vous logger:
+kiwi.dialog.prompt.username=Nom:
+kiwi.dialog.prompt.password=Mot de passe:
+kiwi.dialog.title.progress=En cours
+kiwi.dialog.prompt.wait=Veuillez patientez...
+kiwi.dialog.title.console=Console
+kiwi.dialog.title.select=Choisir un Item
+kiwi.tooltip.move_down=Deplacer Bas
+kiwi.tooltip.move_up=Deplacer Haut
+kiwi.tooltip.delete=Supprimer
+kiwi.tooltip.new=Nouveau
+kiwi.tooltip.cut=Couper
+kiwi.tooltip.copy=Copier
+kiwi.tooltip.paste=Coller
+kiwi.tooltip.clear=Nettoyer
+kiwi.tooltip.italic=Italique
+kiwi.tooltip.bold=Gras
+kiwi.tooltip.underline=Souligne
+kiwi.tooltip.plain="Plain"
+kiwi.tooltip.help=Aide
+kiwi.tooltip.search=Rechercher
+kiwi.tooltip.zoom_in=Zoom In
+kiwi.tooltip.zoom_out=Zoom Out
+kiwi.tooltip.actual_size=Taille actuelle
+kiwi.dialog.message.login_failed=Echec Login. Essayez a nouveau.
+kiwi.dialog.message.select_item=Choisissez.
+kiwi.label.name=Nom
+kiwi.label.value=Valeur
+kiwi.label.directory_list=List Repertoire
+kiwi.dialog.message.save_to=Enregister les changements dans {0}?
+kiwi.dialog.message.save_failed=Impossible d'enregister les changements.

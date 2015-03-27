@@ -1,12 +1,21 @@
-Copyright 1999 - 2003 Troshin Anton
-Version 1.0.3 Clematis
+Copyright 1999 - 2003, 2015 Troshin Anton
+Version 1.1 Clematis
 
-What's new in Clematis 1.0.3?
+What's new in Clematis 1.1?
 
 [           Legend:          ]
 [ + Added feature            ]
 [ * Improved/changed feature ]
 [ - Bug fixed (we hope)      ]
+
+1.1
+
+[+] Maven project 
+[+] Latest Kiwi library
+[+] Latest Bean Shell 
+[+] Jimi is replaced with Apache Imaging
+[*] Re-factoring of installer model
+[-] Removed kiwi.ui.dialog.KDialog, no centering on the screen
 
 1.0.3
 

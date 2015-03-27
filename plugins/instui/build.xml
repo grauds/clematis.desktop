@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+*******************************************************************************
+
+  Ant script for the instui project.
+
+  General targets:
+  clean         - cleans all build products.
+  compile       - compiles Java sources.
+  pack          - creates the application archives.
+  doc           - builds the project documentation.
+  rebuild-all   - cleans all build products and re-builds the project.
+
+  Misc. targets:
+  jw-deploy  - deploys application into Clematis Installation.
+
+  Author: Anton Troshin (anton.troshin@gmail.com)
+
+*******************************************************************************
+-->
+
+<project name="instui" default="jw-deploy" basedir="/">
+    <!--
+    ***************************************************************************
+    Initialization
+    ***************************************************************************
+    -->
+    <target name="init">
+        <property file="build.properties"/>
+        <path id="project.class.path">
+            <fileset dir="${lib.dir}" includes="_*.jar"/>
+            <fileset dir="${lib.dir}" includes="*.jar"/>
+        </path>
+    </target>
+    <!--
+    ***************************************************************************
+    Cleans all build products.
+    ***************************************************************************
+    -->
+    <target name="clean" depends="init"
+        description="Cleans all build products.">
+        <delete dir="${build.dir}"/>
+    </target>
+    <!--
+    ***************************************************************************
+    Compiles Java sources.
+    ***************************************************************************
+    -->
+    <target name="compile" depends="init" description="Compiles Java sources.">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+            classpathref="project.class.path"
+            compiler="${compile.compiler}"
+            fork="${compile.fork}"
+            debug="${compile.debug}"
+            optimize="${compile.optimize}"
+            target="${compile.target}">
+        </javac>
+    </target>
+    <!--
+    ***************************************************************************
+    Creates the application archive.
+    ***************************************************************************
+    -->
+    <target name="pack" depends="compile" description="Creates the application archive.">
+
+        <mkdir dir="${build.archives.dir}"/>
+
+    <!-- instsh.jar -->
+
+        <jar jarfile="${build.archives.dir}/instsh.jar" manifest="MANIFEST.MF">
+            <fileset dir="${build.classes.dir}">
+                <include name="**/jworkspace/ui/installer/*.class"/>
+                <include name="**/jworkspace/ui/installer/actions/*.class"/>
+                <include name="**/jworkspace/ui/installer/dialog/*.class"/>
+            </fileset>
+            <zipfileset dir="${src.dir}/jworkspace/ui/installer/images"
+                includes="*.*"
+                prefix="jworkspace/ui/installer/images"
+            />
+            <zipfileset dir="${src.dir}/i18n"
+                includes="*.*"
+                prefix="i18n"
+            />
+        </jar>
+    </target>
+    <!--
+    ***************************************************************************
+    Builds the project documentation.
+    ***************************************************************************
+    -->
+    <target name="doc" depends="init" description="Builds the project documentation.">
+
+        <mkdir dir="${build.doc.dir}"/>
+
+        <javadoc destdir="${build.doc.api.dir}"
+            access="${javadoc.access}"
+            author="true"
+            version="true"
+            use="true"
+            windowtitle="rtui API"
+            classpathref="project.class.path">
+
+            <packageset dir="${src.dir}" defaultexcludes="yes">
+                <include name="jworkspace/ui/installer/**"/>
+            </packageset>
+        </javadoc>
+    </target>
+    <!--
+    ***************************************************************************
+    Cleans all build products and re-builds the project.
+    ***************************************************************************
+    -->
+    <target name="rebuild-all" depends="clean, compile, pack, doc"
+        description="Cleans all build products and re-builds the project.">
+    </target>
+    <!--
+    ***************************************************************************
+    Deploys application into Java Workspace.
+    ***************************************************************************
+    -->
+    <target name="jw-deploy" depends="compile, pack"
+        description="Deploys application into Clematis Workspace.">
+        <property file="jw.properties"/>
+        <antcall target="check-jw"/>
+        <copy file="${build.archives.dir}/instsh.jar"
+            todir="${jw.home}/users/root/shells"/>
+    </target>
+
+    <target name="check-jw" unless="jw.home">
+        <fail message="Clematis Workspace NOT FOUND!">
+            ===================================================================
+            The application couldn't be deployed! Property jw.home is
+            undefined! Create jw.properties file in the project root
+            directory with the following string:
+
+            jw.home=&lt;path to the Clematis Workspace&gt;
+
+            Example:
+
+            jw.home=./../../
+            ===================================================================
+        </fail>
+    </target>
+</project>

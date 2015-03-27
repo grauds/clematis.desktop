@@ -1,0 +1,73 @@
+# These are general-purpose locale-specific messages, for use in things like
+# buttons, common dialog boxes, tooltips, and so on. Most of these are used by
+# the Kiwi Toolkit itself, but many can be used by an application.
+# Locale: (DE Deutsch)
+# Author: Last Zolex
+#
+kiwi.button.ok=OK
+kiwi.button.cancel=Abbrechen
+kiwi.button.yes=Ja
+kiwi.button.no=Nein
+kiwi.button.new=Neu
+kiwi.button.edit=Bearbeiten
+kiwi.button.copy=Kopieren
+kiwi.button.delete=Loeschen
+kiwi.button.save=Speichern
+kiwi.button.next=Weiter
+kiwi.button.back=Zurück
+kiwi.button.finish=Abschliessen
+kiwi.button.home=Home
+kiwi.button.undo=Rückgängig
+kiwi.button.close=Schliessen
+kiwi.button.dismiss=Bestätigen
+kiwi.button.clear=Löschen
+kiwi.button.browse=Blättern
+kiwi.button.start=Start
+kiwi.button.stop=Stop
+kiwi.button.help=Hilfe
+kiwi.button.search=Suchen
+kiwi.button.detail=Einzelheit
+kiwi.dialog.prompt.date_select=Datum wählen:
+kiwi.dialog.title.date_select=Datum wählen
+kiwi.dialog.prompt=Prompt.
+kiwi.dialog.prompt.input=Eingabe:
+kiwi.dialog.prompt.message=Nachricht.
+kiwi.dialog.prompt.question=Frage?
+kiwi.dialog.title.input=Eingabe
+kiwi.dialog.title.message=Nachricht
+kiwi.dialog.title.question=Frage
+kiwi.dialog.prompt.directory_select=Verzeichnis wählen:
+kiwi.dialog.title.directory_select=Verzeichnis wählen
+kiwi.dialog.title.login=Login
+kiwi.dialog.prompt.login=Bitte anmelden:
+kiwi.dialog.prompt.username=Benutzer:
+kiwi.dialog.prompt.password=Passwort:
+kiwi.dialog.title.progress=Fortschritt
+kiwi.dialog.prompt.wait=Bitte warten...
+kiwi.dialog.title.console=Konsole
+kiwi.dialog.title.select=Element auswählen
+kiwi.tooltip.move_down=Nach unten
+kiwi.tooltip.move_up=Nach oben
+kiwi.tooltip.delete=Löschen
+kiwi.tooltip.new=Neu
+kiwi.tooltip.cut=Ausschneiden
+kiwi.tooltip.copy=Kopieren
+kiwi.tooltip.paste=Einfügen
+kiwi.tooltip.clear=Löschen
+kiwi.tooltip.italic=Kursiv
+kiwi.tooltip.bold=Fett
+kiwi.tooltip.underline=Unterstrichen
+kiwi.tooltip.plain=Normal
+kiwi.tooltip.help=Hilfe
+kiwi.tooltip.search=Suche
+kiwi.tooltip.zoom_in=Zoom +
+kiwi.tooltip.zoom_out=Zoom -
+kiwi.tooltip.actual_size=Normale Grösse
+kiwi.tooltip.select_date=Datum wählen
+kiwi.dialog.message.login_failed=Anmeldung fehlgeschlagen. Bitte neu versuchen.
+kiwi.dialog.message.select_item=Bitte treffen Sie eine Wahl.
+kiwi.label.name=Name
+kiwi.label.value=Wert
+kiwi.label.directory_list=Verzeichnisliste
+kiwi.dialog.message.save_to=Änderungen speichern in {0}?
+kiwi.dialog.message.save_failed=Kann Änderungen nicht speichern.
