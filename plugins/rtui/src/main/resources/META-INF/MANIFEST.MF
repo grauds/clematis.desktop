@@ -4,4 +4,4 @@ PluginName: Runtime Manager Shell
 IconFile: jworkspace/ui/runtime/images/runtime.png
 BigIconFile: jworkspace/ui/runtime/images/runtime_big.png
 Type: XShell
-Version: 0.90
+Version: 0.91

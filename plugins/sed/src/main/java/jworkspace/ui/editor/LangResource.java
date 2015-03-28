@@ -45,13 +45,10 @@ public class LangResource
     }
     catch(MissingResourceException ex)
     {
-      Workspace.logException(ex.toString());
+      Workspace.getLogger().warning(ex.toString());
     }
     if(message == null)
     {
-        JOptionPane.showMessageDialog(null,
-         "Cannot find resource string " + id);
-        Workspace.logException("Cannot find resource string " + id);
         return id;
     }
     return message;

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+
+Name: jworkspace/ui/script/WorkspaceScriptEngine.class
+IconFile: jworkspace/ui/script/images/engine.png
+BigIconFile: jworkspace/ui/script/images/engine_big.png
+PluginName: Scripting Shell
+Type: XShell
+Version: 0.91
+
