@@ -90,7 +90,7 @@ public class WorkbenchActions
     {
       super(deleteActionName);
       putValue(Action.SMALL_ICON, new ImageIcon(ResourceManager.getKiwiResourceManager().
-                                  getImage("delete.gif")));
+                                  getImage("delete.png")));
       putValue(Action.SHORT_DESCRIPTION, "Delete");
     }
     public void actionPerformed (ActionEvent evt)
@@ -108,7 +108,7 @@ public class WorkbenchActions
     {
       super(addActionName);
       putValue(Action.SMALL_ICON, new ImageIcon(ResourceManager.
-                getKiwiResourceManager().getImage("plus.gif")));
+                getKiwiResourceManager().getImage("plus.png")));
       putValue(Action.SHORT_DESCRIPTION, "Add Entry");
     }
     public void actionPerformed (ActionEvent evt)
@@ -126,7 +126,7 @@ public class WorkbenchActions
     {
       super(editActionName);
       putValue(Action.SMALL_ICON, new ImageIcon(ResourceManager.
-                getKiwiResourceManager().getImage("edit.gif")));
+                getKiwiResourceManager().getImage("prefs.png")));
       putValue(Action.SHORT_DESCRIPTION, "Edit");
     }
     public void actionPerformed (ActionEvent evt)
@@ -144,7 +144,7 @@ public class WorkbenchActions
     {
       super(viewDocActionName);
       putValue(Action.SMALL_ICON,  new ImageIcon(ResourceManager.
-                getKiwiResourceManager().getImage("document.gif")));
+                getKiwiResourceManager().getImage("document.png")));
       putValue(Action.SHORT_DESCRIPTION, "View Documentation");
     }
     public void actionPerformed (ActionEvent evt)

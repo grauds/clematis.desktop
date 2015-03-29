@@ -61,7 +61,6 @@ public class CloseFilesDialog extends ComponentDialog implements ActionListener
   public CloseFilesDialog(Frame parent, String[] fileNames)
   {
     super(parent, LangResource.getString("Close_Files"), true);
-    this.centerDialog();
     getCheckList().setListData(fileNames, new int[0]);
   }
   /**

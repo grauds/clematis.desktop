@@ -12,7 +12,8 @@ What's new in Clematis 1.1?
 
 [+] Maven project 
 [+] Latest Kiwi library
-[+] Latest Bean Shell 
+[+] Latest Bean Shell
+[+] New syntax component
 [+] Jimi is replaced with Apache Imaging
 [*] Re-factoring of installer model
 [-] Removed kiwi.ui.dialog.KDialog, no centering on the screen, relativeness to parent instead

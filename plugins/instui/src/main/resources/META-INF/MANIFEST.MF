@@ -1,0 +1,7 @@
+
+Name: jworkspace/ui/installer/InstallerWindow.class
+PluginName: Installer Manager Shell
+IconFile: jworkspace/ui/installer/images/installer.png
+BigIconFile: jworkspace/ui/installer/images/installer_big.png
+Type: XShell
+Version: 0.90

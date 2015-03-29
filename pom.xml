@@ -14,7 +14,7 @@
         <module>desktop</module>
         <module>plugins/sed</module>
         <module>plugins/rtui</module>
-        <!--<module>plugins/instui</module>-->
+        <module>plugins/instui</module>
         <!--<module>plugins/launcher</module>-->
     </modules>
 

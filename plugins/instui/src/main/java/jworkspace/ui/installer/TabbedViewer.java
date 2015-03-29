@@ -34,7 +34,6 @@ import java.io.*;
 import javax.swing.*;
 
 import com.hyperrealm.kiwi.ui.KPanel;
-import kiwi.ui.*;
 
 import jworkspace.kernel.*;
 import jworkspace.ui.installer.dialog.*;
@@ -141,7 +140,6 @@ class TabbedViewer extends KPanel implements ActionListener
     {
       CloseFilesDialog dlg =
           new CloseFilesDialog(Workspace.getUI().getFrame(), getTabNames());
-      dlg.centerDialog();
       dlg.setVisible(true);
       if (!dlg.isCancelled())
       {

@@ -650,7 +650,6 @@ protected void chooseMainClass()
    pr = new ProgressDialog(Workspace.getUI().getFrame(),
                    LangResource.getString("message#1019"), true);
    Inspector inspector = new Inspector(file);
-   pr.centerDialog();
    pr.track(inspector);
    if (this.executables.size() == 1)
    {

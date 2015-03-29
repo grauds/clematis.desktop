@@ -28,6 +28,7 @@ package jworkspace.ui.installer;
 import java.io.*;
 import javax.swing.*;
 
+import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.installer.*;
@@ -62,7 +63,7 @@ public class ApplicationWorkbench extends Workbench
   /**
    * Get a reference to content tree
    */
-  public JTree getContentTree()
+  public KTreeTable getContentTree()
   {
     return initContentTree(Workspace.getInstallEngine().getApplicationModel());
   }
@@ -149,7 +150,6 @@ public class ApplicationWorkbench extends Workbench
        new ApplicationDialog(Workspace.getUI().getFrame());
 
     app_dlg.setData(app);
-    app_dlg.centerDialog();
     app_dlg.setVisible(true);
 
     if(!app_dlg.isCancelled())
@@ -181,7 +181,6 @@ public class ApplicationWorkbench extends Workbench
     {
       ApplicationChooserDialog dlg =
               new ApplicationChooserDialog(Workspace.getUI().getFrame());
-      dlg.centerDialog();
       dlg.setVisible(true);
       if (dlg.getSelectedApplication() != null)
       {
@@ -205,7 +204,6 @@ public class ApplicationWorkbench extends Workbench
        new ApplicationDialog(Workspace.getUI().getFrame());
 
     app_dlg.setData(app);
-    app_dlg.centerDialog();
     app_dlg.setVisible(true);
 
     if(!app_dlg.isCancelled())
