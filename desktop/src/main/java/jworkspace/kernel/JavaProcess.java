@@ -40,7 +40,7 @@ public final class JavaProcess
     /**
      * Default process name
      */
-    protected String process_name = "Untitled";
+    private String process_name = "Untitled";
     /**
      * Native process
      */
@@ -95,7 +95,7 @@ public final class JavaProcess
     /**
      * Reader thread to get all process log information back to workspace.
      */
-    protected class ReaderThread
+    private class ReaderThread
             extends Thread
     {
         private InputStream stream;
@@ -117,9 +117,12 @@ public final class JavaProcess
                     if (b > 0)
                     {
                         String str = new String(buf, 0, b);
-                        log.append(" [ " +
-                                   String.valueOf(getElapsedTime()) + " " + "sec" + " "
-                                   + str);
+                        log.append(" [ ")
+                                .append(String.valueOf(getElapsedTime()))
+                                .append(" ")
+                                .append("sec")
+                                .append(" ")
+                                .append(str);
 
                         StringTokenizer st = new StringTokenizer(str, "\n\r\f\t");
 
@@ -158,10 +161,9 @@ public final class JavaProcess
             return;
         }
 
-        for (int i = 0; i < _args.length; i++)
-        {
-            log.append(">" + "Started with command line" + " " + _args[i]);
-            vlog.append(">" + "Started with command line" + " " + _args[i]);
+        for (String _arg : _args) {
+            log.append(">" + "Started with command line" + " ").append(_arg);
+            vlog.append(">" + "Started with command line" + " " + _arg);
         }
 
         setName(process_name);
@@ -185,10 +187,14 @@ public final class JavaProcess
         });
         waitThread.start();
 
-        log.append(LangResource.getString("JavaProcess.Process")
-                   + " " + process_name
-                   + " " + LangResource.getString("JavaProcess.StartedAt")
-                   + " " + java.text.DateFormat.getInstance().format(startTime));
+        log.append(LangResource.getString("JavaProcess.Process"))
+                .append(" ")
+                .append(process_name)
+                .append(" ")
+                .append(LangResource.getString("JavaProcess.StartedAt"))
+                .append(" ")
+                .append(java.text.DateFormat.getInstance().format(startTime));
+        
         vlog.append(LangResource.getString("JavaProcess.Process") +
                     " " + process_name +
                     " " + LangResource.getString("JavaProcess.StartedAt") +
@@ -203,10 +209,12 @@ public final class JavaProcess
             try
             {
                 int x = process.waitFor();
-                log.append(" [ " +
-                           java.text.DateFormat.getInstance().format(startTime)
-                           + " " + LangResource.getString("JavaProcess.ExitValue")
-                           + " " + x);
+                log.append(" [ ").append(java.text.DateFormat.getInstance()
+                        .format(startTime))
+                        .append(" ")
+                        .append(LangResource.getString("JavaProcess.ExitValue"))
+                        .append(" ")
+                        .append(x);
                 vlog.append(" [ " +
                             java.text.DateFormat.getInstance().format(startTime)
                             + " " + LangResource.getString("JavaProcess.ExitValue") +
@@ -225,7 +233,7 @@ public final class JavaProcess
     /**
      * Returns time, elapsed from process start.
      */
-    public long getElapsedTime()
+    private long getElapsedTime()
     {
         return ((System.currentTimeMillis() - startTime.getTime()) / 1000);
     }
@@ -292,7 +300,7 @@ public final class JavaProcess
         {
             this.process_name = process_name;
         }
-        /**
+        /*
          * Set name for log.
          */
         vlog.setName(this.process_name);

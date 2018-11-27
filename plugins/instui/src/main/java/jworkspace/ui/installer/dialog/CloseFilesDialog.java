@@ -2,7 +2,7 @@ package jworkspace.ui.installer.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 2002 Anton Troshin
+   Copyright (C) 1999-2016 Anton Troshin
 
    This file is part of Java Workspace.
 

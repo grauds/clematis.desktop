@@ -1,0 +1,8 @@
+rootProject.name = 'clematis'
+
+include 'desktop'
+//include 'service'
+//include 'dao'
+//include 'model'
+//include 'store'
+

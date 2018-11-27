@@ -1,14 +1,14 @@
-Copyright 1999 - 2003, 2015 Troshin Anton
-Version 1.1 Clematis
+Copyright 1999 - 2016 Troshin Anton
+Version 2.0.0 Clematis
 
-What's new in Clematis 1.1?
+What's new in Clematis 2.0?
 
 [           Legend:          ]
 [ + Added feature            ]
 [ * Improved/changed feature ]
 [ - Bug fixed (we hope)      ]
 
-1.1
+2.0.0
 
 [+] Maven project 
 [+] Latest Kiwi library

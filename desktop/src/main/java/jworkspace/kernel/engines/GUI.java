@@ -26,7 +26,6 @@ package jworkspace.kernel.engines;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.kernel.engines.IEngine;
 import jworkspace.kernel.IWorkspaceListener;
 
 import java.awt.*;
@@ -38,67 +37,52 @@ import java.util.Hashtable;
  * should implement this interface as it provides minimum
  * services for Java Workspace Kernel and other engines.
  */
-
-/**
- * Change log:
- * 15.11.2001 - Added isModified method to indicate
- * user activity in gui before logging out or exitinig
- * workspace. This is done, because service stores all
- * data in configuration or log files, but any open editor
- * or log in GUI should ask for the file name before
- * saving any data. This method bridges the gap.
- */
 public interface GUI extends IEngine, IWorkspaceListener
 {
     /**
      * Returns special clipboard for graphic interface..
      */
-    public Clipboard getClipboard();
+    Clipboard getClipboard();
 
     /**
      * Main frame for the application.
      */
-    public Frame getFrame();
+    Frame getFrame();
 
     /**
      * Logo screen displays information
      * about version of Java Workspace.
      */
-    public Window getLogoScreen();
+    Window getLogoScreen();
 
     /**
      * Check whether this GUI is modified.
      */
-    public boolean isModified();
+    boolean isModified();
 
     /**
      * Returns all registered components.
      */
-    public Hashtable getAllRegistered();
+    Hashtable getAllRegistered();
 
     /**
      * Check whether gui shell is registered
      * @return registered component.
      */
-    public Object isRegistered(String clazz);
+    Object isRegistered(String clazz);
 
     /**
      * Register gui shell.
      */
-    public void register(Object obj);
+    void register(Object obj);
 
     /**
      * Unregister gui shell.
      */
-    public void unregister(String clazz);
-
-    /**
-     * Loads shell, that is a user interface for system services.
-     */
-//public Object loadShell(String name, String savePath);
+    void unregister(String clazz);
 
     /**
      * Updates all GUI.
      */
-    public void update();
+    void update();
 }

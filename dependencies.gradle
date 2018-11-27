@@ -1,0 +1,23 @@
+apply from: file("${project.rootDir}/libraries.gradle")
+
+dependencies {
+
+    compile(
+            libraries.guava,
+            libraries.findbugsAnotations,
+            libraries.slf4j,
+            libraries.logback,
+            libraries.commonsIo,
+            libraries.commonsLang3
+    )
+
+    testCompile(
+            libraries.junit,
+            libraries.springTest
+    )
+
+    // drop-in replacement for commons-logging, jul and log4j, so logs will be handled by slf4j
+    compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}@jar"
+    compile "org.slf4j:jul-to-slf4j:${slf4jVersion}@jar"
+    compile "org.slf4j:log4j-over-slf4j:${slf4jVersion}@jar"
+}

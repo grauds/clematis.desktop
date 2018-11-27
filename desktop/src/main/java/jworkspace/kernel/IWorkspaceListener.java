@@ -31,5 +31,5 @@ public interface IWorkspaceListener
      * Process event. Such event is send to every
      * subsribed event listener in synchronous manner.
      */
-    public void processEvent(Object event, Object lparam, Object rparam);
+    void processEvent(Object event, Object lparam, Object rparam);
 }

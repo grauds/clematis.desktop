@@ -1,7 +1,7 @@
 package jworkspace.ui.runtime;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2000 Anton Troshin
+   Copyright (C) 1999-2016 Anton Troshin
 
    This file is part of Java Workspace.
 

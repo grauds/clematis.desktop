@@ -40,151 +40,145 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import java.awt.*;
 
-/** This class represents a <i>splash screen</i>: an untitled, frameless window
-  * that briefly appears on the desktop, typically while an application or
-  * installer program is launching. A <code>SplashScreen</code> contains an
-  * image and, optionally, a one-line textual caption. It is drawn with a
-  * 1-pixel wide black border and appears at the center of the screen when
-  * shown. The <code>SplashScreen</code> appears above all other windows on the
-  * desktop.
-  * <p>
-  * As with all <code>Component</code>s, the <code>setForeground()</code> and
-  * <code>setBackground()</code> methods may be called to change the appearance
-  * of the splash screen.
-  *
-  * <p><center>
-  * <img src="snapshot/SplashScreen.gif"><br>
-  * <i>An example SplashScreen.</i>
-  * </center>
-  *
-  * @author Mark Lindner
-  * @author PING Software Group
-  */
+/**
+ * This class represents a <i>splash screen</i>: an untitled, frameless window
+ * that briefly appears on the desktop, typically while an application or
+ * installer program is launching. A <code>SplashScreen</code> contains an
+ * image and, optionally, a one-line textual caption. It is drawn with a
+ * 1-pixel wide black border and appears at the center of the screen when
+ * shown. The <code>SplashScreen</code> appears above all other windows on the
+ * desktop.
+ * <p>
+ * As with all <code>Component</code>s, the <code>setForeground()</code> and
+ * <code>setBackground()</code> methods may be called to change the appearance
+ * of the splash screen.
+ * <p>
+ * <p><center>
+ * <img src="snapshot/SplashScreen.gif"><br>
+ * <i>An example SplashScreen.</i>
+ * </center>
+ *
+ * @author Mark Lindner
+ * @author PING Software Group
+ */
 
-public class SplashScreen extends Window
-  {
-  private int delay = 5;
-  private Image image;
-  private String caption;
+public class SplashScreen extends Window {
 
-  /** Construct a new <code>SplashScreen</code>.
-    *
-    * @param image The image to display in the splash screen.
-    * @param caption A short text caption to display below the image (may be
-    * <code>null</code>).
-    */
+    private int delay = 5;
+    private Image image;
+    private String caption;
 
-  public SplashScreen(Image image, String caption)
-    {
-    super(KiwiUtils.getPhantomFrame());
+    /**
+     * Construct a new <code>SplashScreen</code>.
+     *
+     * @param image   The image to display in the splash screen.
+     * @param caption A short text caption to display below the image (may be
+     *                <code>null</code>).
+     */
 
-    this.image = image;
-    this.caption = caption;
+    public SplashScreen(Image image, String caption) {
+        super(KiwiUtils.getPhantomFrame());
 
-    setForeground(Color.black);
+        this.image = image;
+        this.caption = caption;
+
+        setForeground(Color.black);
     }
 
-  public SplashScreen(Frame parent, Image image, String caption)
-    {
-    super(parent);
+    public SplashScreen(Frame parent, Image image, String caption) {
+        super(parent);
 
-    this.image = image;
-    this.caption = caption;
+        this.image = image;
+        this.caption = caption;
 
-    setForeground(Color.black);
+        setForeground(Color.black);
     }
 
-  /** Set the display duration.
-    *
-    * @param seconds The number of seconds that the splash screen should remain
-    * onscreen before it is automatically hidden. If 0, it will remain onscreen
-    * until explicitly hidden via a call to <code>setVisible()</code> or
-    * <code>dispose()</code>.
-    *
-    * @exception java.lang.IllegalArgumentException If <code>seconds</code> is
-    * less than 0.
-    */
+    /**
+     * Set the display duration.
+     *
+     * @param seconds The number of seconds that the splash screen should remain
+     *                onscreen before it is automatically hidden. If 0, it will remain onscreen
+     *                until explicitly hidden via a call to <code>setVisible()</code> or
+     *                <code>dispose()</code>.
+     * @throws java.lang.IllegalArgumentException If <code>seconds</code> is
+     *                                            less than 0.
+     */
 
-  public void setDelay(int seconds) throws IllegalArgumentException
-    {
-    if(seconds < 0)
-      throw(new IllegalArgumentException("Delay must be >= 0 seconds."));
+    public void setDelay(int seconds) throws IllegalArgumentException {
+        if (seconds < 0)
+            throw (new IllegalArgumentException("Delay must be >= 0 seconds."));
 
-    delay = seconds;
+        delay = seconds;
     }
 
-  /** Paint the splash screen. */
+    /**
+     * Paint the splash screen.
+     */
 
-  public void paint(Graphics gc)
-    {
-    Dimension size = getSize();
+    public void paint(Graphics gc) {
+        Dimension size = getSize();
 
-    FontMetrics fm = gc.getFontMetrics();
+        FontMetrics fm = gc.getFontMetrics();
 
-    gc.setColor(Color.black);
-    gc.drawRect(0, 0, size.width - 1, size.height - 1);
-    gc.drawImage(image, 1, 1, null);
+        gc.setColor(Color.black);
+        gc.drawRect(0, 0, size.width - 1, size.height - 1);
+        gc.drawImage(image, 1, 1, null);
 
-    if(caption != null)
-      {
-      int y = image.getHeight(null) + 2 + fm.getAscent();
-      int x = (size.width - fm.stringWidth(caption)) / 2;
+        if (caption != null) {
+            int y = image.getHeight(null) + 2 + fm.getAscent();
+            int x = (size.width - fm.stringWidth(caption)) / 2;
 
-      gc.setColor(getForeground());
-      gc.drawString(caption, x, y);
-      }
+            gc.setColor(getForeground());
+            gc.drawString(caption, x, y);
+        }
     }
 
-  /** Display or hide the splash screen. The splash screen is displayed on the
-    * desktop, centered on the screen. Although this method returns
-    * immediately, the splash screen remains on the desktop for the duration
-    * of the time delay, or indefinitely if the delay was set to 0.
-    */
+    /**
+     * Display or hide the splash screen. The splash screen is displayed on the
+     * desktop, centered on the screen. Although this method returns
+     * immediately, the splash screen remains on the desktop for the duration
+     * of the time delay, or indefinitely if the delay was set to 0.
+     */
 
-  public void setVisible(boolean flag)
-    {
-    if(flag)
-      {
-      pack();
-      KiwiUtils.centerWindow(this);
-      }
-    super.setVisible(flag);
+    public void setVisible(boolean flag) {
+        if (flag) {
+            pack();
+            KiwiUtils.centerWindow(this);
+        }
+        super.setVisible(flag);
 
-    if(flag && (delay > 0))
-      {
-      Thread thread = new Thread(new Runnable()
-  {
-  public void run()
-    {
-    try
-      {
-      Thread.currentThread().sleep(delay * 1000);
-      }
-    catch(InterruptedException ex) {}
-    dispose();
-    }
-  });
+        if (flag && (delay > 0)) {
+            Thread thread = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Thread.currentThread().sleep(delay * 1000);
+                    } catch (InterruptedException ex) {
+                    }
+                    dispose();
+                }
+            });
 
-      thread.start();
-      }
+            thread.start();
+        }
     }
 
-  /** Get the splash screen's preferred size.
-    *
-    * @return The preferred size of the component.
-    */
+    /**
+     * Get the splash screen's preferred size.
+     *
+     * @return The preferred size of the component.
+     */
 
-  public Dimension getPreferredSize()
-    {
-    FontMetrics fm = getGraphics().getFontMetrics();
+    public Dimension getPreferredSize() {
+        FontMetrics fm = getGraphics().getFontMetrics();
 
-    Dimension d = new Dimension(image.getWidth(null) + 2,
-        image.getHeight(null) + 2);
-    if(caption != null) d.height += fm.getHeight() + 2;
+        Dimension d = new Dimension(image.getWidth(null) + 2,
+                image.getHeight(null) + 2);
+        if (caption != null) d.height += fm.getHeight() + 2;
 
-    return(d);
+        return (d);
     }
 
-  }
+}
 
 /* end of source file */

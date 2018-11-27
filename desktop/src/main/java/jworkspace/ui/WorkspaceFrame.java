@@ -53,7 +53,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
     /**
      * The name of content manager
      */
-    public static String CONTENT_MANAGER = "jworkspace.ui.views.ViewsManager";
+    private static String CONTENT_MANAGER = "jworkspace.ui.views.ViewsManager";
     /**
      * A reference to Workspace GUI
      */
@@ -61,11 +61,11 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
     /**
      * Content.
      */
-    protected static AbstractViewsManager content = null;
+    private static AbstractViewsManager content = null;
     /**
      * Control panel.
      */
-    protected ControlPanel controlPanel = null;
+    private ControlPanel controlPanel = null;
     /**
      * System menu.
      */
@@ -93,14 +93,14 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
     public WorkspaceFrame(String title, WorkspaceGUI gui)
     {
         super(title);
-        /**
+        /*
          * Insert menu bar on the top.
          */
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.gui = gui;
         this.getMainContainer().setLayout( new BorderLayout() );
         this.getMainContainer().setOpaque(false);
-        /**
+        /*
          * ui managers
          */
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
@@ -117,15 +117,14 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
             Class clazz = Class.forName(WorkspaceFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
 
-            if (!(object instanceof JComponent) &&
-                    !(object instanceof AbstractViewsManager))
+            if (!(object instanceof JComponent))
                 throw new IllegalArgumentException();
 
             content = (AbstractViewsManager) object;
             Workspace.getLogger().info(">" + "Loaded content manager" +
                               " " + WorkspaceFrame.CONTENT_MANAGER);
         }
-        /**
+        /*
          * Catch exception is there is no multidesktop manager
          * installed, or it cannot be loaded.
          */
@@ -135,31 +134,29 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
                     (LangResource.getString("WorkspaceFrame.load.CM.failed"), e);
             System.exit(-1);
         }
-        /**
+        /*
          * Ask for buttons and fill control panel.
          */
         CButton[] buttons = content.getButtons();
         if (buttons != null)
         {
-            for (int i = 0; i < buttons.length; i++)
-            {
-                getControlPanel().addButton(buttons[i]);
+            for (CButton button : buttons) {
+                getControlPanel().addButton(button);
             }
             if (buttons.length > 0)
                 getControlPanel().addSeparator();
         }
-        /**
+        /*
          * Ask for menus
          */
         JMenu[] menus = content.getMenu();
         if (menus != null)
         {
-            for (int i = 0; i < menus.length; i++)
-            {
-                getJMenuBar().add(menus[i]);
+            for (JMenu menu : menus) {
+                getJMenuBar().add(menu);
             }
         }
-        /**
+        /*
          * Create ui by default.
          */
         content.create();
@@ -172,7 +169,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         Workspace.getLogger().info(">" + "Frame is loaded with default configuration");
     }
 
-    /**
+    /*
      * Called in response to a frame close event to determine if this frame
      * may be closed.
      *
@@ -185,7 +182,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         return (false);
     }
 
-    /**
+    /*
      * Drags control panel along the frame.
      */
     private void drag(int _x, int _y)
@@ -205,7 +202,6 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
             orientation = BorderLayout.NORTH;
             getMainContainer().repaint();
 
-            return;
         }
         else if ((_y > 2 * getMainContainer().getSize().height / 3) &&
                 (_x > getMainContainer().getSize().width / 3) &&
@@ -225,7 +221,6 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
 
             orientation = BorderLayout.SOUTH;
             getMainContainer().repaint();
-            return;
         }
         else if (_x < getMainContainer().getSize().width / 3)
         {
@@ -240,7 +235,6 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
 
             orientation = BorderLayout.WEST;
             getMainContainer().repaint();
-            return;
         }
         else if ((_x > 2 * getMainContainer().getSize().width / 3))
         {
@@ -258,11 +252,10 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
 
             orientation = BorderLayout.EAST;
             getMainContainer().repaint();
-            return;
         }
     }
 
-    /**
+    /*
      * Returns clipboard for components use.
      */
     public Clipboard getClipboard()
@@ -270,18 +263,18 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         return c;
     }
 
-    /**
+    /*
      * Returns content manager for this frame.
      */
-    public AbstractViewsManager getContentManager()
+    AbstractViewsManager getContentManager()
     {
         return content;
     }
 
-    /**
+    /*
      * Returns control panel for this frame.
      */
-    public ControlPanel getControlPanel()
+    ControlPanel getControlPanel()
     {
         if (controlPanel == null)
         {
@@ -292,7 +285,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         return controlPanel;
     }
 
-    /**
+    /*
      * Returns system menu bar.
      */
     public JMenuBar getJMenuBar()
@@ -304,10 +297,10 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         return systemMenu;
     }
 
-    /**
+    /*
      * Assemble system menu.
      */
-    protected void createMenuBar()
+    private void createMenuBar()
     {
         systemMenu = new JMenuBar();
 
@@ -315,7 +308,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
                 (LangResource.getString("WorkspaceFrame.menu.workspace"));
         wmenu.setMnemonic
                 (LangResource.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
-        /**
+        /*
          *  My details
          */
         JMenuItem my_details = WorkspaceUtils.createMenuItem
@@ -323,13 +316,13 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         my_details.setAccelerator
                 (KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK));
         wmenu.add(my_details);
-        /**
+        /*
          * Settings
          */
         JMenuItem settings = WorkspaceUtils.createMenuItem
                 (gui.getActions().getAction(UIActions.settingsActionName));
         wmenu.add(settings);
-        /**
+        /*
          * Show control panel
          */
         JCheckBoxMenuItem showControlPanel = WorkspaceUtils.createCheckboxMenuItem
@@ -339,27 +332,27 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
                 (KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK));
         wmenu.add(showControlPanel);
         wmenu.addSeparator();        
-        /**
+        /*
          * Help
          */
         JMenuItem help = WorkspaceUtils.createMenuItem
                 (gui.getActions().getAction(UIActions.helpActionName));
         help.setEnabled(false);        
         wmenu.add(help);
-        /**
+        /*
          * About
          */
         JMenuItem about = WorkspaceUtils.createMenuItem
                 (gui.getActions().getAction(UIActions.aboutActionName));
         wmenu.add(about);
         wmenu.addSeparator();
-        /**
+        /*
          * Log off
          */
         JMenuItem log_off = WorkspaceUtils.createMenuItem
                 (gui.getActions().getAction(UIActions.logoffActionName));
         wmenu.add(log_off);
-        /**
+        /*
          * Exit
          */
         JMenuItem exit = WorkspaceUtils.createMenuItem
@@ -371,25 +364,21 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         systemMenu.add(wmenu);
     }
 
-    /**
+    /*
      * Returns true if any of views claimed it is modified
      * by user.
      */
-    public boolean isModified()
-    {
-        if (content == null)
-            return false;
-        else
-            return content.isModified();
+    public boolean isModified() {
+        return content != null && content.isModified();
     }
-    /**
+    /*
      * Loads profile data. Input stream in parameters
      * is from file jwxwin.dat.
      */
     public void load(DataInputStream inputStream)
     {
         Workspace.getLogger().info(">" + "Loading workspace frame");
-        /**
+        /*
          * Try to load content manager
          */
         try
@@ -397,13 +386,12 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
             Class clazz = Class.forName(WorkspaceFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
 
-            if (!(object instanceof JComponent) &&
-                    !(object instanceof AbstractViewsManager))
+            if (!(object instanceof JComponent))
                 throw new IllegalArgumentException();
 
             content = (AbstractViewsManager) object;
         }
-        /**
+        /*
          * Catch exception is there is no multidesktop manager
          * installed, or it cannot be loaded.
          */
@@ -420,20 +408,20 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         int height = Toolkit.getDefaultToolkit().getScreenSize().height;
         try
         {
-            /**
+            /*
              * Read Main Frame config.
              */
             visible = inputStream.readBoolean();
-            /**
+            /*
              * Control panel orientation.
              */
             orientation = inputStream.readUTF();
-            /**
+            /*
              * Location
              */
             x = inputStream.readInt();
             y = inputStream.readInt();
-            /**
+            /*
              * Size
              */
             width = inputStream.readInt();
@@ -444,46 +432,44 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
             WorkspaceError.exception
                     (LangResource.getString("WorkspaceFrame.load.failed"), e);
         }
-        /**
+        /*
          * Control panel
          */
         gui.getActions().getShowPanelAction().setSelected(getControlPanel().isVisible());
         getControlPanel().setVisible(visible);
         getControlPanel().setOrientation(orientation);
-        /**
+        /*
          * Set bounds
          */
         _setBounds(x, y, width, height);
 
         try
         {
-            /**
+            /*
              * Ask for buttons and fill control panel.
              */
             CButton[] buttons = content.getButtons();
             if (buttons != null)
             {
-                for (int i = 0; i < buttons.length; i++)
-                {
-                    getControlPanel().addButton(buttons[i]);
+                for (CButton button : buttons) {
+                    getControlPanel().addButton(button);
                 }
                 if (buttons.length > 0)
                 {
                     getControlPanel().addSeparator();
                 }
             }
-            /**
+            /*
              * Ask for menus
              */
             JMenu[] menus = content.getMenu();
             if (menus != null)
             {
-                for (int i = 0; i < menus.length; i++)
-                {
-                    getJMenuBar().add(menus[i]);
+                for (JMenu menu : menus) {
+                    getJMenuBar().add(menu);
                 }
             }
-            /**
+            /*
              * Load and update content
              */
             content.load();
@@ -493,7 +479,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
             WorkspaceError.exception
                     (LangResource.getString("WorkspaceFrame.cmLoad.failed"), e);
         }
-        /**
+        /*
          * End of Main Frame config.
          */
         assemble();
@@ -534,7 +520,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
             }
             else if (evt.getPropertyName().equals("DRAGGED"))
             {
-                /**
+                /*
                  * Mouse pointer coordinates
                  */
                 drag(((Point) evt.getNewValue()).x + controlPanel.getX() + getContentPane().getX(),
@@ -564,7 +550,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
 
     private void _setBounds(int x, int y, int width, int height)
     {
-         /**
+         /*
           * Set bounds only if this frame is decorated
           */
          if ( !isUndecorated() )
@@ -605,7 +591,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
     public void save(DataOutputStream outputStream)
     {
         Workspace.getLogger().info(">" + "Saving workspace frame");
-        /**
+        /*
          * Write out Main Frame configuration.
          */
         boolean visible = getControlPanel().isVisible();
@@ -617,11 +603,11 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
             outputStream.writeInt(getLocation().y);
             outputStream.writeInt(getWidth());
             outputStream.writeInt(getHeight());
-            /**
+            /*
              * Save content of the frame
              */
             content.save();
-            /**
+            /*
              * Reset content of the frame
              */
             content.reset();
@@ -634,7 +620,8 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         Workspace.getLogger().info(">" + "Saved workspace frame");
     }
 
-    /** Set the background texture.
+    /**
+     * Set the background texture.
      *
      * @param image The image to use as the background
      * texture for the frame.
@@ -648,15 +635,15 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
     /**
      * Sets Workspace frame to a full screen wide.
       */
-    protected void assemble()
+    private void assemble()
     {
-        /**
+        /*
          * Settle stuff on frame.
          */
         setMenuBar(getJMenuBar());
         getMainContainer().add(content, BorderLayout.CENTER);
         getMainContainer().add(getControlPanel(), orientation);
-        /**
+        /*
          * Finally display.
          */
         setVisible(true);
@@ -672,7 +659,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
     /**
      * Switches control panel on and off.
      */
-    protected void switchControlPanel()
+    void switchControlPanel()
     {
         getControlPanel().setVisible(!getControlPanel().isVisible());
         validate();

@@ -266,6 +266,7 @@ public class WorkspaceGUI implements GUI {
                     (screenSize.height - imc.getIconHeight()) / 2, imc.getIconWidth(),
                     imc.getIconHeight());
             logo.setBounds(logoBounds);
+            logo.getParent().setBounds(logoBounds);
             logo.setDelay(0);
         }
         return logo;
@@ -301,10 +302,7 @@ public class WorkspaceGUI implements GUI {
      * As this gui is a frame, ask it.
      */
     public boolean isModified() {
-        if (((WorkspaceFrame) getFrame()) == null)
-            return false;
-        else
-            return ((WorkspaceFrame) getFrame()).isModified();
+        return getFrame() != null && ((WorkspaceFrame) getFrame()).isModified();
     }
 
     /**
@@ -406,7 +404,6 @@ public class WorkspaceGUI implements GUI {
         /**
          * Load recently used texture
          */
-
         try {
 
             fileName = Workspace.getUserHome() + "texture.jpg";

@@ -2,7 +2,7 @@ package jworkspace.kernel;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 2002 Anton Troshin
+   Copyright (C) 1999-2016 Anton Troshin
    This file is part of Java Workspace.
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,5 +25,5 @@ public interface IConstants
     /**
      * Small menu icon
      */
-    public static final String MENU_ICON = "MENU_ICON";
+    String MENU_ICON = "MENU_ICON";
 }

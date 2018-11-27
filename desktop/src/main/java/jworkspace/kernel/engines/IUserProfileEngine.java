@@ -2,7 +2,7 @@ package jworkspace.kernel.engines;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 2002 Anton Troshin
+   Copyright (C) 1999-2016 Anton Troshin
    This file is part of Java Workspace.
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -36,7 +36,7 @@ public interface IUserProfileEngine
     /**
      * Get user-defined property from user profile.
      */
-    public Config getParameters();
+    Config getParameters();
 
     /**
      * Get current user name.
@@ -116,7 +116,7 @@ public interface IUserProfileEngine
      * functions.
      * @return login dialog for the system.
      */
-    public JDialog getLoginDlg();
+    JDialog getLoginDlg();
 
     /**
      * Set user name
