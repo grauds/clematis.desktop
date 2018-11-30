@@ -26,6 +26,9 @@ allprojects {
         }
         mavenLocal()
         mavenCentral()
+        maven {
+            url 'http://maven.imagej.net/content/repositories/public/'
+        }
     }
 }
 
@@ -83,6 +86,8 @@ subprojects {
         compile "ch.qos.logback:logback-classic:$logbackVersion"
 
         compile "commons-io:commons-io:2.5"
+        compile "org.apache.commons:commons-imaging:1.0"
+
         checkstyle "com.puppycrawl.tools:checkstyle:7.6"
     }
 

@@ -19,15 +19,13 @@
 
 package com.hyperrealm.kiwi.util.plugin;
 
-import java.awt.Image;
-import java.io.*;
-import java.util.*;
-import java.util.jar.*;
-import javax.swing.ImageIcon;
+import java.io.File;
+import java.util.ArrayList;
 
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.util.ResourceDecoder;
 
-/** A utility class for locating plugins in JAR files. This class is the
+/**
+ * A utility class for locating plugins in JAR files. This class is the
  * heart of the Kiwi plugin API.
  * <p>
  * A plugin consists of one or more classes that implement the plugin itself
@@ -59,122 +57,120 @@ import com.hyperrealm.kiwi.util.*;
  * the plugin.
  * <p>
  *
- * @since Kiwi 1.3
- *
  * @author Mark Lindner
+ * @since Kiwi 1.3
  */
 
-public class PluginLocator<T>
-{
-  private PluginContext context;
-  private ResourceDecoder decoder;
-  private ArrayList<String> forbiddenPackages, restrictedPackages;
+public class PluginLocator<T> {
 
-  /** Construct a new <code>PluginLocator</code> with the specified plugin
-   * context.
-   *
-   * @param context The <code>PluginContext</code> for this plugin locator.
-   */
-  
-  public PluginLocator(PluginContext context)
-  {
-    decoder = new ResourceDecoder();
+    private PluginContext context;
 
-    this.context = context;
+    private ResourceDecoder decoder;
 
-    restrictedPackages = new ArrayList<String>();
-    forbiddenPackages = new ArrayList<String>();
+    private final ArrayList<String> forbiddenPackages;
 
-    addRestrictedPackage("java.*");
-    addRestrictedPackage("javax.*");
-    addRestrictedPackage("com.hyperrealm.kiwi.*");
-  }
+    private final ArrayList<String> restrictedPackages;
 
-  /** Add a package to the locator's list of restricted packages. Plugins are
-   * allowed to access classes in restricted packages, but they are not allowed
-   * to declare classes that belong to those packages.
-   *
-   * @param pkg The package name.
-   */
-  
-  public void addRestrictedPackage(String pkg)
-  {
-    synchronized(restrictedPackages)
-    {
-      if(! restrictedPackages.contains(pkg))
-        restrictedPackages.add(pkg);
+    /**
+     * Construct a new <code>PluginLocator</code> with the specified plugin
+     * context.
+     *
+     * @param context The <code>PluginContext</code> for this plugin locator.
+     */
+
+    public PluginLocator(PluginContext context) {
+
+        decoder = new ResourceDecoder();
+
+        this.context = context;
+
+        restrictedPackages = new ArrayList<String>();
+        forbiddenPackages = new ArrayList<String>();
+
+        addRestrictedPackage("java.*");
+        addRestrictedPackage("javax.*");
+        addRestrictedPackage("com.hyperrealm.kiwi.*");
     }
-  }
 
-  /** Add a package to the locator's list of forbidden packages. Plugins are
-   * not allowed to access classes in forbidden packages, nor are they allowed
-   * to declare classes that belong to those packages.
-   *
-   * @param pkg The package name.
-   */
+    /**
+     * Add a package to the locator's list of restricted packages. Plugins are
+     * allowed to access classes in restricted packages, but they are not allowed
+     * to declare classes that belong to those packages.
+     *
+     * @param pkg The package name.
+     */
 
-  public void addForbiddenPackage(String pkg)
-  {
-    synchronized(forbiddenPackages)
-    {
-      if(! forbiddenPackages.contains(pkg))
-        forbiddenPackages.add(pkg);
+    public void addRestrictedPackage(String pkg) {
+        synchronized (restrictedPackages) {
+            if (!restrictedPackages.contains(pkg)) {
+                restrictedPackages.add(pkg);
+            }
+        }
     }
-  }
 
-  /** Create a Plugin object for the given plugin archive.
-   *
-   * @param jarFile The plugin archive.
-   *
-   * @return The <code>Plugin</code>, if successfully created, or
-   * <code>null</code> otherwise.
-   */
-  
-  public Plugin<T> loadPlugin(String jarFile, String type)
-    throws PluginException
-  {
-    Plugin<T> plugin = new Plugin<T>(this, jarFile, type);
+    /**
+     * Add a package to the locator's list of forbidden packages. Plugins are
+     * not allowed to access classes in forbidden packages, nor are they allowed
+     * to declare classes that belong to those packages.
+     *
+     * @param pkg The package name.
+     */
 
-    return(plugin);
-  }
+    public void addForbiddenPackage(String pkg) {
+        synchronized (forbiddenPackages) {
+            if (!forbiddenPackages.contains(pkg)) {
+                forbiddenPackages.add(pkg);
+            }
+        }
+    }
 
-  /** Create a Plugin object for the given plugin archive.
-   *
-   * @param jarFile The plugin archive.
-   *
-   * @return The <code>Plugin</code>, if successfully created, or
-   * <code>null</code> otherwise.
-   */
-  
-  public Plugin<T> loadPlugin(File jarFile, String type) throws PluginException
-  {
-    return(loadPlugin(jarFile.getAbsolutePath(), type));
-  }
+    /**
+     * Create a Plugin object for the given plugin archive.
+     *
+     * @param jarFile The plugin archive.
+     * @return The <code>Plugin</code>, if successfully created, or
+     * <code>null</code> otherwise.
+     */
 
-  /*
-   */
+    private Plugin<T> loadPlugin(String jarFile, String type)
+            throws PluginException {
 
-  PluginContext getContext()
-  {
-    return(context);
-  }
+        return new Plugin<T>(this, jarFile, type);
+    }
 
-  /*
-   */
+    /**
+     * Create a Plugin object for the given plugin archive.
+     *
+     * @param jarFile The plugin archive.
+     * @return The <code>Plugin</code>, if successfully created, or
+     * <code>null</code> otherwise.
+     */
 
-  ResourceDecoder getDecoder()
-  {
-    return(decoder);
-  }
+    public Plugin<T> loadPlugin(File jarFile, String type) throws PluginException {
+        return loadPlugin(jarFile.getAbsolutePath(), type);
+    }
 
-  /*
-   */
+    /*
+     */
 
-  PluginClassLoader createClassLoader()
-  {
-    return(new PluginClassLoader(forbiddenPackages, restrictedPackages));
-  }
-  
+    PluginContext getContext() {
+        return context;
+    }
+
+    /*
+     */
+
+    ResourceDecoder getDecoder() {
+        return decoder;
+    }
+
+    /*
+     */
+
+    PluginClassLoader createClassLoader() {
+        return new PluginClassLoader(forbiddenPackages, restrictedPackages);
+    }
+
 }
 
 /* end of source file */

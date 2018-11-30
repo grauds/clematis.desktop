@@ -27,23 +27,20 @@ package jworkspace.kernel;
 */
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
+import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
+import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.util.WorkspaceError;
-
-import kiwi.util.plugin.Plugin;
-import kiwi.util.plugin.PluginLocator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -261,7 +258,6 @@ public final class RuntimeManager {
     private PluginLocator getPluginLocator() {
         if (pluginLocator == null) {
             pluginLocator = new PluginLocator(getPluginContext());
-            pluginLocator.setDisplayAvailable(true);
         }
         return pluginLocator;
     }
@@ -308,14 +304,10 @@ public final class RuntimeManager {
                     }
                 }
             } else if (dir.getName().endsWith("jar")) {
-                Enumeration<Plugin> en = getPluginLocator().findPlugins(dir.getAbsolutePath());
-                while (en.hasMoreElements()) {
-                    plugins.add(en.nextElement());
-                }
+                Plugin plugin = getPluginLocator().loadPlugin(dir, "Any");
+                plugins.add(plugin);
             }
-        } catch (FileNotFoundException ex) {
-            RuntimeManager.LOG.warn("Cannot load plugins. Directory path " + name + " is not found.");
-        } catch (IOException | PluginException ex) {
+        } catch (PluginException ex) {
             RuntimeManager.LOG.warn("Cannot load plugins from " + name + " - " + ex.toString());
         }
         return plugins;

@@ -19,59 +19,56 @@
 
 package com.hyperrealm.kiwi.util.plugin;
 
-/** General-purpose plugin exception.
- *
- * @since Kiwi 1.3
+/**
+ * General-purpose plugin exception.
  *
  * @author Mark Lindner
+ * @since Kiwi 1.3
  */
 
-public class PluginException extends Exception
-{
-  /** Construct a new <code>PluginException</code>.
-   */
-  
-  public PluginException()
-  {
-    super();
-  }
+public class PluginException extends Exception {
+    /**
+     * Construct a new <code>PluginException</code>.
+     */
 
-  /** Construct a new <code>PluginException</code> with the specified message.
-   *
-   * @param message The exception message.
-   */
+    public PluginException() {
+        super();
+    }
 
-  public PluginException(String message)
-  {
-    super(message);
-  }
+    /**
+     * Construct a new <code>PluginException</code> with the specified message.
+     *
+     * @param message The exception message.
+     */
 
-  /** Construct a new <code>PluginException</code> with the specified cause.
-   *
-   * @param cause The cause.
-   *
-   * @since Kiwi 2.3
-   */
-  
-  public PluginException(Throwable cause)
-  {
-    super(cause);
-  }
+    public PluginException(String message) {
+        super(message);
+    }
 
-  /** Construct a new <code>PluginException</code> with the specified message
-   * and cause.
-   *
-   * @param message The exception message.
-   * @param cause The cause.
-   *
-   * @since Kiwi 2.3
-   */
+    /**
+     * Construct a new <code>PluginException</code> with the specified cause.
+     *
+     * @param cause The cause.
+     * @since Kiwi 2.3
+     */
 
-  public PluginException(String message, Throwable cause)
-  {
-    super(message, cause);
-  }
-  
+    public PluginException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * Construct a new <code>PluginException</code> with the specified message
+     * and cause.
+     *
+     * @param message The exception message.
+     * @param cause   The cause.
+     * @since Kiwi 2.3
+     */
+
+    public PluginException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
 
 /* end of source file */

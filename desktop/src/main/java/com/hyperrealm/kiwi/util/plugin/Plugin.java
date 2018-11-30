@@ -19,509 +19,527 @@
 
 package com.hyperrealm.kiwi.util.plugin;
 
-import java.awt.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.net.*;
-import java.util.*;
-import java.util.jar.*;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.event.*;
+import javax.swing.event.EventListenerList;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.io.*;
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.event.PluginReloadEvent;
+import com.hyperrealm.kiwi.event.PluginReloadListener;
 
-/** A class that represents a plugin. A <code>Plugin</code> object encapsulates
+/**
+ * A class that represents a plugin. A <code>Plugin</code> object encapsulates
  * all of the data that makes up a plugin, as specified by the plugin's
  * entry in a JAR Manifest. Instances of the plugin object itself can be
  * created with the <code>newInstance()</code> method.
  *
- * @since Kiwi 1.3
- *
  * @author Mark Lindner
+ * @since Kiwi 1.3
  */
 
-public final class Plugin<T>
-{
-  private boolean loaded = false;
-  private String className;
-  private String name;
-  private String type;
-  private String desc;
-  private String iconFile;
-  private Properties props = new Properties();
-  private String version;
-  private String expectedType;
-  private String jarFile;
-  /* stuff that must be loaded */
-  private Class pluginClass = null;
-  private Icon icon = null;
-  private JarFile jar = null;
-  private URL helpURL = null;
-  /* support objects */
-  private PluginClassLoader loader;
-  private PluginLocator<T> locator;
-  private EventListenerList listeners = new EventListenerList(); 
-  private static final Class ctorArgs[] = new Class[] { PluginContext.class };
-  
-  /* Construct a new plugin. A plugin is uniquely identified by a jar file
-   * and a class name. It's initially created by the PluginLocator which scans
-   * a jar file for plugin entires. When it's reloaded, it reopens the jar file
-   * and rescans everything. (hopefully...will this really work?)
-   */
+public final class Plugin<T> {
 
-  Plugin(PluginLocator<T> locator, String jarFile, String expectedType)
-    throws PluginException
-  {
-    this.locator = locator;
-    this.jarFile = jarFile;
-    this.expectedType = expectedType;
-    load();
-  }
+    private boolean loaded = false;
 
-  /** Get the version number for this plugin.
-   *
-   * @return The version number.
-   */
+    private String className;
 
-  public String getVersion()
-  {
-    return(version);
-  }
+    private String name;
 
-  /** Get the class name for this plugin.
-   *
-   * @return The class name.
-   */
-  
-  public String getClassName()
-  {
-    return(className);
-  }
+    private String type;
 
-  /** Get the <code>PluginContext</code> for this plugin.
-   *
-   * @return The context.
-   */
+    private String desc;
 
-  public PluginContext getContext()
-  {
-    return(locator.getContext());
-  }
+    private String iconFile;
 
-  /** Get the name of this plugin.
-   *
-   * @return The name.
-   */
-  
-  public String getName()
-  {
-    return(name);
-  }
+    private Properties props = new Properties();
 
-  /** Get the type of this plugin.
-   *
-   * @return The type.
-   */
-  
-  public String getType()
-  {
-    return(type);
-  }
+    private String version;
 
-  /** Get the path to the file that the plugin was loaded from.
-   *
-   * @since Kiwi 2.0
-   */
+    private String expectedType;
 
-  public String getFile()
-  {
-    return(jarFile);
-  }
-  
-  /** Get the user-defined properties for the plugin. These correspond to the
-   * user-defined key/value pairs in the Manifest entry for this plugin.
-   *
-   * @return A <code>Properties</code> object containing the user-defined
-   * properties.
-   */
+    private String jarFile;
 
-  public Properties getProperties()
-  {
-    return(props);
-  }
+    /* stuff that must be loaded */
+    private Class pluginClass = null;
 
-  /** Get a specific user-defined property for the plugin. User-defined
-   * properties are those fields in the Manifest entry for the plugin that are
-   * not defined and recognized by the plugin framework itself.
-   *
-   * @param name The property name (key).
-   * @return The value of the property, or <code>null</code> if there is no
-   * property with the given name.
-   */
+    private Icon icon = null;
 
-  public String getProperty(String name)
-  {
-    return(props.getProperty(name));
-  }
+    private JarFile jar = null;
 
-  /** Get a specific user-defined property for the plugin.
-   *
-   * @param name The property name (key).
-   * @param defaultValue The default value for this property.
-   * @return The value of the property, or <code>defaultValue</code> if there
-   * is no property with the given name.
-   */
-  
-  public String getProperty(String name, String defaultValue)
-  {
-    return(props.getProperty(name, defaultValue));
-  }
+    private URL helpURL = null;
 
-  /** Get the description of this plugin.
-   *
-   * @return The description, or <b>null</b> if no description is available.
-   */
-  
-  public String getDescription()
-  {
-    return(desc);
-  }
-  
-  /** Get the icon for this plugin.
-   *
-   * @return The icon, or <b>null</b> if no icon is available.
-   */
-  
-  public Icon getIcon()
-  {
-    return(icon);
-  }
+    /* support objects */
+    private PluginClassLoader loader;
 
-  /** Get the help URL for this plugin.
-   *
-   * @return The URL, or <b>null</b> if no URL is available.
-   *
-   * @since Kiwi 2.0
-   */
-  
-  public URL getHelpURL()
-  {
-    return(helpURL);
-  }
+    private PluginLocator<T> locator;
 
-  /** Determine if the plugin is loaded.
-   *
-   * @return <b>true</b> if the plugin is loaded and <b>false</b> otherwise.
-   */
+    private EventListenerList listeners = new EventListenerList();
 
-  public boolean isLoaded()
-  {
-    return(loaded);
-  }
+    /* Construct a new plugin. A plugin is uniquely identified by a jar file
+     * and a class name. It's initially created by the PluginLocator which scans
+     * a jar file for plugin entires. When it's reloaded, it reopens the jar file
+     * and rescans everything. (hopefully...will this really work?)
+     */
 
-  /** Load the plugin. This method attempts to load the plugin entry-point
-   * class and create an instance of it. The entry-point class must have a
-   * default public constructor.
-   *
-   * @throws com.hyperrealm.kiwi.util.plugin.PluginException If the plugin
-   * could not be loaded.
-   */
+    Plugin(PluginLocator<T> locator, String jarFile, String expectedType)
+            throws PluginException {
 
-  private void load() throws PluginException
-  {
-    Manifest mf = null;
-    
-    try
-    {
-      jar = new JarFile(new File(jarFile));
-
-      // open the manifest and find the plugin entry
-    
-      mf = jar.getManifest();
+        this.locator = locator;
+        this.jarFile = jarFile;
+        this.expectedType = expectedType;
+        load();
     }
-    catch(IOException ex)
-    {
-      throw(new PluginException("Unable to read archive"));
-    }
-      
-    Plugin plugin = null;
-      
-    if(mf == null)
-      throw(new PluginException("No manifest found"));
-      
-    String classFile = null;
-    Attributes attrs = null;
-    boolean found = false;
-    
-    Map map = mf.getEntries();
-    Iterator iter = map.keySet().iterator();
-    while(iter.hasNext())
-    {
-      classFile = (String)iter.next();
-      attrs = mf.getAttributes(classFile);
-        
-      if(attrs.getValue("PluginName") != null)
-      {
-        found = true;
-        break;
-      }
-    }
-      
-    if(! found)
-      throw(new PluginException("No plugin entry found in manifest"));
 
-    className = PluginClassLoader.pathToClassName(classFile);
-    
-    // read in the attributes
-      
-    iter = attrs.keySet().iterator();
-      
-    while(iter.hasNext())
-    {
-      Attributes.Name nm = (Attributes.Name)iter.next();
-      String a = nm.toString();
-      String v = attrs.getValue(nm);
-        
-      if(a.equals("PluginName"))
-        name = v;
-      else if(a.equals("PluginType"))
-        type = v;
-      else if(a.equals("PluginDescription"))
-        desc = v;
-      else if(a.equals("PluginIcon"))
-        iconFile = v;
-      else if(a.equals("PluginVersion"))
-        version = v;
-      else if(a.equals("PluginHelpURL"))
-      {
-        try { helpURL = new URL(v); }
-        catch(MalformedURLException ex) { /* ignore */ };
-      }
-      else
-        props.put(a, v);
+    /**
+     * Get the version number for this plugin.
+     *
+     * @return The version number.
+     */
+
+    public String getVersion() {
+        return version;
     }
-      
-    if((type == null)  || (name == null))
-    {
-      try { jar.close(); } catch(IOException ex) { }
-      throw(new PluginException("Invalid plugin manifest entry"));
+
+    /**
+     * Get the class name for this plugin.
+     *
+     * @return The class name.
+     */
+
+    public String getClassName() {
+        return className;
     }
-      
-    if(! type.equals(expectedType))
-    {
-      try { jar.close(); } catch(IOException ex) { }
-      throw(new PluginException("Plugin type mismatch"));
+
+    /**
+     * Get the <code>PluginContext</code> for this plugin.
+     *
+     * @return The context.
+     */
+
+    public PluginContext getContext() {
+        return locator.getContext();
     }
-      
-    // create the classloader
-      
-    loader = locator.createClassLoader();
-    loader.addJarFile(jar);
-      
-    // load the icon
-      
-    if(iconFile != null
-       && ! GraphicsEnvironment.getLocalGraphicsEnvironment().isHeadless())
-    {
-      JarEntry entry = (JarEntry)jar.getEntry(iconFile);
-      if(entry != null)
-      {
-        try
-        {
-          InputStream in = jar.getInputStream(entry);
-          Image im = locator.getDecoder().decodeImage(in);
-          if(im != null)
-            icon = new ImageIcon(im);
-          in.close();
+
+    /**
+     * Get the name of this plugin.
+     *
+     * @return The name.
+     */
+
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Get the type of this plugin.
+     *
+     * @return The type.
+     */
+
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Get the path to the file that the plugin was loaded from.
+     *
+     * @since Kiwi 2.0
+     */
+
+    public String getFile() {
+        return jarFile;
+    }
+
+    /**
+     * Get the user-defined properties for the plugin. These correspond to the
+     * user-defined key/value pairs in the Manifest entry for this plugin.
+     *
+     * @return A <code>Properties</code> object containing the user-defined
+     * properties.
+     */
+
+    public Properties getProperties() {
+        return props;
+    }
+
+    /**
+     * Get a specific user-defined property for the plugin. User-defined
+     * properties are those fields in the Manifest entry for the plugin that are
+     * not defined and recognized by the plugin framework itself.
+     *
+     * @param name The property name (key).
+     * @return The value of the property, or <code>null</code> if there is no
+     * property with the given name.
+     */
+
+    public String getProperty(String name) {
+        return props.getProperty(name);
+    }
+
+    /**
+     * Get a specific user-defined property for the plugin.
+     *
+     * @param name         The property name (key).
+     * @param defaultValue The default value for this property.
+     * @return The value of the property, or <code>defaultValue</code> if there
+     * is no property with the given name.
+     */
+
+    public String getProperty(String name, String defaultValue) {
+        return props.getProperty(name, defaultValue);
+    }
+
+    /**
+     * Get the description of this plugin.
+     *
+     * @return The description, or <b>null</b> if no description is available.
+     */
+
+    public String getDescription() {
+        return desc;
+    }
+
+    /**
+     * Get the icon for this plugin.
+     *
+     * @return The icon, or <b>null</b> if no icon is available.
+     */
+
+    public Icon getIcon() {
+        return icon;
+    }
+
+    /**
+     * Get the help URL for this plugin.
+     *
+     * @return The URL, or <b>null</b> if no URL is available.
+     * @since Kiwi 2.0
+     */
+
+    public URL getHelpURL() {
+        return helpURL;
+    }
+
+    /**
+     * Determine if the plugin is loaded.
+     *
+     * @return <b>true</b> if the plugin is loaded and <b>false</b> otherwise.
+     */
+
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    /**
+     * Load the plugin. This method attempts to load the plugin entry-point
+     * class and create an instance of it. The entry-point class must have a
+     * default public constructor.
+     *
+     * @throws com.hyperrealm.kiwi.util.plugin.PluginException If the plugin
+     *                                                         could not be loaded.
+     */
+
+    private void load() throws PluginException {
+
+        Manifest mf;
+
+        try {
+            jar = new JarFile(new File(jarFile));
+
+            // open the manifest and find the plugin entry
+
+            mf = jar.getManifest();
+        } catch (IOException ex) {
+            throw new PluginException("Unable to read archive");
         }
-        catch(IOException ex)
-        {
-          icon = null;
+
+        if (mf == null) {
+            throw new PluginException("No manifest found");
         }
-      }
-    }
-    
-    // load the plugin class
-    
-    try
-    {
-      pluginClass = loader.loadClass(className);
-    }
-    catch(Exception ex)
-    {
-      throw(new PluginException("failed to load plugin class " + className,
-                                ex));
-    }
 
-    loaded = true;
-  }
+        String classFile = null;
+        Attributes attrs = null;
+        boolean found = false;
 
-  /* Unload the plugin.
-   */
+        Map map = mf.getEntries();
+        Iterator iter = map.keySet().iterator();
 
-  private void unload()
-  {
-    loader = null;
-    pluginClass = null;
-    icon = null;
-    try { jar.close(); } catch(IOException ex) { }
-    jar = null;
-    loaded = false;
-  }
+        while (iter.hasNext()) {
 
-  /** Reload the plugin.
-   * 
-   * @since Kiwi 2.0
-   */
+            classFile = (String) iter.next();
+            attrs = mf.getAttributes(classFile);
 
-  public void reload() throws PluginException
-  {
-    unload();
-    load();
-    firePluginReloaded();
-  }
-
-  /** Create a new instance of the plugin object. The method attempts to
-   * instantiate the plugin object by calling a constructor that takes an
-   * object that implements <code>PluginContext</code> (or a subinterface
-   * thereof) as its only argument. If no such constructor exists, the method
-   * tries instantiate the object using the default constructor.
-   *
-   * @throws com.hyperrealm.kiwi.util.plugin.PluginException If a problem
-   * occurs during class instantiation.
-   *
-   * @since Kiwi 2.0
-   */
-
-  public T newInstance() throws PluginException
-  {
-    if(! loaded)
-      throw(new PluginException("Plugin is not loaded!"));
-    
-    Object obj = null;
-    
-    try
-    {
-      // try to find a c'tor that takes a PluginContext first
-
-      Constructor ctor = null;
-      Constructor ctors[] = pluginClass.getConstructors();
-      for(int i = 0; i < ctors.length; i++)
-      {
-        Class args[] = ctors[i].getParameterTypes();
-        if(args.length != 1)
-          continue;
-        
-        if(PluginContext.class.isAssignableFrom(args[0]))
-        {
-          ctor = ctors[i];
-          break;
+            if (attrs.getValue("PluginName") != null) {
+                found = true;
+                break;
+            }
         }
-      }
 
-      if(ctor != null)
-        obj = ctor.newInstance(new Object[] { getContext() });
+        if (!found) {
+            throw new PluginException("No plugin entry found in manifest");
+        }
+
+        className = PluginClassLoader.pathToClassName(classFile);
+
+        // read in the attributes
+
+        iter = attrs.keySet().iterator();
+
+        while (iter.hasNext()) {
+
+            Attributes.Name nm = (Attributes.Name) iter.next();
+            String a = nm.toString();
+            String v = attrs.getValue(nm);
+
+            switch (a) {
+                case "PluginName":
+                    name = v;
+                    break;
+                case "PluginType":
+                    type = v;
+                    break;
+                case "PluginDescription":
+                    desc = v;
+                    break;
+                case "PluginIcon":
+                    iconFile = v;
+                    break;
+                case "PluginVersion":
+                    version = v;
+                    break;
+                case "PluginHelpURL":
+                    try {
+                        helpURL = new URL(v);
+                    } catch (MalformedURLException ex) { /* ignore */ }
+                    ;
+                    break;
+                default:
+                    props.put(a, v);
+                    break;
+            }
+        }
+
+        if ((type == null) || (name == null)) {
+            try {
+                jar.close();
+            } catch (IOException ex) {
+            }
+            throw (new PluginException("Invalid plugin manifest entry"));
+        }
+
+        if (!type.equals(expectedType)) {
+            try {
+                jar.close();
+            } catch (IOException ex) {
+            }
+            throw (new PluginException("Plugin type mismatch"));
+        }
+
+        // create the classloader
+
+        loader = locator.createClassLoader();
+        loader.addJarFile(jar);
+
+        // load the icon
+
+        GraphicsEnvironment.getLocalGraphicsEnvironment();
+        if (iconFile != null && !GraphicsEnvironment.isHeadless()) {
+            JarEntry entry = (JarEntry) jar.getEntry(iconFile);
+            if (entry != null) {
+                try {
+                    InputStream in = jar.getInputStream(entry);
+                    Image im = locator.getDecoder().decodeImage(in);
+                    if (im != null)
+                        icon = new ImageIcon(im);
+                    in.close();
+                } catch (IOException ex) {
+                    icon = null;
+                }
+            }
+        }
+
+        // load the plugin class
+
+        try {
+            pluginClass = loader.loadClass(className);
+        } catch (Exception ex) {
+            throw new PluginException("failed to load plugin class " + className, ex);
+        }
+
+        loaded = true;
     }
-    catch(Exception ex)
-    {
-      throw(new PluginException("failed to instantiate plugin "
-                                + pluginClass.getName(), ex));
+
+    /* Unload the plugin.
+     */
+
+    private void unload() {
+        loader = null;
+        pluginClass = null;
+        icon = null;
+        try {
+            jar.close();
+        } catch (IOException ex) {
+        }
+        jar = null;
+        loaded = false;
     }
 
-    if(obj == null)
-    {
-      try
-      {
-        obj = pluginClass.newInstance();
-      }
-      catch(Exception ex)
-      {
-        throw(new PluginException("failed to instantiate plugin "
-                                  + pluginClass.getName(), ex));
-      }
+    /**
+     * Reload the plugin.
+     *
+     * @since Kiwi 2.0
+     */
+
+    public void reload() throws PluginException {
+        unload();
+        load();
+        firePluginReloaded();
     }
 
-    T instance = null;
-    
-    try
-    {
-      instance = (T)obj;
+    /**
+     * Create a new instance of the plugin object. The method attempts to
+     * instantiate the plugin object by calling a constructor that takes an
+     * object that implements <code>PluginContext</code> (or a subinterface
+     * thereof) as its only argument. If no such constructor exists, the method
+     * tries instantiate the object using the default constructor.
+     *
+     * @throws com.hyperrealm.kiwi.util.plugin.PluginException If a problem
+     *                                                         occurs during class instantiation.
+     * @since Kiwi 2.0
+     */
+
+    public T newInstance() throws PluginException {
+        if (!loaded) {
+            throw (new PluginException("Plugin is not loaded!"));
+        }
+
+        Object obj = null;
+
+        try {
+            // try to find a c'tor that takes a PluginContext first
+
+            Constructor ctor = null;
+            Constructor[] ctors = pluginClass.getConstructors();
+
+            for (Constructor actor : ctors) {
+                Class[] args = actor.getParameterTypes();
+                if (args.length != 1) {
+                    continue;
+                }
+
+                if (PluginContext.class.isAssignableFrom(args[0])) {
+                    ctor = actor;
+                    break;
+                }
+            }
+
+            if (ctor != null) {
+                obj = ctor.newInstance(getContext());
+            }
+
+        } catch (Exception ex) {
+            throw (new PluginException("failed to instantiate plugin "
+                    + pluginClass.getName(), ex));
+        }
+
+        if (obj == null) {
+            try {
+                obj = pluginClass.newInstance();
+            } catch (Exception ex) {
+                throw (new PluginException("failed to instantiate plugin "
+                        + pluginClass.getName(), ex));
+            }
+        }
+
+        T instance;
+
+        try {
+            instance = (T) obj;
+        } catch (ClassCastException ex) {
+            throw (new PluginException("plugin class " + pluginClass.getName()
+                    + " is of incompatible type", ex));
+        }
+
+        return (instance);
     }
-    catch(ClassCastException ex)
-    {
-      throw(new PluginException("plugin class " + pluginClass.getName()
-                                + " is of incompatible type", ex));
+
+    /**
+     * Add a <code>PluginReloadListener</code> to this model's list of
+     * listeners.
+     *
+     * @param listener The listener to add.
+     * @since Kiwi 2.0
+     */
+
+    public void addPluginReloadListener(PluginReloadListener listener) {
+        listeners.add(PluginReloadListener.class, listener);
     }
 
-    return(instance);
-  }
+    /**
+     * Remove a <code>PluginReloadListener</code> from this model's list of
+     * listeners.
+     *
+     * @param listener The listener to remove.
+     * @since Kiwi 2.0
+     */
 
-  /** Add a <code>PluginReloadListener</code> to this model's list of
-   * listeners.
-   *
-   * @param listener The listener to add.
-   *
-   * @since Kiwi 2.0
-   */
-  
-  public void addPluginReloadListener(PluginReloadListener listener) 
-  { 
-    listeners.add(PluginReloadListener.class, listener); 
-  } 
-
-  /** Remove a <code>PluginReloadListener</code> from this model's list of
-   * listeners.
-   *
-   * @param listener The listener to remove.
-   *
-   * @since Kiwi 2.0
-   */
-
-  public void removePluginReloadListener(PluginReloadListener listener) 
-  {
-    listeners.remove(PluginReloadListener.class, listener);
-  }
-
-  /** Fire a <i>plugin reloaded</i> event.
-   */
-  
-  protected void firePluginReloaded() 
-  {
-    PluginReloadEvent evt = null; 
-    
-    Object[] list = listeners.getListenerList(); 
-    
-    for(int i = list.length - 2; i >= 0; i -= 2) 
-    { 
-      if(list[i] == PluginReloadListener.class) 
-      { 
-        // Lazily create the event: 
-        if(evt == null) 
-          evt = new PluginReloadEvent(this); 
-        ((PluginReloadListener)list[i + 1]).pluginReloaded(evt); 
-      }
+    public void removePluginReloadListener(PluginReloadListener listener) {
+        listeners.remove(PluginReloadListener.class, listener);
     }
-  }
-  
-  /** Return a string representation of this plugin, which consists of
-   * its name and version.
-   *
-   * @since Kiwi 2.0
-   */
-  
-  public String toString()
-  {
-    String n = getName();
-    String v = getVersion();
 
-    if(v != null)
-      n += " " + v;
+    /**
+     * Fire a <i>plugin reloaded</i> event.
+     */
 
-    return(n);
-  }
+    private void firePluginReloaded() {
+
+        PluginReloadEvent evt = null;
+
+        Object[] list = listeners.getListenerList();
+
+        for (int i = list.length - 2; i >= 0; i -= 2) {
+            if (list[i] == PluginReloadListener.class) {
+                // Lazily create the event:
+                if (evt == null) {
+                    evt = new PluginReloadEvent(this);
+                }
+                ((PluginReloadListener) list[i + 1]).pluginReloaded(evt);
+            }
+        }
+    }
+
+    /**
+     * Return a string representation of this plugin, which consists of
+     * its name and version.
+     *
+     * @since Kiwi 2.0
+     */
+
+    public String toString() {
+
+        String n = getName();
+        String v = getVersion();
+
+        if (v != null) {
+            n += " " + v;
+        }
+
+        return (n);
+    }
 }
 
 /* end of source file */

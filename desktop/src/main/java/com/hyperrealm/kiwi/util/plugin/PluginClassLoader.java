@@ -19,9 +19,12 @@
 
 package com.hyperrealm.kiwi.util.plugin;
 
-import java.io.*;
-import java.util.*;
-import java.util.jar.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /* The internal class loader for plugins.
  *
@@ -46,224 +49,198 @@ import java.util.jar.*;
  * @author Mark Lindner
  */
 
-class PluginClassLoader extends ClassLoader
-{
-  private ArrayList<String> forbiddenPackages;
-  private ArrayList<String> restrictedPackages;
-  private ArrayList<JarFile> jars;
+class PluginClassLoader extends ClassLoader {
 
-  /*
-   */
-  
-  PluginClassLoader(ArrayList<String> forbiddenPackages,
-                    ArrayList<String> restrictedPackages)
-  {
-    this.forbiddenPackages = forbiddenPackages;
-    this.restrictedPackages = restrictedPackages;
-    
-    jars = new ArrayList<JarFile>();
-  }
+    private ArrayList<String> forbiddenPackages;
 
-  /*
-   */
-  
-  void addJarFile(JarFile file)
-  {
-    synchronized(jars)
-    {
-      if((file != null) && ! jars.contains(file))
-        jars.add(file);
+    private ArrayList<String> restrictedPackages;
+
+    private final ArrayList<JarFile> jars;
+
+    /*
+     */
+
+    PluginClassLoader(ArrayList<String> forbiddenPackages,
+                      ArrayList<String> restrictedPackages) {
+        this.forbiddenPackages = forbiddenPackages;
+        this.restrictedPackages = restrictedPackages;
+
+        jars = new ArrayList<>();
     }
-  }
 
-  /**
-   */
-  
-  public synchronized Class loadClass(String className, boolean resolve) 
-    throws ClassNotFoundException
-  {
-    Class result = null;
+    /*
+     */
 
-    // extract package name
-    
-    int ind = className.lastIndexOf('.');
-    if(ind < 0)
-      return(null); // won't support classes in unnamed packages
-
-    String classPackage = className.substring(0, ind);
-    
-    // first check our cache
-
-    result = findLoadedClass(className);
-
-    // not in cache...
-    
-    if(result == null)
-    {
-
-      // try to load it from the system class loader first, but only if it's
-      // not from a forbidden package
-
-      if(! isForbiddenPackage(classPackage))
-      {
-        try
-        {
-          return(findSystemClass(className));
-        }
-        catch(ClassNotFoundException ex)
-        {
-          /* ignore & continue */
-        }
-
-        // no luck, so scan through JAR files looking for the class, but only
-        // if it's not a restricted class (or a forbidden class)
-      
-        if(! isRestrictedPackage(classPackage))
-        {
-          String path = classNameToPath(className);
-
-          Iterator<JarFile> iter = jars.iterator();
-          while(iter.hasNext())
-          {
-            JarFile jar = iter.next();
-            JarEntry entry = (JarEntry)jar.getEntry(path);
-            if(entry == null)
-              continue; // move on to next JAR file
-                    
-            // found it! so let's load it...
-
-            BufferedInputStream ins = null;
-            int r = 0, size = 0;
-            byte b[] = null;
-            
-            try
-            {
-              ins = new BufferedInputStream(jar.getInputStream(entry));
-              size = (int)entry.getSize();
-              
-              b = new byte[size];
-              r = ins.read(b, 0, size);
+    void addJarFile(JarFile file) {
+        synchronized (jars) {
+            if ((file != null) && !jars.contains(file)) {
+                jars.add(file);
             }
-            catch(IOException ex)
-            {
-              r = -1;
+        }
+    }
+
+    /**
+     *
+     */
+
+    public synchronized Class loadClass(String className, boolean resolve)
+            throws ClassNotFoundException {
+
+        Class result;
+
+        // extract package name
+
+        int ind = className.lastIndexOf('.');
+        if (ind < 0) {
+            return null; // won't support classes in unnamed packages
+        }
+
+        String classPackage = className.substring(0, ind);
+
+        // first check our cache
+
+        result = findLoadedClass(className);
+
+        // not in cache...
+
+        if (result == null) {
+
+            // try to load it from the system class loader first, but only if it's
+            // not from a forbidden package
+
+            if (!isForbiddenPackage(classPackage)) {
+                try {
+                    return (findSystemClass(className));
+                } catch (ClassNotFoundException ex) {
+                    /* ignore & continue */
+                }
+
+                // no luck, so scan through JAR files looking for the class, but only
+                // if it's not a restricted class (or a forbidden class)
+
+                if (!isRestrictedPackage(classPackage)) {
+                    String path = classNameToPath(className);
+
+                    for (JarFile jar : jars) {
+
+                        JarEntry entry = (JarEntry) jar.getEntry(path);
+                        if (entry == null) {
+                            continue; // move on to next JAR file
+                        }
+
+                        // found it! so let's load it...
+
+                        BufferedInputStream ins = null;
+                        int r, size = 0;
+                        byte[] b = null;
+
+                        try {
+                            ins = new BufferedInputStream(jar.getInputStream(entry));
+                            size = (int) entry.getSize();
+
+                            b = new byte[size];
+                            r = ins.read(b, 0, size);
+                        } catch (IOException ex) {
+                            r = -1;
+                        }
+
+                        if (ins != null) {
+                            try {
+                                ins.close();
+                            } catch (IOException ex) { /* ignore */ }
+                        }
+
+                        if (r != size) // got less or more bytes than we expected?
+                            throw (new ClassFormatError(className));
+
+                        result = defineClass(className, b, 0, size);
+                        break;
+                    }
+                }
             }
-            
-            if(ins != null)
-            {
-              try
-              {
-                ins.close();
-              }
-              catch(IOException ex) { /* ignore */ }
+        }
+
+        if (result == null) {
+            throw new ClassNotFoundException(className);
+        }
+
+        if (resolve) {
+            resolveClass(result);
+        }
+
+        return (result);
+    }
+
+    /*
+     */
+
+    private boolean isForbiddenPackage(String packageName) {
+        return findPackage(packageName, forbiddenPackages);
+    }
+
+    /*
+     */
+
+    private boolean isRestrictedPackage(String packageName) {
+        return findPackage(packageName, restrictedPackages);
+    }
+
+    /*
+     */
+
+    private synchronized boolean findPackage(String packageName,
+                                             ArrayList<String> packageList) {
+
+
+        for (String pkg : packageList) {
+
+            if (pkg.endsWith(".*")) {
+                if (packageName.startsWith(pkg.substring(0, pkg.length() - 1))) {
+                    return true;
+                }
+            } else if (pkg.equals(packageName)) {
+                return true;
             }
-            
-            if(r != size) // got less or more bytes than we expected?
-              throw(new ClassFormatError(className));
-            
-            result = defineClass(className, b, 0, size);
-            break;
-          }
         }
-      }
+
+        return false;
     }
 
-    if(result == null)
-      throw(new ClassNotFoundException(className));
+    /**
+     *
+     */
 
-    if(resolve)
-      resolveClass(result);
+    public synchronized InputStream getResourceAsStream(String name) {
+        /* Scan through JAR files looking for the resource */
 
-    return(result);
-  }
+        for (JarFile jar : jars) {
 
-  /*
-   */
-
-  private boolean isForbiddenPackage(String packageName)
-  {
-    return(findPackage(packageName, forbiddenPackages));
-  }
-
-  /*
-   */
-
-  private boolean isRestrictedPackage(String packageName)
-  {
-    return(findPackage(packageName, restrictedPackages));
-  }
-
-  /*
-   */
-
-  private boolean findPackage(String packageName,
-                              ArrayList<String> packageList)
-  {
-    synchronized(packageList)
-    {
-      Iterator<String> iter = packageList.iterator();
-    
-      while(iter.hasNext())
-      {
-        String pkg = iter.next();
-        
-        if(pkg.endsWith(".*"))
-        {
-          if(packageName.startsWith(pkg.substring(0, pkg.length() - 1)))
-            return(true);
+            JarEntry entry = jar.getJarEntry(name);
+            if (entry != null) {
+                try {
+                    return (jar.getInputStream(entry));
+                } catch (IOException ex) {
+                    /* ignore error, & continue */
+                }
+            }
         }
-        else if(pkg.equals(packageName))
-          return(true);
-      }
+
+        return (null);
     }
 
-    return(false);
-  }
+    /* convert a class name to its corresponding JAR entry name
+     */
 
-  /**
-   */
-
-  public synchronized InputStream getResourceAsStream(String name)
-  {
-    /* Scan through JAR files looking for the resource */
-
-    Iterator<JarFile> iter = jars.iterator();
-    while(iter.hasNext())
-    {
-      JarFile jar = (JarFile)iter.next();
-      JarEntry entry = jar.getJarEntry(name);
-
-      if(entry != null)
-      {
-        try
-        {
-          return(jar.getInputStream(entry));
-        }
-        catch(IOException ex)
-        {
-          /* ignore error, & continue */
-        }        
-      }
+    private static String classNameToPath(String className) {
+        return (className.replace('.', '/') + ".class");
     }
-    
-    return(null);
-  }
 
-  /* convert a class name to its corresponding JAR entry name
-   */
-  
-  static String classNameToPath(String className)
-  {
-    return(className.replace('.', '/') + ".class");
-  }
+    /* convert a JAR entry name to its corresponding class name
+     */
 
-  /* convert a JAR entry name to its corresponding class name
-   */
-  
-  static String pathToClassName(String path)
-  {
-    return(path.substring(0, path.length() - 6).replace('/', '.'));
-  }
+    static String pathToClassName(String path) {
+        return (path.substring(0, path.length() - 6).replace('/', '.'));
+    }
 
 }
 
