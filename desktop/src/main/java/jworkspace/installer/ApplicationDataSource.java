@@ -33,18 +33,15 @@ import java.io.IOException;
 
 /**
  * Data source for application.
- * This is a "smart" DefinitionDataSource,
- * since it can traverse itself
- * looking for a node that matches a given link path.
  */
 public class ApplicationDataSource extends DefinitionDataSource
 {
     public static final String ROOT = "programs";
-    protected static String rootName = ApplicationDataSource.ROOT;
+
+    private static String rootName = ApplicationDataSource.ROOT;
 
     /**
-     * Construct new application data source
-     * with given file as a root.
+     * Construct new application data source with given file as a root.
      * @param root java.io.File
      */
     ApplicationDataSource(File root)
@@ -68,6 +65,6 @@ public class ApplicationDataSource extends DefinitionDataSource
     protected DefinitionNode makeNode(DefinitionNode parent, File file)
             throws IOException
     {
-        return (new Application(parent, file));
+        return new Application(parent, file);
     }
 }

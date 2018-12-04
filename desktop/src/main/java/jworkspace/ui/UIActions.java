@@ -28,12 +28,11 @@ package jworkspace.ui;
 
 import com.hyperrealm.kiwi.ui.DocumentBrowserFrame;
 import com.hyperrealm.kiwi.ui.model.DocumentDataSource;
-import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 import jworkspace.LangResource;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.IConstants;
+import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.AbstractStateAction;
 import jworkspace.ui.dialog.SettingsDialog;

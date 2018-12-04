@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace.api;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -26,44 +26,14 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.JOptionPane;
-
-import com.hyperrealm.kiwi.util.plugin.PluginContext;
 
 /**
- * Workspace plugin context defines shared
- * workspace resources for use in plugins.
+ * Workspace listener dispatches events send to subscribers through workspace event mechanism.
  */
-public class WorkspacePluginContext implements PluginContext {
-
+public interface IWorkspaceListener
+{
     /**
-     * Show plugin status in workspace ui
-     *
-     * @param status string
+     * Processes event. Such event is send to every subscribed event listener in synchronous manner.
      */
-    public void showStatus(String status) {
-        // todo: not implemented yet
-    }
-
-    /**
-     * Show message in workspace ui
-     *
-     * @param message to workspace user
-     */
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(Workspace.getUI().getFrame(), message);
-    }
-
-    /**
-     * Show question in workspace ui
-     *
-     * @param question to workspace user
-     * @return boolean answer
-     */
-    public boolean showQuestion(String question) {
-        int result = JOptionPane.showConfirmDialog(Workspace.getUI().getFrame(),
-                question);
-
-        return result == JOptionPane.YES_OPTION;
-    }
+    void processEvent(Object event, Object lparam, Object rparam);
 }

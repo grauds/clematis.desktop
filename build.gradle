@@ -87,8 +87,19 @@ subprojects {
 
         compile "commons-io:commons-io:2.5"
         compile "org.apache.commons:commons-imaging:1.0"
+        
+        compile "org.apache-extras.beanshell:bsh:2.0b6"
+
+        compileOnly "org.projectlombok:lombok:1.16.10"
 
         checkstyle "com.puppycrawl.tools:checkstyle:7.6"
+
+        testCompile "org.projectlombok:lombok:1.16.10"
+        testCompile "com.icegreen:greenmail:1.5.2"
+        testCompile "org.assertj:assertj-core:3.6.1"
+        testCompile "com.github.spullara.mustache.java:mustache.java:0.9.4"
+        testCompile "org.powermock:powermock-mockito-release-full:1.6.4"
+        testCompile "org.powermock:powermock-module-junit4-rule-agent:1.6.6"
     }
 
     jar {

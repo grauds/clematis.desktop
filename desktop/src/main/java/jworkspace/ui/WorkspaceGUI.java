@@ -28,17 +28,16 @@ package jworkspace.ui;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
 import com.hyperrealm.kiwi.ui.UIChangeManager;
-import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.Task;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
 import jworkspace.LangResource;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.IWorkspaceListener;
+import jworkspace.api.IWorkspaceListener;
 import jworkspace.kernel.ResourceManager;
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.engines.GUI;
+import jworkspace.api.GUI;
 import jworkspace.ui.action.ActionChangedListener;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
@@ -49,7 +48,6 @@ import jworkspace.util.WorkspaceError;
 
 import kiwi.ui.SplashScreen;
 import kiwi.ui.dialog.ProgressDialog;
-import kiwi.util.plugin.Plugin;
 
 import org.apache.commons.imaging.*;
 
@@ -68,7 +66,7 @@ import java.util.logging.Level;
 /**
  * GUI engine is one of required by kernel.
  * This class implements interface
- * <code>jworkspace.kernel.engines.GUI</code>.
+ * <code>jworkspace.api.GUI</code>.
  */
 public class WorkspaceGUI implements GUI {
     /**
@@ -680,7 +678,20 @@ public class WorkspaceGUI implements GUI {
          * Activate unique GUI shell, i.e. bring the shell to the front
          */
         if (event instanceof Integer && ((Integer) event).intValue() == 1000) {
-            new Listener1000().processEvent(event, lparam, rparam);
+            if (lparam instanceof Hashtable) {
+                if (((Hashtable) lparam).get("view") instanceof IView
+                        && ((Hashtable) lparam).get("display") instanceof Boolean
+                        && ((Hashtable) lparam).get("register") instanceof Boolean) {
+
+                    Hashtable lhparam = (Hashtable) lparam;
+                    IView view = (IView) lhparam.get("view");
+                    Boolean display = (Boolean) lhparam.get("display");
+                    Boolean register = (Boolean) lhparam.get("register");
+
+                    ((WorkspaceFrame) getFrame()).getContentManager().addView(view, display.booleanValue(),
+                            register.booleanValue());
+                }
+            }
         }
         /**
          * Adds new internal frame (JInternalFrame) on currenlty opened desktop
@@ -699,24 +710,6 @@ public class WorkspaceGUI implements GUI {
          */
         else if (event instanceof Integer && ((Integer) event).intValue() == 1003) {
             new Listener1003().processEvent(event, lparam, rparam);
-        }
-    }
-
-    class Listener1000 implements IWorkspaceListener {
-        public void processEvent(Object event, Object lparam, Object rparam) {
-            if (lparam instanceof Hashtable) {
-                if (((Hashtable) lparam).get("view") instanceof IView
-                        && ((Hashtable) lparam).get("display") instanceof Boolean
-                        && ((Hashtable) lparam).get("register") instanceof Boolean) {
-                    Hashtable lhparam = (Hashtable) lparam;
-                    IView view = (IView) lhparam.get("view");
-                    Boolean display = (Boolean) lhparam.get("display");
-                    Boolean register = (Boolean) lhparam.get("register");
-
-                    ((WorkspaceFrame) getFrame()).getContentManager().addView(view, display.booleanValue(),
-                            register.booleanValue());
-                }
-            }
         }
     }
 

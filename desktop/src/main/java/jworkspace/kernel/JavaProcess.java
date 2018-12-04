@@ -26,28 +26,31 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
-
-import jworkspace.LangResource;
-import jworkspace.installer.ApplicationDataSource;
-import jworkspace.util.WorkspaceError;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import jworkspace.LangResource;
+import jworkspace.installer.ApplicationDataSource;
+import jworkspace.util.WorkspaceError;
+
 /**
  * This class represent a single java runtime process,
  * with all required means for diagnostics and management.
  */
-public final class JavaProcess
-{
+public final class JavaProcess {
+
     /**
      * Default process name
      */
-    private String process_name = "Untitled";
+    private String processName = "Untitled";
     /**
      * Native process
      */
@@ -69,32 +72,26 @@ public final class JavaProcess
      */
     private boolean alive = false;
     /**
-     * Scrollback view automatically scrolls view
-     * as new entries are added.
+     * Scrollback view automatically scrolls view as new entries are added.
      */
-    private JTextArea vlog = new JTextArea()
-    {
-        public void setFont(Font font)
-        {
+    private JTextArea vlog = new JTextArea() {
+
+        public void setFont(Font font) {
             font = new Font("Monospaced", Font.PLAIN, 13);
             super.setFont(font);
         }
 
-        public void append(String str)
-        {
+        public void append(String str) {
             super.append(str + "\n");
-            Rectangle b = new Rectangle(0, getHeight() - 13, getWidth(),
-                                        getHeight());
+            Rectangle b = new Rectangle(0, getHeight() - 13, getWidth(), getHeight());
             scrollRectToVisible(b);
         }
 
-        public void setBackground(Color bg)
-        {
+        public void setBackground(Color bg) {
             super.setBackground(Color.lightGray);
         }
 
-        public void setForeground(Color fg)
-        {
+        public void setForeground(Color fg) {
             super.setForeground(Color.black);
         }
     };
@@ -102,30 +99,24 @@ public final class JavaProcess
     /**
      * Reader thread to get all process log information back to workspace.
      */
-    private class ReaderThread
-            extends Thread
-    {
+    private class ReaderThread extends Thread {
+
         private InputStream stream;
         private byte[] buf = new byte[360];
 
-        ReaderThread(InputStream stream)
-        {
+        ReaderThread(InputStream stream) {
             this.stream = stream;
             setDaemon(true);
         }
 
-        public void run()
-        {
-            for (; ;)
-            {
-                try
-                {
+        public void run() {
+            for (; ; ) {
+                try {
                     int b = stream.read(buf);
-                    if (b > 0)
-                    {
+                    if (b > 0) {
                         String str = new String(buf, 0, b);
                         log.append(" [ ")
-                                .append(String.valueOf(getElapsedTime()))
+                                .append(getElapsedTime())
                                 .append(" ")
                                 .append("sec")
                                 .append(" ")
@@ -133,50 +124,41 @@ public final class JavaProcess
 
                         StringTokenizer st = new StringTokenizer(str, "\n\r\f\t");
 
-                        while (st.hasMoreTokens())
-                        {
+                        while (st.hasMoreTokens()) {
                             String little = st.nextToken();
-                            vlog.append(" [ " +
-                                        String.valueOf(getElapsedTime()) + " " + "sec" + " "
-                                        + little);
+                            vlog.append(" [ " + getElapsedTime() + " " + "sec" + " " + little);
                         }
-                    }
-                    else
-                    {
-                        if (b < 0)
-                        {
+                    } else {
+                        if (b < 0) {
                             break;
                         }
                     }
-                }
-                catch (IOException ex)
-                {
+                } catch (IOException ex) {
                     WorkspaceError.exception("Cannot read process log", ex);
                     break;
                 }
             }
         }
     }
+
     /**
      * Constructor
      */
-    JavaProcess(String[] _args, String process_name)
-                                        throws IOException
-    {
-        if (_args == null)
-        {
+    JavaProcess(String[] args, String processName) throws IOException {
+
+        if (args == null) {
             return;
         }
 
-        for (String _arg : _args) {
+        for (String _arg : args) {
             log.append(">" + "Started with command line" + " ").append(_arg);
             vlog.append(">" + "Started with command line" + " " + _arg);
         }
 
-        setName(process_name);
+        setName(processName);
 
         Runtime runtime = Runtime.getRuntime();
-        process = runtime.exec(_args);
+        process = runtime.exec(args);
 
         startTime = new Date();
 
@@ -185,36 +167,32 @@ public final class JavaProcess
         ReaderThread errorStreamReader = new ReaderThread(process.getErrorStream());
         errorStreamReader.start();
 
-        Thread waitThread = new Thread(new Runnable()
-        {
-            public void run()
-            {
-                _wait();
+        Thread waitThread = new Thread(new Runnable() {
+
+            public void run() {
+                waitForLogs();
             }
         });
         waitThread.start();
 
         log.append(LangResource.getString("JavaProcess.Process"))
                 .append(" ")
-                .append(process_name)
+                .append(processName)
                 .append(" ")
                 .append(LangResource.getString("JavaProcess.StartedAt"))
                 .append(" ")
                 .append(java.text.DateFormat.getInstance().format(startTime));
-        
+
         vlog.append(LangResource.getString("JavaProcess.Process") +
-                    " " + process_name +
-                    " " + LangResource.getString("JavaProcess.StartedAt") +
-                    " " + java.text.DateFormat.getInstance().format(startTime));
+                " " + processName +
+                " " + LangResource.getString("JavaProcess.StartedAt") +
+                " " + java.text.DateFormat.getInstance().format(startTime));
         alive = true;
     }
 
-    private void _wait()
-    {
-        for (; ;)
-        {
-            try
-            {
+    private void waitForLogs() {
+        for (; ; ) {
+            try {
                 int x = process.waitFor();
                 log.append(" [ ").append(java.text.DateFormat.getInstance()
                         .format(startTime))
@@ -223,14 +201,12 @@ public final class JavaProcess
                         .append(" ")
                         .append(x);
                 vlog.append(" [ " +
-                            java.text.DateFormat.getInstance().format(startTime)
-                            + " " + LangResource.getString("JavaProcess.ExitValue") +
-                            " " + x);
+                        java.text.DateFormat.getInstance().format(startTime)
+                        + " " + LangResource.getString("JavaProcess.ExitValue") +
+                        " " + x);
                 alive = false;
                 break;
-            }
-            catch (InterruptedException ex)
-            {
+            } catch (InterruptedException ex) {
                 WorkspaceError.exception
                         (LangResource.getString("JavaProcess.CannotWait"), ex);
             }
@@ -240,40 +216,35 @@ public final class JavaProcess
     /**
      * Returns time, elapsed from process start.
      */
-    private long getElapsedTime()
-    {
+    private long getElapsedTime() {
         return ((System.currentTimeMillis() - startTime.getTime()) / 1000);
     }
 
     /**
      * Returns process name.
+     *
      * @return java.lang.String
      */
-    public java.lang.String getName()
-    {
-        return process_name;
+    public String getName() {
+        return processName;
     }
 
-    public Date getStartTime()
-    {
-        return (startTime);
+    public Date getStartTime() {
+        return startTime;
     }
 
     /**
      * Get string log
      */
-    public StringBuffer getLog()
-    {
+    public StringBuffer getLog() {
         return log;
     }
 
     /**
      * Get log for visual components.
      */
-    public JScrollPane getVLog()
-    {
-        if (scroller == null)
-        {
+    public JScrollPane getVLog() {
+        if (scroller == null) {
             scroller = new JScrollPane(vlog);
             scroller.setName(vlog.getName());
         }
@@ -283,10 +254,8 @@ public final class JavaProcess
     /**
      * Kills this process.
      */
-    public void kill()
-    {
-        if (process != null)
-        {
+    public void kill() {
+        if (process != null) {
             process.destroy();
         }
         alive = false;
@@ -294,31 +263,28 @@ public final class JavaProcess
 
     /**
      * Sets process name.
+     *
      * @param process_name java.lang.String
      */
-    public void setName(java.lang.String process_name)
-    {
-        if (process_name.startsWith(ApplicationDataSource.ROOT))
-        {
-            this.process_name = process_name.substring(ApplicationDataSource.ROOT.
-                                                       length(), process_name.length());
-        }
-        else
-        {
-            this.process_name = process_name;
+    public void setName(java.lang.String process_name) {
+        if (process_name.startsWith(ApplicationDataSource.ROOT)) {
+            this.processName = process_name.substring(ApplicationDataSource.ROOT.
+                    length());
+        } else {
+            this.processName = process_name;
         }
         /*
          * Set name for log.
          */
-        vlog.setName(this.process_name);
+        vlog.setName(this.processName);
     }
 
     /**
      * If current process alive.
+     *
      * @return boolean
      */
-    public boolean isAlive()
-    {
+    public boolean isAlive() {
         return alive;
     }
 }

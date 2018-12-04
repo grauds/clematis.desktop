@@ -1,8 +1,8 @@
-package jworkspace.kernel.engines;
+package jworkspace.api;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -27,6 +27,7 @@ package jworkspace.kernel.engines;
 */
 
 import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
+
 import jworkspace.installer.DefinitionDataSource;
 
 /**
@@ -39,95 +40,88 @@ public interface InstallEngine extends IEngine
     /**
      * File extension for configuration file.
      */
-    public static final String FILE_EXTENSION = ".dat";
+    String FILE_EXTENSION = ".dat";
 
     /**
      * Returns application data.
      * @return jworkspace.installer.DefinitionDataSource
      */
-    public DefinitionDataSource getApplicationData();
+    DefinitionDataSource getApplicationData();
 
     /**
      * Returns tree model for application data.
      * @return kiwi.ui.model.DynamicTreeModel
      */
-    public DefaultKTreeModel getApplicationModel();
+    DefaultKTreeModel getApplicationModel();
 
     /**
      * Returns command line for application,
      * found by its path.
-     * @return java.lang.String
-     * @param path java.lang.String
+     * @return String
+     * @param path String
      */
-    public java.lang.String[] getInvocationArgs(String path);
+    String[] getInvocationArgs(String path);
 
     /**
      * Returns jar file for installation.
-     * @return java.lang.String
-     * @param path java.lang.String
+     * @return String
+     * @param path String
      */
-    public java.lang.String getJarFile(String path);
+    String getJarFile(String path);
 
     /**
      * Returns jvm data.
      * @return jworkspace.installer.DefinitionDataSource
      */
-    public DefinitionDataSource getJvmData();
+    DefinitionDataSource getJvmData();
 
     /**
      * Returns tree model for jvm data.
      * @return kiwi.ui.model.DynamicTreeModel
      */
-    public DefaultKTreeModel getJvmModel();
+    DefaultKTreeModel getJvmModel();
 
     /**
      * Returns library data.
      * @return jworkspace.installer.DefinitionDataSource
      */
-    public DefinitionDataSource getLibraryData();
+    DefinitionDataSource getLibraryData();
 
     /**
      * Returns tree model for library data.
      * @return kiwi.ui.model.DynamicTreeModel
      */
-    public DefaultKTreeModel getLibraryModel();
+    DefaultKTreeModel getLibraryModel();
 
     /**
      * Returns main class for installation.
-     * @return java.lang.String
-     * @param path java.lang.String
+     * @return String
+     * @param path String
      */
-    public java.lang.String getMainClass(String path);
+    String getMainClass(String path);
 
     /**
      * Returns working directory for new process.
-     * @return java.lang.String
-     * @param path java.lang.String
+     * @return String
+     * @param path String
      */
-    public java.lang.String getWorkingDir(String path);
+    String getWorkingDir(String path);
 
     /**
-     * Returns flag, that tells Workspace
-     * to launch this application
-     * on startup. Usually, this flag should
-     * set to "true" for services like
-     * network connection or system clocks.
+     * Returns flag, that tells Workspace to launch this application on startup. Usually, this flag should
+     * set to "true" for services like network connection or system clocks.
      *
-     * @return java.lang.String
-     * @param path java.lang.String
+     * @return String
+     * @param path String
      */
-    public boolean isLoadedAtStartup(String path);
+    boolean isLoadedAtStartup(String path);
 
     /**
-     * Returns flag, that tells Workspace
-     * to launch this application
-     * in separate process. Usually,
-     * this flag should
-     * set to "true" for external java
-     * applications.
+     * Returns flag, that tells Workspace to launch this application in separate process. Usually,
+     * this flag should set to "true" for external java applications.
      *
-     * @return java.lang.String
-     * @param path java.lang.String
+     * @return String
+     * @param path String
      */
-    public boolean isSeparateProcess(String path);
+    boolean isSeparateProcess(String path);
 }

@@ -29,14 +29,11 @@ package jworkspace.util;
 import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import jworkspace.LangResource;
-import jworkspace.kernel.IConstants;
+import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.util.crypto.DesCipher;
-
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -71,23 +68,23 @@ public final class WorkspaceUtils implements IConstants
         {
             return new byte[]{};
         }
-        /**
+        /*
          * Password is a key.
          */
         DesCipher cipher = new DesCipher(password);
-        /**
+        /*
          * Encrypt plain string.
          */
         byte[] plain = userName.getBytes();
         byte[] encrypted = new byte[plain.length];
-        /**
+        /*
          * Encrypt a block of eight bytes.
          * Our plain password is divided on
          * several 8-bytes blocks.
          */
         byte[] plain_block = new byte[8];
         byte[] encrypted_block = new byte[8];
-        /**
+        /*
          * Fill blocks with bytes, copy encrypted to
          * result one.
          */
@@ -99,7 +96,7 @@ public final class WorkspaceUtils implements IConstants
             cipher.encrypt(plain_block, encrypted_block);
             System.arraycopy(encrypted_block, 0, encrypted, i, 8);
         }
-        /**
+        /*
          * Encrypt trail.
          */
         int trail_length = plain.length - i;
@@ -110,36 +107,29 @@ public final class WorkspaceUtils implements IConstants
         return encrypted;
     }
 
-    private static final void _copyDir(File _dir, FileSystemView fileSystem)
+    private static void _copyDir(File _dir, FileSystemView fileSystem)
     {
         File[] list = fileSystem.getFiles(_dir, false);
-        Vector dirList = new Vector();
+        Vector<File> dirList = new Vector<>();
 
-        for (int i = 0; i < list.length; i++)
-        {
-            if (list[i].isDirectory())
-            {
-                dirList.addElement(list[i]);
+        for (File file : list) {
+
+            if (file.isDirectory()) {
+                dirList.addElement(file);
                 // calculate name of new directory
-                File destSubDir = new File(dest + list[i].getAbsolutePath().
-                                                  substring(dir.length()));
+                File destSubDir = new File(dest + file.getAbsolutePath().substring(dir.length()));
                 destSubDir.mkdir();
-            }
-            else if (list[i].isFile())
-            {
-                File destFile = new File(dest + list[i].getAbsolutePath().
-                                                substring(dir.length()));
+            } else if (file.isFile()) {
+                File destFile = new File(dest + file.getAbsolutePath().
+                        substring(dir.length()));
 
-                try
-                {
-                    FileInputStream input = new FileInputStream(list[i]);
+                try {
+                    FileInputStream input = new FileInputStream(file);
                     FileOutputStream output = new FileOutputStream(destFile);
                     output = (FileOutputStream) StreamUtils.readStreamToStream(input, output);
                     input.close();
                     output.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     WorkspaceError.exception
                             (LangResource.getString("Utils.cannotCopyDir"), e);
                 }

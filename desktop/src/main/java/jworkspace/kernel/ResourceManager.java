@@ -1,7 +1,8 @@
 package jworkspace.kernel;
+
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2015 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin
 
    This file is part of Java Workspace.
 

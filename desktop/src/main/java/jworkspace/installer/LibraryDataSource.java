@@ -2,8 +2,8 @@ package jworkspace.installer;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+   Copyright (C) 1998-1999 Mark A. Lindner,
+          2000-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -33,22 +33,20 @@ import java.io.IOException;
 
 /**
  * Data source for library.
- * This is a "smart" DefinitionDataSource,
- * since it can traverse itself
- * looking for a node that matches a given link path.
  */
-class LibraryDataSource extends DefinitionDataSource
-{
-    public static final String ROOT = "libraries";
-    protected static String rootName = LibraryDataSource.ROOT;
+class LibraryDataSource extends DefinitionDataSource {
+
+    static final String ROOT = "libraries";
+
+    private static String rootName = LibraryDataSource.ROOT;
 
     /**
      * Construct new library data source
      * with given file as a root.
+     *
      * @param root java.io.File
      */
-    LibraryDataSource(File root)
-    {
+    LibraryDataSource(File root) {
         super(root);
         rootName = root.getName();
     }
@@ -56,9 +54,8 @@ class LibraryDataSource extends DefinitionDataSource
     /**
      * Returns root name for libraries hierarchy.
      */
-    public String getRootName()
-    {
-        return (rootName);
+    public String getRootName() {
+        return rootName;
     }
 
     /**
@@ -66,8 +63,7 @@ class LibraryDataSource extends DefinitionDataSource
      * itself is a library.
      */
     protected DefinitionNode makeNode(DefinitionNode parent, File file)
-            throws IOException
-    {
+            throws IOException {
         return (new Library(parent, file));
     }
 }

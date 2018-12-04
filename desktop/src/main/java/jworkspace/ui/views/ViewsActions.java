@@ -27,10 +27,9 @@ package jworkspace.ui.views;
 */
 
 import jworkspace.LangResource;
-import jworkspace.kernel.IConstants;
+import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.AbstractStateAction;
-import jworkspace.ui.views.ViewsManager;
 import jworkspace.util.WorkspaceError;
 
 import javax.swing.*;

@@ -271,7 +271,7 @@ public class WorkspaceFrame extends KFrame implements PropertyChangeListener
         return content;
     }
 
-    /*
+    /**
      * Returns control panel for this frame.
      */
     ControlPanel getControlPanel()

@@ -2,8 +2,8 @@ package jworkspace.installer;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+   Copyright (C) 1998-1999 Mark A. Lindner,
+          2000-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -33,14 +33,12 @@ import java.io.IOException;
 
 /**
  * Data source for jvm.
- * This is a "smart" DefinitionDataSource,
- * since it can traverse itself
- * looking for a node that matches a given link path.
  */
 class JVMDataSource extends DefinitionDataSource
 {
-    public static final String ROOT = "jmachines";
-    protected static String rootName = JVMDataSource.ROOT;
+    static final String ROOT = "jmachines";
+
+    private static String rootName = JVMDataSource.ROOT;
 
     /**
      * Construct new jvm data source
@@ -58,7 +56,7 @@ class JVMDataSource extends DefinitionDataSource
      */
     public String getRootName()
     {
-        return (rootName);
+        return rootName;
     }
 
     /**

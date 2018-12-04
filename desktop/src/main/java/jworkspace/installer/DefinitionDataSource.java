@@ -27,176 +27,181 @@ package jworkspace.installer;
    anton.troshin@gmail.com
    ----------------------------------------------------------------------------
 */
-
-import com.hyperrealm.kiwi.ui.model.TreeDataSource;
-import jworkspace.util.sort.QuickSort;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.Icon;
+
+import com.hyperrealm.kiwi.ui.model.TreeDataSource;
+import jworkspace.util.sort.QuickSort;
+
 /**
- * This is a "smart" DefinitionDataSource,
- * since it can traverse itself
+ * This is a "smart" DefinitionDataSource, since it can traverse itself
  * looking for a node that matches a given link path.
  */
-public abstract class DefinitionDataSource implements TreeDataSource<DefinitionNode>
-{
+public abstract class DefinitionDataSource implements TreeDataSource<DefinitionNode> {
+
     private static final String EXPANDABLE_PROPERTY = "EXPANDABLE";
+
     private static final String LABEL_PROPERTY = "LABEL";
+
     private static final String ICON_PROPERTY = "ICON";
 
+    private static final DefinitionNode[] emptyArray = new DefinitionNode[0];
+
     private DefinitionNode root;
-    private static final DefinitionNode emptyArray[] = new DefinitionNode[0];
+
     protected boolean hierarchy = true;
 
     /**
-     * Public constuctor.
-     * Definition data source is based on file
-     * structure. Each object of this class should
-     * encapsulate separate file.
+     * Public constuctor. Definition data source is based on file
+     * structure. Each object of this class should encapsulate separate file.
+     *
      * @param root java.io.File
      */
-    DefinitionDataSource(File root)
-    {
+    DefinitionDataSource(File root) {
         this.root = new DefinitionNode(null, root);
-        if (!root.exists())
-            root.mkdir();
+        if (!root.exists()) {
+            root.mkdirs();
+        }
     }
 
     /**
-     * This helper routin iterates through
-     * the children until find first branch
+     * This helper routin iterates through the children until find first branch
      * with given link path.
      */
     private DefinitionNode _findNode(StringTokenizer st,
-                                     DefinitionNode currentNode)
-    {
-        if (!st.hasMoreTokens())
-            return (null);
+                                     DefinitionNode currentNode) {
+        if (!st.hasMoreTokens()) {
+            return null;
+        }
 
         String link = st.nextToken();
 
         // ok, let's look through the children...
 
-        Object children[] = getChildNodes(currentNode);
-        for (int i = 0; i < children.length; i++)
-        {
-            DefinitionNode node = (DefinitionNode) children[i];
+        Object[] children = getChildNodes(currentNode);
+        for (Object child : children) {
 
-            if (node.getNodeName().equals(link))
-            {
-                if (!st.hasMoreTokens())
-                    return (node);
-                else
-                    return (_findNode(st, node));
+            DefinitionNode node = (DefinitionNode) child;
+
+            if (node.getNodeName().equals(link)) {
+                if (!st.hasMoreTokens()) {
+                    return node;
+                } else {
+                    return _findNode(st, node);
+                }
             }
         }
 
-        return (null);
+        return null;
     }
 
     /**
-     * Find node by its link path, which is actually
-     * a string like follows "/node/node1/node2".
-     * Java Workspace Installer uses link path
-     * then launching applications.
+     * Find node by its link path, which is actually a string like follows "/node/node1/node2".
+     * Java Workspace Installer uses link path then launching applications.
+     *
      * @param linkPath java.lang.String
      */
-    public DefinitionNode findNode(String linkPath)
-    {
-        if (linkPath == null)
-            return (null);
+    DefinitionNode findNode(String linkPath) {
+
+        if (linkPath == null) {
+            return null;
+        }
         StringTokenizer st = new StringTokenizer(linkPath, "/");
-        if (!st.hasMoreElements())
-            return (null);
-        if (!root.getNodeName().equals(st.nextToken()))
-            return (null);
-        return (_findNode(st, root));
+        if (!st.hasMoreElements()) {
+            return null;
+        }
+        if (!root.getNodeName().equals(st.nextToken())) {
+            return null;
+        }
+        return _findNode(st, root);
     }
 
     /**
      * Returns ordered list of child nodes.
      */
-    private DefinitionNode[] getChildNodes(DefinitionNode defn)
-    {
-        if (!defn.isExpandable())
-            return (emptyArray);
+    private DefinitionNode[] getChildNodes(DefinitionNode defn) {
+
+        if (!defn.isExpandable()) {
+            return emptyArray;
+        }
 
         File f = defn.getFile();
-        File files[] = f.listFiles();
-        Vector v = new Vector();
-        /**
-         * As there is no guarantee, that files will
-         * be in alphabetical order, lets sort
-         * directories and files.
-         */
-        Vector dirs = new Vector();
-        Vector sfiles = new Vector();
-        for (int i = 0; i < files.length; i++)
-        {
-            if (files[i].isDirectory())
-                dirs.addElement(files[i]);
-            else
-                sfiles.addElement(files[i]);
-        }
-        /**
-         * Sorting
-         */
-        new QuickSort(true).sort(dirs);
-        new QuickSort(true).sort(sfiles);
+        File[] files = f.listFiles();
 
-        dirs.addAll(sfiles);
+        Vector<File> dirs = new Vector<>();
+        Vector<File> sfiles = new Vector<>();
 
-        for (int i = 0; i < dirs.size(); i++)
-        {
-            File file = (File) dirs.elementAt(i);
-            if (file.isDirectory() && hierarchy)
-                v.addElement(new DefinitionNode(defn, file));
+        if (files != null && files.length > 0) {
 
-            else
-            {
-                try
-                {
-                    v.addElement(makeNode(defn, file));
+            /*
+             * As there is no guarantee, that files will be in alphabetical order we sort
+             * directories and files.
+             */
+            for (File file1 : files) {
+
+                if (file1.isDirectory()) {
+                    dirs.addElement(file1);
+                } else {
+                    sfiles.addElement(file1);
                 }
-                catch (IOException ex)
-                {
+            }
+            /*
+             * Sorting
+             */
+            new QuickSort(true).sort(dirs);
+            new QuickSort(true).sort(sfiles);
+
+            dirs.addAll(sfiles);
+        }
+
+        Vector<DefinitionNode> v = new Vector<>();
+
+        for (int i = 0; i < dirs.size(); i++) {
+
+            File file = dirs.elementAt(i);
+            if (file.isDirectory() && hierarchy) {
+
+                v.addElement(new DefinitionNode(defn, file));
+            } else {
+
+                try {
+                    v.addElement(makeNode(defn, file));
+                } catch (IOException ex) {
                     /* silently ignore stuff we can't read */
                 }
             }
         }
 
-        DefinitionNode children[] = new DefinitionNode[v.size()];
+        DefinitionNode[] children = new DefinitionNode[v.size()];
         v.copyInto(children);
-        return (children);
+        return children;
     }
 
     /**
      * Return ordered array of children for given definition node
+     *
      * @param node jworkspace.installer.DefinitionNode
      */
-    public DefinitionNode[] getChildren(DefinitionNode node)
-    {
-        return (getChildNodes(node));
+    public DefinitionNode[] getChildren(DefinitionNode node) {
+        return getChildNodes(node);
     }
 
     /**
      * Returns root for data hierarchy.
      */
-    public DefinitionNode getRoot()
-    {
-        return (root);
+    public DefinitionNode getRoot() {
+        return root;
     }
 
     /**
      * Returns root name for data hierarchy.
      */
-    public String getRootName()
-    {
-        return ("Root");
+    public String getRootName() {
+        return "Root";
     }
 
     @Override
@@ -229,20 +234,19 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      * </ol>
      * Otherwise returns null
      */
-    public Object getValueForProperty(DefinitionNode node, String property)
-    {
-        if (property.equals(EXPANDABLE_PROPERTY)) {
-            return (node.isExpandable() ? Boolean.TRUE : Boolean.FALSE);
-        }
-        else if (property.equals(LABEL_PROPERTY)) {
-            return (node.isRoot() ? getRootName() : node.getNodeName());
-        }
-        else if (property.equals(COLUMN_NAMES_PROPERTY)) {
-            return new String[] {"Name"};
-        } else if (property.equals(COLUMN_TYPES_PROPERTY)) {
-            return new Class[] {String.class};
-        } else {
-            return (null);
+    public Object getValueForProperty(DefinitionNode node, String property) {
+
+        switch (property) {
+            case EXPANDABLE_PROPERTY:
+                return node.isExpandable() ? Boolean.TRUE : Boolean.FALSE;
+            case LABEL_PROPERTY:
+                return node.isRoot() ? getRootName() : node.getNodeName();
+            case COLUMN_NAMES_PROPERTY:
+                return new String[]{"Name"};
+            case COLUMN_TYPES_PROPERTY:
+                return new Class[]{String.class};
+            default:
+                return null;
         }
 
     }

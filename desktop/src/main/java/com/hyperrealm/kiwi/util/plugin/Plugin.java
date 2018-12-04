@@ -338,7 +338,7 @@ public final class Plugin<T> {
                 jar.close();
             } catch (IOException ex) {
             }
-            throw (new PluginException("Invalid plugin manifest entry"));
+            throw new PluginException("Invalid plugin manifest entry");
         }
 
         if (!type.equals(expectedType)) {
@@ -346,7 +346,7 @@ public final class Plugin<T> {
                 jar.close();
             } catch (IOException ex) {
             }
-            throw (new PluginException("Plugin type mismatch"));
+            throw new PluginException("Plugin type mismatch");
         }
 
         // create the classloader
@@ -386,16 +386,16 @@ public final class Plugin<T> {
     /* Unload the plugin.
      */
 
-    private void unload() {
+    private void unload() throws IOException {
         loader = null;
         pluginClass = null;
         icon = null;
         try {
             jar.close();
-        } catch (IOException ex) {
+        } finally {
+            jar = null;
+            loaded = false;
         }
-        jar = null;
-        loaded = false;
     }
 
     /**
@@ -404,7 +404,7 @@ public final class Plugin<T> {
      * @since Kiwi 2.0
      */
 
-    public void reload() throws PluginException {
+    public void reload() throws PluginException, IOException {
         unload();
         load();
         firePluginReloaded();

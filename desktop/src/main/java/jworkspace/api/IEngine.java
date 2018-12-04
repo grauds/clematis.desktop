@@ -1,4 +1,5 @@
-package jworkspace.kernel;
+package jworkspace.api;
+
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -26,10 +27,30 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
-public interface IConstants
+import java.io.IOException;
+
+/**
+ * Abstract workspace engine
+ */
+public interface IEngine
 {
     /**
-     * Small menu icon
+     * Save engine
      */
-    String MENU_ICON = "MENU_ICON";
+    void load() throws IOException;
+
+    /**
+     * Load engine
+     */
+    void save() throws IOException;
+
+    /**
+     * Reset engine
+     */
+    void reset();
+
+    /**
+     * Get human readable name
+     */
+    String getName();
 }

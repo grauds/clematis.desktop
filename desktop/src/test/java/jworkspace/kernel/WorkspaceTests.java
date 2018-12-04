@@ -9,7 +9,7 @@ package jworkspace.kernel;
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   VERSION 2 of the License, or (at your option) any later VERSION.
 
    This application is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,14 +26,16 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
+import org.junit.Test;
 
-/**
- * Workspace listener dispatches events send to subscribers through workspace event mechanism.
- */
-public interface IWorkspaceListener
-{
-    /**
-     * Processes event. Such event is send to every subscribed event listener in synchronous manner.
-     */
-    void processEvent(Object event, Object lparam, Object rparam);
+public class WorkspaceTests {
+
+    @Test
+    public void testIsLoading() {
+        /*
+         * Test workspace is loading
+         */
+        Workspace.start(new String[]{});
+
+    }
 }

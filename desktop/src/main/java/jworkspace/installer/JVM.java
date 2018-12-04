@@ -2,8 +2,8 @@ package jworkspace.installer;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+   Copyright (C) 1998-1999 Mark A. Lindner,
+          2000-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -27,21 +27,33 @@ package jworkspace.installer;
    anton.troshin@gmail.com
    ----------------------------------------------------------------------------
 */
-
-import com.hyperrealm.kiwi.io.ConfigFile;
-import jworkspace.kernel.Workspace;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.Icon;
+
+import com.hyperrealm.kiwi.io.ConfigFile;
+
+import jworkspace.kernel.Workspace;
 
 /**
  * JVM entry is a definition node, that stores
  * its data in file on disk, which is in file hierarchy
  * inside virtual machines root directory.
  */
-public class JVM extends DefinitionNode
-{
+public class JVM extends DefinitionNode {
+
+    public static final Icon icon = Workspace.getResourceManager()
+            .getIcon("installer/jvm.gif");
+
+    private static final String CK_NAME = "jvm.name",
+            CK_VERSION = "jvm.version",
+            CK_PATH = "jvm.path",
+            CK_SOURCE = "jvm.source",
+            CK_ARGS = "jvm.arguments",
+            CK_DOCDIR = "jvm.documentation_dir",
+            CK_DESCRIPTION = "jvm.description";
+
     private String name = "";
     private String version = "";
     private String path = "";
@@ -49,24 +61,16 @@ public class JVM extends DefinitionNode
     private String description = "";
     private String docs = "";
     private String source = "";
-    public static final Icon icon = Workspace.getResourceManager()
-            .getIcon("installer/jvm.gif");
-    private ConfigFile config;
 
-    private static final String CK_NAME = "jvm.name",
-    CK_VERSION = "jvm.version", CK_PATH = "jvm.path",
-    CK_SOURCE = "jvm.source",
-    CK_ARGS = "jvm.arguments",
-    CK_DOCDIR = "jvm.documentation_dir",
-    CK_DESCRIPTION = "jvm.description";
+    private ConfigFile config;
 
     /**
      * Public jvm constructor.
+     *
      * @param parent node jworkspace.installer.DefinitionNode
-     * @param file to hold jvm data java.io.File
+     * @param file   to hold jvm data java.io.File
      */
-    public JVM(DefinitionNode parent, File file) throws IOException
-    {
+    public JVM(DefinitionNode parent, File file) throws IOException {
         super(parent, file);
         load();
         this.name = getNodeName();
@@ -74,11 +78,11 @@ public class JVM extends DefinitionNode
 
     /**
      * Public jvm constructor.
+     *
      * @param parent node jworkspace.installer.DefinitionNode
-     * @param name of file to hold jvm data java.lang.String
+     * @param name   of file to hold jvm data java.lang.String
      */
-    public JVM(DefinitionNode parent, String name)
-    {
+    public JVM(DefinitionNode parent, String name) {
         super(parent, name + WorkspaceInstaller.FILE_EXTENSION);
         this.name = name;
     }
@@ -86,68 +90,60 @@ public class JVM extends DefinitionNode
     /**
      * Returns arguments for current jvm.
      */
-    public String getArguments()
-    {
-        return (arguments);
+    public String getArguments() {
+        return arguments;
     }
 
     /**
      * Returns closed icon to represent
      * jvm in tree control.
      */
-    public Icon getClosedIcon()
-    {
-        return (icon);
+    public Icon getClosedIcon() {
+        return icon;
     }
 
     /**
      * Returns jvm description
      */
-    public String getDescription()
-    {
-        return (description);
+    public String getDescription() {
+        return description;
     }
 
     /**
      * Returns directory or jar file, containing
      * jvm documentation.
      */
-    public java.lang.String getDocs()
-    {
+    public java.lang.String getDocs() {
         return docs;
     }
 
     /**
      * Returns jvm nickname.
      */
-    public String getName()
-    {
-        return (name);
+    public String getName() {
+        return name;
     }
 
     /**
      * Returns open icon to represent
      * jvm in tree control.
      */
-    public Icon getOpenIcon()
-    {
-        return (icon);
+    public Icon getOpenIcon() {
+        return icon;
     }
 
     /**
      * Returns path to jvm executable.
      */
-    public String getPath()
-    {
-        return (path);
+    public String getPath() {
+        return path;
     }
 
     /**
      * Returns version of this JVM.
      */
-    public String getVersion()
-    {
-        return (version);
+    public String getVersion() {
+        return version;
     }
 
     /**
@@ -155,16 +151,16 @@ public class JVM extends DefinitionNode
      * not a branch, as it is cannot
      * be expanded.
      */
-    public boolean isExpandable()
-    {
-        return (false);
+    public boolean isExpandable() {
+        return false;
     }
 
     /**
      * Loads class data from disk file
      */
-    public void load() throws IOException
-    {
+    @SuppressWarnings("Duplicates")
+    public void load() throws IOException {
+
         config = new ConfigFile(file, "Java Virtual Machine Definition");
         config.load();
         name = config.getString(CK_NAME, "");
@@ -179,10 +175,9 @@ public class JVM extends DefinitionNode
     /**
      * Stores class data to disk file
      */
-    public void save() throws IOException
-    {
-        if (config == null)
-        {
+    @SuppressWarnings("Duplicates")
+    public void save() throws IOException {
+        if (config == null) {
             config = new ConfigFile(file, "Java Virtual Machine Definition");
         }
         config.putString(CK_NAME, name);
@@ -203,16 +198,15 @@ public class JVM extends DefinitionNode
      * with all options:
      * <b>-cp %c %m %a</b>.
      * <ol>
-     *  <li>%c - include classpath
-     *  <li>%m - include mainclass
-     *  <li>%a - include application command line parameters
+     * <li>%c - include classpath
+     * <li>%m - include mainclass
+     * <li>%a - include application command line parameters
      * </li>
      * If any of these three parameters are missing,
      * corresponding part of full command line, nessesary
      * to launch application, will be omitted.
      */
-    public void setArguments(String arguments)
-    {
+    public void setArguments(String arguments) {
         this.arguments = arguments;
     }
 
@@ -220,8 +214,7 @@ public class JVM extends DefinitionNode
      * Sets description of jvm. This is optional,
      * as installer does not recognize this.
      */
-    public void setDescription(String description)
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -229,18 +222,15 @@ public class JVM extends DefinitionNode
      * Sets directory or jar file, containing
      * jvm documentation.
      */
-    public void setDocs(java.lang.String docs)
-    {
+    public void setDocs(java.lang.String docs) {
         this.docs = docs;
     }
 
     /**
      * Sets human readable name of jvm.
      */
-    public void setName(String name) throws InstallationException
-    {
-        if (name == null)
-        {
+    public void setName(String name) throws InstallationException {
+        if (name == null) {
             throw new InstallationException("Name is null");
         }
         this.name = name;
@@ -251,10 +241,8 @@ public class JVM extends DefinitionNode
      * This will be a part of command line for application
      * that will choose to use this jvm.
      */
-    public void setPath(String path) throws InstallationException
-    {
-        if (path == null)
-        {
+    public void setPath(String path) throws InstallationException {
+        if (path == null) {
             throw new InstallationException("Path is null");
         }
         this.path = path;
@@ -264,10 +252,8 @@ public class JVM extends DefinitionNode
      * Sets version of jvm. This can be useful for
      * user, as version is not recognized by installer.
      */
-    public void setVersion(String version) throws InstallationException
-    {
-        if (version == null)
-        {
+    public void setVersion(String version) throws InstallationException {
+        if (version == null) {
             throw new InstallationException("Version is null");
         }
         this.version = version;
@@ -277,17 +263,15 @@ public class JVM extends DefinitionNode
      * Returns brief jvm info, that is used
      * in installer configuration dialogs.
      */
-    public String toString()
-    {
-        return (name + " " + version);
+    public String toString() {
+        return name + " " + version;
     }
 
     /**
      * Returns directory or jar file, containing
      * jvm source.
      */
-    public java.lang.String getSource()
-    {
+    public java.lang.String getSource() {
         return source;
     }
 
@@ -295,8 +279,7 @@ public class JVM extends DefinitionNode
      * Sets directory or jar file, containing
      * jvm source.
      */
-    public void setSource(java.lang.String source)
-    {
+    public void setSource(java.lang.String source) {
         this.source = source;
     }
 }

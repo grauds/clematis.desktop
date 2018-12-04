@@ -9,7 +9,7 @@ package jworkspace.kernel;
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   VERSION 2 of the License, or (at your option) any later VERSION.
 
    This application is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,8 +33,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.lang.reflect.Method;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,37 +45,39 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import com.hyperrealm.kiwi.util.Config;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
+import com.hyperrealm.kiwi.util.plugin.Plugin;
+
+import jworkspace.api.GUI;
+import jworkspace.api.IEngine;
+import jworkspace.api.IUserProfileEngine;
+import jworkspace.api.IWorkspaceListener;
+import jworkspace.api.InstallEngine;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jworkspace.LangResource;
-import jworkspace.kernel.engines.GUI;
-import jworkspace.kernel.engines.IEngine;
-import jworkspace.kernel.engines.IUserProfileEngine;
-import jworkspace.kernel.engines.InstallEngine;
 import jworkspace.util.WorkspaceError;
-
-import kiwi.util.plugin.Plugin;
 
 /**
  * Workspace is a core class for Java Workspace, which dispatches messages and commands from users. This class also
- * initializes and manages engines, it performs such tasks as loading and saving of user settings,
+ * initializes and manages ENGINES, it performs such tasks as loading and saving of user settings,
  * responding to command processor and managing plugins.
  *
  * @since 1.0
  */
+@SuppressWarnings("unused")
 public final class Workspace {
 
     /**
      * Version
      */
-    private static final String version = "Clematis 2.0";
+    private static final String VERSION = "Clematis 2.0";
 
     /**
      * Listeners for service events.
      */
-    private static final Vector<IWorkspaceListener> listeners = new Vector<>();
+    private static final Vector<IWorkspaceListener> LISTENERS = new Vector<>();
 
     /**
      * Default logger
@@ -102,12 +102,12 @@ public final class Workspace {
     /**
      * Runtime manager
      */
-    private static final RuntimeManager runtimeManager = new RuntimeManager();
+    private static final RuntimeManager RUNTIME_MANAGER = new RuntimeManager();
 
     /**
      * Java Workspace GUI
      */
-    private static GUI gui = null;
+    private static jworkspace.api.GUI gui = null;
 
     /**
      * SYSTEM PLUGINS. This is actually invisible services,
@@ -116,7 +116,7 @@ public final class Workspace {
      * <p>
      * Each one is executed in its own thread and has its own security manager
      */
-    private static final Set<Plugin> system_plugins = new HashSet<>();
+    private static final Set<Plugin> SYSTEM_PLUGINS = new HashSet<>();
 
     /**
      * USER PLUGINS. This is actually invisible services,
@@ -125,19 +125,19 @@ public final class Workspace {
      * <p>
      * Each one is executed in its own thread and has its own security manager
      */
-    private static final Set<Plugin> user_plugins = new HashSet<>();
+    private static final Set<Plugin> USER_PLUGINS = new HashSet<>();
 
     /**
      * LOADED COMPONENTS. These components are not managed as
      * services, but are stored under Object keys to gain access
      * everytime user needs a reference.
      */
-    private static final Map<String, Object> loaded_components = new HashMap<>();
+    private static final Map<String, Object> LOADED_COMPONENTS = new HashMap<>();
 
     /**
      * Workspace ENGINES in a synchronized list
      */
-    private static final Collection<IEngine> engines = new Vector<>();
+    private static final Collection<IEngine> ENGINES = new Vector<>();
 
     /**
      * Resource manager.
@@ -163,14 +163,14 @@ public final class Workspace {
      * Add ENGINE
      */
     private static void addEngine(IEngine engine) {
-        engines.add(engine);
+        ENGINES.add(engine);
     }
 
     /**
      * Adds SYSTEM PLUGIN.
      */
     private static void addSystemPlugin(Plugin pl) {
-        system_plugins.add(pl);
+        SYSTEM_PLUGINS.add(pl);
     }
 
     /**
@@ -186,7 +186,7 @@ public final class Workspace {
      * Adds USER PLUGIN.
      */
     private static void addUserPlugin(Plugin pl) {
-        user_plugins.add(pl);
+        USER_PLUGINS.add(pl);
     }
 
     /**
@@ -224,14 +224,9 @@ public final class Workspace {
             killAllProcesses();
 
             saveAndResetUI();
-
-            saveUserPlugins();
-
-            user_plugins.clear();
-
-            removeAllRegisteredComponents();
-
             saveEngines();
+            USER_PLUGINS.clear();
+            removeAllRegisteredComponents();
 
             getRuntimeManager().resetPluginsCache();
 
@@ -245,7 +240,7 @@ public final class Workspace {
 
             loadEngines();
 
-            user_plugins.clear();
+            USER_PLUGINS.clear();
 
             loadUserPlugins();
 
@@ -285,8 +280,7 @@ public final class Workspace {
             return;
         }
 
-        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
-                getImage("exit.png"));
+        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("exit.png"));
 
         int result = JOptionPane.showConfirmDialog(gui.getFrame(),
                 LangResource.getString("Workspace.exit.question"),
@@ -300,11 +294,6 @@ public final class Workspace {
             if (Workspace.getProfilesEngine().userLogged()) {
 
                 saveAndResetUI();
-
-                saveUserPlugins();
-
-                saveSystemPlugins();
-
                 saveEngines();
 
                 try {
@@ -323,30 +312,30 @@ public final class Workspace {
     /**
      * Add listener for service events.
      */
-    private static synchronized void addListener(IWorkspaceListener l) {
-        listeners.add(l);
+    private static void addListener(IWorkspaceListener l) {
+        LISTENERS.add(l);
     }
 
     /**
      * Remove workspace listener
      */
-    public static synchronized void removeListener(IWorkspaceListener l) {
-        listeners.removeElement(l);
+    public static void removeListener(IWorkspaceListener l) {
+        LISTENERS.removeElement(l);
     }
 
     /**
-     * Deliver event to all listeners.
+     * Deliver event to all LISTENERS.
      */
     public static synchronized void fireEvent(Object event, Object lparam, Object rparam) {
 
-        for (IWorkspaceListener listener : listeners) {
+        for (IWorkspaceListener listener : LISTENERS) {
             listener.processEvent(event, lparam, rparam);
         }
     }
 
     /**
      * Returns class, implemented interface
-     * <code>jworkspace.kernel.engines.InstallEngine</code>
+     * <code>jworkspace.api.InstallEngine</code>
      */
     public static InstallEngine getInstallEngine() {
         return installEngine;
@@ -357,7 +346,7 @@ public final class Workspace {
      */
     public static void register(String key, Object component) {
         if (key != null && component != null) {
-            loaded_components.put(key, component);
+            LOADED_COMPONENTS.put(key, component);
         }
     }
 
@@ -365,19 +354,19 @@ public final class Workspace {
      * Get registered component
      */
     public static Object getRegisteredComponent(String key) {
-        return loaded_components.get(key);
+        return LOADED_COMPONENTS.get(key);
     }
 
     /**
      * Empty all components
      */
     private static void removeAllRegisteredComponents() {
-        loaded_components.clear();
+        LOADED_COMPONENTS.clear();
         System.gc();
     }
 
     /**
-     * Returns class, implemented interface <code>jworkspace.kernel.engines.IUserProfileEngine</code>
+     * Returns class, implemented interface <code>jworkspace.api.IUserProfileEngine</code>
      */
     public static IUserProfileEngine getProfilesEngine() {
         return profilesEngine;
@@ -441,18 +430,18 @@ public final class Workspace {
      * <code>jworkspace.kernel.RuntimeManager</code>
      */
     public static RuntimeManager getRuntimeManager() {
-        return runtimeManager;
+        return RUNTIME_MANAGER;
     }
 
     /**
-     * Returns workspace version
+     * Returns workspace VERSION
      */
     public static String getVersion() {
-        return version;
+        return VERSION;
     }
 
     /**
-     * Returns class of interface <code>jworkspace.kernel.engines.GUI</code>
+     * Returns class of interface <code>jworkspace.api.GUI</code>
      */
     public static GUI getUI() {
         return gui;
@@ -465,7 +454,7 @@ public final class Workspace {
      */
     private static Object getService(String clazz_name) {
 
-        Iterator it = system_plugins.iterator();
+        Iterator it = SYSTEM_PLUGINS.iterator();
 
         Plugin plugin = null;
 
@@ -476,7 +465,7 @@ public final class Workspace {
             }
         }
 
-        it = user_plugins.iterator();
+        it = USER_PLUGINS.iterator();
 
         while (it.hasNext()) {
             plugin = (Plugin) it.next();
@@ -537,7 +526,7 @@ public final class Workspace {
     }
 
     private static void loadEngines() {
-        for (IEngine engine : engines) {
+        for (IEngine engine : ENGINES) {
             try {
                 engine.load();
             } catch (IOException ex) {
@@ -552,7 +541,7 @@ public final class Workspace {
     }
 
     private static void saveEngines() {
-        for (IEngine engine : engines) {
+        for (IEngine engine : ENGINES) {
             try {
                 engine.save();
                 engine.reset();
@@ -567,55 +556,10 @@ public final class Workspace {
         }
     }
 
-    private static void saveUserPlugins() {
-        for (Plugin uscomp : user_plugins) {
-            disposePlugin(uscomp);
-        }
-    }
-
-    private static void saveSystemPlugins() {
-        for (Plugin uscomp : system_plugins) {
-            disposePlugin(uscomp);
-        }
-    }
-
-    private static void disposePlugin(Plugin uscomp) {
-
-        Workspace.LOG.info(">" + "Saving" + " " + uscomp.getName() + "...");
-        try {
-            uscomp.dispose();
-        } catch (PluginException ex) {
-            WorkspaceError.exception(LangResource.getString("Workspace.plugin.saveFailed"), ex);
-        }
-    }
-
-    private static void loadSystemPlugins() {
-
-        for (Plugin uscomp : system_plugins) {
-            Workspace.LOG.info(">" + "Loading system plugin" + " " + uscomp.getName() + "...");
-            loadPlugin(uscomp);
-        }
-    }
-
     private static void loadUserPlugins() {
 
         String fileName = Workspace.getUserHome() + File.separator + "plugins";
         addUserPlugins(Workspace.getRuntimeManager().loadPlugins(fileName));
-
-        for (Plugin uscomp : user_plugins) {
-            Workspace.LOG.info(">" + "Loading user plugin" + " " + uscomp.getName() + "...");
-            loadPlugin(uscomp);
-        }
-    }
-
-    private static void loadPlugin(Plugin uscomp) {
-        try {
-            uscomp.load();
-            Method m = uscomp.getPluginObject().getClass().getMethod("load");
-            m.invoke(uscomp.getPluginObject());
-        } catch (Exception | Error ex) {
-            WorkspaceError.exception(LangResource.getString("Workspace.plugin.loadFailed"), ex);
-        }
     }
 
     /**
@@ -641,7 +585,6 @@ public final class Workspace {
      */
     public static void main(java.lang.String[] args) {
 
-        long start = System.currentTimeMillis();
         int paramLength = args.length;
 
         for (String par : args) {
@@ -651,7 +594,7 @@ public final class Workspace {
                 if (paramLength == 1) {
                     System.exit(0);
                 }
-            } else if (par.equalsIgnoreCase("-version")) {
+            } else if (par.equalsIgnoreCase("-VERSION")) {
                 System.out.println(Workspace.getVersion());
                 if (paramLength == 1) {
                     System.exit(0);
@@ -661,6 +604,12 @@ public final class Workspace {
             }
         }
 
+        start(args);
+    }
+
+    public static void start(String[] args) {
+
+        long start = System.currentTimeMillis();
         Workspace.LOG.info(">" + "Starting" + " " + Workspace.getVersion());
         Config cfg = new Config(getConfigHeader().toString());
         try {
@@ -700,11 +649,9 @@ public final class Workspace {
 
         StringBuffer sb = new StringBuffer();
         sb.append("#\n");
-        sb.append(
-                "# Java Workspace kernel configuration. This file configures classes for\n");
-        sb.append(
-                "# three kernel engines. If any of these classes are incorrectly specified,\n");
-        sb.append("# kernel will fail to load them and will use stub classes.\n");
+        sb.append("# Java Workspace kernel configuration. This file configures classes for\n");
+        sb.append("# three kernel engines. If any of these classes are incorrectly specified,\n");
+        sb.append("# kernel will resort to the default classes.\n");
         sb.append("#\n");
 
         return sb;
@@ -714,9 +661,9 @@ public final class Workspace {
      * This method is responsible for Workspace initialization.
      * It performs full startup procedure and logs on user.
      */
-    private static void initWorkspace(java.lang.String[] args) {
+    private static void initWorkspace(String[] args) {
 
-        int paramLength = args.length;
+        int paramLength = args != null ? args.length : 0;
 
         String quickLogin = null;
 
@@ -730,16 +677,16 @@ public final class Workspace {
             }
         }
 
-        Workspace.LOG.info(">" + "Loading" + " " + Workspace.getVersion());
+        Workspace.LOG.info("> Loading " + Workspace.getVersion());
 
         /*
          * LAUNCH STARTUP SERVICES FROM JW ROOT DIRECTORY
          */
         initSystem();
 
-        Workspace.LOG.info(">" + "Kernel is successfully booted");
+        Workspace.LOG.info("> Kernel is successfully booted");
         /*
-         * When engines are initialized, we need to bring up gui system to promote login procedure and
+         * When ENGINES are initialized, we need to bring up gui system to promote login procedure and
          * so Java Workspace brings main frame of gui system that must be existent.
          */
         if (gui.getFrame() == null) {
@@ -777,7 +724,6 @@ public final class Workspace {
         }
 
         loadEngines();
-        loadSystemPlugins();
         loadUserPlugins();
 
         try {
