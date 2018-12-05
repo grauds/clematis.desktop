@@ -19,34 +19,33 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.beans.*;
+import java.beans.PropertyChangeListener;
 
-/** Interface that must be implemented by objects that are sources of
+/**
+ * Interface that must be implemented by objects that are sources of
  * <code>PropertyChangeEvent</code>s.
  *
- * @see java.beans.PropertyChangeEvent
- *
  * @author Mark Lindner
+ * @see java.beans.PropertyChangeEvent
  */
 
-public interface PropertyChangeSource
-{
+public interface PropertyChangeSource {
 
-  /** Register a new property change listener.
-   *
-   * @param listener The <code>PropertyChangeListener</code> to be added to
-   * this object's list of listeners.
-   */
+    /**
+     * Register a new property change listener.
+     *
+     * @param listener The <code>PropertyChangeListener</code> to be added to
+     *                 this object's list of listeners.
+     */
 
-  public void addPropertyChangeListener(PropertyChangeListener listener);
+    void addPropertyChangeListener(PropertyChangeListener listener);
 
-  /** Unregister a property change listener.
-   *
-   * @param listener The <code>PropertyChangeListener</code> to be removed
-   * from this object's list of listeners.
-   */
+    /**
+     * Unregister a property change listener.
+     *
+     * @param listener The <code>PropertyChangeListener</code> to be removed
+     *                 from this object's list of listeners.
+     */
 
-  public void removePropertyChangeListener(PropertyChangeListener listener);
+    void removePropertyChangeListener(PropertyChangeListener listener);
 }
-
-/* end of source file */

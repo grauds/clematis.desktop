@@ -19,42 +19,66 @@
 
 package com.hyperrealm.kiwi.text;
 
-/** This interface defines common formatting constants.
+/**
+ * This interface defines common formatting constants.
  *
  * @author Mark Lindner
  */
 
-public interface FormatConstants
-{
-  /** Custom format. */
-  public static final int CUSTOM_FORMAT = 0x00;
-  /** Currency format. */
-  public static final int CURRENCY_FORMAT = 0x10;
-  /** Percentage format. */
-  public static final int PERCENTAGE_FORMAT = 0x20;
-  /** Integer format. */
-  public static final int INTEGER_FORMAT = 0x30;
-  /** Decimal format. */
-  public static final int DECIMAL_FORMAT = 0x40;
-  /** Date and time format. */
-  public static final int DATE_TIME_FORMAT = 0x50;
-  /** Date format. */
-  public static final int DATE_FORMAT = 0x60;
-  /** Time format. */
-  public static final int TIME_FORMAT = 0x70;
+public interface FormatConstants {
+    /**
+     * Custom format.
+     */
+    int CUSTOM_FORMAT = 0x00;
+    /**
+     * Currency format.
+     */
+    int CURRENCY_FORMAT = 0x10;
+    /**
+     * Percentage format.
+     */
+    int PERCENTAGE_FORMAT = 0x20;
+    /**
+     * Integer format.
+     */
+    int INTEGER_FORMAT = 0x30;
+    /**
+     * Decimal format.
+     */
+    int DECIMAL_FORMAT = 0x40;
+    /**
+     * Date and time format.
+     */
+    int DATE_TIME_FORMAT = 0x50;
+    /**
+     * Date format.
+     */
+    int DATE_FORMAT = 0x60;
+    /**
+     * Time format.
+     */
+    int TIME_FORMAT = 0x70;
 
-  /** Format type mask. */
-  public static final int TYPE_MASK = 0xF0;
-  
-  /** Short (abbreviated) format. */
-  public static final int SHORT = 0x00;
-  /** Medium (common) format. */
-  public static final int MEDIUM = 0x01;
-  /** Long (extended) format. */
-  public static final int LONG = 0x02;
+    /**
+     * Format type mask.
+     */
+    int TYPE_MASK = 0xF0;
 
-  /** Format length mask. */
-  public static final int LENGTH_MASK = 0x0F;
+    /**
+     * Short (abbreviated) format.
+     */
+    int SHORT = 0x00;
+    /**
+     * Medium (common) format.
+     */
+    int MEDIUM = 0x01;
+    /**
+     * Long (extended) format.
+     */
+    int LONG = 0x02;
+
+    /**
+     * Format length mask.
+     */
+    int LENGTH_MASK = 0x0F;
 }
-
-/* end of source file */

@@ -19,25 +19,23 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventListener;
 
-/** This class represents a listener that is notified when the data in a
+/**
+ * This class represents a listener that is notified when the data in a
  * <code>ChartModel</code> changes.
  *
- * @see com.hyperrealm.kiwi.ui.model.ChartModel
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.model.ChartModel
  */
 
-public interface ChartModelListener extends EventListener
-{
+public interface ChartModelListener extends EventListener {
 
-  /** Invoked when the data in the model has changed in some way.
-   *
-   * @param event The event.
-   */
-  
-  public void chartDataChanged(ChartModelEvent event);
+    /**
+     * Invoked when the data in the model has changed in some way.
+     *
+     * @param event The event.
+     */
+
+    void chartDataChanged(ChartModelEvent event);
 }
-
-/* end of source file */

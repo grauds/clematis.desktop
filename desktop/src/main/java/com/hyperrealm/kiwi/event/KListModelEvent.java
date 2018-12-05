@@ -21,113 +21,111 @@ package com.hyperrealm.kiwi.event;
 
 import java.util.EventObject;
 
-/** Event for notifying listeners that a list data structure has changed.
+/**
+ * Event for notifying listeners that a list data structure has changed.
  *
- * @see com.hyperrealm.kiwi.event.KListModelListener
  * @author Mark Lindner
- *
+ * @see com.hyperrealm.kiwi.event.KListModelListener
  * @since Kiwi 2.0
  */
+@SuppressWarnings("unused")
+public class KListModelEvent extends EventObject {
 
-public class KListModelEvent extends EventObject
-{
-  private int startIndex = 0;
-  private int endIndex = 0;
-  private int field = -1;
+    private int startIndex;
+    private int endIndex;
+    private int field;
 
-  /** Construct a new <code>KListModelEvent</code>.
-   *
-   * @param source The source of the event.
-   * @param startIndex The offset of the first item in a range of items that is
-   * affected by this event.
-   * @param endIndex The offset of the last item in a range of items that is
-   * affected by this event.
-   */
+    /**
+     * Construct a new <code>KListModelEvent</code>.
+     *
+     * @param source     The source of the event.
+     * @param startIndex The offset of the first item in a range of items that is
+     *                   affected by this event.
+     * @param endIndex   The offset of the last item in a range of items that is
+     *                   affected by this event.
+     */
 
-  public KListModelEvent(Object source, int startIndex, int endIndex)
-  {
-    this(source, startIndex, endIndex, -1);
-  }
-  
-  /** Construct a new <code>KListModelEvent</code>.
-   *
-   * @param source The source of the event.
-   * @param startIndex The offset of the first item in a range of items that is
-   * affected by this event.
-   * @param endIndex The offset of the last item in a range of items that is
-   * affected by this event.
-   * @param field The field number affected by this event, or -1 if potentially
-   * all fields in the affected object(s) have changed.
-   *
-   * @since Kiwi 2.4.1
-   */
+    public KListModelEvent(Object source, int startIndex, int endIndex) {
+        this(source, startIndex, endIndex, -1);
+    }
 
-  public KListModelEvent(Object source, int startIndex, int endIndex,
-                         int field)
-  {
-    super(source);
+    /**
+     * Construct a new <code>KListModelEvent</code>.
+     *
+     * @param source     The source of the event.
+     * @param startIndex The offset of the first item in a range of items that is
+     *                   affected by this event.
+     * @param endIndex   The offset of the last item in a range of items that is
+     *                   affected by this event.
+     * @param field      The field number affected by this event, or -1 if potentially
+     *                   all fields in the affected object(s) have changed.
+     * @since Kiwi 2.4.1
+     */
 
-    this.startIndex = startIndex;
-    this.endIndex = endIndex;
-    this.field = field;
-  }
+    public KListModelEvent(Object source, int startIndex, int endIndex,
+                           int field) {
+        super(source);
 
-  /** Construct a new <code>KListModelEvent</code>. The index is set to
-   * 0.
-   *
-   * @param source The source of the event.
-   */
+        this.startIndex = startIndex;
+        this.endIndex = 0;
+        this.endIndex = endIndex;
+        this.field = field;
+    }
 
-  public KListModelEvent(Object source)
-  {
-    this(source, -1, -1, -1);
-  }
-  
-  /** Get the offset (index) for this event. For insertions, the
-   * position at which an item will be inserted; for deletions, the
-   * position of an item being removed; for updates, the position of an item
-   * that has changed.
-   */
+    /**
+     * Construct a new <code>KListModelEvent</code>. The index is set to
+     * 0.
+     *
+     * @param source The source of the event.
+     */
 
-  public int getIndex()
-  {
-    return(startIndex);
-  }
+    public KListModelEvent(Object source) {
+        this(source, -1, -1, -1);
+    }
 
-  /** Get the start index for this event. For insertions, the offset
-   * of the first item in a range of items that will be inserted; for
-   * deletions, the position of the first item in a range of items
-   * being removed; for updates, the position of the first item in a range of
-   * items that have changed.
-   */
+    /**
+     * Get the offset (index) for this event. For insertions, the
+     * position at which an item will be inserted; for deletions, the
+     * position of an item being removed; for updates, the position of an item
+     * that has changed.
+     */
 
-  public int getStartIndex()
-  {
-    return(startIndex);
-  }
+    public int getIndex() {
+        return (startIndex);
+    }
 
-  /** Get the end index for this event. For insertions, the offset of
-   * the last item in a range of items that will be inserted; for
-   * deletions, the position of the last item in a range of items
-   * being removed; for updates, the position of the last item in a
-   * range of items that have changed.
-   */
-  
-  public int getEndIndex()
-  {
-    return(endIndex);
-  }
+    /**
+     * Get the start index for this event. For insertions, the offset
+     * of the first item in a range of items that will be inserted; for
+     * deletions, the position of the first item in a range of items
+     * being removed; for updates, the position of the first item in a range of
+     * items that have changed.
+     */
 
-  /** Get the field number for this event.
-   *
-   * @since Kiwi 2.4.1
-   */
-  
-  public int getField()
-  {
-    return(field);
-  }
-  
+    public int getStartIndex() {
+        return (startIndex);
+    }
+
+    /**
+     * Get the end index for this event. For insertions, the offset of
+     * the last item in a range of items that will be inserted; for
+     * deletions, the position of the last item in a range of items
+     * being removed; for updates, the position of the last item in a
+     * range of items that have changed.
+     */
+
+    public int getEndIndex() {
+        return (endIndex);
+    }
+
+    /**
+     * Get the field number for this event.
+     *
+     * @since Kiwi 2.4.1
+     */
+
+    public int getField() {
+        return (field);
+    }
+
 }
-
-/* end of source file */

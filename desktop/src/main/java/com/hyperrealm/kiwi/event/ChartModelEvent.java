@@ -21,30 +21,27 @@ package com.hyperrealm.kiwi.event;
 
 import java.util.EventObject;
 
-import com.hyperrealm.kiwi.ui.model.*;
+import com.hyperrealm.kiwi.ui.model.ChartModel;
 
-/** A class that represents a general <code>ChartModel</code> event. Any
+/**
+ * A class that represents a general <code>ChartModel</code> event. Any
  * change in the data will require a complete repaint of the chart, so more
  * specific events would not be useful.
  *
  * @author Mark Lindner
  */
 
-public class ChartModelEvent extends EventObject
-{
-  private ChartModel source;
+public class ChartModelEvent extends EventObject {
 
-  /** Construct a new <code>ChartModelEvent</code> for the specified source.
-   *
-   * @param source The <code>ChartModel</code> that is the source of this
-   * event.
-   */
-  
-  public ChartModelEvent(ChartModel source)
-  {
-    super(source);
-  }
-  
+    /**
+     * Construct a new <code>ChartModelEvent</code> for the specified source.
+     *
+     * @param source The <code>ChartModel</code> that is the source of this
+     *               event.
+     */
+
+    public ChartModelEvent(ChartModel source) {
+        super(source);
+    }
+
 }
-
-/* end of source file */

@@ -19,10 +19,14 @@
 
 package com.hyperrealm.kiwi.text;
 
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
-/** This class represents a high-level date parser/formatter that is almost
+/**
+ * This class represents a high-level date parser/formatter that is almost
  * fully format-string-compatible with the UNIX <b>strftime(3)</b> function.
  * Date formats are specified by formatting directives; these directives are
  * enumerated in the table below:
@@ -60,206 +64,192 @@ import java.util.*;
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class DateFormatter {
 
-public class DateFormatter
-{
-  private SimpleDateFormat fmt;
-  private String pattern;
+    private SimpleDateFormat fmt;
 
-  /** Construct a new <code>DateFormatter</code>. See the table of formatting
-   * directives above.
-   *
-   * @param pattern The pattern to be used by this formatter.
-   * @exception IllegalArgumentException If the pattern contains
-   * unrecognized formatting directives.
-   */
+    /**
+     * Construct a new <code>DateFormatter</code>. See the table of formatting
+     * directives above.
+     *
+     * @param pattern The pattern to be used by this formatter.
+     * @throws IllegalArgumentException If the pattern contains
+     *                                  unrecognized formatting directives.
+     */
 
-  public DateFormatter(String pattern) throws IllegalArgumentException
-  {
-    fmt = new SimpleDateFormat(constructPattern(pattern));
-    fmt.setTimeZone(TimeZone.getDefault());
-  }
-
-  /** Parse a date, returning a <code>Date</code> object.
-   *
-   * @param text The text to parse.
-   * @return A <code>Date</code> object corresponding to the parsed date.
-   * @exception java.text.ParseException If a parsing error occurred.
-   * @see #format
-   */
-
-  public Date parse(String text) throws ParseException
-  {
-    return(fmt.parse(text));
-  }
-
-  /** Format a <code>Calendar</code> object. The date is formatted according
-   * to the pattern specified in this object's constructor.
-   *
-   * @param date The <code>Date</code> to format.
-   * @return The date formatted as a string.
-   * @see #parse
-   */
-
-  public String format(Calendar date)
-  {
-    return(format(date.getTime()));
-  }
-
-  /** Format the current date. The date is formatted according to the pattern
-   * specified in this object's constructor.
-   *
-   * @return The date formatted as a string.
-   * @see #parse
-   */
-
-  public String format()
-  {
-    return(format(new Date()));
-  }
-  
-  /** Format a date from a <code>Date</code> object. The date is formatted
-   * according to the pattern specified in this object's constructor.
-   *
-   * @param date The <code>Date</code> to format.
-   * @return The date formatted as a string.
-   * @see #parse
-   */
-
-  public String format(Date date)
-  {
-    return(fmt.format(date));
-  }
-
-  /* pattern translator */
-
-  private String constructPattern(String text) throws IllegalArgumentException
-  {
-    StringBuilder sb = new StringBuilder();
-    boolean escaped = false;
-
-    for(int i = 0; i < text.length(); i++)
-    {
-      char c = text.charAt(i);
-
-      if(!escaped)
-      {
-        switch(c)
-        {
-          case ':':
-          case ';':
-          case '/':
-          case '.':
-          case ',':
-          case '-':
-          case ' ':
-          case '\t':
-          case '(':
-          case ')':
-            sb.append(c);
-            escaped = false;
-            break;
-
-          case '%':
-            if(escaped)
-            {
-              sb.append(c);
-              escaped = false;
-            }
-            else escaped = true;
-            break;
-
-          default:
-            throw(new IllegalArgumentException("Unknown format character :"
-                                               + c));
-        }
-      }
-      else
-      {
-        switch(c)
-        {
-          case 'a':
-            sb.append("EE");
-            break;
-          case 'A':
-            sb.append("EEEE");
-            break;
-          case 'b':
-            sb.append("MMM");
-            break;
-          case 'B':
-            sb.append("MMMM");
-            break;
-          case 'd':
-            sb.append("dd");
-            break;
-          case 'e':
-            sb.append('d');
-            break;
-          case 'H':
-            sb.append("HH");
-            break;
-          case 'I':
-            sb.append("hh");
-            break;
-          case 'j':
-            sb.append("DDD");
-            break;
-          case 'm':
-            sb.append("MM");
-            break;
-          case 'M':
-            sb.append("mm");
-            break;
-          case 'N':
-            sb.append('G');
-            break;
-          case 'p':
-            sb.append('a');
-            break;
-          case 'r':
-            sb.append(constructPattern("%I:%M:%S %p"));
-            break;
-          case 'R':
-            sb.append(constructPattern("%H:%M"));
-            break;
-          case 'S':
-            sb.append("ss");
-            break;
-          case 't':
-            sb.append('\t');
-            break;
-          case 'T':
-            sb.append(constructPattern("%H:%M:%S"));
-            break;
-          case 'u':
-            sb.append("EE");
-            break;
-          case 'U':
-            sb.append("ww");
-            break;
-          case 's':
-            sb.append("SSS");
-            break;
-          case 'y':
-            sb.append("yy");
-            break;
-          case 'Y':
-            sb.append("yyyy");
-            break;
-          case 'Z':
-            sb.append("zzzz");
-            break;
-          default:
-            throw(new IllegalArgumentException("Unknown escape sequence: %"
-                                               + c));
-        }
-        escaped = false;
-      }
+    public DateFormatter(String pattern) throws IllegalArgumentException {
+        fmt = new SimpleDateFormat(constructPattern(pattern));
+        fmt.setTimeZone(TimeZone.getDefault());
     }
-    return(sb.toString());
-  }
-  
-}
 
-/* end of source file */
+    /**
+     * Parse a date, returning a <code>Date</code> object.
+     *
+     * @param text The text to parse.
+     * @return A <code>Date</code> object corresponding to the parsed date.
+     * @throws java.text.ParseException If a parsing error occurred.
+     * @see #format
+     */
+
+    public Date parse(String text) throws ParseException {
+        return (fmt.parse(text));
+    }
+
+    /**
+     * Format a <code>Calendar</code> object. The date is formatted according
+     * to the pattern specified in this object's constructor.
+     *
+     * @param date The <code>Date</code> to format.
+     * @return The date formatted as a string.
+     * @see #parse
+     */
+
+    public String format(Calendar date) {
+        return (format(date.getTime()));
+    }
+
+    /**
+     * Format the current date. The date is formatted according to the pattern
+     * specified in this object's constructor.
+     *
+     * @return The date formatted as a string.
+     * @see #parse
+     */
+
+    public String format() {
+        return (format(new Date()));
+    }
+
+    /**
+     * Format a date from a <code>Date</code> object. The date is formatted
+     * according to the pattern specified in this object's constructor.
+     *
+     * @param date The <code>Date</code> to format.
+     * @return The date formatted as a string.
+     * @see #parse
+     */
+
+    public String format(Date date) {
+        return (fmt.format(date));
+    }
+
+    /* pattern translator */
+
+    @SuppressWarnings("CheckStyle")
+    private String constructPattern(String text) throws IllegalArgumentException {
+        StringBuilder sb = new StringBuilder();
+        boolean escaped = false;
+
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+
+            if (!escaped) {
+                switch (c) {
+                    case ':':
+                    case ';':
+                    case '/':
+                    case '.':
+                    case ',':
+                    case '-':
+                    case ' ':
+                    case '\t':
+                    case '(':
+                    case ')':
+                        sb.append(c);
+                        escaped = false;
+                        break;
+
+                    case '%':
+                        escaped = true;
+                        break;
+
+                    default:
+                        throw (new IllegalArgumentException("Unknown format character :"
+                                + c));
+                }
+            } else {
+                switch (c) {
+                    case 'a':
+                        sb.append("EE");
+                        break;
+                    case 'A':
+                        sb.append("EEEE");
+                        break;
+                    case 'b':
+                        sb.append("MMM");
+                        break;
+                    case 'B':
+                        sb.append("MMMM");
+                        break;
+                    case 'd':
+                        sb.append("dd");
+                        break;
+                    case 'e':
+                        sb.append('d');
+                        break;
+                    case 'H':
+                        sb.append("HH");
+                        break;
+                    case 'I':
+                        sb.append("hh");
+                        break;
+                    case 'j':
+                        sb.append("DDD");
+                        break;
+                    case 'm':
+                        sb.append("MM");
+                        break;
+                    case 'M':
+                        sb.append("mm");
+                        break;
+                    case 'N':
+                        sb.append('G');
+                        break;
+                    case 'p':
+                        sb.append('a');
+                        break;
+                    case 'r':
+                        sb.append(constructPattern("%I:%M:%S %p"));
+                        break;
+                    case 'R':
+                        sb.append(constructPattern("%H:%M"));
+                        break;
+                    case 'S':
+                        sb.append("ss");
+                        break;
+                    case 't':
+                        sb.append('\t');
+                        break;
+                    case 'T':
+                        sb.append(constructPattern("%H:%M:%S"));
+                        break;
+                    case 'u':
+                        sb.append("EE");
+                        break;
+                    case 'U':
+                        sb.append("ww");
+                        break;
+                    case 's':
+                        sb.append("SSS");
+                        break;
+                    case 'y':
+                        sb.append("yy");
+                        break;
+                    case 'Y':
+                        sb.append("yyyy");
+                        break;
+                    case 'Z':
+                        sb.append("zzzz");
+                        break;
+                    default:
+                        throw (new IllegalArgumentException("Unknown escape sequence: %"
+                                + c));
+                }
+                escaped = false;
+            }
+        }
+        return (sb.toString());
+    }
+
+}

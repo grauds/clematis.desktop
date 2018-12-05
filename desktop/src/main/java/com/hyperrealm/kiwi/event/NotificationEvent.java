@@ -19,43 +19,43 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventObject;
 
-/** This class represents a notification event. Such an event can be used to
+/**
+ * This class represents a notification event. Such an event can be used to
  * notify listeners of a condition through the delivery of a token. In this
  * case, the token is simply an integer.
  *
  * @author Mark Lindner
  */
- 
-public class NotificationEvent extends EventObject
-{
-  /** The token ID for this event. */
-  protected int id;
+@SuppressWarnings("unused")
+public class NotificationEvent extends EventObject {
 
-  /** Construct a new <code>Notification Event</code>.
-   *
-   * @param source The source of this event.
-   * @param id The token ID for this event.
-   */
-  
-  public NotificationEvent(Object source, int id)
-  {
-    super(source);
+    /**
+     * The token ID for this event.
+     */
+    private int id;
 
-    this.id = id;
-  }
+    /**
+     * Construct a new <code>Notification Event</code>.
+     *
+     * @param source The source of this event.
+     * @param id     The token ID for this event.
+     */
 
-  /** Get the token ID associated with this event.
-   *
-   * @return The token ID.
-   */
-  
-  public int getID()
-  {
-    return(id);
-  }
-  
+    NotificationEvent(Object source, int id) {
+        super(source);
+
+        this.id = id;
+    }
+
+    /**
+     * Get the token ID associated with this event.
+     *
+     * @return The token ID.
+     */
+
+    public int getID() {
+        return (id);
+    }
 }
-
-/* end of source file */

@@ -19,22 +19,20 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventListener;
 
-/** This class represents a listener that receives
+/**
+ * This class represents a listener that receives
  * <code>NotificationEvent</code>s.
  *
  * @author Mark Lindner
  */
 
-public interface NotificationListener extends EventListener
-{
-  /** Handler method for <code>NotificationEvent</code>s.
-   *
-   * @param evt The event.
-   */
-  
-  public void notificationPerformed(NotificationEvent evt);
+public interface NotificationListener extends EventListener {
+    /**
+     * Handler method for <code>NotificationEvent</code>s.
+     *
+     * @param evt The event.
+     */
+    void notificationPerformed(NotificationEvent evt);
 }
-
-/* end of source file */

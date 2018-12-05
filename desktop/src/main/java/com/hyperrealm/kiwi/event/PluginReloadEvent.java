@@ -19,40 +19,37 @@
 
 package com.hyperrealm.kiwi.event;
 
-import com.hyperrealm.kiwi.ui.model.*;
-import com.hyperrealm.kiwi.util.plugin.*;
+import com.hyperrealm.kiwi.util.plugin.Plugin;
 
-/** A class that represents a plugin reload event.
+/**
+ * A class that represents a plugin reload event.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
+public class PluginReloadEvent {
 
-public class PluginReloadEvent
-{
-  private Plugin source;
+    private Plugin source;
 
-  /** Construct a new <code>PluginReloadEvent</code> for the specified source.
-   *
-   * @param source The <code>Plugin</code> that is the source of this
-   * event.
-   */
-  
-  public PluginReloadEvent(Plugin source)
-  {
-    this.source = source;
-  }
+    /**
+     * Construct a new <code>PluginReloadEvent</code> for the specified source.
+     *
+     * @param source The <code>Plugin</code> that is the source of this
+     *               event.
+     */
 
-  /** Get the source of the event.
-   *
-   * @return The <code>Plugin</code> that is the source of this event.
-   */
-  
-  public Plugin getSource()
-  {
-    return(source);
-  }
-  
+    public PluginReloadEvent(Plugin source) {
+        this.source = source;
+    }
+
+    /**
+     * Get the source of the event.
+     *
+     * @return The <code>Plugin</code> that is the source of this event.
+     */
+
+    public Plugin getSource() {
+        return (source);
+    }
+
 }
-
-/* end of source file */

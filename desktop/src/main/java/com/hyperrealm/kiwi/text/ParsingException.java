@@ -19,68 +19,69 @@
 
 package com.hyperrealm.kiwi.text;
 
-/** General-purpose parsing exception.
+/**
+ * General-purpose parsing exception.
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class ParsingException extends Exception {
 
-public class ParsingException extends Exception
-{
-  private int line = -1;
-  private String message = "";
+    private int line;
 
-  /** Construct a new <code>ParsingException</code>.
-   *
-   * @param message The exception message.
-   */
+    private String message;
 
-  public ParsingException(String message)
-  {
-    this(message, -1);
-  }
+    /**
+     * Construct a new <code>ParsingException</code>.
+     *
+     * @param message The exception message.
+     */
 
-  /** Construct a new <code>ParsingException</code>.
-   *
-   * @param message The exception message.
-   * @param line The line number in the input where the exception occurred.
-   */
+    public ParsingException(String message) {
+        this(message, -1);
+    }
 
-  public ParsingException(String message, int line)
-  {
-    super(message);
-    this.message = message;
-    this.line = line;
-  }
+    /**
+     * Construct a new <code>ParsingException</code>.
+     *
+     * @param message The exception message.
+     * @param line    The line number in the input where the exception occurred.
+     */
 
-  /** Get the line number of this exception. If no line number is available,
-   * this method returns -1.
-   */
+    public ParsingException(String message, int line) {
+        super(message);
+        this.message = message;
+        this.line = line;
+    }
 
-  public int getLine()
-  {
-    return(line);
-  }
+    /**
+     * Get the line number of this exception. If no line number is available,
+     * this method returns -1.
+     */
 
-  /** Get the message of this exception. */
+    public int getLine() {
+        return (line);
+    }
 
-  public String getMessage()
-  {
-    return(message);
-  }
+    /**
+     * Get the message of this exception.
+     */
 
-  /** Convert the parsing exception to a string that contains the message and
-   * line number.
-   */
+    public String getMessage() {
+        return (message);
+    }
 
-  public String toString()
-  {
-    String msg = getMessage();
-    if(line >= 0)
-      msg += (" on line " + line);
-    
-    return(msg);
-  }
+    /**
+     * Convert the parsing exception to a string that contains the message and
+     * line number.
+     */
+
+    public String toString() {
+        String msg = getMessage();
+        if (line >= 0) {
+            msg += (" on line " + line);
+        }
+        return (msg);
+    }
 
 }
-
-/* end of source file */

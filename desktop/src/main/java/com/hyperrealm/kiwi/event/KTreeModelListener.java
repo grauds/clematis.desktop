@@ -19,45 +19,49 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventListener;
 
-/** Event listener interface for <code>KTreeModelEvent</code>s.
+/**
+ * Event listener interface for <code>KTreeModelEvent</code>s.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public interface KTreeModelListener extends EventListener
-{
-  /** Invoked after a new child is added to an existing node in the
-   * hierarchy.
-   */
+public interface KTreeModelListener extends EventListener {
+    /**
+     * Invoked after a new child is added to an existing node in the
+     * hierarchy.
+     */
 
-  public void nodesAdded(KTreeModelEvent evt);
+    void nodesAdded(KTreeModelEvent evt);
 
-  /** Invoked after a child is removed from an existing node in the
-   * hierarchy.
-   */
+    /**
+     * Invoked after a child is removed from an existing node in the
+     * hierarchy.
+     */
 
-  public void nodesRemoved(KTreeModelEvent evt);
+    void nodesRemoved(KTreeModelEvent evt);
 
-  /** Invoked after a node in the tree changes in some way. */
+    /**
+     * Invoked after a node in the tree changes in some way.
+     */
 
-  public void nodesChanged(KTreeModelEvent evt);
+    void nodesChanged(KTreeModelEvent evt);
 
-  /** Invoked after the subtree rooted at an existing node changes its
-   * structure in a way that can't be described efficiently using any of the
-   * other messages in this interface.
-   */
+    /**
+     * Invoked after the subtree rooted at an existing node changes its
+     * structure in a way that can't be described efficiently using any of the
+     * other messages in this interface.
+     */
 
-  public void structureChanged(KTreeModelEvent evt);
+    void structureChanged(KTreeModelEvent evt);
 
-  /** Invoked after the entire tree structure has changed (typically after
-   * the root node has changed).
-   */
+    /**
+     * Invoked after the entire tree structure has changed (typically after
+     * the root node has changed).
+     */
 
-  public void dataChanged(KTreeModelEvent evt);
+    void dataChanged(KTreeModelEvent evt);
 }
-
-/* end of source file */
 

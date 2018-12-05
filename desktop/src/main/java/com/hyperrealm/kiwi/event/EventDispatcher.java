@@ -19,10 +19,14 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.EventObject;
+import java.util.HashMap;
 
-/** A class that implements a reflection-based event dispatcher. The class
+/**
+ * A class that implements a reflection-based event dispatcher. The class
  * is meant to be used as a private member of an event handler object. This
  * event handler object is assumed to have an event handler method (whose
  * name is arbitrary) which may be overloaded to handle different subclasses of
@@ -81,78 +85,74 @@ import java.util.*;
  * @author Mark Lindner
  * @since Kiwi 2.1.1
  */
+@SuppressWarnings("unused")
+public final class EventDispatcher {
 
-public final class EventDispatcher
-{
-  private HashMap<Class, Method> callMap = new HashMap<Class, Method>();
-  private Object owner;
+    private HashMap<Class, Method> callMap = new HashMap<>();
+    private Object owner;
 
-  /** Construct a new <code>EventDispatcher</code>.
-   *
-   * @param owner The object that will own this dispatcher instance.
-   * @param methodName The name of the event handler method(s).
-   * @param baseClass The common ancestor class for all events that will be
-   * delivered using this dispatcher.
-   */
-  
-  public EventDispatcher(Object owner, String methodName, Class baseClass)
-  {
-    this.owner = owner;
-    
-    Method methods[] = owner.getClass().getMethods();
-    for(int i = 0; i < methods.length; i++)
-    {      
-      if(! methods[i].getName().equals(methodName))
-        continue;
+    /**
+     * Construct a new <code>EventDispatcher</code>.
+     *
+     * @param owner      The object that will own this dispatcher instance.
+     * @param methodName The name of the event handler method(s).
+     * @param baseClass  The common ancestor class for all events that will be
+     *                   delivered using this dispatcher.
+     */
 
-      int mod = methods[i].getModifiers();
-      if(! (Modifier.isPublic(mod)))
-        continue;
+    public EventDispatcher(Object owner, String methodName, Class<?> baseClass) {
 
-      if(methods[i].getReturnType() != void.class)
-        continue;
+        this.owner = owner;
 
-      Class[] params = methods[i].getParameterTypes();
+        Method[] methods = owner.getClass().getMethods();
+        for (Method method : methods) {
 
-      if((params.length != 1) || ! baseClass.isAssignableFrom(params[0]))
-        continue;
+            if (!method.getName().equals(methodName)) {
+                continue;
+            }
 
-//      System.out.println("method: " + methods[i].getName() + "("
-//                         + params[0].getName() + ")");
+            int mod = method.getModifiers();
+            if (!(Modifier.isPublic(mod))) {
+                continue;
+            }
 
-      callMap.put(params[0], methods[i]);
-    }
-  }
+            if (method.getReturnType() != void.class) {
+                continue;
+            }
 
-  /** Dispatch an event to the most appropriate handler method.
-   *
-   * @param event The event object to dispatch.
-   * @throws java.lang.reflect.InvocationTargetException If the handler method
-   * threw an uncaught exception.
-   */
-  
-  public void dispatch(EventObject event) throws InvocationTargetException
-  {
-    Method m = null;
+            Class[] params = method.getParameterTypes();
 
-    for(Class clz = event.getClass(); clz != EventObject.class;
-        clz = clz.getSuperclass())
-    {
-      m = callMap.get(clz);
-      if(m != null)
-        break;
+            if ((params.length != 1) || !baseClass.isAssignableFrom(params[0])) {
+                continue;
+            }
+
+            callMap.put(params[0], method);
+        }
     }
 
-    if(m != null)
-    {
-      try
-      {
-        m.invoke(owner, event);
-      }
-      catch(IllegalAccessException ex) { /* won't happen */ }
+    /**
+     * Dispatch an event to the most appropriate handler method.
+     *
+     * @param event The event object to dispatch.
+     * @throws java.lang.reflect.InvocationTargetException If the handler method
+     *                                                     threw an uncaught exception.
+     */
+    public void dispatch(EventObject event) throws InvocationTargetException {
+        Method m = null;
+
+        for (Class clz = event.getClass(); clz != EventObject.class;
+             clz = clz.getSuperclass()) {
+            m = callMap.get(clz);
+            if (m != null) {
+                break;
+            }
+        }
+
+        if (m != null) {
+            try {
+                m.invoke(owner, event);
+            } catch (IllegalAccessException ex) { /* won't happen */ }
+        }
     }
-  }
-  
+
 }
-
-/* end of source file */

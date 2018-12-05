@@ -19,58 +19,62 @@
 
 package com.hyperrealm.kiwi.event;
 
-/** A trivial implementation of <code>WorkspaceListener</code>, with all
+/**
+ * A trivial implementation of <code>WorkspaceListener</code>, with all
  * methods implemented as no-ops.
  *
  * @author Mark Lindner
  */
 
-public class BasicWorkspaceListener implements WorkspaceListener 
-{
+public class BasicWorkspaceListener implements WorkspaceListener {
 
-  /** Construct a new <code>BasicWorkspaceListener</code>.
-   */
-  
-  public BasicWorkspaceListener()
-  {
-  }
+    /**
+     * Construct a new <code>BasicWorkspaceListener</code>.
+     */
 
-  /** Handle an <i>editor selected</i> event. */
+    public BasicWorkspaceListener() {
+    }
 
-  public void editorSelected(WorkspaceEvent evt)
-  {
-  }
+    /**
+     * Handle an <i>editor selected</i> event.
+     */
 
-  /** Handle an <i>editor deselected</i> event. */
+    public void editorSelected(WorkspaceEvent evt) {
+    }
 
-  public void editorDeselected(WorkspaceEvent evt)
-  {
-  }
+    /**
+     * Handle an <i>editor deselected</i> event.
+     */
 
-  /** Handle an <i>editor restored</i> event. */
-  
-  public void editorRestored(WorkspaceEvent evt)
-  {
-  }
+    public void editorDeselected(WorkspaceEvent evt) {
+    }
 
-  /** Handle an <i>editor iconified</i> event. */
+    /**
+     * Handle an <i>editor restored</i> event.
+     */
 
-  public void editorIconified(WorkspaceEvent evt)
-  {
-  }
+    public void editorRestored(WorkspaceEvent evt) {
+    }
 
-  /** Handle an <i>editor closed</i> event. */
+    /**
+     * Handle an <i>editor iconified</i> event.
+     */
 
-  public void editorClosed(WorkspaceEvent evt)
-  {
-  }
+    public void editorIconified(WorkspaceEvent evt) {
+    }
 
-  /** Handle an <i>editor state changed</i> event. */
+    /**
+     * Handle an <i>editor closed</i> event.
+     */
 
-  public void editorStateChanged(WorkspaceEvent evt)
-  {
-  }
-  
+    public void editorClosed(WorkspaceEvent evt) {
+    }
+
+    /**
+     * Handle an <i>editor state changed</i> event.
+     */
+
+    public void editorStateChanged(WorkspaceEvent evt) {
+    }
+
 }
-
-/* end of source file */

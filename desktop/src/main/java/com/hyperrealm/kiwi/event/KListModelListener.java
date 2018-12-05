@@ -19,32 +19,38 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventListener;
 
-/** Event listener interface for <code>KListModelEvent</code>s.
+/**
+ * Event listener interface for <code>KListModelEvent</code>s.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public interface KListModelListener extends EventListener
-{
+public interface KListModelListener extends EventListener {
 
-  /** Invoked after items are inserted into the list. */
+    /**
+     * Invoked after items are inserted into the list.
+     */
 
-  public void itemsAdded(KListModelEvent evt);
+    void itemsAdded(KListModelEvent evt);
 
-  /** Invoked after items are removed from the list. */
+    /**
+     * Invoked after items are removed from the list.
+     */
 
-  public void itemsRemoved(KListModelEvent evt);
+    void itemsRemoved(KListModelEvent evt);
 
-  /** Invoked after items in the list are changed in some way. */
+    /**
+     * Invoked after items in the list are changed in some way.
+     */
 
-  public void itemsChanged(KListModelEvent evt);
+    void itemsChanged(KListModelEvent evt);
 
-  /** Invoked after the model undergoes a substantial change. */
+    /**
+     * Invoked after the model undergoes a substantial change.
+     */
 
-  public void dataChanged(KListModelEvent evt);
+    void dataChanged(KListModelEvent evt);
 }
-
-/* end of source file */

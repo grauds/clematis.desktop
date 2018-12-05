@@ -19,44 +19,52 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventListener;
 
-/** This class represents a listener that is notified of changes in a
+/**
+ * This class represents a listener that is notified of changes in a
  * <code>WorkspaceManager</code>.
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.ui.WorkspaceManager
  * @see com.hyperrealm.kiwi.ui.WorkspaceEditor
- * 
- * @author Mark Lindner
  */
+public interface WorkspaceListener extends EventListener {
 
-public interface WorkspaceListener extends EventListener
-{
-  /** Invoked after an editor has been selected in the workspace. */
+    /**
+     * Invoked after an editor has been selected in the workspace.
+     */
 
-  public void editorSelected(WorkspaceEvent evt);
+    void editorSelected(WorkspaceEvent evt);
 
-  /** Invoked after an editor has been deselected in the workspace. */
+    /**
+     * Invoked after an editor has been deselected in the workspace.
+     */
 
-  public void editorDeselected(WorkspaceEvent evt);
+    void editorDeselected(WorkspaceEvent evt);
 
-  /** Invoked after an editor has been restored (from an icon) in the
-   * workspace.
-   */
+    /**
+     * Invoked after an editor has been restored (from an icon) in the
+     * workspace.
+     */
 
-  public void editorRestored(WorkspaceEvent evt);
+    void editorRestored(WorkspaceEvent evt);
 
-  /** Invoked after an editor has been iconified in the workspace. */
+    /**
+     * Invoked after an editor has been iconified in the workspace.
+     */
 
-  public void editorIconified(WorkspaceEvent evt);
+    void editorIconified(WorkspaceEvent evt);
 
-  /** Invoked after an editor is closed in the workspace. */
+    /**
+     * Invoked after an editor is closed in the workspace.
+     */
 
-  public void editorClosed(WorkspaceEvent evt);
+    void editorClosed(WorkspaceEvent evt);
 
-  /** Invoked after an editor's state has changed in some way. */
+    /**
+     * Invoked after an editor's state has changed in some way.
+     */
 
-  public void editorStateChanged(WorkspaceEvent evt);
+    void editorStateChanged(WorkspaceEvent evt);
 }
-
-/* end of source file */

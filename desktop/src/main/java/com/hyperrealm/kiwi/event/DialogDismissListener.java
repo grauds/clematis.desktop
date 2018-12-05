@@ -19,26 +19,24 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventListener;
 
-/** This class represents a listener that is notified when a dialog window is
+/**
+ * This class represents a listener that is notified when a dialog window is
  * dismissed. A convenience method for firing <code>DialogDismissEvent</code>s
  * is provided in <code>com.hyperrealm.kiwi.ui.dialog.KDialog</code>.
  *
- * @see com.hyperrealm.kiwi.ui.dialog.KDialog#fireDialogDismissed
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.dialog.KDialog#fireDialogDismissed
  */
 
-public interface DialogDismissListener extends EventListener
-{
+public interface DialogDismissListener extends EventListener {
 
-  /** Invoked after a dialog is dismissed.
-   *
-   * @param evt The event.
-   */
+    /**
+     * Invoked after a dialog is dismissed.
+     *
+     * @param evt The event.
+     */
 
-  public void dialogDismissed(DialogDismissEvent evt);
+    void dialogDismissed(DialogDismissEvent evt);
 }
-
-/* end of source file */

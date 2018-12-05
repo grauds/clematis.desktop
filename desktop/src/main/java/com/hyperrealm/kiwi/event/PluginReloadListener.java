@@ -19,26 +19,24 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.util.*;
+import java.util.EventListener;
 
-/** This class represents a listener that is notified when a plugin is
+/**
+ * This class represents a listener that is notified when a plugin is
  * reloaded.
  *
- * @see com.hyperrealm.kiwi.util.plugin.Plugin
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.util.plugin.Plugin
  * @since Kiwi 2.0
  */
 
-public interface PluginReloadListener extends EventListener
-{
+public interface PluginReloadListener extends EventListener {
 
-  /** Invoked when a plugin is reloaded.
-   *
-   * @param event The event.
-   */
-  
-  public void pluginReloaded(PluginReloadEvent event);
+    /**
+     * Invoked when a plugin is reloaded.
+     *
+     * @param event The event.
+     */
+
+    void pluginReloaded(PluginReloadEvent event);
 }
-
-/* end of source file */

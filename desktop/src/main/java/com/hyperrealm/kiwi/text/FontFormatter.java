@@ -21,104 +21,111 @@ package com.hyperrealm.kiwi.text;
 
 import java.awt.Font;
 
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.util.StringUtils;
 
-/** This class provides methods for converting fonts to and from string
+/**
+ * This class provides methods for converting fonts to and from string
  * representations.
  *
- * @see java.awt.Font
- *
  * @author Mark Lindner
+ * @see java.awt.Font
  */
+public class FontFormatter {
 
-public class FontFormatter
-{
-  private static final int styleCodes[]
-    = { Font.PLAIN, Font.BOLD, Font.ITALIC, (Font.BOLD | Font.ITALIC) };
-  private static final String styleNames[]
-    = { "Plain", "Bold", "Italic", "BoldItalic" };
+    private static final int[] STYLE_CODES
+            = {Font.PLAIN, Font.BOLD, Font.ITALIC, (Font.BOLD | Font.ITALIC)};
 
-  /*
-   */
-  
-  private FontFormatter() {}
+    private static final String[] STYLE_NAMES
+            = {"Plain", "Bold", "Italic", "BoldItalic"};
 
-  /*
-   */
-  
-  private static String nameForStyle(int style)
-  {
-    for(int i = 0; i < styleCodes.length; i++)
-      if(style == styleCodes[i])
-        return(styleNames[i]);
+    private static final String COMMA = ",";
 
-    return(null);
-  }
+    private static final int FONT_NAME_LENGTH = 3;
 
-  /*
-   */
-  
-  private static int styleForName(String style)
-  {
-    for(int i = 0; i < styleCodes.length; i++)
-      if(style.equalsIgnoreCase(styleNames[i]))
-        return(styleCodes[i]);
+    /*
+     */
 
-    return(-1);
-  }
-
-  /** Format a <code>Font</code> as a string. The format is "Name,Style,Size"
-   * where <i>Style</i> is one of <i>Plain</i>, <i>Bold</i>, <i>Italic</i>, or
-   * <i>BoldItalic</i>.
-   *
-   * @param font The <code>Font</code> to format.
-   * @return A string representation of the font.
-   * @see #parse
-   */
-   
-  public static String format(Font font)
-  {
-    String styleName = nameForStyle(font.getStyle());
-    if(styleName == null)
-      return(null);
-
-    return(font.getName() + "," + styleName + ","
-           + String.valueOf(font.getSize()));
-  }
-
-  /** Parse a font representation, returning an appropriate <code>Font</code>
-   * object.
-   *
-   * @param font The string representation of the font.
-   * @return An appropriate <code>Font</code> object.
-   * @exception com.hyperrealm.kiwi.text.ParsingException If
-   * <code>font</code> is an invalid font representation.
-   *
-   * @see #format
-   */
-
-  public static Font parse(String font) throws ParsingException
-  {
-    String def[] = StringUtils.split(font, ",");
-    if(def.length != 3) return(null);
-    int styleCode = -1, sz = 0;
-
-    try
-    {
-      styleCode = styleForName(def[1]);
-      sz = Integer.parseInt(def[2]);
+    private FontFormatter() {
     }
-    catch(NumberFormatException ex)
-    {
-      sz = 0;
-    }
-    
-    if((styleCode < 0) || (sz == 0))
-      throw(new ParsingException("Invalid Font specification."));
 
-    return(new Font(def[0], styleCode, sz));
-  }
-  
+    /*
+     */
+
+    private static String nameForStyle(int style) {
+        for (int i = 0; i < STYLE_CODES.length; i++) {
+            if (style == STYLE_CODES[i]) {
+                return (STYLE_NAMES[i]);
+            }
+        }
+        return (null);
+    }
+
+    /*
+     */
+
+    private static int styleForName(String style) {
+        for (int i = 0; i < STYLE_CODES.length; i++) {
+            if (style.equalsIgnoreCase(STYLE_NAMES[i])) {
+                return (STYLE_CODES[i]);
+            }
+        }
+
+        return (-1);
+    }
+
+    /**
+     * Format a <code>Font</code> as a string. The format is "Name,Style,Size"
+     * where <i>Style</i> is one of <i>Plain</i>, <i>Bold</i>, <i>Italic</i>, or
+     * <i>BoldItalic</i>.
+     *
+     * @param font The <code>Font</code> to format.
+     * @return A string representation of the font.
+     * @see #parse
+     */
+
+    public static String format(Font font) {
+
+        String styleName = nameForStyle(font.getStyle());
+        if (styleName == null) {
+            return null;
+        }
+
+        return (font.getName() + COMMA + styleName + COMMA + font.getSize());
+    }
+
+    /**
+     * Parse a font representation, returning an appropriate <code>Font</code>
+     * object.
+     *
+     * @param font The string representation of the font.
+     * @return An appropriate <code>Font</code> object.
+     * @throws com.hyperrealm.kiwi.text.ParsingException If
+     *                                                   <code>font</code> is an invalid font representation.
+     * @see #format
+     */
+
+    @SuppressWarnings("MagicConstant")
+    public static Font parse(String font) throws ParsingException {
+
+        String[] def = StringUtils.split(font, COMMA);
+        if (def.length != FONT_NAME_LENGTH) {
+            return null;
+        }
+
+        int styleCode = -1, sz;
+
+        try {
+            styleCode = styleForName(def[1]);
+            sz = Integer.parseInt(def[2]);
+        } catch (NumberFormatException ex) {
+            sz = 0;
+        }
+
+        if ((styleCode < 0) || (sz == 0)) {
+            throw (new ParsingException("Invalid Font specification."));
+        }
+
+        return (new Font(def[0], styleCode, sz));
+    }
+
 }
-
-/* end of source file */

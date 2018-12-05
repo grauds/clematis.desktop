@@ -19,11 +19,14 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-/** A simple extension of <code>MouseAdapter</code> for handling single-
+import javax.swing.JTable;
+
+/**
+ * A simple extension of <code>MouseAdapter</code> for handling single-
  * and double-clicks on rows in a <code>JTable</code>.
  *
  * <p>
@@ -34,7 +37,7 @@ import javax.swing.*;
  * {
  *   public void rowClicked(int row, int button)
  *   {
- *     System.out.println("Button " + button + " clicked on row #" + row);
+ *     LOG.warn("Button " + button + " clicked on row #" + row);
  *   }
  * });
  * </pre>
@@ -42,68 +45,67 @@ import javax.swing.*;
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
+@SuppressWarnings("unused")
+public class TableRowMouseAdapter extends MouseAdapter {
 
-public class TableRowMouseAdapter extends MouseAdapter
-{
+    /**
+     * Construct a new <code>TableRowMouseAdapter</code>.
+     */
 
-  /** Construct a new <code>TableRowMouseAdapter</code>. */
-
-  public TableRowMouseAdapter()
-  {
-  }
-  
-  /** Handle a mouse event. This method dispatches the mouse event to one of
-   * the click handlers, based on its click count.  It is assumed that the
-   * source of the event is an instance of <code>JTable</code>; if it is not,
-   * the event is ignored.
-   *
-   * @param evt The event.
-   */
-  
-  public final void mouseClicked(MouseEvent evt)
-  {
-    Object source = evt.getSource();
-    if(!(source instanceof JTable))
-      return;
-
-    JTable table = (JTable)source;
-
-    int selRow = table.rowAtPoint(new Point(evt.getX(), evt.getY()));
-    if(selRow != -1)
-    {
-      switch(evt.getClickCount())
-      {
-        case 1:
-          rowClicked(selRow, evt.getButton());
-          break;
-
-        case 2:
-          rowDoubleClicked(selRow, evt.getButton());
-          break;
-      }
+    public TableRowMouseAdapter() {
     }
-  }
 
-  /** Handle a single-click on a row.
-   *
-   * @param row The index of the row that was clicked on.
-   * @param button The mouse button that was clicked.
-   */
-  
-  public void rowClicked(int row, int button)
-  {
-  }
+    /**
+     * Handle a mouse event. This method dispatches the mouse event to one of
+     * the click handlers, based on its click count.  It is assumed that the
+     * source of the event is an instance of <code>JTable</code>; if it is not,
+     * the event is ignored.
+     *
+     * @param evt The event.
+     */
 
-  /** Handle a double-click on a row.
-   *
-   * @param row The index of the row that was clicked on.
-   * @param button The mouse button that was clicked.
-   */
-  
-  public void rowDoubleClicked(int row, int button)
-  {
-  }
-  
+    public final void mouseClicked(MouseEvent evt) {
+        Object source = evt.getSource();
+        if (!(source instanceof JTable)) {
+            return;
+        }
+
+        JTable table = (JTable) source;
+
+        int selRow = table.rowAtPoint(new Point(evt.getX(), evt.getY()));
+        if (selRow != -1) {
+            switch (evt.getClickCount()) {
+                case 1:
+                    rowClicked(selRow, evt.getButton());
+                    break;
+
+                case 2:
+                    rowDoubleClicked(selRow, evt.getButton());
+                    break;
+
+                default:
+            }
+        }
+    }
+
+    /**
+     * Handle a single-click on a row.
+     *
+     * @param row    The index of the row that was clicked on.
+     * @param button The mouse button that was clicked.
+     */
+
+    public void rowClicked(int row, int button) {
+    }
+
+    /**
+     * Handle a double-click on a row.
+     *
+     * @param row    The index of the row that was clicked on.
+     * @param button The mouse button that was clicked.
+     */
+
+    public void rowDoubleClicked(int row, int button) {
+    }
+
 }
-
-/* end of source file */

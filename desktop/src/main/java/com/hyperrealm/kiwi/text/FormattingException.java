@@ -19,36 +19,34 @@
 
 package com.hyperrealm.kiwi.text;
 
-/** This exception is thrown by any of the formatter/parser classes in response
+/**
+ * This exception is thrown by any of the formatter/parser classes in response
  * to invalid input.
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class FormattingException extends Exception {
 
-public class FormattingException extends Exception
-{
+    /**
+     * Construct a new <code>FormattingException</code>.
+     *
+     * @since Kiwi 1.3
+     */
 
-  /** Construct a new <code>FormattingException</code>.
-   *
-   * @since Kiwi 1.3
-   */
+    public FormattingException() {
+        super();
+    }
 
-  public FormattingException()
-  {
-    super();
-  }
-  
-  /** Construct a new <code>FormattingException</code> with the specified
-   * message.
-   *
-   * @param message The message.
-   */
+    /**
+     * Construct a new <code>FormattingException</code> with the specified
+     * message.
+     *
+     * @param message The message.
+     */
 
-  public FormattingException(String message)
-  {
-    super(message);
-  }
-  
+    public FormattingException(String message) {
+        super(message);
+    }
+
 }
-
-/* end of source file */

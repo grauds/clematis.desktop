@@ -19,12 +19,14 @@
 
 package com.hyperrealm.kiwi.event;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.tree.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-/** A simple extension of <code>MouseAdapter</code> for handling single-
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
+
+/**
+ * A simple extension of <code>MouseAdapter</code> for handling single-
  * and double-clicks on nodes in a <code>JTree</code>.
  * The following example illustrates how this adapter might be used:
  *
@@ -34,7 +36,7 @@ import javax.swing.tree.*;
  * {
  *   public void itemClicked(TreePath path, int button)
  *   {
- *     System.out.println("Button " + button + " clicked on node "
+ *     LOG.warn("Button " + button + " clicked on node "
  *                        path.getLastPathComponent());
  *   }
  * });
@@ -42,68 +44,68 @@ import javax.swing.tree.*;
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class TreeNodeMouseAdapter extends MouseAdapter {
 
-public class TreeNodeMouseAdapter extends MouseAdapter
-{
+    /**
+     * Construct a new <code>TreeNodeMouseAdapter</code>.
+     */
 
-  /** Construct a new <code>TreeNodeMouseAdapter</code>. */
-
-  public TreeNodeMouseAdapter()
-  {
-  }
-
-  /** Handle a mouse event. This method dispatches the mouse event to one of
-   * the click handlers, based on its click count.  It is assumed that the
-   * source of the event is an instance of <code>JTree</code>; if it is not,
-   * the event is ignored.
-   *
-   * @param evt The event.
-   */
-  
-  public final void mouseClicked(MouseEvent evt)
-  {
-    Object source = evt.getSource();
-    if(!(source instanceof JTree)) return;
-
-    JTree tree = (JTree)source;
-
-    int selRow = tree.getRowForLocation(evt.getX(), evt.getY());
-    TreePath selPath = tree.getPathForLocation(evt.getX(), evt.getY());
-    if(selRow != -1)
-    {
-      switch(evt.getClickCount())
-      {
-        case 1:
-          nodeClicked(selPath, evt.getButton());
-          break;
-
-        case 2:
-          nodeDoubleClicked(selPath, evt.getButton());
-          break;
-      }
+    public TreeNodeMouseAdapter() {
     }
-  }
 
-  /** Handle a single-click on a node.
-   *
-   * @param path The path to the node that was clicked on.
-   * @param button The mouse button that was clicked.
-   */
-  
-  public void nodeClicked(TreePath path, int button)
-  {
-  }
+    /**
+     * Handle a mouse event. This method dispatches the mouse event to one of
+     * the click handlers, based on its click count.  It is assumed that the
+     * source of the event is an instance of <code>JTree</code>; if it is not,
+     * the event is ignored.
+     *
+     * @param evt The event.
+     */
 
-  /** Handle a double-click on a node.
-   *
-   * @param path The path to the node that was clicked on.
-   * @param button The mouse button that was clicked.   
-   */
-  
-  public void nodeDoubleClicked(TreePath path, int button)
-  {
-  }
-  
+    public final void mouseClicked(MouseEvent evt) {
+        Object source = evt.getSource();
+        if (!(source instanceof JTree)) {
+            return;
+        }
+
+        JTree tree = (JTree) source;
+
+        int selRow = tree.getRowForLocation(evt.getX(), evt.getY());
+        TreePath selPath = tree.getPathForLocation(evt.getX(), evt.getY());
+        if (selRow != -1) {
+            switch (evt.getClickCount()) {
+                case 1:
+                    nodeClicked(selPath, evt.getButton());
+                    break;
+
+                case 2:
+                    nodeDoubleClicked(selPath, evt.getButton());
+                    break;
+
+                default:
+            }
+        }
+    }
+
+    /**
+     * Handle a single-click on a node.
+     *
+     * @param path   The path to the node that was clicked on.
+     * @param button The mouse button that was clicked.
+     */
+
+    public void nodeClicked(TreePath path, int button) {
+    }
+
+    /**
+     * Handle a double-click on a node.
+     *
+     * @param path   The path to the node that was clicked on.
+     * @param button The mouse button that was clicked.
+     */
+
+    public void nodeDoubleClicked(TreePath path, int button) {
+    }
+
 }
-
-/* end of source file */
