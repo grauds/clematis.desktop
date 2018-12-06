@@ -19,84 +19,87 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.ui.graph.*;
+import java.util.Iterator;
 
-import java.util.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import com.hyperrealm.kiwi.event.ChartModelListener;
+import com.hyperrealm.kiwi.ui.graph.DataSample;
 
-/** This interface defines the behavior for a data model for charts. A
+/**
+ * This interface defines the behavior for a data model for charts. A
  * <code>ChartModel</code> consists of a collection of
  * <code>DataSample</code>s. A <code>ChartView</code> plots these data
  * samples graphically.
  *
- * @see com.hyperrealm.kiwi.ui.graph.ChartView
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.graph.ChartView
  */
 
-public interface ChartModel extends Iterable<DataSample>
-{
+public interface ChartModel extends Iterable<DataSample> {
 
-  /** Add a <code>ChartModelListener</code> to this model's list of listeners.
-   *
-   * @param listener The listener to add.
-   */
-  
-  public void addChartModelListener(ChartModelListener listener);
+    /**
+     * Add a <code>ChartModelListener</code> to this model's list of listeners.
+     *
+     * @param listener The listener to add.
+     */
 
-  /** Remove a <code>ChartModelListener</code> from this model's list of
-   * listeners.
-   *
-   * @param listener The listener to remove.
-   */
-  
-  public void removeChartModelListener(ChartModelListener listener);
+    void addChartModelListener(ChartModelListener listener);
 
-  /** Get the number of data samples in this model.
-   *
-   * @return The number of data samples.
-   */
-  
-  public int getDataSampleCount();
+    /**
+     * Remove a <code>ChartModelListener</code> from this model's list of
+     * listeners.
+     *
+     * @param listener The listener to remove.
+     */
 
-  /** Get the data sample at the specified index.
-   *
-   * @param index The index of the desired data sample.
-   * @return The <code>DataSample</code> at the specified index, or
-   * <code>null</code> if there is no data sample at that index.
-   */
-  
-  public DataSample getDataSample(int index);
+    void removeChartModelListener(ChartModelListener listener);
 
-  /** Get all of the data samples in this model.
-   *
-   * @return An <code>Enumeration</code> of the <code>DataSample</code>
-   * objects in this model.
-   * @since Kiwi 2.1
-   */
-  
-  public Iterator<DataSample> iterator();
+    /**
+     * Get the number of data samples in this model.
+     *
+     * @return The number of data samples.
+     */
 
-  /** Add a data sample to this model.
-   *
-   * @param ds The data sample to add.
-   */
-  
-  public void addDataSample(DataSample ds);
+    int getDataSampleCount();
 
-  /** Remove the data sample at the specified index from this model.
-   *
-   * @param index The index of the data sample to remove.
-   */
-  
-  public void removeDataSample(int index);
+    /**
+     * Get the data sample at the specified index.
+     *
+     * @param index The index of the desired data sample.
+     * @return The <code>DataSample</code> at the specified index, or
+     * <code>null</code> if there is no data sample at that index.
+     */
 
-  /** Remove all data samples from this model.
-   */
-  
-  public void clear();
+    DataSample getDataSample(int index);
+
+    /**
+     * Get all of the data samples in this model.
+     *
+     * @return An <code>Enumeration</code> of the <code>DataSample</code>
+     * objects in this model.
+     * @since Kiwi 2.1
+     */
+
+    Iterator<DataSample> iterator();
+
+    /**
+     * Add a data sample to this model.
+     *
+     * @param ds The data sample to add.
+     */
+
+    void addDataSample(DataSample ds);
+
+    /**
+     * Remove the data sample at the specified index from this model.
+     *
+     * @param index The index of the data sample to remove.
+     */
+
+    void removeDataSample(int index);
+
+    /**
+     * Remove all data samples from this model.
+     */
+
+    void clear();
 }
-
-/* end of source file */

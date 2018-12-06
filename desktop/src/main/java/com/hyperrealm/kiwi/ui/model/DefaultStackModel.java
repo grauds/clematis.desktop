@@ -20,175 +20,175 @@
 package com.hyperrealm.kiwi.ui.model;
 
 import java.util.EmptyStackException;
-import javax.swing.*;
-import javax.swing.event.*;
 
-/** A default implementation of the <code>StackModel</code>
+import javax.swing.DefaultListModel;
+import javax.swing.event.ListDataListener;
+
+/**
+ * A default implementation of the <code>StackModel</code>
  * interface. It inherits its base functionality from
  * <code>DefaultListModel</code>, and adds only methods for dealing
  * with stack operations.
  *
+ * @param <T>
  * @author Mark Lindner
  */
 
-public class DefaultStackModel<T> extends DefaultListModel
-  implements StackModel<T>
-{
+public class DefaultStackModel<T> extends DefaultListModel implements StackModel<T> {
 
-  /** Construct a new <code>DefaultStackModel</code>.
-   */
-  
-  public DefaultStackModel()
-  {
-  }
+    /**
+     * Construct a new <code>DefaultStackModel</code>.
+     */
 
-  /** Push an object on the stack. The object becomes the topmost item on the
-   * stack.
-   *
-   * @param obj The object to push.
-   */
+    public DefaultStackModel() {
+    }
 
-  public void push(T obj)
-  {
-    insertElementAt(obj, 0);
-    fireIntervalAdded(this, 0, 0);
-  }
+    /**
+     * Push an object on the stack. The object becomes the topmost item on the
+     * stack.
+     *
+     * @param obj The object to push.
+     */
 
-  /** Pop an object off the stack. Pulls the topmost item off the stack.
-   *
-   * @return The popped object.
-   */
+    public void push(T obj) {
+        insertElementAt(obj, 0);
+        fireIntervalAdded(this, 0, 0);
+    }
 
-  public T pop() throws EmptyStackException
-  {
-    return(pick(0));
-  }
+    /**
+     * Pop an object off the stack. Pulls the topmost item off the stack.
+     *
+     * @return The popped object.
+     */
 
-  /** Drop an item off the stack. Pops and discards the topmost item on the
-   * stack.
-   *
-   * @exception java.util.EmptyStackException If the stack is empty.
-   */
+    public T pop() throws EmptyStackException {
+        return (pick(0));
+    }
 
-  public void drop() throws EmptyStackException
-  {
-    pop(); // discard return value
-  }
+    /**
+     * Drop an item off the stack. Pops and discards the topmost item on the
+     * stack.
+     *
+     * @throws java.util.EmptyStackException If the stack is empty.
+     */
 
-  /** Retrieve the topmost item from the stack (without removing the item from
-   * the stack).
-   *
-   * @return The topmost item on the stack.
-   *
-   * @exception java.util.EmptyStackException If the stack is empty.
-   */
+    public void drop() throws EmptyStackException {
+        pop(); // discard return value
+    }
 
-  public T peek() throws EmptyStackException
-  {
-    if(isEmpty())
-      throw(new EmptyStackException());
-      
-    return((T)get(0));
-  }
+    /**
+     * Retrieve the topmost item from the stack (without removing the item from
+     * the stack).
+     *
+     * @return The topmost item on the stack.
+     * @throws java.util.EmptyStackException If the stack is empty.
+     */
 
-  /** Get the depth of the stack.
-   *
-   * @return The number of items in the stack.
-   */
+    public T peek() throws EmptyStackException {
+        if (isEmpty()) {
+            throw (new EmptyStackException());
+        }
 
-  public int getDepth()
-  {
-    return(getSize());
-  }
+        return ((T) get(0));
+    }
 
-  /** Swap the topmost items on the stack. If the stack contains only one item,
-   * calling this method has no effect.
-   *
-   * @exception java.util.EmptyStackException If the stack is empty.
-   */
+    /**
+     * Get the depth of the stack.
+     *
+     * @return The number of items in the stack.
+     */
 
-  public void swap() throws EmptyStackException
-  {
-    if(getDepth() < 2) throw(new EmptyStackException());
+    public int getDepth() {
+        return (getSize());
+    }
 
-    T a = pop();
-    T b = pop();
-    push(a);
-    push(b);
-  }
+    /**
+     * Swap the topmost items on the stack. If the stack contains only one item,
+     * calling this method has no effect.
+     *
+     * @throws java.util.EmptyStackException If the stack is empty.
+     */
 
-  /** Determine if the stack is empty.
-   *
-   * @return <code>true</code> if there are no items in the stack, and
-   * <code>false</code> otherwise.
-   */
+    public void swap() throws EmptyStackException {
+        if (getDepth() < 2) {
+            throw (new EmptyStackException());
+        }
 
-  public boolean isEmpty()
-  {
-    return(getSize() == 0);
-  }
+        T a = pop();
+        T b = pop();
+        push(a);
+        push(b);
+    }
 
-  /** Remove an object from the stack. Retrieves (and removes) an object from
-   * the given offset in the stack.
-   *
-   * @param index The offset (from the top of the stack) of the item to
-   * remove.
-   *
-   * @return The object that was removed.
-   *
-   * @exception java.util.EmptyStackException If the stack is empty.
-   * @exception ArrayIndexOutOfBoundsException If the value of
-   * <code>index</code> is out of range.
-   */
+    /**
+     * Determine if the stack is empty.
+     *
+     * @return <code>true</code> if there are no items in the stack, and
+     * <code>false</code> otherwise.
+     */
 
-  public T pick(int index) throws ArrayIndexOutOfBoundsException,
-    EmptyStackException
-  {
-    if(isEmpty())
-      throw(new EmptyStackException());
+    public boolean isEmpty() {
+        return (getSize() == 0);
+    }
 
-    T o = (T)getElementAt(index);
-    remove(index);
-    fireIntervalRemoved(this, index, index);
-    return(o);
-  }
+    /**
+     * Remove an object from the stack. Retrieves (and removes) an object from
+     * the given offset in the stack.
+     *
+     * @param index The offset (from the top of the stack) of the item to
+     *              remove.
+     * @return The object that was removed.
+     * @throws java.util.EmptyStackException  If the stack is empty.
+     * @throws ArrayIndexOutOfBoundsException If the value of
+     *                                        <code>index</code> is out of range.
+     */
 
-  /** Append an object to the bottom of the stack.
-   *
-   * @param obj The object to append.
-   */
+    public T pick(int index) throws ArrayIndexOutOfBoundsException,
+        EmptyStackException {
+        if (isEmpty()) {
+            throw (new EmptyStackException());
+        }
 
-  public void append(T obj)
-  {
-    int index = getSize();
-    insertElementAt(obj, index);
-    fireIntervalAdded(this, index, index);
-  }
+        T o = (T) getElementAt(index);
+        remove(index);
+        fireIntervalRemoved(this, index, index);
+        return (o);
+    }
 
-  /** Add a <code>ListDataListener</code> to this model's list of listeners.
-   * Since a stack is essentially a list with some special semantics,
-   * <code>ListDataListeners</code> are used.
-   *
-   * @param listener The listener to add.
-   */
+    /**
+     * Append an object to the bottom of the stack.
+     *
+     * @param obj The object to append.
+     */
 
-  public void addStackDataListener(ListDataListener listener)
-  {
-    addListDataListener(listener);
-  }
+    public void append(T obj) {
+        int index = getSize();
+        insertElementAt(obj, index);
+        fireIntervalAdded(this, index, index);
+    }
 
-  /** Remove a <code>ListDataListener</code> from this model's list of
-   * listeners. Since a stack is essentially a list with some special
-   * semantics, <code>ListDataListeners</code> are used.
-   *
-   * @param listener The listener to add.
-   */
+    /**
+     * Add a <code>ListDataListener</code> to this model's list of listeners.
+     * Since a stack is essentially a list with some special semantics,
+     * <code>ListDataListeners</code> are used.
+     *
+     * @param listener The listener to add.
+     */
 
-  public void removeStackDataListener(ListDataListener listener)
-  {
-    removeListDataListener(listener);
-  }
-  
+    public void addStackDataListener(ListDataListener listener) {
+        addListDataListener(listener);
+    }
+
+    /**
+     * Remove a <code>ListDataListener</code> from this model's list of
+     * listeners. Since a stack is essentially a list with some special
+     * semantics, <code>ListDataListeners</code> are used.
+     *
+     * @param listener The listener to add.
+     */
+
+    public void removeStackDataListener(ListDataListener listener) {
+        removeListDataListener(listener);
+    }
+
 }
-
-/* end of source file */

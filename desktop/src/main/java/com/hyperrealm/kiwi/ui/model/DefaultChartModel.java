@@ -19,14 +19,20 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.ui.graph.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import java.util.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.event.EventListenerList;
+import javax.swing.table.AbstractTableModel;
 
-/** A default implementation of <code>ChartModel</code> that also implements
+import com.hyperrealm.kiwi.event.ChartModelEvent;
+import com.hyperrealm.kiwi.event.ChartModelListener;
+import com.hyperrealm.kiwi.ui.graph.Chart;
+import com.hyperrealm.kiwi.ui.graph.ChartValue;
+import com.hyperrealm.kiwi.ui.graph.DataSample;
+
+/**
+ * A default implementation of <code>ChartModel</code> that also implements
  * the Swing <code>TableModel</code> interface. The labels of the chart values
  * in this chart model provide the names of the columns for the table model.
  * Therefore, each data sample in the chart model represents one row in the
@@ -43,189 +49,185 @@ import javax.swing.table.*;
  * @author Mark Lindner
  */
 
-public class DefaultChartModel extends AbstractTableModel implements ChartModel
-{
-  private EventListenerList listeners = new EventListenerList(); 
-  private ArrayList<DataSample> data;
-  private Chart chart;
+public class DefaultChartModel extends AbstractTableModel implements ChartModel {
+    private EventListenerList listeners = new EventListenerList();
+    private ArrayList<DataSample> data;
+    private Chart chart;
 
-  /** Construct a new <code>DefaultChartModel</code> for the specified chart
-   * definition.
-   *
-   * @param chart The chart definition.
-   */
-  
-  public DefaultChartModel(Chart chart)
-  {
-    this.chart = chart;
+    /**
+     * Construct a new <code>DefaultChartModel</code> for the specified chart
+     * definition.
+     *
+     * @param chart The chart definition.
+     */
 
-    data = new ArrayList<DataSample>();
-  }
+    public DefaultChartModel(Chart chart) {
+        this.chart = chart;
 
-  /** Get the number of rows in the table model.
-   *
-   * @return The row count.
-   */
-  
-  public int getRowCount()
-  {
-    return(data.size());
-  }
-
-  /** Get the number of columns in the table model.
-   *
-   * @return The column count.
-   */
-  
-  public int getColumnCount()
-  {
-    return(chart.getValueCount());
-  }
-  
-  /** Get the name of the specified column in the table model.
-   *
-   * @param col The column.
-   * @return The name of the specified column.
-   */
-  
-  public String getColumnName(int col)
-  {
-    return(chart.getValueAt(col).getLabel());
-  }
-
-  /** Determine if the given cell is editable.
-   *
-   * @param row The row.
-   * @param col The Column.
-   * @return <code>true</code> if the cell is editable, <code>false</code>
-   * otherwise. This implementation always returns <code>false</code>.
-   */
-  
-  public boolean isCellEditable(int row, int col)
-  {
-    return(false);
-  }
-
-  /** Add a <code>ChartModelListener</code> to this model's list of listeners.
-   *
-   * @param listener The listener to add.
-   */
-  
-  public void addChartModelListener(ChartModelListener listener) 
-  { 
-    listeners.add(ChartModelListener.class, listener); 
-  } 
-
-  /** Remove a <code>ChartModelListener</code> from this model's list of
-   * listeners.
-   *
-   * @param listener The listener to remove.
-   */
-
-  public void removeChartModelListener(ChartModelListener listener) 
-  {
-    listeners.remove(ChartModelListener.class, listener);
-  }
-
-  /** Fire a <i>chart data changed</i> event.
-   */
-  
-  protected void fireChartDataChanged() 
-  {
-    ChartModelEvent evt = null; 
-    
-    Object[] list = listeners.getListenerList(); 
-    
-    for(int i = list.length - 2; i >= 0; i -= 2) 
-    { 
-      if(list[i] == ChartModelListener.class) 
-      { 
-        // Lazily create the event: 
-        if(evt == null) 
-          evt = new ChartModelEvent(this); 
-        ((ChartModelListener)list[i + 1]).chartDataChanged(evt); 
-      }
+        data = new ArrayList<DataSample>();
     }
-  }
 
-  /** Add a data sample to this model.
-   *
-   * @param ds The data sample to add.
-   */
-  
-  public void addDataSample(DataSample ds)
-  {
-    data.add(ds);
-    fireChartDataChanged();
-    fireTableDataChanged();
-  }
+    /**
+     * Get the number of rows in the table model.
+     *
+     * @return The row count.
+     */
 
-  /** Get the number of data samples in this model.
-   *
-   * @return The number of data samples.
-   */
-  
-  public int getDataSampleCount()
-  {
-    return(data.size());
-  }
+    public int getRowCount() {
+        return (data.size());
+    }
 
-  /** Get an iterator to the data samples in this model.
-   *
-   * @since Kiwi 2.1
-   */
+    /**
+     * Get the number of columns in the table model.
+     *
+     * @return The column count.
+     */
 
-  public Iterator<DataSample> iterator()
-  {
-    return(data.iterator());
-  }
+    public int getColumnCount() {
+        return (chart.getValueCount());
+    }
 
-  /** Get the data sample at the specified index.
-   *
-   * @param index The index of the desired data sample.
-   * @return The <code>DataSample</code> at the specified index, or
-   * <code>null</code> if there is no data sample at that index.
-   */
-  
-  public DataSample getDataSample(int index)
-  {
-    return(data.get(index));
-  }
+    /**
+     * Get the name of the specified column in the table model.
+     *
+     * @param col The column.
+     * @return The name of the specified column.
+     */
 
-  /** Remove the data sample at the specified index from this model.
-   *
-   * @param index The index of the data sample to remove.
-   */
-  
-  public void removeDataSample(int index)
-  {
-    data.remove(index);
-  }
+    public String getColumnName(int col) {
+        return (chart.getValueAt(col).getLabel());
+    }
 
-  /** Remove all data samples from this model.
-   */
-  
-  public void clear()
-  {
-    data.clear();
-    fireChartDataChanged();
-    fireTableDataChanged();
-  }
+    /**
+     * Determine if the given cell is editable.
+     *
+     * @param row The row.
+     * @param col The Column.
+     * @return <code>true</code> if the cell is editable, <code>false</code>
+     * otherwise. This implementation always returns <code>false</code>.
+     */
 
-  /** Get the value at the specified row and column in the table model.
-   *
-   * @param row The row.
-   * @param col The column.
-   * @return The value at the specified row and column.
-   */
-  
-  public Object getValueAt(int row, int col)
-  {
-    DataSample ds = data.get(row);
-    ChartValue val = chart.getValueAt(col);
-    return(ds.getValue(val.getName()));
-  }
+    public boolean isCellEditable(int row, int col) {
+        return (false);
+    }
+
+    /**
+     * Add a <code>ChartModelListener</code> to this model's list of listeners.
+     *
+     * @param listener The listener to add.
+     */
+
+    public void addChartModelListener(ChartModelListener listener) {
+        listeners.add(ChartModelListener.class, listener);
+    }
+
+    /**
+     * Remove a <code>ChartModelListener</code> from this model's list of
+     * listeners.
+     *
+     * @param listener The listener to remove.
+     */
+
+    public void removeChartModelListener(ChartModelListener listener) {
+        listeners.remove(ChartModelListener.class, listener);
+    }
+
+    /**
+     * Fire a <i>chart data changed</i> event.
+     */
+
+    protected void fireChartDataChanged() {
+        ChartModelEvent evt = null;
+
+        Object[] list = listeners.getListenerList();
+
+        for (int i = list.length - 2; i >= 0; i -= 2) {
+            if (list[i] == ChartModelListener.class) {
+                // Lazily create the event:
+                if (evt == null) {
+                    evt = new ChartModelEvent(this);
+                }
+                ((ChartModelListener) list[i + 1]).chartDataChanged(evt);
+            }
+        }
+    }
+
+    /**
+     * Add a data sample to this model.
+     *
+     * @param ds The data sample to add.
+     */
+
+    public void addDataSample(DataSample ds) {
+        data.add(ds);
+        fireChartDataChanged();
+        fireTableDataChanged();
+    }
+
+    /**
+     * Get the number of data samples in this model.
+     *
+     * @return The number of data samples.
+     */
+
+    public int getDataSampleCount() {
+        return (data.size());
+    }
+
+    /**
+     * Get an iterator to the data samples in this model.
+     *
+     * @since Kiwi 2.1
+     */
+
+    public Iterator<DataSample> iterator() {
+        return (data.iterator());
+    }
+
+    /**
+     * Get the data sample at the specified index.
+     *
+     * @param index The index of the desired data sample.
+     * @return The <code>DataSample</code> at the specified index, or
+     * <code>null</code> if there is no data sample at that index.
+     */
+
+    public DataSample getDataSample(int index) {
+        return (data.get(index));
+    }
+
+    /**
+     * Remove the data sample at the specified index from this model.
+     *
+     * @param index The index of the data sample to remove.
+     */
+
+    public void removeDataSample(int index) {
+        data.remove(index);
+    }
+
+    /**
+     * Remove all data samples from this model.
+     */
+
+    public void clear() {
+        data.clear();
+        fireChartDataChanged();
+        fireTableDataChanged();
+    }
+
+    /**
+     * Get the value at the specified row and column in the table model.
+     *
+     * @param row The row.
+     * @param col The column.
+     * @return The value at the specified row and column.
+     */
+
+    public Object getValueAt(int row, int col) {
+        DataSample ds = data.get(row);
+        ChartValue val = chart.getValueAt(col);
+        return (ds.getValue(val.getName()));
+    }
 
 }
-
-/* end of source file */

@@ -19,14 +19,22 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.Icon;
 
-/** An implementation of
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.ResourceManager;
+
+/**
+ * An implementation of
  * {@link com.hyperrealm.kiwi.ui.model.TreeDataSource TreeDataSource}
  * in which tree nodes represent HTML documents that are loaded as system
  * resources.
@@ -73,233 +81,245 @@ import com.hyperrealm.kiwi.util.*;
  * be accessed concurrently by multiple threads without explicit
  * synchronization.
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.util.ResourceManager
  * @see com.hyperrealm.kiwi.ui.DocumentBrowserView
  * @see com.hyperrealm.kiwi.ui.DocumentBrowserFrame
- *
- * @author Mark Lindner
  */
 
-public class DocumentDataSource
-  implements TreeDataSource<DocumentDataSource.DocumentNode>
-{
-  private ResourceManager resmgr;
-  private String basePath;
-  private DocumentNode root;
-  private static Icon DOCUMENT_ICON = KiwiUtils.getResourceManager()
-    .getIcon("document.png");
-  private static Icon BOOKS_ICON = KiwiUtils.getResourceManager()
-    .getIcon("books.png");
-  private static Icon UNKNOWN_ICON = KiwiUtils.getResourceManager()
-    .getIcon("document_blank.png");
-  private static Icon BOOK_OPEN_ICON = KiwiUtils.getResourceManager()
-    .getIcon("book_open.png");
-  private static Icon BOOK_CLOSED_ICON = KiwiUtils.getResourceManager()
-    .getIcon("book.png");
-  private static final String INDEX_FILE = "_index.txt";
-  /** The default description of this set of documents. */
-  public static final String DEFAULT_DESCRIPTION = "Help Topics";
-  /** The default relative document base path. */
-  public static final String DEFAULT_BASEPATH = "docs/";
-  
-  /** Construct a new <code>DocumentDataSource</code> with a default
-   * description and base path.
-   *
-   * @param manager the <code>ResourceManager</code> that will be used to load
-   * index files for the tree.
-   */
+public class DocumentDataSource implements TreeDataSource<DocumentDataSource.DocumentNode> {
+    /**
+     * The default description of this set of documents.
+     */
+    private static final String DEFAULT_DESCRIPTION = "Help Topics";
+    /**
+     * The default relative document base path.
+     */
+    private static final String DEFAULT_BASEPATH = "docs/";
 
-  public DocumentDataSource(ResourceManager manager)
-  {
-    this(manager, DEFAULT_DESCRIPTION, DEFAULT_BASEPATH);
-  }
+    private static final String INDEX_FILE = "_index.txt";
 
-  /** Construct a new <code>DocumentDataSource</code> with the specified
-   * description and base path.
-   *
-   * @param manager The <code>ResourceManager</code> that will be used to load
-   * index files for the tree.
-   * @param description A brief description of this set of documents; this
-   * becomes the label for the root node in the tree.
-   */
-  
-  public DocumentDataSource(ResourceManager manager, String description,
-                            String basePath)
-  {
-    this.resmgr = manager;
-    if(! basePath.endsWith("/"))
-      basePath += "/";
-    this.basePath = basePath;
+    private static final Icon DOCUMENT_ICON = KiwiUtils.getResourceManager()
+        .getIcon("document.png");
 
-    URL rootURL = resmgr.getURL(basePath + INDEX_FILE);
-    root = new DocumentNode(null, description, BOOKS_ICON, null, rootURL,
-                            true, "");
-  }
+    private static final Icon BOOKS_ICON = KiwiUtils.getResourceManager()
+        .getIcon("books.png");
 
-  /** Get the root object. */
+    private static final Icon UNKNOWN_ICON = KiwiUtils.getResourceManager()
+        .getIcon("document_blank.png");
 
-  public DocumentNode getRoot()
-  {
-    return(root);
-  }
+    private static final Icon BOOK_OPEN_ICON = KiwiUtils.getResourceManager()
+        .getIcon("book_open.png");
 
-  /** Get the children of a given node. */
+    private static final Icon BOOK_CLOSED_ICON = KiwiUtils.getResourceManager()
+        .getIcon("book.png");
 
-  public DocumentNode[] getChildren(DocumentNode node)
-  {
-    ArrayList<DocumentNode> children = new ArrayList<DocumentNode>();
+    private static final String SUFFIX_SLASH = "/";
 
-    try
-    {
-      String s;
-      DocumentNode sect;
+    private static final String STAR = "*";
 
-      InputStream is = node.getURL().openStream();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    private static final int TOKENS_NUMBER = 5;
 
-      while((s = reader.readLine()) != null)
-      {
-        if((sect = parseLine(node, s)) != null)
-          children.add(sect);
-      }
-      reader.close();
-      is.close();
-    }
-    catch(IOException ex)
-    {
+    private ResourceManager resmgr;
+
+    private DocumentNode root;
+
+    /**
+     * Construct a new <code>DocumentDataSource</code> with a default
+     * description and base path.
+     *
+     * @param manager the <code>ResourceManager</code> that will be used to load
+     *                index files for the tree.
+     */
+
+    public DocumentDataSource(ResourceManager manager) {
+        this(manager, DEFAULT_DESCRIPTION, DEFAULT_BASEPATH);
     }
 
-    DocumentNode childlist[] = new DocumentNode[children.size()];
-    children.toArray(childlist);
+    /**
+     * Construct a new <code>DocumentDataSource</code> with the specified
+     * description and base path.
+     *
+     * @param manager     The <code>ResourceManager</code> that will be used to load
+     *                    index files for the tree.
+     * @param description A brief description of this set of documents; this
+     *                    becomes the label for the root node in the tree.
+     */
 
-    return(childlist);
-  }
+    public DocumentDataSource(ResourceManager manager, String description,
+                              String basePath) {
+        this.resmgr = manager;
+        String basePathInt = basePath;
 
-  public boolean isExpandable(DocumentNode node)
-  { 
-    return(node.isExpandable());
-  }
+        if (!basePathInt.endsWith(SUFFIX_SLASH)) {
+            basePathInt += SUFFIX_SLASH;
+        }
 
-  public Icon getIcon(DocumentNode node, boolean isExpanded)
-  {
-    return(isExpanded ? node.getAltIcon() : node.getIcon());
-  }
-
-  public String getLabel(DocumentNode node)
-  {
-    return(node.getLabel());
-  }
-  
-  /** Get the value for a given property. */
-
-  public Object getValueForProperty(DocumentNode node, String property)
-  {
-    return(null);
-  }
-
-  /* parse a line of an index file */
-
-  private DocumentNode parseLine(DocumentNode parent, String line)
-  {
-    StringTokenizer st = new StringTokenizer(line, "|");
-    if(st.countTokens() != 5) return(null);
-
-    String file;
-    String iconName = st.nextToken();
-    String altIconName = st.nextToken();
-    boolean expandable = st.nextToken().equals("+");
-    URL url;
-
-    Icon icon = null, alticon = null;
-
-    if(iconName.equals("*"))
-      icon = (expandable ? BOOK_CLOSED_ICON : DOCUMENT_ICON);
-    else
-      icon = resmgr.getIcon(iconName);
-
-    if(altIconName.equals("*"))
-      alticon = (expandable ? BOOK_OPEN_ICON : DOCUMENT_ICON);
-    else if(!altIconName.equals("-"))
-      alticon = resmgr.getIcon(altIconName);
-
-    String label = st.nextToken();
-
-    try
-    {
-      String parentURL = parent.getURL().toString();
-      int idx = parentURL.lastIndexOf("/");
-      file = st.nextToken();
-      String temp = parentURL.substring(0, idx) + "/" + file;
-      if(expandable)
-        temp += "/" + INDEX_FILE;
-      url = new URL(temp);
-    }
-    catch(MalformedURLException ex)
-    {
-      return(null);
+        URL rootURL = resmgr.getURL(basePathInt + INDEX_FILE);
+        root = new DocumentNode(description, BOOKS_ICON, null, rootURL, true, "");
     }
 
-    return(new DocumentNode(parent, label, icon, alticon, url, expandable,
-                            file));
-  }
-  
-  /* Internal class for managing help nodes. */
+    /**
+     * Get the root object.
+     */
 
-  public class DocumentNode
-  {
-    private String label, file;
-    private Icon icon, alticon;
-    private URL url;
-    private boolean expandable;
-    private DocumentNode parent = null;
-
-    DocumentNode(DocumentNode parent, String label, Icon icon, Icon alticon,
-                 URL url, boolean expandable, String file)
-    {
-      this.label = label;
-      this.icon = ((icon != null) ? icon : UNKNOWN_ICON);
-      this.alticon = ((alticon != null) ? alticon : this.icon);
-      this.url = url;
-      this.expandable = expandable;
-      this.file = file;
+    public DocumentNode getRoot() {
+        return (root);
     }
 
-    public DocumentNode getParent()
-    {
-      return(parent);
+    /**
+     * Get the children of a given node.
+     */
+
+    public DocumentNode[] getChildren(DocumentNode node) {
+        ArrayList<DocumentNode> children = new ArrayList<DocumentNode>();
+
+        try (InputStream is = node.getURL().openStream();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+
+            String s;
+            DocumentNode sect;
+
+            while ((s = reader.readLine()) != null) {
+                sect = parseLine(node, s);
+                if (sect != null) {
+                    children.add(sect);
+                }
+            }
+        } catch (IOException ignored) {
+
+        }
+
+        DocumentNode[] childlist = new DocumentNode[children.size()];
+        children.toArray(childlist);
+
+        return (childlist);
     }
 
-    public String getFile()
-    {
-      return(file);
-    }
-    
-    public boolean isExpandable()
-    {
-      return(expandable);
+    public boolean isExpandable(DocumentNode node) {
+        return (node.isExpandable());
     }
 
-    public String getLabel()
-    {
-      return(label);
+    public Icon getIcon(DocumentNode node, boolean isExpanded) {
+        return (isExpanded ? node.getAltIcon() : node.getIcon());
     }
 
-    public Icon getIcon()
-    {
-      return(icon);
+    public String getLabel(DocumentNode node) {
+        return (node.getLabel());
     }
 
-    public Icon getAltIcon()
-    {
-      return(alticon);
+    /**
+     * Get the value for a given property.
+     */
+
+    public Object getValueForProperty(DocumentNode node, String property) {
+        return (null);
     }
 
-    public URL getURL()
-    {
-      return(url);
+    /* parse a line of an index file */
+
+    private DocumentNode parseLine(DocumentNode parent, String line) {
+
+        StringTokenizer st = new StringTokenizer(line, "|");
+
+        DocumentNode ret = null;
+        URL url;
+        Icon icon, alticon = null;
+
+        if (st.countTokens() == TOKENS_NUMBER) {
+
+            String file;
+            String iconName = st.nextToken();
+            String altIconName = st.nextToken();
+            boolean expandable = st.nextToken().equals("+");
+
+            if (iconName.equals(STAR)) {
+                icon = (expandable ? BOOK_CLOSED_ICON : DOCUMENT_ICON);
+            } else {
+                icon = resmgr.getIcon(iconName);
+            }
+
+            if (altIconName.equals(STAR)) {
+                alticon = (expandable ? BOOK_OPEN_ICON : DOCUMENT_ICON);
+            } else if (!altIconName.equals("-")) {
+                alticon = resmgr.getIcon(altIconName);
+            }
+
+            String label = st.nextToken();
+
+            try {
+
+                String parentURL = parent.getURL().toString();
+                int idx = parentURL.lastIndexOf(SUFFIX_SLASH);
+                file = st.nextToken();
+                String temp = parentURL.substring(0, idx) + SUFFIX_SLASH + file;
+                if (expandable) {
+                    temp += SUFFIX_SLASH + INDEX_FILE;
+                }
+                url = new URL(temp);
+                ret = new DocumentNode(label, icon, alticon, url, expandable, file);
+
+            } catch (MalformedURLException ignored) {
+
+            }
+        }
+
+        return ret;
     }
-  }
-  
+
+    /**
+     *  Internal class for managing help nodes.
+     * @author Anton Troshin
+     */
+    public class DocumentNode {
+
+        private String label, file;
+
+        private Icon icon, alticon;
+
+        private URL url;
+
+        private boolean expandable;
+
+        private DocumentNode parent = null;
+
+        DocumentNode(String label, Icon icon, Icon alticon,
+                     URL url, boolean expandable, String file) {
+            this.label = label;
+            this.icon = ((icon != null) ? icon : UNKNOWN_ICON);
+            this.alticon = ((alticon != null) ? alticon : this.icon);
+            this.url = url;
+            this.expandable = expandable;
+            this.file = file;
+        }
+
+        public DocumentNode getParent() {
+            return (parent);
+        }
+
+        public String getFile() {
+            return (file);
+        }
+
+        public boolean isExpandable() {
+            return (expandable);
+        }
+
+        public String getLabel() {
+            return (label);
+        }
+
+        public Icon getIcon() {
+            return (icon);
+        }
+
+        public Icon getAltIcon() {
+            return (alticon);
+        }
+
+        public URL getURL() {
+            return (url);
+        }
+    }
+
 }
-
-/* end of source file */
