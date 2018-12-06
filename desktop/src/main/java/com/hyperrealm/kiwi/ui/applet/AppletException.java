@@ -19,19 +19,16 @@
 
 package com.hyperrealm.kiwi.ui.applet;
 
-/** A general-purpose applet exception.
+/**
+ * A general-purpose applet exception.
  *
  * @author Mark Lindner
  * @since Kiwi 1.4.2
  */
 
-public class AppletException extends Exception
-{
-  
-  AppletException(Throwable cause)
-  {
-    super(cause);
-  }
-}
+public class AppletException extends Exception {
 
-/* end of source file */
+    AppletException(Throwable cause) {
+        super(cause);
+    }
+}

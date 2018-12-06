@@ -19,88 +19,88 @@
 
 package com.hyperrealm.kiwi.ui.applet;
 
-import java.applet.*;
-import java.awt.*;
-import java.util.*;
-import java.io.*;
-import java.net.*;
+import java.applet.AppletContext;
+import java.applet.AppletStub;
+import java.awt.Dimension;
+import java.net.URL;
+import java.util.Dictionary;
 
 /**
  * @author Mark Lindner
  * @since Kiwi 1.4.2
  */
 
-class KiwiAppletStub implements AppletStub
-{
-  private AppletPanel panel;
-  private AppletContext context;
-  private Dictionary params;
-  private URL url;
-  private URLClassLoader classLoader;
+class KiwiAppletStub implements AppletStub {
 
-  /**
-   */
-  
-  KiwiAppletStub(AppletPanel panel, AppletContext context, URL url,
-                 Dictionary params)
-  {
-    this.panel = panel;
-    this.context = context;
-    this.url = url;
+    private AppletPanel panel;
 
-    this.params = params;
-  }
+    private AppletContext context;
 
-  /**
-   */
-  
-  public void appletResize(int w, int h)
-  {
-    Dimension dim = new Dimension(w, h);
-    panel.setPreferredSize(dim);
-    panel.setSize(dim);
-  }
+    private Dictionary params;
 
-  /**
-   */
+    private URL url;
 
-  public AppletContext getAppletContext()
-  {
-    return(context);
-  }
+    /**
+     *
+     */
 
-  /**
-   */
-  
-  public URL getCodeBase()
-  {
-    return(url);
-  }
+    KiwiAppletStub(AppletPanel panel, AppletContext context, URL url,
+                   Dictionary params) {
+        this.panel = panel;
+        this.context = context;
+        this.url = url;
 
-  /**
-   */
-  
-  public URL getDocumentBase()
-  {
-    return(url);
-  }
+        this.params = params;
+    }
 
-  /**
-   */
-  
-  public String getParameter(String name)
-  {
-    return((String)params.get(name));
-  }
+    /**
+     *
+     */
 
-  /**
-   */
-  
-  public boolean isActive()
-  {
-    return(panel.isVisible());
-  }
-  
+    public void appletResize(int w, int h) {
+        Dimension dim = new Dimension(w, h);
+        panel.setPreferredSize(dim);
+        panel.setSize(dim);
+    }
+
+    /**
+     *
+     */
+
+    public AppletContext getAppletContext() {
+        return (context);
+    }
+
+    /**
+     *
+     */
+
+    public URL getCodeBase() {
+        return (url);
+    }
+
+    /**
+     *
+     */
+
+    public URL getDocumentBase() {
+        return (url);
+    }
+
+    /**
+     *
+     */
+
+    public String getParameter(String name) {
+        return ((String) params.get(name));
+    }
+
+    /**
+     *
+     */
+
+    public boolean isActive() {
+        return (panel.isVisible());
+    }
+
 }
-
-/* end of source file */
