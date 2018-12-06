@@ -19,161 +19,150 @@
 
 package com.hyperrealm.kiwi.ui.graph;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
-import com.hyperrealm.kiwi.util.*;
-
-/** A base class for bar charts that provides some general painting logic.
+/**
+ * A base class for bar charts that provides some general painting logic.
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public abstract class BarChart3D extends ChartView {
 
-public abstract class BarChart3D extends ChartView
-{
-  /** The width of a bar.
-   */
-  
-  protected int barWidth = 10;
+    /**
+     * The width of a bar.
+     */
 
-  /** The amount of space between bars (or bar clusters).
-   */
-  
-  protected int barSpacing = 20;
+    static final int BAR_LENGTH = 10;
 
-  /** The depth of a bar (shading).
-   */
-  
-  protected int barDepth = barWidth / 2;
+    /**
+     * The amount of space between bars (or bar clusters).
+     */
 
-  /** Construct a new <code>BarChart3D</code> for the specified chart
-   * definition and orientation.
-   *
-   * @param chart The chart definition.
-   * @param orientation The orientation; one of the symbolic constants
-   * <code>HORIZONTAL</code> or <code>VERTICAL</code>.
-   */
-  
-  public BarChart3D(Chart chart, int orientation)
-  {
-    super(chart);
-    setOrientation(orientation);
+    static final int BAR_SPACING = 20;
 
-    setTickInterval(chart.getTickInterval());
-  }
+    /**
+     * The depth of a bar (shading).
+     */
 
-  /** Draw a horizontal bar.
-   *
-   * @param gc The graphics context.
-   * @param x The x-coordinate of the upper left corner of the base.
-   * @param y The y-coordinate of the upper left corner of the base.
-   * @param value The value that this bar represents.
-   * @param color The color of the bar.
-   *
-   * @return The x-coordinate of the end of the bar.
-   */
-  
-  protected int drawHorizontalBar(Graphics gc, int x, int y, double value,
-                                  Color color)
-  {
-    int px, py;
-    int barLength = (int)(value * scale);
-    int ox = x;
-    int oy = y;
+    static final int BAR_DEPTH = 5;
 
-    // draw face of bar
-    
-    gc.setColor(color);
-    gc.fillRect(ox, oy, barLength, barWidth);
+    /**
+     * Construct a new <code>BarChart3D</code> for the specified chart
+     * definition and orientation.
+     *
+     * @param chart       The chart definition.
+     * @param orientation The orientation; one of the symbolic constants
+     *                    <code>HORIZONTAL</code> or <code>VERTICAL</code>.
+     */
 
-    // draw shadow (above)
+    public BarChart3D(Chart chart, int orientation) {
+        super(chart);
+        setOrientation(orientation);
 
-    px = ox;
-    py = oy - 1;
-
-    gc.setColor(color.darker());
-    for(int i = 0; i < barDepth; i++)
-    {
-      gc.drawLine(px, py, px + barLength, py);
-      px++;
-      py--;
+        setTickInterval(chart.getTickInterval());
     }
 
-    // draw end of bar
+    /**
+     * Draw a horizontal bar.
+     *
+     * @param gc    The graphics context.
+     * @param x     The x-coordinate of the upper left corner of the base.
+     * @param y     The y-coordinate of the upper left corner of the base.
+     * @param value The value that this bar represents.
+     * @param color The color of the bar.
+     * @return The x-coordinate of the end of the bar.
+     */
 
-    px = ox + barLength - 1;
-    py = oy - 1;
+    int drawHorizontalBar(Graphics gc, int x, int y, double value,
+                          Color color) {
+        int px, py;
+        int barLength = (int) (value * scale);
 
-    gc.setColor(color);
-    for(int i = 0; i < barDepth; i++)
-    {
-      gc.drawLine(px, py, px, py + barWidth);
-      px++;
-      py--;
+        // draw face of bar
+
+        gc.setColor(color);
+        gc.fillRect(x, y, barLength, BAR_LENGTH);
+
+        // draw shadow (above)
+
+        px = x;
+        py = y - 1;
+
+        gc.setColor(color.darker());
+        for (int i = 0; i < BAR_DEPTH; i++) {
+            gc.drawLine(px, py, px + barLength, py);
+            px++;
+            py--;
+        }
+
+        // draw end of bar
+
+        px = x + barLength - 1;
+        py = y - 1;
+
+        gc.setColor(color);
+        for (int i = 0; i < BAR_DEPTH; i++) {
+            gc.drawLine(px, py, px, py + BAR_LENGTH);
+            px++;
+            py--;
+        }
+
+        // return the x coordinate of the end of this bar
+
+        return (x + barLength);
     }
 
-    // return the x coordinate of the end of this bar
+    /**
+     * Draw a vertical bar.
+     *
+     * @param gc    The graphics context.
+     * @param x     The x-coordinate of the lower left corner of the base.
+     * @param y     The y-coordinate of the lower left corner of the base.
+     * @param value The value that this bar represents.
+     * @param color The color of the bar.
+     * @return The y-coordinate of the top of the bar.
+     */
 
-    return(x + barLength);
-  }
-  
-  /** Draw a vertical bar.
-   *
-   * @param gc The graphics context.
-   * @param x The x-coordinate of the lower left corner of the base.
-   * @param y The y-coordinate of the lower left corner of the base.
-   * @param value The value that this bar represents.
-   * @param color The color of the bar.
-   *
-   * @return The y-coordinate of the top of the bar.
-   */
-  
-  protected int drawVerticalBar(Graphics gc, int x, int y, double value,
-                                Color color)
-  {
-    int barDepth = barWidth / 2;
-    int px, py;
-    int barLength = (int)(value * scale);
-    int ox = x;
-    int oy = getSize().height - y - barLength;
-    
-    // draw face of bar
-    
-    gc.setColor(color);
-    gc.fillRect(ox, oy, barWidth, barLength);
+    int drawVerticalBar(Graphics gc, int x, int y, double value,
+                        Color color) {
+        int px, py;
+        int barLength = (int) (value * scale);
+        int oy = getSize().height - y - barLength;
 
-    // draw shadow (right side)
+        // draw face of bar
 
-    px = ox + barWidth;
-    py = oy;
+        gc.setColor(color);
+        gc.fillRect(x, oy, BAR_LENGTH, barLength);
 
-    gc.setColor(color.darker());
-    for(int i = 0; i < barDepth; i++)
-    {
-      gc.drawLine(px, py, px, py + barLength - 1);
-      px++;
-      py--;
+        // draw shadow (right side)
+
+        px = x + BAR_LENGTH;
+        py = oy;
+
+        gc.setColor(color.darker());
+        for (int i = 0; i < BAR_DEPTH; i++) {
+            gc.drawLine(px, py, px, py + barLength - 1);
+            px++;
+            py--;
+        }
+
+        // draw top of bar
+
+        px = x;
+        py = oy - 1;
+
+        gc.setColor(color);
+        for (int i = 0; i < BAR_DEPTH; i++) {
+            gc.drawLine(px, py, px + BAR_LENGTH + 1, py);
+            px++;
+            py--;
+        }
+
+        // return the y coordinate of the top of this bar
+
+        return (y + barLength);
     }
 
-    // draw top of bar
-
-    px = ox;
-    py = oy - 1;
-
-    gc.setColor(color);
-    for(int i = 0; i < barDepth; i++)
-    {
-      gc.drawLine(px, py, px + barWidth + 1, py);
-      px++;
-      py--;
-    }
-
-    // return the y coordinate of the top of this bar
-    
-    return(y + barLength);
-  }
-  
 }
-
-/* end of source file */

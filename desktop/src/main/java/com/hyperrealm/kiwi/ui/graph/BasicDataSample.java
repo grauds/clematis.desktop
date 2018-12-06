@@ -28,71 +28,64 @@ import java.util.HashMap;
  * @since Kiwi 2.0
  */
 
-public class BasicDataSample implements DataSample
-{
-  private HashMap data;
+public class BasicDataSample implements DataSample {
 
-  /**
-   * Construct a new <code>BasicDataSample</code>.
-   */
-  
-  public BasicDataSample()
-  {
-    data = new HashMap();
-  }
+    private HashMap<String, Number> data;
 
-  /**
-   */
+    /**
+     * Construct a new <code>BasicDataSample</code>.
+     */
 
-  public Object getValue(String var)
-  {
-    return(data.get(var));
-  }
+    public BasicDataSample() {
+        data = new HashMap<>();
+    }
 
-  /**
-   * Store an integer value in the data sample.
-   *
-   * @param var The variable name.
-   * @param value The variable value.
-   */
-  
-  public void putValue(String var, int value)
-  {
-    data.put(var, new Integer(value));
-  }
+    /**
+     *
+     */
 
-  /**
-   * Store a double value in the data sample.
-   *
-   * @param var The variable name.
-   * @param value The variable value.
-   */
+    public Object getValue(String var) {
+        return (data.get(var));
+    }
 
-  public void putValue(String var, double value)
-  {
-    data.put(var, new Double(value));
-  }
+    /**
+     * Store an integer value in the data sample.
+     *
+     * @param var   The variable name.
+     * @param value The variable value.
+     */
 
-  /**
-   * Remove a value from the data sample.
-   *
-   * @param var The variable name.
-   */
-  
-  public void removeValue(String var)
-  {
-    data.remove(var);
-  }
+    public void putValue(String var, int value) {
+        data.put(var, value);
+    }
 
-  /**
-   * Remove all values from the data sample.
-   */
-  
-  public void clear()
-  {
-    data.clear();
-  }
+    /**
+     * Store a double value in the data sample.
+     *
+     * @param var   The variable name.
+     * @param value The variable value.
+     */
+
+    public void putValue(String var, double value) {
+        data.put(var, value);
+    }
+
+    /**
+     * Remove a value from the data sample.
+     *
+     * @param var The variable name.
+     */
+
+    public void removeValue(String var) {
+        data.remove(var);
+    }
+
+    /**
+     * Remove all values from the data sample.
+     */
+
+    public void clear() {
+        data.clear();
+    }
 
 }
-
-/* end of source file */

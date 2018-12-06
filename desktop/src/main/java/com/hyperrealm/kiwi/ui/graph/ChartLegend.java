@@ -19,73 +19,75 @@
 
 package com.hyperrealm.kiwi.ui.graph;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.util.Iterator;
 
-import com.hyperrealm.kiwi.ui.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.EmptyBorder;
 
-/** A component that displays a chart legend. For long legends, consider
+import com.hyperrealm.kiwi.ui.ColorSwatch;
+
+/**
+ * A component that displays a chart legend. For long legends, consider
  * placing the <code>ChartLegend</code> within a <code>JScrollPane</code>.
  *
  * <p><center><img src="snapshot/ChartLegend.gif"><br>
  * <i>An example ChartLegend.</i>
  * </center>
  *
- * @see com.hyperrealm.kiwi.ui.graph.ChartView
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.graph.ChartView
  */
 
-public class ChartLegend extends JList
-{
-  private static EmptyBorder border = new EmptyBorder(0, 5, 0, 5);
-  
-  /** Construct a new <code>ChartLegend</code> for the specified chart
-   * definition.
-   *
-   * @param def The chart definition.
-   */
-  
-  public ChartLegend(Chart def)
-  {
-    DefaultListModel model = new DefaultListModel(); 
+public class ChartLegend extends JList<ChartValue> {
 
-    Iterator<ChartValue> iter = def.getValues();
-    while(iter.hasNext())
-      model.addElement(iter.next());
-    
-    setModel(model);
-    
-    setCellRenderer(new ChartLegendRenderer());
-  }
+    private static final EmptyBorder DEFAULT_EMPTY_BORDER = new EmptyBorder(0, 5, 0, 5);
 
-  /* The list renderer.
-   */
+    /**
+     * Construct a new <code>ChartLegend</code> for the specified chart
+     * definition.
+     *
+     * @param def The chart definition.
+     */
 
-  private class ChartLegendRenderer extends JLabel implements ListCellRenderer
-  {
-    private ColorSwatch swatch = new ColorSwatch(Color.gray, 10, 10);
-    
-    ChartLegendRenderer()
-    {
-      setIcon(swatch);
-      setBorder(border);
+    public ChartLegend(Chart def) {
+        DefaultListModel<ChartValue> model = new DefaultListModel<>();
+
+        Iterator<ChartValue> iter = def.getValues();
+        while (iter.hasNext()) {
+            model.addElement(iter.next());
+        }
+
+        setModel(model);
+
+        setCellRenderer(new ChartLegendRenderer());
     }
-    
-    public Component getListCellRendererComponent(JList list, Object value,
-                                                  int index,
-                                                  boolean isSelected,
-                                                  boolean hasFocus)
-    {
-      ChartValue val = (ChartValue)value;
-      swatch.setColor(val.getColor());
-      setText(val.getLabel());
-      return(this);
+
+    /* The list renderer.
+     */
+
+    private class ChartLegendRenderer extends JLabel implements ListCellRenderer<ChartValue> {
+
+        private final ColorSwatch swatch = new ColorSwatch(Color.gray, 10, 10);
+
+        ChartLegendRenderer() {
+            setIcon(swatch);
+            setBorder(DEFAULT_EMPTY_BORDER);
+        }
+
+        public Component getListCellRendererComponent(JList list,
+                                                      ChartValue value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean hasFocus) {
+            swatch.setColor(value.getColor());
+            setText(value.getLabel());
+            return (this);
+        }
     }
-  }
 
 }
-
-/* end of source file */

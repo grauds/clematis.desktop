@@ -19,26 +19,24 @@
 
 package com.hyperrealm.kiwi.ui.graph;
 
-/** A class that represents a data sample. A data sample consists of one or
+/**
+ * A class that represents a data sample. A data sample consists of one or
  * more variables and their values. These variables correspond to those
  * defined in a chart definition (<code>Chart</code> object).
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.ui.graph.ChartValue
  * @see com.hyperrealm.kiwi.ui.graph.Chart
- *
- * @author Mark Lindner
  */
 
-public interface DataSample
-{
-  /** Get the value associated with the specified variable.
-   *
-   * @param var The variable name.
-   * @return The value for the variable, or <code>null</code> if the variable
-   * was not found or has no value.
-   */
-  
-  public Object getValue(String var);
-}
+public interface DataSample {
+    /**
+     * Get the value associated with the specified variable.
+     *
+     * @param var The variable name.
+     * @return The value for the variable, or <code>null</code> if the variable
+     * was not found or has no value.
+     */
 
-/* end of source file */
+    Object getValue(String var);
+}

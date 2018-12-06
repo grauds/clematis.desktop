@@ -19,13 +19,12 @@
 
 package com.hyperrealm.kiwi.ui.graph;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Iterator;
 
-import com.hyperrealm.kiwi.util.*;
-
-/** A bar chart that renders each data sample as a cluster of bars; each
+/**
+ * A bar chart that renders each data sample as a cluster of bars; each
  * bar in the cluster represents one of the values in the data sample. This
  * type of chart is used to compare values across data samples.
  *
@@ -35,134 +34,126 @@ import com.hyperrealm.kiwi.util.*;
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class ClusteredBarChart3D extends BarChart3D {
 
-public class ClusteredBarChart3D extends BarChart3D
-{
-  
-  /** Construct a new <code>ClusteredBarChart3D</code> for the specified chart
-   * definition and with the specified orientation.
-   *
-   * @param chart The chart definition.
-   * @param orientation The orientation of the chart; one of the constants
-   * <code>VERTICAL</code> or <code>HORIZONTAL</code> defined in
-   * <code>ChartView</code>.
-   */
-  
-  public ClusteredBarChart3D(Chart chart, int orientation)
-  {
-    super(chart, orientation);
-  }
+    /**
+     * Construct a new <code>ClusteredBarChart3D</code> for the specified chart
+     * definition and with the specified orientation.
+     *
+     * @param chart       The chart definition.
+     * @param orientation The orientation of the chart; one of the constants
+     *                    <code>VERTICAL</code> or <code>HORIZONTAL</code> defined in
+     *                    <code>ChartView</code>.
+     */
 
-  /** Paint the chart.
-   */
+    public ClusteredBarChart3D(Chart chart, int orientation) {
+        super(chart, orientation);
+    }
 
-  protected void paintChart(Graphics gc)
-  {
-    Dimension d = getSize();
-    int cx = horizontalPad;
-    int cy = verticalPad;
+    /**
+     * Paint the chart.
+     */
 
-    if(orientation == HORIZONTAL)
-      cy += barDepth + scaleWidth + verticalPad;
-    else
-      cx += scaleWidth + horizontalPad;
+    protected void paintChart(Graphics gc) {
+        int cx = horizontalPad;
+        int cy = verticalPad;
 
-    // loop over the bar clusters
-
-    Iterator<DataSample> iter = model.iterator();
-    while(iter.hasNext())
-    {
-      DataSample ds = iter.next();
-
-      Iterator<ChartValue> viter = chart.getValues();
-      int valueCount = chart.getValueCount();
-      int skip = (valueCount - 1) * barWidth;
-      if(orientation == HORIZONTAL)
-        cy += skip;
-
-      // loop over the bars in a cluster; if it's a horizontal bar chart,
-      // we have to draw them in reverse, because the shadows are above the
-      // bars
-      
-      while(viter.hasNext())
-      {
-        ChartValue cv = viter.next();
-        
-        Color color = cv.getColor();
-        Object o = ds.getValue(cv.getName());
-        double value = 0.0;
-        if((o != null) && (o instanceof Number))
-          value = ((Number)o).doubleValue();
-        
-        switch (orientation)
-        {
-          case VERTICAL:
-          default:
-          {
-            drawVerticalBar(gc, cx, verticalPad, value, color);
-            cx += barWidth;
-            break;
-          }
-          
-          case HORIZONTAL:
-          {
-            drawHorizontalBar(gc, horizontalPad, cy, value, color);
-            cy -= barWidth;
-            break;
-          }
+        if (orientation == HORIZONTAL) {
+            cy += BAR_DEPTH + scaleWidth + verticalPad;
+        } else {
+            cx += scaleWidth + horizontalPad;
         }
-      }
 
-      if(orientation == VERTICAL)
-        cx += barSpacing;
-      else
-        cy += skip + barWidth + barSpacing;
+        // loop over the bar clusters
+
+        for (DataSample ds : model) {
+            Iterator<ChartValue> viter = chart.getValues();
+            int valueCount = chart.getValueCount();
+            int skip = (valueCount - 1) * BAR_LENGTH;
+            if (orientation == HORIZONTAL) {
+                cy += skip;
+            }
+
+            // loop over the bars in a cluster; if it's a horizontal bar chart,
+            // we have to draw them in reverse, because the shadows are above the
+            // bars
+
+            while (viter.hasNext()) {
+                ChartValue cv = viter.next();
+
+                Color color = cv.getColor();
+                Object o = ds.getValue(cv.getName());
+                double value = 0.0;
+                if (o instanceof Number) {
+                    value = ((Number) o).doubleValue();
+                }
+
+                switch (orientation) {
+                    case VERTICAL:
+                    default: {
+                        drawVerticalBar(gc, cx, verticalPad, value, color);
+                        cx += BAR_LENGTH;
+                        break;
+                    }
+
+                    case HORIZONTAL: {
+                        drawHorizontalBar(gc, horizontalPad, cy, value, color);
+                        cy -= BAR_LENGTH;
+                        break;
+                    }
+                }
+            }
+
+            if (orientation == VERTICAL) {
+                cx += BAR_SPACING;
+            } else {
+                cy += skip + BAR_LENGTH + BAR_SPACING;
+            }
+        }
+
+        // draw the scale
+
+        switch (orientation) {
+
+            case HORIZONTAL:
+                drawHorizontalScale(gc, verticalPad + scaleWidth);
+                break;
+
+            case VERTICAL:
+                drawVerticalScale(gc, horizontalPad + scaleWidth);
+                break;
+
+            default:
+        }
     }
 
-    // draw the scale
-    
-    switch(orientation)
-    {
-      case HORIZONTAL:
-        drawHorizontalScale(gc, verticalPad + scaleWidth);
-        break;
+    /**
+     * Compute the maximum value.
+     */
 
-      case VERTICAL:
-        drawVerticalScale(gc, horizontalPad + scaleWidth);
-        break;
+    protected double getMaxValue() {
+        double maxval = 0.0;
+
+        Iterator<ChartValue> viter = chart.getValues();
+        while (viter.hasNext()) {
+            ChartValue cv = viter.next();
+            String var = cv.getName();
+
+            for (DataSample ds : model) {
+                Object o = ds.getValue(var);
+                double value = 0.0;
+                if (o instanceof Number) {
+                    value = ((Number) o).doubleValue();
+                }
+
+                if (value > maxval) {
+                    maxval = value;
+                }
+            }
+        }
+
+        return (maxval);
     }
-  }
-  
-  /** Compute the maximum value.
-   */
-  
-  protected double getMaxValue()
-  {
-    double maxval = 0.0;
-
-    Iterator<ChartValue> viter = chart.getValues();
-    while(viter.hasNext())
-    {
-      ChartValue cv = (ChartValue)viter.next();
-      String var = cv.getName();
-
-      Iterator<DataSample> iter = model.iterator();
-      while(iter.hasNext())
-      {
-        DataSample ds = iter.next();
-        Object o = ds.getValue(var);
-        double value = 0.0;
-        if((o != null) && (o instanceof Number))
-          value = ((Number)o).doubleValue();
-
-        if(value > maxval)
-          maxval = value;
-      }
-    }
-
-    return(maxval);
-  }
 
 }
-
-/* end of source file */

@@ -23,11 +23,13 @@
 
 package com.hyperrealm.kiwi.ui.graph;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
-/** A chart that renders the sum total of the values of each variable across
+/**
+ * A chart that renders the sum total of the values of each variable across
  * data samples as a wedge in a circular "pie" whose whole represents the sum
  * total of all values from all data samples. This type of chart is used to
  * compare the cumulative contributions of values to the total.
@@ -39,223 +41,224 @@ import javax.swing.*;
  * @author Ciaran Treanor
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class PieChart3D extends ChartView {
 
-public class PieChart3D extends ChartView
-{
-  private double aspectRatio = 2.5;
-  private int pieDepth = 5, pieWidth = 250, pieHeight;
-  private int cx, cy, rx, ry;
-  private boolean drawLabels = true;
+    private static final double DEFAULT_ASPECT_RATIO = 2.5;
 
-  /** Construct a new <code>PieChart3D</code> for the specified chart
-   * definition.
-   *
-   * @param chart The chart definition.
-   */
-  
-  public PieChart3D(Chart chart)
-  {
-    super(chart);
+    private static final int DEFAULT_PIE_DEPTH = 5;
 
-    _init();
-  }
+    private static final int DEFAULT_PIE_WIDTH = 250;
 
-  /*
-   */
-  
-  private void _init()
-  {
-    pieHeight = (int)(pieWidth / aspectRatio);
-    
-    rx = pieWidth / 2;
-    ry = pieHeight / 2;
-    
-    cx = rx + horizontalPad;
-    cy = ry + verticalPad;
-  }
+    private static final int DEFAULT_START_ANGLE = -45;
 
-  /** Set the width of the pie.
-   *
-   * @param pieWidth The width, in pixels.
-   */
+    private static final int FULL_CIRCLE_DEGREES = 360;
 
-  public void setPieWidth(int pieWidth)
-  {
-    this.pieWidth = pieWidth;
+    private static final double DEFAULT_SCALE = 1.2;
 
-    _init();
-  }
+    private static final double SEMICIRCLE_DEGREES = 180.0;
 
-  /** Get the width of the pie.
-   *
-   * @return The width, in pixels.
-   */
-  
-  public int getPieWidth()
-  {
-    return(pieWidth);
-  }
+    private double aspectRatio = DEFAULT_ASPECT_RATIO;
 
-  /** Set the depth of the pie.
-   *
-   * @param pieDepth The depth, in pixels.
-   */
+    private int pieDepth = DEFAULT_PIE_DEPTH, pieWidth = DEFAULT_PIE_WIDTH, pieHeight;
 
-  public void setPieDepth(int pieDepth)
-  {
-    this.pieDepth = pieDepth;
+    private int cx, cy, rx, ry;
 
-    _init();
-  }
+    private boolean drawLabels = true;
 
-  /** Get the depth of the pie.
-   *
-   * @return The depth, in pixels.
-   */
-  
-  public int getPieDepth()
-  {
-    return(pieDepth);
-  }
-    
-  /** Paint the chart.
-   */
+    /**
+     * Construct a new <code>PieChart3D</code> for the specified chart
+     * definition.
+     *
+     * @param chart The chart definition.
+     */
 
-  /** Specify whether labels will be drawn beside each slice in the pie
-   * chart.
-   *
-   * @since Kiwi 1.4.3
-   */
+    public PieChart3D(Chart chart) {
+        super(chart);
 
-  public void setDrawsLabels(boolean flag)
-  {
-    drawLabels = flag;
-  }
-
-  /** Determine whether labels will be drawn beside each slice in the pie
-   * chart.
-   *
-   * @since Kiwi 1.4.3
-   */
-
-  public boolean getDrawsLabels()
-  {
-    return(drawLabels);
-  }
-
-  /**
-   */
-  
-  protected void paintChart(Graphics gc)
-  {
-    int startAngle;
-    double angle;
-    Dimension d = getSize();
-    FontMetrics fm = getFontMetrics(getFont());
-
-    horizontalPad = (int)((d.getWidth() - pieWidth) / 2);
-    verticalPad = (int)((d.getHeight() - (pieHeight + pieDepth)) / 2);
-
-    cx = rx + horizontalPad;
-    cy = ry + verticalPad;
-
-    // precompute the slices
-
-    int sliceCount = chart.getValueCount();
-    double slices[] = new double[sliceCount];
-    Color colors[] = new Color[sliceCount];
-    double total = 0.0;
-    
-    for(int i = 0; i < sliceCount; i++)
-    {
-      ChartValue cv = (ChartValue)chart.getValueAt(i);
-      String var = cv.getName();
-      colors[i] = cv.getColor();
-
-      Iterator<DataSample> iter  = model.iterator();
-      while(iter.hasNext())
-      {
-        DataSample ds = iter.next();
-        Object o = ds.getValue(var);
-        double value = 0.0;
-        if((o != null) && (o instanceof Number))
-          value = ((Number)o).doubleValue();
-
-        slices[i] += value;
-        total += value;
-      }
+        init();
     }
 
-    // This is less than optimal, but we don't have a floodfill.
-    // Draw pieDepth-1 ovals in a darker color
-    
-    for(int x = pieDepth; x > 0; x--)
-    {
-      startAngle = -45;
+    /*
+     */
 
-      
-      for(int i = 0; i < sliceCount; i++)
-      {
-        gc.setColor(colors[i].darker());
-        angle = Math.round(360 * (slices[i] / total));
-        gc.fillArc(horizontalPad, verticalPad + x, pieWidth,
-                   (int)(pieWidth / aspectRatio), startAngle, (int)angle);
-        startAngle += angle;
-      }
+    private void init() {
+        pieHeight = (int) (pieWidth / aspectRatio);
+
+        rx = pieWidth / 2;
+        ry = pieHeight / 2;
+
+        cx = rx + horizontalPad;
+        cy = ry + verticalPad;
     }
 
-    // Now draw the final (top) oval in the undarkened color
-    
-    startAngle = -45;
-    for(int i = 0; i < sliceCount; i++)
-    {
-      gc.setColor(colors[i]);
-      angle = Math.round(360 * (slices[i] / total));
-      gc.fillArc(horizontalPad, verticalPad, pieWidth,
-                 (int)(pieWidth / aspectRatio), startAngle, (int)angle);
-      startAngle += angle;
+    /**
+     * Get the width of the pie.
+     *
+     * @return The width, in pixels.
+     */
+
+    public int getPieWidth() {
+        return (pieWidth);
     }
 
-    // add labels
+    /**
+     * Set the width of the pie.
+     *
+     * @param pieWidth The width, in pixels.
+     */
 
-    if(drawLabels)
-    {
-      startAngle = -45;
-      gc.setColor(Color.black);
-    
-      double bisect, sx, sy;
+    public void setPieWidth(int pieWidth) {
+        this.pieWidth = pieWidth;
 
-      for(int i = 0; i < sliceCount; i++)
-      {
-        angle = Math.round(360 * (slices[i] / total));
-        bisect = (startAngle + angle / 2.0) * Math.PI / 180.0;
+        init();
+    }
 
-        sx = 1.2 * rx * Math.cos(bisect);
-        sy = 1.2 * ry * Math.sin(bisect);
+    /**
+     * Get the depth of the pie.
+     *
+     * @return The depth, in pixels.
+     */
 
-        String label = lm.formatDecimal(slices[i], precision)
-          + " (" + lm.formatPercentage((slices[i] / total), precision) + ")";
+    public int getPieDepth() {
+        return (pieDepth);
+    }
 
-        if(bisect < 0.0)
-          sy -= (fm.getAscent() + pieDepth);
-        else if(bisect < Math.PI / 2.0)
-          ;
-        else if(bisect < Math.PI)
-          sx -= fm.stringWidth(label);
-        else
-        {
-          /* bisect < 270 */
-          sx -= fm.stringWidth(label);
-          sy -= (fm.getAscent() + pieDepth);
+    /**
+     * Set the depth of the pie.
+     *
+     * @param pieDepth The depth, in pixels.
+     */
+
+    public void setPieDepth(int pieDepth) {
+        this.pieDepth = pieDepth;
+
+        init();
+    }
+
+    /**
+     * Determine whether labels will be drawn beside each slice in the pie
+     * chart.
+     *
+     * @since Kiwi 1.4.3
+     */
+
+    public boolean getDrawsLabels() {
+        return (drawLabels);
+    }
+
+    /**
+     * Specify whether labels will be drawn beside each slice in the pie
+     * chart.
+     *
+     * @since Kiwi 1.4.3
+     */
+
+    public void setDrawsLabels(boolean flag) {
+        drawLabels = flag;
+    }
+
+    /**
+     *
+     */
+
+    protected void paintChart(Graphics gc) {
+
+        int startAngle;
+        double angle;
+        Dimension d = getSize();
+        FontMetrics fm = getFontMetrics(getFont());
+
+        horizontalPad = (int) ((d.getWidth() - pieWidth) / 2);
+        verticalPad = (int) ((d.getHeight() - (pieHeight + pieDepth)) / 2);
+
+        cx = rx + horizontalPad;
+        cy = ry + verticalPad;
+
+        // precompute the slices
+
+        int sliceCount = chart.getValueCount();
+        double[] slices = new double[sliceCount];
+        Color[] colors = new Color[sliceCount];
+        double total = 0.0;
+
+        for (int i = 0; i < sliceCount; i++) {
+            ChartValue cv = chart.getValueAt(i);
+            String var = cv.getName();
+            colors[i] = cv.getColor();
+
+            for (DataSample ds : model) {
+                Object o = ds.getValue(var);
+                double value = 0.0;
+                if (o instanceof Number) {
+                    value = ((Number) o).doubleValue();
+                }
+
+                slices[i] += value;
+                total += value;
+            }
         }
 
-        gc.drawString(label, (int)(sx + cx), (int)(-sy + cy));
-      
-        startAngle += angle;
-      }
+        // This is less than optimal, but we don't have a floodfill.
+        // Draw pieDepth-1 ovals in a darker color
+
+        for (int x = pieDepth; x > 0; x--) {
+            startAngle = DEFAULT_START_ANGLE;
+
+
+            for (int i = 0; i < sliceCount; i++) {
+                gc.setColor(colors[i].darker());
+                angle = Math.round(FULL_CIRCLE_DEGREES * (slices[i] / total));
+                gc.fillArc(horizontalPad, verticalPad + x, pieWidth,
+                    (int) (pieWidth / aspectRatio), startAngle, (int) angle);
+                startAngle += angle;
+            }
+        }
+
+        // Now draw the final (top) oval in the undarkened color
+
+        startAngle = DEFAULT_START_ANGLE;
+        for (int i = 0; i < sliceCount; i++) {
+            gc.setColor(colors[i]);
+            angle = Math.round(FULL_CIRCLE_DEGREES * (slices[i] / total));
+            gc.fillArc(horizontalPad, verticalPad, pieWidth,
+                (int) (pieWidth / aspectRatio), startAngle, (int) angle);
+            startAngle += angle;
+        }
+
+        // add labels
+
+        if (drawLabels) {
+            startAngle = DEFAULT_START_ANGLE;
+            gc.setColor(Color.black);
+
+            double bisect, sx, sy;
+
+            for (int i = 0; i < sliceCount; i++) {
+                angle = Math.round(FULL_CIRCLE_DEGREES * (slices[i] / total));
+                bisect = (startAngle + angle / 2.0) * Math.PI / SEMICIRCLE_DEGREES;
+
+                sx = DEFAULT_SCALE * rx * Math.cos(bisect);
+                sy = DEFAULT_SCALE * ry * Math.sin(bisect);
+
+                String label = lm.formatDecimal(slices[i], precision)
+                    + " (" + lm.formatPercentage((slices[i] / total), precision) + ")";
+
+                if (bisect < 0.0) {
+                    sy -= (fm.getAscent() + pieDepth);
+                } else if (Math.PI / 2.0 < bisect && bisect < Math.PI) {
+                    sx -= fm.stringWidth(label);
+                } else {
+                    /* bisect < 270 */
+                    sx -= fm.stringWidth(label);
+                    sy -= (fm.getAscent() + pieDepth);
+                }
+
+                gc.drawString(label, (int) (sx + cx), (int) (-sy + cy));
+
+                startAngle += angle;
+            }
+        }
     }
-  }
 
 }
-
-/* end of source file */
