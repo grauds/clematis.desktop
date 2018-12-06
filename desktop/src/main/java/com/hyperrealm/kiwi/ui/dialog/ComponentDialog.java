@@ -19,17 +19,28 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.util.*;
-import com.hyperrealm.kiwi.event.*;
+import com.hyperrealm.kiwi.ui.ButtonPanel;
+import com.hyperrealm.kiwi.ui.KButton;
+import com.hyperrealm.kiwi.ui.KLabel;
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
 
-/** A base class for custom dialog windows. This class provides some base
+/**
+ * A base class for custom dialog windows. This class provides some base
  * functionality that can be useful across many different types of dialogs.
  * The class constructs a skeleton dialog consisting of an optional comment
  * line, an icon, <i>OK</i> and <i>Cancel</i> buttons, and a middle area that
@@ -43,397 +54,398 @@ import com.hyperrealm.kiwi.event.*;
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public abstract class ComponentDialog extends KDialog {
 
-public abstract class ComponentDialog extends KDialog
-{
-  /** The OK button. */
-  protected KButton b_ok;
+    protected static final String DEFAULT_POSITION = "Center";
 
-  /** The Cancel button. */
-  protected KButton b_cancel = null;
-  
-  private _ActionListener actionListener;
-  private KPanel main;
-  private KLabel iconLabel, commentLabel;
-  private JTextField inputComponent = null;
-  private ButtonPanel buttons;
-  private int fixedButtons = 1;
+    protected static final String POSITION_NORTH = "North";
 
-  /** Construct a new <code>ComponentDialog</code>.
-   *
-   * @param parent The parent dialog for this dialog.
-   * @param title The title for this dialog's window.
-   * @param modal A flag specifying whether this dialog will be modal.
-   */
-  
-  public ComponentDialog(Dialog parent, String title, boolean modal)
-  {
-    this(parent, title, modal, true);
-  }
+    protected static final BorderLayout DEFAULT_BORDER_LAYOUT = new BorderLayout(5, 5);
 
-  /** Construct a new <code>ComponentDialog</code>.
-   *
-   * @param parent The parent dialog for this dialog.
-   * @param title The title for this dialog's window.
-   * @param modal A flag specifying whether this dialog will be modal.
-   * @param hasCancel A flag specifying whether this dialog should have a
-   * <i>Cancel</i> button.
-   */
-  
-  public ComponentDialog(Dialog parent, String title, boolean modal,
-                         boolean hasCancel)
-  {
-    super(parent, title, modal);
+    protected static final Dimension DEFAULT_LIST_SIZE = new Dimension(350, 150);
 
-    _init(hasCancel);
-  }
-  
-  /** Construct a new <code>ComponentDialog</code>.
-   *
-   * @param parent The parent frame for this dialog.
-   * @param title The title for this dialog's window.
-   * @param modal A flag specifying whether this dialog will be modal.
-   */
+    protected static final int DEFAULT_LABEL_LENGTH = 30;
 
-  public ComponentDialog(Frame parent, String title, boolean modal)
-  {
-    this(parent, title, modal, true);
-  }
+    protected static final int DEFAULT_FIELD_LENGTH = 15;
 
-  /** Construct a new <code>ComponentDialog</code>.
-   *
-   * @param parent The parent frame for this dialog.
-   * @param title The title for this dialog's window.
-   * @param modal A flag specifying whether this dialog will be modal.
-   * @param hasCancel A flag specifying whether this dialog should have a
-   * <i>Cancel</i> button.
-   */
+    protected static final int DEFAULT_ROWS_NUMBER = 3;
 
-  public ComponentDialog(Frame parent, String title, boolean modal,
-                         boolean hasCancel)
-  {
-    super(parent, title, modal);
+    protected static final int DEFAULT_PADDING = 5;
 
-    _init(hasCancel);
-  }
+    protected static final String POSITION_OUT_OF_RANGE = "Position out of range.";
 
-  /*
-   * Common initialization.
-   */
+    protected static final int MAXIMUM = 100;
+    /**
+     * The OK button.
+     */
+    KButton bOk;
+    /**
+     * The Cancel button.
+     */
+    KButton bCancel = null;
 
-  private void _init(boolean hasCancel)
-  {
-    LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
-  
-    actionListener = new _ActionListener();
-    
-    main = getMainContainer();
-    main.setBorder(new EmptyBorder(5, 5, 5, 5));
-    main.setLayout(new BorderLayout(5, 5));
+    private ActionListener actionListener;
 
-    commentLabel = new KLabel(loc.getMessage("kiwi.dialog.prompt"));
-    main.add("North", commentLabel);
+    private KPanel main;
 
-    iconLabel = new KLabel();
-    iconLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
-    iconLabel.setVerticalAlignment(SwingConstants.CENTER);
-    iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    private KLabel iconLabel, commentLabel;
 
-    buttons = new ButtonPanel();
+    private JTextField inputComponent = null;
 
-    b_ok = new KButton(loc.getMessage("kiwi.button.ok"));
-    b_ok.addActionListener(actionListener);
-    buttons.addButton(b_ok);
+    private ButtonPanel buttons;
 
-    if(hasCancel)
-    {
-      b_cancel = new KButton(loc.getMessage("kiwi.button.cancel"));
-      b_cancel.addActionListener(actionListener);
-      buttons.addButton(b_cancel);
-      fixedButtons++;
+    private int fixedButtons = 1;
+
+    /**
+     * Construct a new <code>ComponentDialog</code>.
+     *
+     * @param parent The parent dialog for this dialog.
+     * @param title  The title for this dialog's window.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     */
+
+    public ComponentDialog(Dialog parent, String title, boolean modal) {
+        this(parent, title, modal, true);
     }
 
-    main.add("South", buttons);
+    /**
+     * Construct a new <code>ComponentDialog</code>.
+     *
+     * @param parent    The parent dialog for this dialog.
+     * @param title     The title for this dialog's window.
+     * @param modal     A flag specifying whether this dialog will be modal.
+     * @param hasCancel A flag specifying whether this dialog should have a
+     *                  <i>Cancel</i> button.
+     */
 
-    installDialogUI();
-  }
+    public ComponentDialog(Dialog parent, String title, boolean modal,
+                           boolean hasCancel) {
+        super(parent, title, modal);
 
-  /** Install the component returned by <code>buildDialogUI()</code>
-   * into the dialog. If it is not possible to build the dialog UI at
-   * the time that the constructor calls <code>buildDialogUI()</code>,
-   * that method should return <b>null</b>. The subclass constructor
-   * can then explicitly call <code>installDialogUI()</code>, at which
-   * time <code>buildDialogUI</code> should return a valid component.
-   */
-
-  protected void installDialogUI()
-  {
-    Component c = buildDialogUI();
-    if(c != null)
-    {
-      main.add("Center", c);
-      pack();
+        init(hasCancel);
     }
-  }
 
-  /** Set the vertical position of the icon.
-   *
-   * @param position The vertical position: one of
-   <code>SwingConstants.TOP</code>,
-   * <code>SwingConstants.BOTTOM</code>, or
-   * <code>SwingConstants.CENTER</code>.
-   *
-   * @since Kiwi 2.1
-   */
-  
-  public void setIconPosition(int position)
-  {
-    iconLabel.setVerticalAlignment(position);
-  }
-  
-  /** Construct the component that will be displayed in the center of the
-   * dialog window. Subclassers implement this method to customize the look of
-   * the dialog.
-   *
-   * @return A <code>Component</code> to display in the dialog, or
-   * <code>null</code> if the component will be constructed later.
-   */
-  
-  protected abstract Component buildDialogUI();
+    /**
+     * Construct a new <code>ComponentDialog</code>.
+     *
+     * @param parent The parent frame for this dialog.
+     * @param title  The title for this dialog's window.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     */
 
-  /** Show or hide the dialog.
-   */
-  
-  public void setVisible(boolean flag)
-  {
-    if(flag)
-    {
-      if (getParent()!=null) {
-        setLocationRelativeTo(getParent());
-      }
-      validate();
-      //pack();
+    public ComponentDialog(Frame parent, String title, boolean modal) {
+        this(parent, title, modal, true);
     }
-    super.setVisible(flag);
-  }
 
-  /** Register a text field with this dialog. In some dialogs, most notably
-   * <code>KInputDialog</code>, pressing <i>Return</i> in a text field is
-   * equivalent to pressing the dialog's <i>OK</i> button. Subclassers may use
-   * this method to register a text field that should function in this way.
-   *
-   * @param c The <code>JTextField</code> to register.
-   */
+    /**
+     * Construct a new <code>ComponentDialog</code>.
+     *
+     * @param parent    The parent frame for this dialog.
+     * @param title     The title for this dialog's window.
+     * @param modal     A flag specifying whether this dialog will be modal.
+     * @param hasCancel A flag specifying whether this dialog should have a
+     *                  <i>Cancel</i> button.
+     */
 
-  protected void registerTextInputComponent(JTextField c)
-  {
-    inputComponent = c;
+    public ComponentDialog(Frame parent, String title, boolean modal,
+                           boolean hasCancel) {
+        super(parent, title, modal);
 
-    inputComponent.addActionListener(actionListener);
-  }
-
-  /** This is overridden to fix a Swing layout bug. */
-
-  /*
-    public void pack()
-    {
-    // only do this for JDK 1.3 and earlier
-
-    // add a test here
-    
-    boolean old = isResizable();
-    setResizable(true);
-    super.pack();
-    setResizable(old);
+        init(hasCancel);
     }
-  */
-  
-  /** Change the dialog's comment.
-   *
-   * @param comment The new text to display in the comment portion of the
-   * dialog.
-   */
 
-  public void setComment(String comment)
-  {
-    setComment(null, comment);
-  }
+    /*
+     * Common initialization.
+     */
 
-  /** Change the dialog's comment.
-   *
-   * @param comment The new text to display in the comment portion of the
-   * dialog.
-   * @param icon An icon to display to the left of the comment text.
-   *
-   * @since Kiwi 2.0
-   */
+    private void init(boolean hasCancel) {
 
-  public void setComment(Icon icon, String comment)
-  {
-    commentLabel.setText(comment);
-    commentLabel.setIcon(icon);
-    commentLabel.invalidate();
-    commentLabel.validate();
-  }
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
 
-  /** Set the icon to display in the left part of the dialog
-   * window. The method can be called by classes that extend this
-   * class to provide an appropriate icon for the dialog.
-   *
-   * @param icon The icon.
-   */
+        actionListener = new ActionListener();
 
-  public void setIcon(Icon icon)
-  {
-    if(icon != null)
-    {
-      iconLabel.setIcon(icon);
-      main.add("West", iconLabel);
+        main = getMainContainer();
+        main.setBorder(new EmptyBorder(DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING));
+        main.setLayout(new BorderLayout(DEFAULT_PADDING, DEFAULT_PADDING));
+
+        commentLabel = new KLabel(loc.getMessage("kiwi.dialog.prompt"));
+        main.add(POSITION_NORTH, commentLabel);
+
+        iconLabel = new KLabel();
+        iconLabel.setBorder(new EmptyBorder(DEFAULT_PADDING, 0, DEFAULT_PADDING, 0));
+        iconLabel.setVerticalAlignment(SwingConstants.CENTER);
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        buttons = new ButtonPanel();
+
+        bOk = new KButton(loc.getMessage("kiwi.button.ok"));
+        bOk.addActionListener(actionListener);
+        buttons.addButton(bOk);
+
+        if (hasCancel) {
+            bCancel = new KButton(loc.getMessage("kiwi.button.cancel"));
+            bCancel.addActionListener(actionListener);
+            buttons.addButton(bCancel);
+            fixedButtons++;
+        }
+
+        main.add("South", buttons);
+
+        installDialogUI();
     }
-    else
-      main.remove(iconLabel);
-  }
 
-  /* action listener */
+    /**
+     * Install the component returned by <code>buildDialogUI()</code>
+     * into the dialog. If it is not possible to build the dialog UI at
+     * the time that the constructor calls <code>buildDialogUI()</code>,
+     * that method should return <b>null</b>. The subclass constructor
+     * can then explicitly call <code>installDialogUI()</code>, at which
+     * time <code>buildDialogUI</code> should return a valid component.
+     */
 
-  private class _ActionListener implements ActionListener
-  {
-    public void actionPerformed(ActionEvent evt)
-    {
-      Object o = evt.getSource();
-
-      if((o == b_ok) || (o == inputComponent))
-      {
-        doAccept();
-      }
-      else if(o == b_cancel)
-      {
-        if(canCancel())
-          doCancel();
-      }
+    private void installDialogUI() {
+        Component c = buildDialogUI();
+        if (c != null) {
+            main.add(DEFAULT_POSITION, c);
+            pack();
+        }
     }
-  }
 
-  /** Determine if the dialog can be cancelled. This method is called in
-   * response to a click on the <i>Cancel</i> button or on the dialog
-   * window's close icon/option. Subclassers may wish to override this
-   * method to prevent cancellation of a window in certain circumstances.
-   *
-   * @return <code>true</code> if the dialog may be cancelled,
-   * <code>false</code> otherwise. The default implementation returns
-   * <code>true</code> if the dialog has a <i>Cancel</i> button and
-   * <code>false</code> otherwise.
-   */
-  
-  protected boolean canCancel()
-  {
-    return(b_cancel != null);
-  }
-  
-  /* Set the opacity on all the buttons */
+    /**
+     * Set the vertical position of the icon.
+     *
+     * @param position The vertical position: one of
+     *                 <code>SwingConstants.TOP</code>,
+     *                 <code>SwingConstants.BOTTOM</code>, or
+     *                 <code>SwingConstants.CENTER</code>.
+     * @since Kiwi 2.1
+     */
 
-  void setButtonOpacity(boolean flag)
-  {
-    Component c[] = buttons.getComponents();
-
-    for(int i = 0; i < c.length; i++)
-    {
-      if(c[i] instanceof JButton)
-        ((JButton)c[i]).setOpaque(flag);
+    public void setIconPosition(int position) {
+        iconLabel.setVerticalAlignment(position);
     }
-  }
 
-  /** Add a button to the dialog's button panel. The button is added
-   * immediately before the <i>OK</i> button.
-   *
-   * @param button The button to add.
-   */
-  
-  protected void addButton(JButton button)
-  {
-    addButton(button, -1);
-  }
+    /**
+     * Construct the component that will be displayed in the center of the
+     * dialog window. Subclassers implement this method to customize the look of
+     * the dialog.
+     *
+     * @return A <code>Component</code> to display in the dialog, or
+     * <code>null</code> if the component will be constructed later.
+     */
 
-  /** Add a button to the dialog's button panel at the specified position.
-   *
-   * @param button The button to add.
-   * @param pos The position at which to add the button. A value of 0 denotes
-   * the first position, and -1 denotes the last position. The possible
-   * range of values for <code>pos</code> excludes the <i>OK</i> and
-   * (if present) <i>Cancel</i> buttons; buttons may not be added after
-   * these "fixed" buttons.
-   */
-  
-  protected void addButton(JButton button, int pos)
-    throws IllegalArgumentException
-  {
-    int bc = buttons.getButtonCount();
-    int maxpos = bc - fixedButtons;
+    protected abstract Component buildDialogUI();
 
-    if(pos > maxpos)
-      throw(new IllegalArgumentException("Position out of range."));      
-    else if(pos < 0)
-      pos = maxpos;
+    /**
+     * Show or hide the dialog.
+     */
 
-    buttons.addButton(button, pos);
-  }
+    public void setVisible(boolean flag) {
+        if (flag) {
+            if (getParent() != null) {
+                setLocationRelativeTo(getParent());
+            }
+            validate();
+            //pack();
+        }
+        super.setVisible(flag);
+    }
 
-  /** Remove a button from the dialog's button panel.
-   *
-   * @param button The button to remove. Neither the <i>OK</i> nor the
-   * <i>Cancel</i> button may be removed.
-   */
-  
-  protected void removeButton(JButton button)
-  {
-    if((button != b_ok) && (button != b_cancel))
-      buttons.removeButton(button);
-  }
+    /**
+     * Register a text field with this dialog. In some dialogs, most notably
+     * <code>KInputDialog</code>, pressing <i>Return</i> in a text field is
+     * equivalent to pressing the dialog's <i>OK</i> button. Subclassers may use
+     * this method to register a text field that should function in this way.
+     *
+     * @param c The <code>JTextField</code> to register.
+     */
 
-  /** Remove a button from the specified position in the  dialog's button
-   * panel.
-   *
-   * @param pos The position of the button to remove, where 0 denotes
-   * the first position, and -1 denotes the last position. The possible
-   * range of values for <code>pos</code> excludes the <i>OK</i> and
-   * (if present) <i>Cancel</i> buttons; these "fixed" buttons may not be
-   * removed.
-   */
-  
-  protected void removeButton(int pos)
-  {
-    int bc = buttons.getButtonCount();
-    int maxpos = bc - fixedButtons;
+    void registerTextInputComponent(JTextField c) {
+        inputComponent = c;
+        inputComponent.addActionListener(actionListener);
+    }
 
-    if(pos > maxpos)
-      throw(new IllegalArgumentException("Position out of range."));      
-    else if(pos < 0)
-      pos = maxpos;
+    /**
+     * Change the dialog's comment.
+     *
+     * @param comment The new text to display in the comment portion of the
+     *                dialog.
+     */
 
-    buttons.removeButton(pos);
-  }
+    public void setComment(String comment) {
+        setComment(null, comment);
+    }
 
-  /** Set the label text for the <i>OK</i> button.
-   *
-   * @param text The text for the accept button (for example, "Yes").
-   */
+    /**
+     * Change the dialog's comment.
+     *
+     * @param comment The new text to display in the comment portion of the
+     *                dialog.
+     * @param icon    An icon to display to the left of the comment text.
+     * @since Kiwi 2.0
+     */
 
-  public void setAcceptButtonText(String text)
-  {
-    b_ok.setText(text);
-  }
+    public void setComment(Icon icon, String comment) {
+        commentLabel.setText(comment);
+        commentLabel.setIcon(icon);
+        commentLabel.invalidate();
+        commentLabel.validate();
+    }
 
-  /** Set the label text for the <i>Cancel</i> button.
-   *
-   * @param text The text for the cancel button (for example, "No").
-   */
-  
-  public void setCancelButtonText(String text)
-  {
-    if(b_cancel != null)
-      b_cancel.setText(text);
-  }
+    /**
+     * Set the icon to display in the left part of the dialog
+     * window. The method can be called by classes that extend this
+     * class to provide an appropriate icon for the dialog.
+     *
+     * @param icon The icon.
+     */
+
+    public void setIcon(Icon icon) {
+        if (icon != null) {
+            iconLabel.setIcon(icon);
+            main.add("West", iconLabel);
+        } else {
+            main.remove(iconLabel);
+        }
+    }
+
+    /* action listener */
+
+    /**
+     * Determine if the dialog can be cancelled. This method is called in
+     * response to a click on the <i>Cancel</i> button or on the dialog
+     * window's close icon/option. Subclassers may wish to override this
+     * method to prevent cancellation of a window in certain circumstances.
+     *
+     * @return <code>true</code> if the dialog may be cancelled,
+     * <code>false</code> otherwise. The default implementation returns
+     * <code>true</code> if the dialog has a <i>Cancel</i> button and
+     * <code>false</code> otherwise.
+     */
+
+    protected boolean canCancel() {
+        return (bCancel != null);
+    }
+
+    void setButtonOpacity(boolean flag) {
+        Component[] c = buttons.getComponents();
+
+        for (Component component : c) {
+            if (component instanceof JButton) {
+                ((JButton) component).setOpaque(flag);
+            }
+        }
+    }
+
+    /* Set the opacity on all the buttons */
+
+    /**
+     * Add a button to the dialog's button panel. The button is added
+     * immediately before the <i>OK</i> button.
+     *
+     * @param button The button to add.
+     */
+
+    protected void addButton(JButton button) {
+        addButton(button, -1);
+    }
+
+    /**
+     * Add a button to the dialog's button panel at the specified position.
+     *
+     * @param button The button to add.
+     * @param pos    The position at which to add the button. A value of 0 denotes
+     *               the first position, and -1 denotes the last position. The possible
+     *               range of values for <code>pos</code> excludes the <i>OK</i> and
+     *               (if present) <i>Cancel</i> buttons; buttons may not be added after
+     *               these "fixed" buttons.
+     */
+
+    protected void addButton(JButton button, int pos)
+        throws IllegalArgumentException {
+
+        int posInt = getPosInt(pos);
+        buttons.addButton(button, posInt);
+    }
+
+    /**
+     * Remove a button from the dialog's button panel.
+     *
+     * @param button The button to remove. Neither the <i>OK</i> nor the
+     *               <i>Cancel</i> button may be removed.
+     */
+
+    protected void removeButton(JButton button) {
+        if ((button != bOk) && (button != bCancel)) {
+            buttons.removeButton(button);
+        }
+    }
+
+    /**
+     * Remove a button from the specified position in the  dialog's button
+     * panel.
+     *
+     * @param pos The position of the button to remove, where 0 denotes
+     *            the first position, and -1 denotes the last position. The possible
+     *            range of values for <code>pos</code> excludes the <i>OK</i> and
+     *            (if present) <i>Cancel</i> buttons; these "fixed" buttons may not be
+     *            removed.
+     */
+
+    protected void removeButton(int pos) {
+        int posInt = getPosInt(pos);
+        buttons.removeButton(posInt);
+    }
+
+    private int getPosInt(int pos) {
+
+        int posInt = pos;
+        int bc = buttons.getButtonCount();
+        int maxpos = bc - fixedButtons;
+
+        if (posInt > maxpos) {
+            throw (new IllegalArgumentException(POSITION_OUT_OF_RANGE));
+        } else if (posInt < 0) {
+            posInt = maxpos;
+        }
+        return posInt;
+    }
+
+    /**
+     * Set the label text for the <i>OK</i> button.
+     *
+     * @param text The text for the accept button (for example, "Yes").
+     */
+
+    public void setAcceptButtonText(String text) {
+        bOk.setText(text);
+    }
+
+    /**
+     * Set the label text for the <i>Cancel</i> button.
+     *
+     * @param text The text for the cancel button (for example, "No").
+     */
+
+    public void setCancelButtonText(String text) {
+        if (bCancel != null) {
+            bCancel.setText(text);
+        }
+    }
+
+    private class ActionListener implements java.awt.event.ActionListener {
+        public void actionPerformed(ActionEvent evt) {
+            Object o = evt.getSource();
+
+            if ((o == bOk) || (o == inputComponent)) {
+                doAccept();
+            } else if (o == bCancel) {
+                if (canCancel()) {
+                    doCancel();
+                }
+            }
+        }
+    }
 
 }
-
-/* end of source file */

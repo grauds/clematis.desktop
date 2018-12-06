@@ -19,15 +19,21 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.JTextField;
 
-/** This class represents a <i>Kiwi</i> input dialog. This dialog allows input
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
+
+/**
+ * This class represents a <i>Kiwi</i> input dialog. This dialog allows input
  * of a single line of text, and has <i>OK</i> and <i>Cancel</i> buttons.
  * Pressing <i>Return</i> in the text field is equivalent to pressing the
  * <i>OK</i> button.
@@ -40,142 +46,144 @@ import com.hyperrealm.kiwi.util.*;
  * @author Mark Lindner
  */
 
-public class KInputDialog extends ComponentDialog
-{
-  private String input = null;
-  private JTextField t_input;
+public class KInputDialog extends ComponentDialog {
 
-  /** Construct a new <code>KInputDialog</code>. Constructs a new, modal
-   * <code>KInputDialog</code> with a default window title.
-   *
-   * @param parent The parent window for this dialog.
-   */
+    private String input = null;
 
-  public KInputDialog(Frame parent)
-  {
-    this(parent, "", true);
-  }
+    private JTextField tInput;
 
-  /** Construct a new <code>KInputDialog</code>. Constructs a new, modal
-   * <code>KInputDialog</code> with a default window title.
-   *
-   * @param parent The parent window for this dialog.
-   *
-   * @since Kiwi 1.4
-   */
+    /**
+     * Construct a new <code>KInputDialog</code>. Constructs a new, modal
+     * <code>KInputDialog</code> with a default window title.
+     *
+     * @param parent The parent window for this dialog.
+     */
 
-  public KInputDialog(Dialog parent)
-  {
-    this(parent, "", true);
-  }
-  
-  /** Construct a new <code>KInputDialog</code>.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   */
+    public KInputDialog(Frame parent) {
+        this(parent, "", true);
+    }
 
-  public KInputDialog(Frame parent, String title, boolean modal)
-  {
-    super(parent, title, true);
+    /**
+     * Construct a new <code>KInputDialog</code>. Constructs a new, modal
+     * <code>KInputDialog</code> with a default window title.
+     *
+     * @param parent The parent window for this dialog.
+     * @since Kiwi 1.4
+     */
 
-    setResizable(false);
-  }
+    public KInputDialog(Dialog parent) {
+        this(parent, "", true);
+    }
 
-  /** Construct a new <code>KInputDialog</code>.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   *
-   * @since Kiwi 1.4
-   */
+    /**
+     * Construct a new <code>KInputDialog</code>.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     */
 
-  public KInputDialog(Dialog parent, String title, boolean modal)
-  {
-    super(parent, title, true);
+    public KInputDialog(Frame parent, String title, boolean modal) {
+        super(parent, title, true);
 
-    setResizable(false);
-  }
-  
-  /** Show or hide the dialog. */
+        setResizable(false);
+    }
 
-  public void setVisible(boolean flag)
-  {
-    if(flag)
-      t_input.requestFocus();
-    super.setVisible(flag);
-  }
+    /**
+     * Construct a new <code>KInputDialog</code>.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     * @since Kiwi 1.4
+     */
 
-  /** Build the dialog user interface. */
+    public KInputDialog(Dialog parent, String title, boolean modal) {
+        super(parent, title, true);
 
-  protected Component buildDialogUI()
-  {
-    LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
-    
-    KPanel jp = new KPanel();
-    GridBagLayout gb = new GridBagLayout();
-    jp.setLayout(gb);
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.fill = gbc.HORIZONTAL;
-    gbc.weightx = 1;
-    gbc.anchor = gbc.WEST;
-    
-    t_input = new JTextField(15);
-    registerTextInputComponent(t_input);
+        setResizable(false);
+    }
 
-    jp.add(t_input, gbc);
+    /**
+     * Show or hide the dialog.
+     */
 
-    setIcon(KiwiUtils.getResourceManager().getIcon("dialog_question.png"));
-    setComment(loc.getMessage("kiwi.dialog.prompt.input"));
+    public void setVisible(boolean flag) {
+        if (flag) {
+            tInput.requestFocus();
+        }
+        super.setVisible(flag);
+    }
 
-    if(getTitle().length() == 0)
-      setTitle(loc.getMessage("kiwi.dialog.title.input"));
-    
-    return(jp);
-  }
+    /**
+     * Build the dialog user interface.
+     */
 
-  /** Accept this dialog. Always returns <code>true</code>. */
+    protected Component buildDialogUI() {
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
 
-  protected boolean accept()
-  {
-    input = t_input.getText();
-    return(true);
-  }
+        KPanel jp = new KPanel();
+        GridBagLayout gb = new GridBagLayout();
+        jp.setLayout(gb);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
 
-  /** Retrieve the text entered in the dialog.
-   *
-   * @return The contents of the dialog's text field, or <code>null</code>
-   * if the dialog was cancelled.
-   */
+        tInput = new JTextField(DEFAULT_FIELD_LENGTH);
+        registerTextInputComponent(tInput);
 
-  public String getText()
-  {
-    return(input);
-  }
+        jp.add(tInput, gbc);
 
-  /** Set the text in the dialog's text field.
-   *
-   * @param text The text to place in the textfield.
-   */
+        setIcon(KiwiUtils.getResourceManager().getIcon("dialog_question.png"));
+        setComment(loc.getMessage("kiwi.dialog.prompt.input"));
 
-  public void setText(String text)
-  {
-    t_input.setText(text);
-  }
-  
-  /** Set the prompt. Sets the dialog's input prompt.
-   *
-   * @param text The text for the prompt.
-   */
+        if (getTitle().length() == 0) {
+            setTitle(loc.getMessage("kiwi.dialog.title.input"));
+        }
 
-  public void setPrompt(String text)
-  {
-    setComment(text);
-    pack();
-  }
-  
+        return (jp);
+    }
+
+    /**
+     * Accept this dialog. Always returns <code>true</code>.
+     */
+
+    protected boolean accept() {
+        input = tInput.getText();
+        return (true);
+    }
+
+    /**
+     * Retrieve the text entered in the dialog.
+     *
+     * @return The contents of the dialog's text field, or <code>null</code>
+     * if the dialog was cancelled.
+     */
+
+    public String getText() {
+        return (input);
+    }
+
+    /**
+     * Set the text in the dialog's text field.
+     *
+     * @param text The text to place in the textfield.
+     */
+
+    public void setText(String text) {
+        tInput.setText(text);
+    }
+
+    /**
+     * Set the prompt. Sets the dialog's input prompt.
+     *
+     * @param text The text for the prompt.
+     */
+
+    public void setPrompt(String text) {
+        setComment(text);
+        pack();
+    }
+
 }
-
-/* end of source file */

@@ -19,14 +19,18 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
 
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.ui.KLabelArea;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
 
-/** This class represents a <i>Kiwi</i> message dialog. This dialog displays a
+/**
+ * This class represents a <i>Kiwi</i> message dialog. This dialog displays a
  * textual message, and has an <i>OK</i> button.
  *
  * <p><center>
@@ -37,100 +41,101 @@ import com.hyperrealm.kiwi.util.*;
  * @author Mark Lindner
  */
 
-public class KMessageDialog extends ComponentDialog
-{
-  private KLabelArea l_text;
+public class KMessageDialog extends ComponentDialog {
 
-  /** Construct a new <code>KMessageDialog</code>. Constructs a new, modal
-   * <code>KMessageDialog</code> with a default window title.
-   *
-   * @param parent The parent window for this dialog.
-   */
+    private KLabelArea lText;
 
-  public KMessageDialog(Frame parent)
-  {
-    this(parent, "", true);
-  }
+    /**
+     * Construct a new <code>KMessageDialog</code>. Constructs a new, modal
+     * <code>KMessageDialog</code> with a default window title.
+     *
+     * @param parent The parent window for this dialog.
+     */
 
-  /** Construct a new <code>KMessageDialog</code>. Constructs a new, modal
-   * <code>KMessageDialog</code> with a default window title.
-   *
-   * @param parent The parent window for this dialog.
-   *
-   * @since Kiwi 1.4
-   */
+    public KMessageDialog(Frame parent) {
+        this(parent, "", true);
+    }
 
-  public KMessageDialog(Dialog parent)
-  {
-    this(parent, "", true);
-  }
-  
-  /** Construct a new <code>KMessageDialog</code>.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   */
+    /**
+     * Construct a new <code>KMessageDialog</code>. Constructs a new, modal
+     * <code>KMessageDialog</code> with a default window title.
+     *
+     * @param parent The parent window for this dialog.
+     * @since Kiwi 1.4
+     */
 
-  public KMessageDialog(Frame parent, String title, boolean modal)
-  {
-    super(parent, title, modal, false);
-    setResizable(false);
-  }
+    public KMessageDialog(Dialog parent) {
+        this(parent, "", true);
+    }
 
-  /** Construct a new <code>KMessageDialog</code>.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   *
-   * @since Kiwi 1.4
-   */
+    /**
+     * Construct a new <code>KMessageDialog</code>.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     */
 
-  public KMessageDialog(Dialog parent, String title, boolean modal)
-  {
-    super(parent, title, modal, false);
-    setResizable(false);
-  }
-  
-  /** Show or hide the dialog. */
+    public KMessageDialog(Frame parent, String title, boolean modal) {
+        super(parent, title, modal, false);
+        setResizable(false);
+    }
 
-  public void setVisible(boolean flag)
-  {
-    if(flag)
-      b_ok.requestFocus();
-    super.setVisible(flag);
-  }
+    /**
+     * Construct a new <code>KMessageDialog</code>.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     * @since Kiwi 1.4
+     */
 
-  /** Build the dialog user interface. */
+    public KMessageDialog(Dialog parent, String title, boolean modal) {
+        super(parent, title, modal, false);
+        setResizable(false);
+    }
 
-  protected Component buildDialogUI()
-  {
-    LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
+    /**
+     * Show or hide the dialog.
+     */
 
-    l_text = new KLabelArea(loc.getMessage("kiwi.dialog.prompt.message"), 3,
-                            30);
-    l_text.setForeground(Color.black);
-    
-    setIcon(KiwiUtils.getResourceManager().getIcon("dialog_exclamation.png"));
-    setComment("");
-    if(getTitle().length() == 0)
-      setTitle(loc.getMessage("kiwi.dialog.title.message"));
-    
-    return(l_text);
-  }
+    public void setVisible(boolean flag) {
+        if (flag) {
+            bOk.requestFocus();
+        }
+        super.setVisible(flag);
+    }
 
-  /** Set the message. Sets the dialog's message.
-   *
-   * @param text The text for the message.
-   */
+    /**
+     * Build the dialog user interface.
+     */
 
-  public void setMessage(String text)
-  {
-    l_text.setText(text);
-    pack();
-  }
+    protected Component buildDialogUI() {
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
+
+        lText = new KLabelArea(loc.getMessage("kiwi.dialog.prompt.message"),
+            DEFAULT_ROWS_NUMBER,
+            DEFAULT_LABEL_LENGTH);
+        lText.setForeground(Color.black);
+
+        setIcon(KiwiUtils.getResourceManager().getIcon("dialog_exclamation.png"));
+        setComment("");
+        if (getTitle().length() == 0) {
+            setTitle(loc.getMessage("kiwi.dialog.title.message"));
+        }
+
+        return (lText);
+    }
+
+    /**
+     * Set the message. Sets the dialog's message.
+     *
+     * @param text The text for the message.
+     */
+
+    public void setMessage(String text) {
+        lText.setText(text);
+        pack();
+    }
 
 }
-
-/* end of source file */

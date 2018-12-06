@@ -19,17 +19,28 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Cursor;
+import java.awt.Dialog;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.util.*;
-import com.hyperrealm.kiwi.ui.*;
+import javax.swing.JDialog;
+import javax.swing.WindowConstants;
 
-/** <code>KDialog</code> is a trivial extension of <code>JDialog</code>
+import com.hyperrealm.kiwi.event.DialogDismissEvent;
+import com.hyperrealm.kiwi.event.DialogDismissListener;
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.UIChangeManager;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+
+/**
+ * <code>KDialog</code> is a trivial extension of <code>JDialog</code>
  * that provides support for tiling the background of the dialog with an
  * image and for firing dismissal events.
  * <p>
@@ -44,347 +55,337 @@ import com.hyperrealm.kiwi.ui.*;
  * provided to generate dialog dismissal events. See
  * <code>ComponentDialog</code> for an example of this functionality.
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.ui.KPanel
  * @see com.hyperrealm.kiwi.ui.KFrame
  * @see com.hyperrealm.kiwi.ui.dialog.ComponentDialog
  * @see com.hyperrealm.kiwi.event.DialogDismissEvent
- *
- * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class KDialog extends JDialog {
 
-public class KDialog extends JDialog
-{
-  private KPanel _main;
-  private _PropertyChangeListener propListener;
-  private ArrayList<DialogDismissListener> _listeners
-    = new ArrayList<DialogDismissListener>();
-  private boolean cancelled = false;
+    private KPanel main;
 
-  /** Construct a new <code>KDialog</code>.
-   *
-   * @param parent The parent dialog for this dialog.
-   * @param title The title for this dialog.
-   * @param modal A flag specifying whether this dialog should be modal.
-   */
-  
-  public KDialog(Dialog parent, String title, boolean modal)
-  {
-    super(parent, title, modal);
+    private PropertyChangeListener propListener;
 
-    _init();
-  }
-  
-  /** Construct a new <code>KDialog</code>.
-   *
-   * @param parent The parent frame for this dialog.
-   * @param title The title for this dialog.
-   * @param modal A flag specifying whether this dialog should be modal.
-   */
+    private final ArrayList<DialogDismissListener> listeners = new ArrayList<DialogDismissListener>();
 
-  public KDialog(Window parent, String title, boolean modal)
-  {
-    super(parent, title, modal ? ModalityType.APPLICATION_MODAL : ModalityType.MODELESS);
+    private boolean cancelled = false;
 
-    _init();
-  }
+    /**
+     * Construct a new <code>KDialog</code>.
+     *
+     * @param parent The parent dialog for this dialog.
+     * @param title  The title for this dialog.
+     * @param modal  A flag specifying whether this dialog should be modal.
+     */
 
-  /*
-   * Common initialization.
-   */
-  
-  private void _init()
-  {
-    getContentPane().setLayout(new GridLayout(1, 0));
-    _main = new KPanel(UIChangeManager.getDefaultTexture());
-    _main.setOpaque(true);
-    getContentPane().add(_main);
+    public KDialog(Dialog parent, String title, boolean modal) {
+        super(parent, title, modal);
 
-    UIChangeManager.getInstance().registerComponent(getRootPane());
-    propListener = new _PropertyChangeListener();
-    UIChangeManager.getInstance().addPropertyChangeListener(propListener);
+        init();
+    }
 
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    /**
+     * Construct a new <code>KDialog</code>.
+     *
+     * @param parent The parent frame for this dialog.
+     * @param title  The title for this dialog.
+     * @param modal  A flag specifying whether this dialog should be modal.
+     */
 
-    addWindowListener(new WindowAdapter()
-      {
-        public void windowClosing(WindowEvent evt)
-        {
-          if(canCancel())
-            doCancel();
-          else
-            doAccept();
+    public KDialog(Window parent, String title, boolean modal) {
+        super(parent, title, modal ? ModalityType.APPLICATION_MODAL : ModalityType.MODELESS);
+
+        init();
+    }
+
+    /*
+     * Common initialization.
+     */
+
+    private void init() {
+
+        getContentPane().setLayout(new GridLayout(1, 0));
+
+        main = new KPanel(UIChangeManager.getDefaultTexture());
+
+        main.setOpaque(true);
+
+        getContentPane().add(main);
+
+        UIChangeManager.getInstance().registerComponent(getRootPane());
+        propListener = new PropertyChangeListener();
+        UIChangeManager.getInstance().addPropertyChangeListener(propListener);
+
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent evt) {
+                if (canCancel()) {
+                    doCancel();
+                } else {
+                    doAccept();
+                }
+            }
+
+            public void windowOpened(WindowEvent evt) {
+                startFocus();
+            }
+
+            public void windowActivated(WindowEvent evt) {
+                startFocus();
+            }
+        });
+    }
+
+    /**
+     * Get a reference to the main container (in this case, the
+     * <code>KPanel</code> that is the child of the frame's content pane).
+     */
+
+    protected KPanel getMainContainer() {
+        return (main);
+    }
+
+    /**
+     * Set the background image for the dialog.
+     *
+     * @param image The new background image.
+     */
+
+    public void setTexture(Image image) {
+        main.setTexture(image);
+        invalidate();
+        validate();
+        repaint();
+    }
+
+    /**
+     * Add a <code>DialogDismissListener</code> to this dialog's list of
+     * listeners.
+     *
+     * @param listener The listener to add.
+     * @see #removeDialogDismissListener
+     */
+
+    public void addDialogDismissListener(DialogDismissListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
         }
+    }
 
-        public void windowOpened(WindowEvent evt)
-        {
-          startFocus();
+    /**
+     * Remove a <code>DialogDismissListener</code> from this dialog's list
+     * of listeners.
+     *
+     * @param listener The listener to remove.
+     * @see #addDialogDismissListener
+     */
+
+    public void removeDialogDismissListener(DialogDismissListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
         }
+    }
 
-        public void windowActivated(WindowEvent evt)
-        {
-          startFocus();
+    /**
+     * Fire a <i>dialog dismissed</i> event. Notifies listeners that this dialog
+     * is being dismissed.
+     *
+     * @param type The event type.
+     */
+
+    public void fireDialogDismissed(int type) {
+        fireDialogDismissed(type, null);
+    }
+
+    /**
+     * Fire a <i>dialog dismissed</i> event. Notifies listeners that this dialog
+     * is being dismissed.
+     *
+     * @param type    The event type.
+     * @param userObj An arbitrary user object argument to pass in the event.
+     */
+
+    protected void fireDialogDismissed(int type, Object userObj) {
+        DialogDismissEvent evt = null;
+        DialogDismissListener listener;
+
+        synchronized (listeners) {
+            for (DialogDismissListener listener1 : listeners) {
+                listener = listener1;
+                if (evt == null) {
+                    evt = new DialogDismissEvent(this, type, userObj);
+                }
+
+                listener.dialogDismissed(evt);
+            }
         }
-      });
-  }
-
-  /** Get a reference to the main container (in this case, the
-   * <code>KPanel</code> that is the child of the frame's content pane).
-   */
-
-  protected KPanel getMainContainer()
-  {
-    return(_main);
-  }
-
-  /** Set the background image for the dialog.
-   *
-   * @param image The new background image.
-   */
-
-  public void setTexture(Image image)
-  {
-    _main.setTexture(image);
-    invalidate();
-    validate();
-    repaint();
-  }
-
-  /** Add a <code>DialogDismissListener</code> to this dialog's list of
-   * listeners.
-   *
-   * @param listener The listener to add.
-   * @see #removeDialogDismissListener
-   */
-
-  public void addDialogDismissListener(DialogDismissListener listener)
-  {
-    synchronized(_listeners)
-    {
-      _listeners.add(listener);
     }
-  }
 
-  /** Remove a <code>DialogDismissListener</code> from this dialog's list
-   * of listeners.
-   *
-   * @param listener The listener to remove.
-   * @see #addDialogDismissListener
-   */
+    /**
+     * This method is called when the dialog is made visible; it should
+     * transfer focus to the appropriate child component. The default
+     * implementation does nothing.
+     */
 
-  public void removeDialogDismissListener(DialogDismissListener listener)
-  {
-    synchronized(_listeners)
-    {
-      _listeners.remove(listener);
+    protected void startFocus() {
     }
-  }
 
-  /** Fire a <i>dialog dismissed</i> event. Notifies listeners that this dialog
-   * is being dismissed.
-   *
-   * @param type The event type.
-   */
+    /**
+     * Turn the busy cursor on or off for this dialog.
+     *
+     * @param flag If <code>true</code>, the wait cursor will be set for
+     *             this dialog, otherwise the default cursor will be set.
+     */
 
-  protected void fireDialogDismissed(int type)
-  {
-    fireDialogDismissed(type, null);
-  }
-
-  /** Fire a <i>dialog dismissed</i> event. Notifies listeners that this dialog
-   * is being dismissed.
-   *
-   * @param type The event type.
-   * @param userObj An arbitrary user object argument to pass in the event.
-   */
-
-  protected void fireDialogDismissed(int type, Object userObj)
-  {
-    DialogDismissEvent evt = null;
-    DialogDismissListener listener;
-
-    synchronized(_listeners)
-    {
-      Iterator<DialogDismissListener> iter = _listeners.iterator();
-      while(iter.hasNext())
-      {
-        listener = iter.next();
-        if(evt == null)
-          evt = new DialogDismissEvent(this, type, userObj);
-        
-        listener.dialogDismissed(evt);
-      }
+    public void setBusyCursor(boolean flag) {
+        setCursor(Cursor.getPredefinedCursor(flag ? Cursor.WAIT_CURSOR
+            : Cursor.DEFAULT_CURSOR));
     }
-  }
 
-  /** This method is called when the dialog is made visible; it should
-   * transfer focus to the appropriate child component. The default
-   * implementation does nothing.
-   */
-  
-  protected void startFocus()
-  {
-  }
+    /**
+     * Determine if this dialog can be closed.
+     *
+     * @return <code>true</code> if the dialog may be closed, and
+     * <code>false</code> otherwise. The default implementation returns
+     * <code>true</code>.
+     */
 
-  /** Turn the busy cursor on or off for this dialog.
-   *
-   * @param flag If <code>true</code>, the wait cursor will be set for
-   * this dialog, otherwise the default cursor will be set.
-   */
-  
-  public void setBusyCursor(boolean flag)
-  {
-    setCursor(Cursor.getPredefinedCursor(flag ? Cursor.WAIT_CURSOR
-                                         : Cursor.DEFAULT_CURSOR));
-  }
-
-  /** Determine if this dialog can be closed.
-   *
-   * @return <code>true</code> if the dialog may be closed, and
-   * <code>false</code> otherwise. The default implementation returns
-   * <code>true</code>.
-   */
-  
-  protected boolean canClose()
-  {
-    return(true);
-  }
-  
-  /** Destroy this dialog. Call this method when the dialog is no longer
-   * needed. The dialog will detach its listeners from the
-   * <code>UIChanageManager</code>.
-   */
-
-  public void destroy()
-  {
-    UIChangeManager.getInstance().unregisterComponent(getRootPane());
-    UIChangeManager.getInstance().removePropertyChangeListener(propListener);
-  }
-
-  /** Accept user input. The dialog calls this method in response to a
-   * click on the dialog's <i>OK</i> button. If this method returns
-   * <code>true</code>, the dialog disappears; otherwise, it remains
-   * on the screen. This method can be overridden to check input in
-   * the dialog before allowing it to be dismissed. The default
-   * implementation of this method returns <code>true</code>.
-   *
-   * @return <code>true</code> if the dialog may be dismissed, and
-   * <code>false</code> otherwise.
-   *
-   * @since Kiwi 2.0
-   */
-
-  protected boolean accept()
-  {
-    return(true);
-  }
-
-  /** Programmatically accept user input.
-   *
-   * @since Kiwi 2.0
-   */
-  
-  protected void doAccept()
-  {
-    if(accept())
-    {
-      setCancelled(false);
-      fireDialogDismissed(DialogDismissEvent.OK);
-      setVisible(false);
-      dispose();
+    protected boolean canClose() {
+        return (true);
     }
-  }
-  
-  /** Cancel the dialog. The dialog calls this method in response to a click on
-   * the dialog's <i>Cancel</i> button, or on a close of the dialog window
-   * itself. Subclassers may override this method to provide any special
-   * processing that is required when the dialog is cancelled. The default
-   * implementation of this method does nothing.
-   *
-   * @since Kiwi 2.0
-   */
-  
-  protected void cancel()
-  {
-  }
 
-  /** Programmatically cancel the dialog.
-   *
-   * @since Kiwi 2.0
-   */
+    /**
+     * Destroy this dialog. Call this method when the dialog is no longer
+     * needed. The dialog will detach its listeners from the
+     * <code>UIChanageManager</code>.
+     */
 
-  protected void doCancel()
-  {
-    setCancelled(true);
-    cancel();
-    setVisible(false);
-    dispose();
-    fireDialogDismissed(DialogDismissEvent.CANCEL);
-  }
-  
-  /** Get the <i>cancelled</i> state of the dialog. This method should be
-   * called after the dialog is dismissed to determine if it was cancelled by
-   * the user.
-   *
-   * @return <code>true</code> if the dialog was cancelled, and
-   * <code>false</code> otherwise.
-   *
-   * @since Kiwi 2.0
-   */
-
-  public boolean isCancelled()
-  {
-    return(cancelled);
-  }
-
-  /** Set the <i>cancelled</i> state of the dialog. Custom dialogs which
-   * subclass <code>KDialog</code> directory may use this method to record the
-   * fact that the dialog was cancelled.
-   *
-   * @since Kiwi 2.0
-   */
-
-  protected void setCancelled(boolean flag)
-  {
-    cancelled = flag;
-  }
-
-  /** Determine if the dialog can be cancelled. This method is called in
-   * response to a click on the <i>Cancel</i> button or on the dialog
-   * window's close icon/option. Subclassers may wish to override this
-   * method to prevent cancellation of a window in certain circumstances.
-   *
-   * @return The default implementation returns<code>true</code>.
-   */
-  
-  protected boolean canCancel()
-  {
-    return(true);
-  }
-  
-  /* PropertyChangeListener */
-
-  private class _PropertyChangeListener implements PropertyChangeListener
-  {
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-      if(evt.getPropertyName().equals(UIChangeManager.TEXTURE_PROPERTY))
-        setTexture((Image)evt.getNewValue());
+    public void destroy() {
+        UIChangeManager.getInstance().unregisterComponent(getRootPane());
+        UIChangeManager.getInstance().removePropertyChangeListener(propListener);
     }
-  }
 
-  /** Set the font for this dialog window. This method sets the font for
-   * each component in the window's component hierarchy.
-   *
-   * @param font The new font.
-   *
-   * @since Kiwi 2.2
-   */
+    /**
+     * Accept user input. The dialog calls this method in response to a
+     * click on the dialog's <i>OK</i> button. If this method returns
+     * <code>true</code>, the dialog disappears; otherwise, it remains
+     * on the screen. This method can be overridden to check input in
+     * the dialog before allowing it to be dismissed. The default
+     * implementation of this method returns <code>true</code>.
+     *
+     * @return <code>true</code> if the dialog may be dismissed, and
+     * <code>false</code> otherwise.
+     * @since Kiwi 2.0
+     */
 
-  public void setFontRecursively(Font font)
-  {
-    KiwiUtils.setFonts(getMainContainer(), font);
-  }
- 
+    protected boolean accept() {
+        return (true);
+    }
+
+    /**
+     * Programmatically accept user input.
+     *
+     * @since Kiwi 2.0
+     */
+
+    protected void doAccept() {
+        if (accept()) {
+            setCancelled(false);
+            fireDialogDismissed(DialogDismissEvent.OK);
+            setVisible(false);
+            dispose();
+        }
+    }
+
+    /**
+     * Cancel the dialog. The dialog calls this method in response to a click on
+     * the dialog's <i>Cancel</i> button, or on a close of the dialog window
+     * itself. Subclassers may override this method to provide any special
+     * processing that is required when the dialog is cancelled. The default
+     * implementation of this method does nothing.
+     *
+     * @since Kiwi 2.0
+     */
+
+    protected void cancel() {
+    }
+
+    /**
+     * Programmatically cancel the dialog.
+     *
+     * @since Kiwi 2.0
+     */
+
+    protected void doCancel() {
+        setCancelled(true);
+        cancel();
+        setVisible(false);
+        dispose();
+        fireDialogDismissed(DialogDismissEvent.CANCEL);
+    }
+
+    /**
+     * Get the <i>cancelled</i> state of the dialog. This method should be
+     * called after the dialog is dismissed to determine if it was cancelled by
+     * the user.
+     *
+     * @return <code>true</code> if the dialog was cancelled, and
+     * <code>false</code> otherwise.
+     * @since Kiwi 2.0
+     */
+
+    public boolean isCancelled() {
+        return (cancelled);
+    }
+
+    /**
+     * Set the <i>cancelled</i> state of the dialog. Custom dialogs which
+     * subclass <code>KDialog</code> directory may use this method to record the
+     * fact that the dialog was cancelled.
+     *
+     * @since Kiwi 2.0
+     */
+
+    protected void setCancelled(boolean flag) {
+        cancelled = flag;
+    }
+
+    /**
+     * Determine if the dialog can be cancelled. This method is called in
+     * response to a click on the <i>Cancel</i> button or on the dialog
+     * window's close icon/option. Subclassers may wish to override this
+     * method to prevent cancellation of a window in certain circumstances.
+     *
+     * @return The default implementation returns<code>true</code>.
+     */
+
+    protected boolean canCancel() {
+        return (true);
+    }
+
+    /* PropertyChangeListener */
+
+    /**
+     * Set the font for this dialog window. This method sets the font for
+     * each component in the window's component hierarchy.
+     *
+     * @param font The new font.
+     * @since Kiwi 2.2
+     */
+
+    public void setFontRecursively(Font font) {
+        KiwiUtils.setFonts(getMainContainer(), font);
+    }
+
+    private class PropertyChangeListener implements java.beans.PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (evt.getPropertyName().equals(UIChangeManager.TEXTURE_PROPERTY)) {
+                setTexture((Image) evt.getNewValue());
+            }
+        }
+    }
+
 }
-
-/* end of source file */

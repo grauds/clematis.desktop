@@ -19,61 +19,54 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Frame;
+import java.awt.GridLayout;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.WizardView;
+import com.hyperrealm.kiwi.util.KiwiUtils;
 
-/** This class displays a <code>WizardView</code> in a dialog window.
+/**
+ * This class displays a <code>WizardView</code> in a dialog window.
  * <p><center>
  * <img src="snapshot/WizardDialog.gif"><br>
  * <i>An example WizardDialog.</i>
  * </center>
  *
- * @see com.hyperrealm.kiwi.ui.WizardView
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.WizardView
  */
 
-public class WizardDialog extends KDialog
-{
-  /** Construct a new <code>WizardDialog</code>. The dialog is created with a
-   * default size of 400x400, but this can be overridden with a call to
-   * <code>setSize()</code>. The dialog is resizable by default, but this
-   * behavior can be changed with a call to <code>setResizable()</code>.
-   *
-   * @param parent The parent window.
-   * @param title The title for the dialog window.
-   * @param modal A flag specifying whether this dialog will be modal.
-   * @param view The <code>WizardView</code> to display in this dialog.
-   */
+public class WizardDialog extends KDialog {
+    /**
+     * Construct a new <code>WizardDialog</code>. The dialog is created with a
+     * default size of 400x400, but this can be overridden with a call to
+     * <code>setSize()</code>. The dialog is resizable by default, but this
+     * behavior can be changed with a call to <code>setResizable()</code>.
+     *
+     * @param parent The parent window.
+     * @param title  The title for the dialog window.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     * @param view   The <code>WizardView</code> to display in this dialog.
+     */
 
-  public WizardDialog(Frame parent, String title, boolean modal,
-                      WizardView view)
-  {
-    super(parent, title, modal);
-    
-    KPanel main = getMainContainer();
-    main.setBorder(KiwiUtils.defaultBorder);
-    main.setLayout(new GridLayout(1, 0));
-    main.add(view);
-    view.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent evt)
-        {
-          if(evt.getActionCommand().equals("finish"))
-            doAccept();
-          else
-            doCancel();
-        }
-      });
+    public WizardDialog(Frame parent, String title, boolean modal,
+                        WizardView view) {
+        super(parent, title, modal);
 
-    pack();
-  }
+        KPanel main = getMainContainer();
+        main.setBorder(KiwiUtils.defaultBorder);
+        main.setLayout(new GridLayout(1, 0));
+        main.add(view);
+        view.addActionListener(evt -> {
+            if (evt.getActionCommand().equals("finish")) {
+                doAccept();
+            } else {
+                doCancel();
+            }
+        });
+
+        pack();
+    }
 
 }
-
-/* end of source file */

@@ -19,189 +19,192 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.util.Calendar;
 
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.ui.DateChooser;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
 
-/** A dialog window that displays a <code>DateChooser</code>.
+/**
+ * A dialog window that displays a <code>DateChooser</code>.
  *
  * <p><center>
  * <img src="snapshot/DateChooserDialog.gif"><br>
  * <i>An example DateChooserDialog.</i>
  * </center>
  *
- * @see com.hyperrealm.kiwi.ui.DateChooser
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.DateChooser
  */
+@SuppressWarnings("unused")
+public class DateChooserDialog extends ComponentDialog {
 
-public class DateChooserDialog extends ComponentDialog
-{
-  private DateChooser cal;
-  private Calendar v_date = null;
+    private DateChooser cal;
 
-  /** Construct a new <code>DateChooserDialog</code> with a default title.
-   *
-   * @param parent The parent window for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   */
+    private Calendar vDate = null;
 
-  public DateChooserDialog(Frame parent, boolean modal)
-  {
-    this(parent, "", modal);
-  }
+    /**
+     * Construct a new <code>DateChooserDialog</code> with a default title.
+     *
+     * @param parent The parent window for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     */
 
-  /** Construct a new <code>DateChooserDialog</code> with a default title.
-   *
-   * @param parent The parent window for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   *
-   * @since Kiwi 1.4
-   */
+    public DateChooserDialog(Frame parent, boolean modal) {
+        this(parent, "", modal);
+    }
 
-  public DateChooserDialog(Dialog parent, boolean modal)
-  {
-    this(parent, "", modal);
-  }
-  
-  /** Construct a new <code>DateChooserDialog</code>.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   */
+    /**
+     * Construct a new <code>DateChooserDialog</code> with a default title.
+     *
+     * @param parent The parent window for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     * @since Kiwi 1.4
+     */
 
-  public DateChooserDialog(Frame parent, String title, boolean modal)
-  {
-    super(parent, title, modal);
-    setResizable(false);
-  }
+    public DateChooserDialog(Dialog parent, boolean modal) {
+        this(parent, "", modal);
+    }
 
-  /** Construct a new <code>DateChooserDialog</code>.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog.
-   * @param modal A flag specifying whether this dialog will be modal.
-   *
-   * @since Kiwi 1.4
-   */
+    /**
+     * Construct a new <code>DateChooserDialog</code>.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     */
 
-  public DateChooserDialog(Dialog parent, String title, boolean modal)
-  {
-    super(parent, title, modal);
-    setResizable(false);
-  }
-  
-  /** Build the dialog user interface. */
+    public DateChooserDialog(Frame parent, String title, boolean modal) {
+        super(parent, title, modal);
+        setResizable(false);
+    }
 
-  protected Component buildDialogUI()
-  {
-    LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
-    
-    setComment(loc.getMessage("kiwi.dialog.prompt.date_select"));
-    if(getTitle().length() == 0)
-      setTitle(loc.getMessage("kiwi.dialog.title.date_select"));
+    /**
+     * Construct a new <code>DateChooserDialog</code>.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog.
+     * @param modal  A flag specifying whether this dialog will be modal.
+     * @since Kiwi 1.4
+     */
 
-    return(cal = new DateChooser());
-  }
+    public DateChooserDialog(Dialog parent, String title, boolean modal) {
+        super(parent, title, modal);
+        setResizable(false);
+    }
 
-  /** Show or hide the dialog. */
+    /**
+     * Build the dialog user interface.
+     */
 
-  public void setVisible(boolean flag)
-  {
-    if(flag)
-      v_date = null;
-    super.setVisible(flag);
-  }
+    protected Component buildDialogUI() {
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
 
-  /** Accept the input. Always returns <code>true</code>. */
+        setComment(loc.getMessage("kiwi.dialog.prompt.date_select"));
+        if (getTitle().length() == 0) {
+            setTitle(loc.getMessage("kiwi.dialog.title.date_select"));
+        }
 
-  protected boolean accept()
-  {
-    v_date = cal.getSelectedDate();
-    return(true);
-  }
+        cal = new DateChooser();
+        return cal;
+    }
 
-  /** Get the selected date.
-   *
-   * @return The date selected, as a <code>Calendar</code> object, or
-   * <code>null</code> if the dialog was cancelled.
-   */
+    /**
+     * Show or hide the dialog.
+     */
 
-  public Calendar getDate()
-  {
-    return(v_date);
-  }
+    public void setVisible(boolean flag) {
+        if (flag) {
+            vDate = null;
+        }
+        super.setVisible(flag);
+    }
 
-  /** Set the selected date.
-   *
-   * @param date The new date.
-   */
-  
-  public void setDate(Calendar date)
-  {
-    cal.setSelectedDate(date);
-  }
+    /**
+     * Accept the input. Always returns <code>true</code>.
+     */
 
-  /** Get the latest selectable date for the chooser.
-   *
-   * @return  The maximum selectable date, or <code>null</code> if there is no
-   * maximum date currently set.
-   */
-  
-  public Calendar getMaximumDate()
-  {
-    return(cal.getMaximumDate());
-  }
-  
-  /** Set the latest selectable date for the chooser.
-   *
-   * @param date The (possibly <code>null</code>) maximum selectable date.
-   */
-   
-  public void setMaximumDate(Calendar date)
-  {
-    cal.setMaximumDate(date);
-  }
+    protected boolean accept() {
+        vDate = cal.getSelectedDate();
+        return (true);
+    }
 
-  /** Get the earliest selectable date for the chooser.
-   *
-   * @return  The minimum selectable date, or <code>null</code> if there is no
-   * minimum date currently set.
-   */
-  
-  public Calendar getMinimumDate()
-  {
-    return(cal.getMinimumDate());
-  }
-  
-  /** Set the earliest selectable date for the chooser.
-   *
-   * @param date The (possibly <code>null</code>) minimum selectable date.
-   */
-  
-  public void setMinimumDate(Calendar date)
-  {
-    cal.setMinimumDate(date);
-  }
+    /**
+     * Get the selected date.
+     *
+     * @return The date selected, as a <code>Calendar</code> object, or
+     * <code>null</code> if the dialog was cancelled.
+     */
 
-  /** Set the size of date cells in the calendar pane.
-   *
-   * @param size The width and height, in pixels, of a cell.
-   *
-   * @since Kiwi 2.0
-   */
+    public Calendar getDate() {
+        return (vDate);
+    }
 
-  public void setCellSize(int size)
-  {
-    cal.setCellSize(size);
-    pack();
-  }
-  
+    /**
+     * Set the selected date.
+     *
+     * @param date The new date.
+     */
+
+    public void setDate(Calendar date) {
+        cal.setSelectedDate(date);
+    }
+
+    /**
+     * Get the latest selectable date for the chooser.
+     *
+     * @return The maximum selectable date, or <code>null</code> if there is no
+     * maximum date currently set.
+     */
+
+    public Calendar getMaximumDate() {
+        return (cal.getMaximumDate());
+    }
+
+    /**
+     * Set the latest selectable date for the chooser.
+     *
+     * @param date The (possibly <code>null</code>) maximum selectable date.
+     */
+
+    public void setMaximumDate(Calendar date) {
+        cal.setMaximumDate(date);
+    }
+
+    /**
+     * Get the earliest selectable date for the chooser.
+     *
+     * @return The minimum selectable date, or <code>null</code> if there is no
+     * minimum date currently set.
+     */
+
+    public Calendar getMinimumDate() {
+        return (cal.getMinimumDate());
+    }
+
+    /**
+     * Set the earliest selectable date for the chooser.
+     *
+     * @param date The (possibly <code>null</code>) minimum selectable date.
+     */
+
+    public void setMinimumDate(Calendar date) {
+        cal.setMinimumDate(date);
+    }
+
+    /**
+     * Set the size of date cells in the calendar pane.
+     *
+     * @param size The width and height, in pixels, of a cell.
+     * @since Kiwi 2.0
+     */
+
+    public void setCellSize(int size) {
+        cal.setCellSize(size);
+        pack();
+    }
+
 }
-
-/* end of source file */

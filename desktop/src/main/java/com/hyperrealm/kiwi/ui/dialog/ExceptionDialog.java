@@ -19,16 +19,25 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
 
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.JList;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
-/** A dialog for presenting an exception to the user. The dialog displays a
+import com.hyperrealm.kiwi.ui.KButton;
+import com.hyperrealm.kiwi.ui.KLabelArea;
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.KScrollPane;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
+import com.hyperrealm.kiwi.util.ResourceManager;
+
+/**
+ * A dialog for presenting an exception to the user. The dialog displays a
  * message as well as the detail of the exception, including its stack trace.
  *
  * <p><center>
@@ -40,187 +49,185 @@ import com.hyperrealm.kiwi.util.*;
  * <img src="snapshot/ExceptionDialog_2.gif"><br>
  * <i>An example ExceptionDialog with the detail expanded.</i>
  * </center>
- * 
+ *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
+@SuppressWarnings("unused")
+public class ExceptionDialog extends ComponentDialog {
 
-public class ExceptionDialog extends ComponentDialog
-{
-  private KButton b_detail, b_copy;
-  private JList l_trace;
-  private KPanel p_main, p_detail;
-  private JTextField t_exception;
-  private KLabelArea l_message;
-  private boolean detailShown = false;
-  private KScrollPane scroll;
-  private static Dimension listSize = new Dimension(350, 150);
-  private boolean expandable = true;
-  private Throwable throwable;
-  
-  /** Construct a new modal <code>ExceptionDialog</code> with the specified
-   * parent window.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog window.
-   */
-  
-  public ExceptionDialog(Frame parent, String title)
-  {
-    super(parent, title, true, false);
-  }
+    private KButton bDetail, bCopy;
 
-  /** Construct a new modal <code>ExceptionDialog</code> with the specified
-   * parent window.
-   *
-   * @param parent The parent window for the dialog.
-   * @param title The title for the dialog window.
-   * @since Kiwi 2.1
-   */
-  
-  public ExceptionDialog(Dialog parent, String title)
-  {
-    super(parent, title, true, false);
-  }
-  
-  /** Set the "expandable" mode of the dialog. If the mode is enabled, the
-   * dialog will include a "detail" button, which, when clicked, will
-   * expand the dialog to display the exception type and stack trace.
-   * This mode is enabled by default.
-   */
+    private JList<StackTraceElement> lTrace;
 
-  public void setExpandable(boolean expandable)
-  {
-    this.expandable = expandable;
-    
-    b_detail.setVisible(expandable);
-  }
-  
-  /** Build the dialog user interface. */
-  
-  protected Component buildDialogUI()
-  {
-    setComment(null);
+    private KPanel pMain, pDetail;
 
-    ResourceManager resmgr = KiwiUtils.getResourceManager();
-    
-    setIcon(resmgr.getIcon("dialog_alert.png"));
-    setIconPosition(SwingConstants.TOP);
+    private JTextField tException;
 
-    LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
-    
-    b_detail = new KButton(loc.getMessage("kiwi.button.detail"),
-                           resmgr.getIcon("arrow_expand.png"));
+    private KLabelArea lMessage;
 
-    b_detail.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent evt)
-        {
-          Object o = evt.getSource();
-          
-          if(o == b_detail)
-          {
-            detailShown = !detailShown;
-            
-            if(detailShown)
-              p_main.add("Center", p_detail);
-            else
-              p_main.remove(p_detail);
-            
-            pack();
-            
-            if(detailShown)
-            {
-              b_detail.setVisible(false);
-              addButton(b_copy);
-            }
-          }
-        }
-      });
-    addButton(b_detail);
+    private boolean detailShown = false;
 
-    b_copy = new KButton(loc.getMessage("kiwi.button.copy"));
-    b_copy.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent evt)
-        {
-          Object o = evt.getSource();
-          
-          if(o == b_copy)
-          {
-            KiwiUtils.setClipboardText(
-              KiwiUtils.stackTraceToString(throwable));
-          }
-        }
-      });
-    
-    p_main = new KPanel();
-    p_main.setLayout(new BorderLayout(5, 5));
-    
-    l_message = new KLabelArea(1, 30);
-    p_main.add("North", l_message);
-    
-    p_detail = new KPanel();
-    p_detail.setLayout(new BorderLayout(5, 5));
-    
-    t_exception = new JTextField();
-    t_exception.setFont(KiwiUtils.boldFont);
-    t_exception.setOpaque(false);
-    t_exception.setEditable(false);
-    
-    p_detail.add("North", t_exception);
-    
-    l_trace = new JList();
-    l_trace.setFont(KiwiUtils.plainFont);
-    scroll = new KScrollPane(l_trace);
-    scroll.setSize(listSize);
-    scroll.setPreferredSize(listSize);
-    
-    p_detail.add("Center", scroll);
-    
-    return(p_main);
-  }
-    
-  /** Set a textual error message and the throwable object to be displayed in
-   *  the dialog.
-   *
-   * @param message The message.
-   * @param throwable The throwable.
-   */
-  
-  public void setException(String message, Throwable throwable)
-  {
-    String tmsg = throwable.getMessage();
-    if(tmsg != null)
-      message += "\n" + tmsg;
-    else
-      message += "\n(no message)";
+    private boolean expandable = true;
 
-    l_message.setText(message);
-    
-    l_trace.setListData(throwable.getStackTrace());
-    t_exception.setText(throwable.getClass().getName());
-    this.throwable = throwable;
-  }
-  
-  /** Show or hide the dialog. */
-  
-  public void setVisible(boolean flag)
-  {
-    if(flag)
-    {
-      detailShown = false;
-      p_main.remove(p_detail);
-      b_detail.setVisible(expandable);
-      removeButton(b_copy);
-      pack();
+    private Throwable throwable;
 
-      b_ok.requestFocus();
+    /**
+     * Construct a new modal <code>ExceptionDialog</code> with the specified
+     * parent window.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog window.
+     */
+
+    public ExceptionDialog(Frame parent, String title) {
+        super(parent, title, true, false);
     }
-    
-    super.setVisible(flag);
-  }
-  
-}
 
-/* end of source file */
+    /**
+     * Construct a new modal <code>ExceptionDialog</code> with the specified
+     * parent window.
+     *
+     * @param parent The parent window for the dialog.
+     * @param title  The title for the dialog window.
+     * @since Kiwi 2.1
+     */
+
+    public ExceptionDialog(Dialog parent, String title) {
+        super(parent, title, true, false);
+    }
+
+    /**
+     * Set the "expandable" mode of the dialog. If the mode is enabled, the
+     * dialog will include a "detail" button, which, when clicked, will
+     * expand the dialog to display the exception type and stack trace.
+     * This mode is enabled by default.
+     */
+
+    public void setExpandable(boolean expandable) {
+        this.expandable = expandable;
+
+        bDetail.setVisible(expandable);
+    }
+
+    /**
+     * Build the dialog user interface.
+     */
+
+    protected Component buildDialogUI() {
+        setComment(null);
+
+        ResourceManager resmgr = KiwiUtils.getResourceManager();
+
+        setIcon(resmgr.getIcon("dialog_alert.png"));
+        setIconPosition(SwingConstants.TOP);
+
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
+
+        bDetail = new KButton(loc.getMessage("kiwi.button.detail"),
+            resmgr.getIcon("arrow_expand.png"));
+
+        bDetail.addActionListener(evt -> {
+            Object o = evt.getSource();
+
+            if (o == bDetail) {
+                detailShown = !detailShown;
+
+                if (detailShown) {
+                    pMain.add(DEFAULT_POSITION, pDetail);
+                } else {
+                    pMain.remove(pDetail);
+                }
+
+                pack();
+
+                if (detailShown) {
+                    bDetail.setVisible(false);
+                    addButton(bCopy);
+                }
+            }
+        });
+        addButton(bDetail);
+
+        bCopy = new KButton(loc.getMessage("kiwi.button.copy"));
+        bCopy.addActionListener(evt -> {
+            Object o = evt.getSource();
+
+            if (o == bCopy) {
+                KiwiUtils.setClipboardText(
+                    KiwiUtils.stackTraceToString(throwable));
+            }
+        });
+
+        pMain = new KPanel();
+        pMain.setLayout(DEFAULT_BORDER_LAYOUT);
+
+        lMessage = new KLabelArea(1, DEFAULT_LABEL_LENGTH);
+        pMain.add(POSITION_NORTH, lMessage);
+
+        pDetail = new KPanel();
+        pDetail.setLayout(DEFAULT_BORDER_LAYOUT);
+
+        tException = new JTextField();
+        tException.setFont(KiwiUtils.boldFont);
+        tException.setOpaque(false);
+        tException.setEditable(false);
+
+        pDetail.add(POSITION_NORTH, tException);
+
+        lTrace = new JList<>();
+        lTrace.setFont(KiwiUtils.plainFont);
+        KScrollPane scroll = new KScrollPane(lTrace);
+        scroll.setSize(DEFAULT_LIST_SIZE);
+        scroll.setPreferredSize(DEFAULT_LIST_SIZE);
+
+        pDetail.add(DEFAULT_POSITION, scroll);
+
+        return (pMain);
+    }
+
+    /**
+     * Set a textual error message and the throwable object to be displayed in
+     * the dialog.
+     *
+     * @param message   The message.
+     * @param throwable The throwable.
+     */
+
+    public void setException(String message, Throwable throwable) {
+
+        StringBuilder sb = new StringBuilder(message);
+
+        String tmsg = throwable.getMessage();
+        if (tmsg != null) {
+            sb.append("\n").append(tmsg);
+        } else {
+            sb.append("\n(no message)");
+        }
+
+        lMessage.setText(sb.toString());
+
+        lTrace.setListData(throwable.getStackTrace());
+        tException.setText(throwable.getClass().getName());
+        this.throwable = throwable;
+    }
+
+    /**
+     * Show or hide the dialog.
+     */
+
+    public void setVisible(boolean flag) {
+        if (flag) {
+            detailShown = false;
+            pMain.remove(pDetail);
+            bDetail.setVisible(expandable);
+            removeButton(bCopy);
+            pack();
+
+            bOk.requestFocus();
+        }
+
+        super.setVisible(flag);
+    }
+
+}
