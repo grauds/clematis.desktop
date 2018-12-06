@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.io;
+package com.hyperrealm.kiwi.io.xdr;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -31,9 +31,10 @@ import java.io.OutputStream;
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
-
+@SuppressWarnings({"unused", "checkstyle:magicnumber"})
 public class XDROutputStream extends FilterOutputStream
         implements XDRDataOutput {
+
     private static final int UNIT_SIZE = 4;
 
     /**
@@ -58,7 +59,7 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public void writeChar(char value) throws IOException {
         write((byte) 0);
         write((byte) 0);
@@ -69,61 +70,62 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public void writeShort(short value) throws IOException {
+        writeShort(value >>> 8, 0xFF & value, value);
+    }
+
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    private void writeShort(int i, int i2, int value) throws IOException {
         write((byte) 0);
         write((byte) 0);
-        write((byte) (0xFF & (value >>> 8)));
-        write((byte) (0xFF & value));
+        write((byte) (0xFF & (i)));
+        write((byte) (i2));
     }
 
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public void writeUnsignedShort(int value) throws IOException {
         // will this work??
-        write((byte) 0);
-        write((byte) 0);
-        write((byte) (0xFF & (value >>> 8)));
-        write((byte) (0xFF & value));
+        writeShort(value >>> 8, 0xFF & value, value);
     }
 
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public void writeInt(int value) throws IOException {
-        write((byte) (0xFF & (value >>> 24)));
-        write((byte) (0xFF & (value >>> 16)));
-        write((byte) (0xFF & (value >>> 8)));
-        write((byte) (0xFF & value));
+        writeInt(value >>> 24, value >>> 16, value >>> 8, 0xFF & value, value);
+    }
+
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    private void writeInt(long i, long i2, long i3, long i4, long value) throws IOException {
+        write((byte) (0xFF & (i)));
+        write((byte) (0xFF & (i2)));
+        write((byte) (0xFF & (i3)));
+        write((byte) (i4));
     }
 
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public void writeUnsignedInt(long value) throws IOException {
-        write((byte) (0xFF & (value >>> 24)));
-        write((byte) (0xFF & (value >>> 16)));
-        write((byte) (0xFF & (value >>> 8)));
-        write((byte) (0xFF & value));
+        writeInt(value >>> 24, value >>> 16, value >>> 8, 0xFF & value, value);
     }
 
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public void writeLong(long value) throws IOException {
         write((byte) (0xFF & (value >>> 56)));
         write((byte) (0xFF & (value >>> 48)));
         write((byte) (0xFF & (value >>> 40)));
         write((byte) (0xFF & (value >>> 32)));
-        write((byte) (0xFF & (value >>> 24)));
-        write((byte) (0xFF & (value >>> 16)));
-        write((byte) (0xFF & (value >>> 8)));
-        write((byte) (0xFF & value));
+        writeInt(value >>> 24, value >>> 16, value >>> 8, 0xFF & value, value);
     }
 
     /**
@@ -183,8 +185,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeBooleanVector(boolean[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeBoolean(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeBoolean(array[offsetInt++]);
+        }
     }
 
     /**
@@ -222,9 +228,11 @@ public class XDROutputStream extends FilterOutputStream
         write(array, offset, length);
 
         int pad = length % UNIT_SIZE;
-        if (pad != 0)
-            for (int i = (UNIT_SIZE - pad); i > 0; i--)
+        if (pad != 0) {
+            for (int i = (UNIT_SIZE - pad); i > 0; i--) {
                 write((byte) 0);
+            }
+        }
     }
 
     /**
@@ -259,8 +267,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeShortVector(short[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeShort(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeShort(array[offsetInt++]);
+        }
     }
 
     /**
@@ -295,8 +307,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeUnsignedShortVector(int[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeUnsignedShort(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeUnsignedShort(array[offsetInt++]);
+        }
     }
 
     /**
@@ -331,8 +347,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeIntVector(int[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeInt(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeInt(array[offsetInt++]);
+        }
     }
 
     /**
@@ -367,8 +387,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeUnsignedIntVector(long[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeUnsignedInt(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeUnsignedInt(array[offsetInt++]);
+        }
     }
 
     /**
@@ -403,8 +427,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeLongVector(long[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeLong(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeLong(array[offsetInt++]);
+        }
     }
 
     /**
@@ -439,8 +467,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeFloatVector(float[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeFloat(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeFloat(array[offsetInt++]);
+        }
     }
 
     /**
@@ -475,8 +507,12 @@ public class XDROutputStream extends FilterOutputStream
 
     public void writeDoubleVector(double[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            writeDouble(array[offset++]);
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeDouble(array[offsetInt++]);
+        }
     }
 
 }

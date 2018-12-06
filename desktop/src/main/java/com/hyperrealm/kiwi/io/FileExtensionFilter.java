@@ -19,10 +19,11 @@
 
 package com.hyperrealm.kiwi.io;
 
-import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * A convenience implementation of <code>FileFilter</code> that filters files
@@ -41,11 +42,14 @@ import java.util.Iterator;
  *
  * @author Mark Lindner
  */
-
 public class FileExtensionFilter extends FileFilter {
-    private HashMap<String, FileFilter> filters = null;
+
+    private HashMap<String, FileFilter> filters;
+
     private String description = null;
+
     private String fullDescription = null;
+
     private boolean useExtensionsInDescription = true;
 
     /**
@@ -54,7 +58,7 @@ public class FileExtensionFilter extends FileFilter {
      */
 
     public FileExtensionFilter() {
-        filters = new HashMap<String, FileFilter>();
+        filters = new HashMap<>();
     }
 
     /**
@@ -85,8 +89,9 @@ public class FileExtensionFilter extends FileFilter {
 
     public FileExtensionFilter(String extension, String description) {
         this();
-        if (extension != null)
+        if (extension != null) {
             addExtension(extension);
+        }
 
         this.description = description;
     }
@@ -126,8 +131,9 @@ public class FileExtensionFilter extends FileFilter {
 
     public FileExtensionFilter(String[] extensions, String description) {
         this();
-        for (int i = 0; i < extensions.length; i++)
-            addExtension(extensions[i]);
+        for (String extension : extensions) {
+            addExtension(extension);
+        }
 
         this.description = description;
     }
@@ -144,15 +150,19 @@ public class FileExtensionFilter extends FileFilter {
      */
 
     public boolean accept(File f) {
-        if (f != null) {
-            if (f.isDirectory())
-                return (true);
 
-            String extension = getExtension(f);
-            return (extension != null) && (filters.get(extension) != null);
+        boolean ret = false;
+
+        if (f != null) {
+            if (f.isDirectory()) {
+                ret = true;
+            } else {
+                String extension = getExtension(f);
+                ret = extension != null && filters.get(extension) != null;
+            }
         }
 
-        return (false);
+        return ret;
     }
 
     /**
@@ -163,11 +173,13 @@ public class FileExtensionFilter extends FileFilter {
      */
 
     private String getExtension(File f) {
+
         if (f != null) {
             String filename = f.getName();
             int i = filename.lastIndexOf('.');
-            if ((i > 0) && (i < filename.length() - 1))
+            if ((i > 0) && (i < filename.length() - 1)) {
                 return (filename.substring(i + 1).toLowerCase());
+            }
         }
 
         return (null);
@@ -191,7 +203,7 @@ public class FileExtensionFilter extends FileFilter {
      * @param extension The extension to add.
      */
 
-    public void addExtension(String extension) {
+    private void addExtension(String extension) {
         filters.put(extension.toLowerCase(), this);
         fullDescription = null;
     }
@@ -202,14 +214,17 @@ public class FileExtensionFilter extends FileFilter {
      * @return The description.
      */
 
+    @SuppressWarnings("CheckStyle")
     public String getDescription() {
         if (fullDescription == null) {
+
+            StringBuilder sb = new StringBuilder();
+            if (description != null) {
+                sb.append(description);
+                sb.append(' ');
+            }
+
             if (description == null || isExtensionListInDescription()) {
-                StringBuilder sb = new StringBuilder();
-                if (description != null) {
-                    sb.append(description);
-                    sb.append(' ');
-                }
 
                 sb.append('(');
                 Iterator<String> iter = filters.keySet().iterator();
@@ -217,8 +232,9 @@ public class FileExtensionFilter extends FileFilter {
 
                 while (iter.hasNext()) {
                     String ext = iter.next();
-                    if (!first)
+                    if (!first) {
                         sb.append(", ");
+                    }
 
                     first = false;
                     sb.append('.');
@@ -228,8 +244,9 @@ public class FileExtensionFilter extends FileFilter {
                 sb.append(')');
 
                 fullDescription = sb.toString();
-            } else
+            } else {
                 fullDescription = description;
+            }
         }
 
         return (fullDescription);

@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.io;
+package com.hyperrealm.kiwi.io.xdr;
 
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ import java.io.IOException;
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
-
+@SuppressWarnings("unused")
 public interface XDRDataInput {
 
     /**

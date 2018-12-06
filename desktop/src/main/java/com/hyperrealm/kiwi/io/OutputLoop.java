@@ -19,7 +19,11 @@
 
 package com.hyperrealm.kiwi.io;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
 
 /**
  * A class for redirecting a program's standard output stream back into
@@ -30,8 +34,11 @@ import java.io.*;
  */
 
 public class OutputLoop {
+
     private PipedInputStream pipein;
+
     private PipedOutputStream pipeout;
+
     private PrintStream oldout, newout;
 
     /**
@@ -42,6 +49,7 @@ public class OutputLoop {
      */
 
     public OutputLoop() throws IOException {
+
         pipeout = new PipedOutputStream();
         pipein = new PipedInputStream(pipeout);
 
@@ -66,10 +74,11 @@ public class OutputLoop {
      */
 
     public void setActive(boolean active) {
-        if (active)
+        if (active) {
             System.setOut(newout);
-        else
+        } else {
             System.setOut(oldout);
+        }
     }
 
     /**
@@ -83,7 +92,7 @@ public class OutputLoop {
         try {
             pipein.close();
             pipeout.close();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         } finally {
             pipein = null;
             pipeout = null;

@@ -30,11 +30,14 @@ import java.io.FilenameFilter;
  * @author Mark Lindner
  * @see com.hyperrealm.kiwi.io.FileConsumer
  */
-
+@SuppressWarnings("unused")
 public class FilesystemTraverser {
+
     private File root;
+
     private FilenameFilter filter;
-    private FileConsumer consumer = null;
+
+    private FileConsumer consumer;
 
     /**
      * Construct a new <code>FilesystemTraverser</code>.
@@ -79,40 +82,50 @@ public class FilesystemTraverser {
      */
 
     public boolean traverse() {
-        if (!root.exists())
-            return (false);
 
-        if (!root.isDirectory())
-            return (true);
-        else
-            return (_traverse(root));
+        if (!root.exists()) {
+            return (false);
+        }
+
+        return !root.isDirectory() || traverse(root);
     }
 
     /* one iteration of traversal */
 
-    private boolean _traverse(File dir) {
+    private boolean traverse(File dir) {
+
+        boolean ret = true;
         String[] files = ((filter == null) ? dir.list() : dir.list(filter));
 
-        for (int i = 0; i < files.length; i++) {
-            File f = new File(dir, files[i]);
+        if (files == null) {
+            return false;
+        }
+
+        for (String file : files) {
+            File f = new File(dir, file);
 
             if (f.isDirectory()) {
-                if (!f.canRead()) {
-                    if (!consumer.accessError(f))
-                        return (false);
+                if (!f.canRead() && !consumer.accessError(f)) {
+                    ret = false;
+                    break;
                 }
 
-                if (!consumer.accept(f))
-                    return (false);
-                else if (!_traverse(f))
-                    return (false);
+                if (!consumer.accept(f)) {
+                    ret = false;
+                    break;
+                } else if (!traverse(f)) {
+                    ret = false;
+                    break;
+                }
             } else {
-                if (!consumer.accept(f))
-                    return (false);
+                if (!consumer.accept(f)) {
+                    ret = false;
+                    break;
+                }
             }
         }
 
-        return (true);
+        return ret;
     }
 
 }

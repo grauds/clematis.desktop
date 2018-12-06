@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.io;
+package com.hyperrealm.kiwi.io.xdr;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -31,11 +31,15 @@ import java.io.IOException;
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
+ * @link https://en.wikipedia.org/wiki/External_Data_Representation
  */
-
+@SuppressWarnings({"unused", "checkstyle:magicnumber", "CheckStyle"})
 public class XDRBufferReader implements XDRDataInput {
+
     private byte[] buffer;
+
     private int left;
+
     private int pos;
 
     /**
@@ -73,7 +77,7 @@ public class XDRBufferReader implements XDRDataInput {
      *               in the buffer.
      */
 
-    public XDRBufferReader(byte[] buffer, int offset, int length) {
+    private XDRBufferReader(byte[] buffer, int offset, int length) {
         this.buffer = buffer;
         left = length;
         pos = offset;
@@ -120,13 +124,14 @@ public class XDRBufferReader implements XDRDataInput {
      */
 
     public char readChar() throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
         pos += 3;
 
-        return ((char) (buffer[pos++] & 0xFF));
+        return ((char) (buffer[pos++] & XDRConstants.STOP_BYTE));
     }
 
     /**
@@ -134,13 +139,13 @@ public class XDRBufferReader implements XDRDataInput {
      */
 
     public short readShort() throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
-
+        }
         left -= XDRConstants.UNIT_SIZE;
         pos += 2;
 
-        return ((short) ((buffer[pos++] << 8) | (buffer[pos++] & 0xFF)));
+        return ((short) ((buffer[pos++] << 8) | (buffer[pos++] & XDRConstants.STOP_BYTE)));
     }
 
     /**
@@ -148,13 +153,14 @@ public class XDRBufferReader implements XDRDataInput {
      */
 
     public int readUnsignedShort() throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
         pos += 2;
 
-        return (((buffer[pos++] & 0xFF) << 8) | (buffer[pos++] & 0xFF));
+        return (((buffer[pos++] & XDRConstants.STOP_BYTE) << 8) | (buffer[pos++] & XDRConstants.STOP_BYTE));
     }
 
     /**
@@ -162,15 +168,16 @@ public class XDRBufferReader implements XDRDataInput {
      */
 
     public int readInt() throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
 
-        return (((buffer[pos++] & 0xFF) << 24)
-                | ((buffer[pos++] & 0xFF) << 16)
-                | ((buffer[pos++] & 0xFF) << 8)
-                | (buffer[pos++] & 0xFF));
+        return (((buffer[pos++] & XDRConstants.STOP_BYTE) << 24)
+                | ((buffer[pos++] & XDRConstants.STOP_BYTE) << 16)
+                | ((buffer[pos++] & XDRConstants.STOP_BYTE) << 8)
+                | (buffer[pos++] & XDRConstants.STOP_BYTE));
     }
 
     /**
@@ -178,15 +185,16 @@ public class XDRBufferReader implements XDRDataInput {
      */
 
     public long readUnsignedInt() throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
 
-        return ((((long) (buffer[pos++] & 0xFF)) << 24)
-                | (((long) (buffer[pos++] & 0xFF)) << 16)
-                | (((long) (buffer[pos++] & 0xFF)) << 8)
-                | ((long) (buffer[pos++] & 0xFF)));
+        return ((((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 24)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 16)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 8)
+                | ((long) (buffer[pos++] & XDRConstants.STOP_BYTE)));
     }
 
     /**
@@ -194,19 +202,20 @@ public class XDRBufferReader implements XDRDataInput {
      */
 
     public long readLong() throws IOException {
-        if (left < (XDRConstants.UNIT_SIZE * 2))
+        if (left < (XDRConstants.UNIT_SIZE * 2)) {
             throw (new EOFException());
+        }
 
         left -= (XDRConstants.UNIT_SIZE * 2);
 
-        return ((((long) (buffer[pos++] & 0xFF)) << 56)
-                | (((long) (buffer[pos++] & 0xFF)) << 48)
-                | (((long) (buffer[pos++] & 0xFF)) << 40)
-                | (((long) (buffer[pos++] & 0xFF)) << 32)
-                | (((long) (buffer[pos++] & 0xFF)) << 24)
-                | (((long) (buffer[pos++] & 0xFF)) << 16)
-                | (((long) (buffer[pos++] & 0xFF)) << 8)
-                | ((long) (buffer[pos++] & 0xFF)));
+        return ((((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 56)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 48)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 40)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 32)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 24)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 16)
+                | (((long) (buffer[pos++] & XDRConstants.STOP_BYTE)) << 8)
+                | ((long) (buffer[pos++] & XDRConstants.STOP_BYTE)));
     }
 
     /**
@@ -232,8 +241,9 @@ public class XDRBufferReader implements XDRDataInput {
     public String readString(int length) throws IOException {
         int len = length + getPad(length);
 
-        if (left < len)
+        if (left < len) {
             throw (new EOFException());
+        }
 
         String s = null;
 
@@ -286,8 +296,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readBooleanVector(boolean[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readBoolean();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readBoolean();
+        }
     }
 
     /**
@@ -319,8 +333,9 @@ public class XDRBufferReader implements XDRDataInput {
             throws IOException {
         int len = length + getPad(length);
 
-        if (left < len)
+        if (left < len) {
             throw (new EOFException());
+        }
 
         System.arraycopy(buffer, pos, array, 0, length);
 
@@ -355,8 +370,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readShortVector(short[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readShort();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readShort();
+        }
     }
 
     /**
@@ -386,8 +405,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readUnsignedShortVector(int[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readUnsignedShort();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readUnsignedShort();
+        }
     }
 
     /**
@@ -417,8 +440,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readIntVector(int[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readInt();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readInt();
+        }
     }
 
     /**
@@ -448,8 +475,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readUnsignedIntVector(long[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readUnsignedInt();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readUnsignedInt();
+        }
     }
 
     /**
@@ -479,8 +510,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readLongVector(long[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readLong();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readLong();
+        }
     }
 
     /**
@@ -510,8 +545,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readFloatVector(float[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readFloat();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readFloat();
+        }
     }
 
     /**
@@ -541,8 +580,12 @@ public class XDRBufferReader implements XDRDataInput {
 
     public void readDoubleVector(double[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readDouble();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readDouble();
+        }
     }
 
     /*

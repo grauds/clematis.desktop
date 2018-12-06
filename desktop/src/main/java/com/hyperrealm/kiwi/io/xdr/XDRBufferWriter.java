@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.io;
+package com.hyperrealm.kiwi.io.xdr;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -31,8 +31,9 @@ import java.io.IOException;
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
+ * @link https://en.wikipedia.org/wiki/External_Data_Representation
  */
-
+@SuppressWarnings({"unused", "checkstyle:magicnumber", "CheckStyle"})
 public class XDRBufferWriter implements XDRDataOutput {
     private byte[] buffer;
     private int left;
@@ -70,7 +71,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      * @param length The length (the number of available bytes) in the buffer.
      */
 
-    public XDRBufferWriter(byte[] buffer, int offset, int length) {
+    private XDRBufferWriter(byte[] buffer, int offset, int length) {
         this.buffer = buffer;
         left = length;
         pos = offset;
@@ -113,9 +114,10 @@ public class XDRBufferWriter implements XDRDataOutput {
 
     public void setLength(int pos) {
         if (pos > buffer.length) {
-            pos = buffer.length;
+            this.pos = buffer.length;
+        } else {
+            this.pos = pos;            
         }
-        this.pos = pos;
     }
 
     /**
@@ -131,15 +133,16 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeChar(char value) throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
 
         buffer[pos++] = 0;
         buffer[pos++] = 0;
         buffer[pos++] = 0;
-        buffer[pos++] = (byte) (0xFF & value);
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & value);
     }
 
     /**
@@ -147,15 +150,16 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeShort(short value) throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
 
         buffer[pos++] = 0;
         buffer[pos++] = 0;
-        buffer[pos++] = (byte) (0xFF & (value >>> 8));
-        buffer[pos++] = (byte) (0xFF & value);
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 8));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & value);
     }
 
     /**
@@ -163,15 +167,16 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeUnsignedShort(int value) throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
 
         buffer[pos++] = 0;
         buffer[pos++] = 0;
-        buffer[pos++] = (byte) (0xFF & (value >>> 8));
-        buffer[pos++] = (byte) (0xFF & value);
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 8));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & value);
     }
 
     /**
@@ -179,15 +184,16 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeInt(int value) throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
 
-        buffer[pos++] = (byte) (0xFF & (value >>> 24));
-        buffer[pos++] = (byte) (0xFF & (value >>> 16));
-        buffer[pos++] = (byte) (0xFF & (value >>> 8));
-        buffer[pos++] = (byte) (0xFF & value);
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 24));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 16));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 8));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & value);
     }
 
     /**
@@ -200,10 +206,10 @@ public class XDRBufferWriter implements XDRDataOutput {
 
         left -= XDRConstants.UNIT_SIZE;
 
-        buffer[pos++] = (byte) (0xFF & (value >>> 24));
-        buffer[pos++] = (byte) (0xFF & (value >>> 16));
-        buffer[pos++] = (byte) (0xFF & (value >>> 8));
-        buffer[pos++] = (byte) (0xFF & value);
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 24));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 16));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 8));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & value);
     }
 
     /**
@@ -216,14 +222,14 @@ public class XDRBufferWriter implements XDRDataOutput {
 
         left -= (XDRConstants.UNIT_SIZE * 2);
 
-        buffer[pos++] = (byte) (0xFF & (value >>> 56));
-        buffer[pos++] = (byte) (0xFF & (value >>> 48));
-        buffer[pos++] = (byte) (0xFF & (value >>> 40));
-        buffer[pos++] = (byte) (0xFF & (value >>> 32));
-        buffer[pos++] = (byte) (0xFF & (value >>> 24));
-        buffer[pos++] = (byte) (0xFF & (value >>> 16));
-        buffer[pos++] = (byte) (0xFF & (value >>> 8));
-        buffer[pos++] = (byte) (0xFF & value);
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 56));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 48));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 40));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 32));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 24));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 16));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & (value >>> 8));
+        buffer[pos++] = (byte) (XDRConstants.STOP_BYTE & value);
     }
 
     /**

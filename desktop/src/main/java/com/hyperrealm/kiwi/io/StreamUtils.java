@@ -19,7 +19,11 @@
 
 package com.hyperrealm.kiwi.io;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * This class consists of several convenience routines for reading and
@@ -28,12 +32,13 @@ import java.io.*;
  * @author Mark Lindner
  * @since Kiwi 1.3.1
  */
-
+@SuppressWarnings("unused")
 public final class StreamUtils {
+
     /**
      * The data transfer block size.
      */
-    public static final int blockSize = 4096;
+    private static final int BLOCK_SIZE = 4096;
 
     /* Private constructor */
 
@@ -51,14 +56,16 @@ public final class StreamUtils {
      *                             the stream.
      */
 
-    public static final OutputStream readStreamToStream(InputStream input,
+    public static OutputStream readStreamToStream(InputStream input,
                                                         OutputStream output)
             throws IOException {
-        byte[] buf = new byte[blockSize];
+
+        byte[] buf = new byte[BLOCK_SIZE];
         int b;
 
-        while ((b = input.read(buf)) > 0)
+        while ((b = input.read(buf)) > 0) {
             output.write(buf, 0, b);
+        }
 
         return (output);
     }
@@ -73,7 +80,7 @@ public final class StreamUtils {
      *                             the stream.
      */
 
-    public static final String readStreamToString(InputStream input)
+    public static String readStreamToString(InputStream input)
             throws IOException {
         return (readStream(input).toString());
     }
@@ -87,7 +94,7 @@ public final class StreamUtils {
      *                             stream.
      */
 
-    public static final void writeStringToStream(String s, OutputStream output)
+    public static void writeStringToStream(String s, OutputStream output)
             throws IOException {
         InputStream input = new ByteArrayInputStream(s.getBytes());
 
@@ -104,7 +111,7 @@ public final class StreamUtils {
      *                             the stream.
      */
 
-    public static final byte[] readStreamToByteArray(InputStream input)
+    public static byte[] readStreamToByteArray(InputStream input)
             throws IOException {
         return (readStream(input).toByteArray());
     }
@@ -113,9 +120,9 @@ public final class StreamUtils {
      * <code>ByteArrayOutputStream. Returns a reference to the resulting stream.
      */
 
-    private static final ByteArrayOutputStream readStream(InputStream input)
+    private static ByteArrayOutputStream readStream(InputStream input)
             throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream(blockSize);
+        ByteArrayOutputStream output = new ByteArrayOutputStream(BLOCK_SIZE);
 
         readStreamToStream(input, output);
 

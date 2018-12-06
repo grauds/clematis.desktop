@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.io;
+package com.hyperrealm.kiwi.io.xdr;
 
 /**
  * XDR encoding constants.
@@ -26,15 +26,19 @@ package com.hyperrealm.kiwi.io;
  * @since Kiwi 2.4.1
  */
 
-public final class XDRConstants {
+final class XDRConstants {
     /**
      * XDR encoding unit size.
      */
-    public static final int UNIT_SIZE = 4;
+    static final int UNIT_SIZE = 4;
     /**
      * Character encoding for ASCII strings.
      */
-    public static final String ASCII_ENCODING = "US-ASCII";
+    static final String ASCII_ENCODING = "US-ASCII";
+    /**
+     *
+     */
+    static final int STOP_BYTE = 0xFF;
 
     private XDRConstants() {
     }

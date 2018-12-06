@@ -19,11 +19,13 @@
 
 package com.hyperrealm.kiwi.io;
 
-import com.hyperrealm.kiwi.text.Base64Codec;
-
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+//
+
+import com.hyperrealm.kiwi.text.Base64Codec;
 
 /**
  * This class implements a Base-64 encoding filter. It accepts binary data
@@ -47,10 +49,17 @@ import java.io.OutputStream;
  *
  * @author Mark Lindner
  * @since Kiwi 2.1.1
+ * @deprecated
+ * @see org.apache.commons.codec.binary.Base64OutputStream
  */
-
 public class Base64OutputStream extends FilterOutputStream {
-    private byte[] buf = new byte[3], bufx = new byte[4];
+
+    private static final int TEXT_CHUNK_TO_ENCODE_LENGTH = 3;
+
+    private static final int TEXT_CHUNK_ENCODED_LENGTH = 4;
+
+    private byte[] buf = new byte[TEXT_CHUNK_TO_ENCODE_LENGTH], bufx = new byte[TEXT_CHUNK_ENCODED_LENGTH];
+
     private int c = 0, w = Base64Codec.TUPLES_PER_LINE;
 
     /**
@@ -72,7 +81,7 @@ public class Base64OutputStream extends FilterOutputStream {
 
     public void write(int b) throws IOException {
         buf[c++] = (byte) b;
-        if (c == 3) {
+        if (c == TEXT_CHUNK_TO_ENCODE_LENGTH) {
             // encode this 3-byte sequence into a 4-char string & dump it out
 
             Base64Codec.encode(bufx, 0, buf, 0, c);

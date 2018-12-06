@@ -19,9 +19,13 @@
 
 package com.hyperrealm.kiwi.io;
 
-import com.hyperrealm.kiwi.util.Config;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-import java.io.*;
+import com.hyperrealm.kiwi.util.Config;
 
 /**
  * Persistent configuration object. This class extends
@@ -35,7 +39,8 @@ import java.io.*;
  */
 
 public class ConfigFile extends Config {
-    private File file = null;
+
+    private File file;
 
     /**
      * Construct a new <code>ConfigFile</code>. Note that the object has to be

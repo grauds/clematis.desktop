@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.io;
+package com.hyperrealm.kiwi.io.xdr;
 
 import java.io.EOFException;
 import java.io.FilterInputStream;
@@ -33,11 +33,14 @@ import java.nio.charset.StandardCharsets;
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
-
+@SuppressWarnings("unused")
 public class XDRInputStream extends FilterInputStream implements XDRDataInput {
+
     private static final int UNIT_SIZE = 4;
-    byte[] unitbuf = new byte[UNIT_SIZE];
-    byte[] unit2buf = new byte[UNIT_SIZE * 2];
+
+    private byte[] unitbuf = new byte[UNIT_SIZE];
+
+    private byte[] unit2buf = new byte[UNIT_SIZE * 2];
 
     /**
      * Construct a new <code>XDRInputStream</code> that wraps the given
@@ -60,7 +63,7 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public char readChar() throws IOException {
         readFully(unitbuf);
 
@@ -70,7 +73,7 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public short readShort() throws IOException {
         readFully(unitbuf);
 
@@ -80,7 +83,7 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public int readUnsignedShort() throws IOException {
         readFully(unitbuf);
 
@@ -90,7 +93,7 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public int readInt() throws IOException {
         readFully(unitbuf);
 
@@ -103,7 +106,7 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public long readUnsignedInt() throws IOException {
         readFully(unitbuf);
 
@@ -116,7 +119,7 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
     /**
      *
      */
-
+    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
     public long readLong() throws IOException {
         readFully(unit2buf);
 
@@ -157,13 +160,18 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
      */
 
     private void readFully(byte[] b, int offset, int length) throws IOException {
-        while (length > 0) {
+
+        int lengthInt = length;
+        int offsetInt = offset;
+
+        while (lengthInt > 0) {
             // in.read will block until some data is available.
-            int r = in.read(b, offset, length);
-            if (r < 0)
+            int r = in.read(b, offsetInt, length);
+            if (r < 0) {
                 throw new EOFException();
-            length -= r;
-            offset += r;
+            }
+            lengthInt -= r;
+            offsetInt += r;
         }
     }
 
@@ -174,8 +182,9 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
     private void align(int length) throws IOException {
         int pad = length % UNIT_SIZE;
 
-        if (pad != 0)
+        if (pad != 0) {
             readFully(unitbuf, 0, UNIT_SIZE - pad);
+        }
     }
 
     /**
@@ -228,8 +237,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readBooleanVector(boolean[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readBoolean();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readBoolean();
+        }
     }
 
     /**
@@ -291,8 +304,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readShortVector(short[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readShort();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readShort();
+        }
     }
 
     /**
@@ -322,8 +339,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readUnsignedShortVector(int[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readUnsignedShort();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readUnsignedShort();
+        }
     }
 
     /**
@@ -353,8 +374,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readIntVector(int[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readInt();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readInt();
+        }
     }
 
     /**
@@ -384,8 +409,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readUnsignedIntVector(long[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readUnsignedInt();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readUnsignedInt();
+        }
     }
 
     /**
@@ -415,8 +444,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readLongVector(long[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readLong();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readLong();
+        }
     }
 
     /**
@@ -446,8 +479,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readFloatVector(float[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readFloat();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readFloat();
+        }
     }
 
     /**
@@ -477,8 +514,12 @@ public class XDRInputStream extends FilterInputStream implements XDRDataInput {
 
     public void readDoubleVector(double[] array, int offset, int length)
             throws IOException {
-        for (int i = 0; i < length; i++)
-            array[offset++] = readDouble();
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            array[offsetInt++] = readDouble();
+        }
     }
 
 }

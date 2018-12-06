@@ -46,6 +46,7 @@ import com.hyperrealm.kiwi.text.Base64Codec;
  * @author Mark Lindner
  * @since Kiwi 2.1.1
  * @deprecated
+ * @see org.apache.commons.codec.binary.Base64InputStream
  */
 public class Base64InputStream extends FilterInputStream {
 
