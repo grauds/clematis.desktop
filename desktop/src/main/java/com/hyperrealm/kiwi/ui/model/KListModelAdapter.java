@@ -19,92 +19,91 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import java.util.*;
-import javax.swing.event.*;
+import com.hyperrealm.kiwi.event.KListModelEvent;
+import com.hyperrealm.kiwi.event.KListModelListener;
 
-import com.hyperrealm.kiwi.event.*;
-
-/** A base class for <code>KListModel</code> adapters. See subclasses for
+/**
+ * A base class for <code>KListModel</code> adapters. See subclasses for
  * details.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public abstract class KListModelAdapter implements KListModelListener
-{
-  /**
-   * The <code>KListModel</code> which is wrapped by this adapter.
-   */
-  protected KListModel model = null;
+public abstract class KListModelAdapter<T> implements KListModelListener {
+    /**
+     * The <code>KListModel</code> which is wrapped by this adapter.
+     */
+    protected KListModel<T> model = null;
 
-  /** Construct a new <code>KListModelAdapter</code>.
-   */
+    /**
+     * Construct a new <code>KListModelAdapter</code>.
+     */
 
-  protected KListModelAdapter()
-  {
-  }
-  
-  /** Set the <code>KListModel</code> for this adapter.
-   *
-   * @param model The model.
-   */
-  
-  public void setListModel(KListModel model)
-  {
-    if(this.model != null)
-      this.model.removeListModelListener(this);
-    this.model = model;
-    _init();
-  }
+    protected KListModelAdapter() {
+    }
 
-  /* initialization code */
+    private void init() {
+        if (model != null) {
+            model.addListModelListener(this);
+        }
 
-  private void _init()
-  {
-    if(model != null)
-      model.addListModelListener(this);
+        fireModelChangedEvent();
+    }
 
-    fireModelChangedEvent();
-  }
+    /* initialization code */
 
-  /** Get the <code>KListModel</code> for this adapter.
-   *
-   * @return The model.
-   */
-  
-  public KListModel getListModel()
-  {
-    return(model);
-  }
+    /**
+     * Get the <code>KListModel</code> for this adapter.
+     *
+     * @return The model.
+     */
 
-  /** Fire the appropriate event to indicate that the wrapped data model
-   * has changed significantly. This method is called whenever the
-   * <code>KListModel</code> for this adapter is changed.
-   */
+    public KListModel<T> getListModel() {
+        return (model);
+    }
 
-  protected abstract void fireModelChangedEvent();
+    /**
+     * Set the <code>KListModel</code> for this adapter.
+     *
+     * @param model The model.
+     */
 
-  /*
-   */
+    public void setListModel(KListModel<T> model) {
+        if (this.model != null) {
+            this.model.removeListModelListener(this);
+        }
+        this.model = model;
+        init();
+    }
 
-  public abstract void itemsAdded(KListModelEvent evt);
+    /**
+     * Fire the appropriate event to indicate that the wrapped data model
+     * has changed significantly. This method is called whenever the
+     * <code>KListModel</code> for this adapter is changed.
+     */
 
-  /*
-   */
-  
-  public abstract void itemsChanged(KListModelEvent evt);
+    protected abstract void fireModelChangedEvent();
 
-  /*
-   */
+    /*
+     */
 
-  public abstract void itemsRemoved(KListModelEvent evt);
+    public abstract void itemsAdded(KListModelEvent evt);
 
-  /*
-   */
+    /*
+     */
 
-  public abstract void dataChanged(KListModelEvent evt);
-  
+    public abstract void itemsChanged(KListModelEvent evt);
+
+    /*
+     */
+
+    public abstract void itemsRemoved(KListModelEvent evt);
+
+    /*
+     */
+
+    public abstract void dataChanged(KListModelEvent evt);
+
 }
-
-/* end of source file */

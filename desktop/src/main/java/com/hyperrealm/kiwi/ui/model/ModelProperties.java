@@ -19,25 +19,25 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-/** A list of basic data model properties.
+/**
+ * A list of basic data model properties.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public interface ModelProperties
-{
-  /** The "column names" property. The value of this property is expected
-   * to be an array of <code>String</code>s.
-   */
-  
-  public static final String COLUMN_NAMES_PROPERTY = "__columnNames__";
+public interface ModelProperties {
+    /**
+     * The "column names" property. The value of this property is expected
+     * to be an array of <code>String</code>s.
+     */
 
-  /** The "column types" property. The value of this property is expected
-   * to be an array of <code>Class</code>es.
-   */
-  
-  public static final String COLUMN_TYPES_PROPERTY = "__columnTypes__";  
+    String COLUMN_NAMES_PROPERTY = "__columnNames__";
+
+    /**
+     * The "column types" property. The value of this property is expected
+     * to be an array of <code>Class</code>es.
+     */
+
+    String COLUMN_TYPES_PROPERTY = "__columnTypes__";
 }
-
-/* end of source file */

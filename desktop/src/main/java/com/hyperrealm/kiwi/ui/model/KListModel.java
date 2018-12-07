@@ -19,225 +19,240 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import java.util.*;
+import java.util.Iterator;
+
 import javax.swing.Icon;
 
-import com.hyperrealm.kiwi.event.*;
+import com.hyperrealm.kiwi.event.KListModelListener;
 import com.hyperrealm.kiwi.util.MutatorException;
 
-/** This interface defines the behavior for a data model for list data
+/**
+ * This interface defines the behavior for a data model for list data
  * structures.
  *
- * @since Kiwi 2.0
- *
+ * @param <T>
  * @author Mark Lindner
+ * @since Kiwi 2.0
  */
 
-public interface KListModel<T> extends Iterable<T>
-{
-  /** Determine if the model is empty.
-   *
-   * @return <code>true</code> if the model is empty, and <code>false</code>
-   * otherwise.
-   */
-  
-  public boolean isEmpty();
+public interface KListModel<T> extends Iterable<T> {
+    /**
+     * Determine if the model is empty.
+     *
+     * @return <code>true</code> if the model is empty, and <code>false</code>
+     * otherwise.
+     */
 
-  /** Remove all items from the model.
-   */
-  
-  public void clear();
+    boolean isEmpty();
 
-  /** Get the number of items in the model.
-   *
-   * @return The number of items.
-   */
-  
-  public int getItemCount();
+    /**
+     * Remove all items from the model.
+     */
 
-  /** Return an iterator to the items in the model.
-   *
-   * @return An iterator to the items.
-   */
+    void clear();
 
-  public Iterator<T> iterator();
+    /**
+     * Get the number of items in the model.
+     *
+     * @return The number of items.
+     */
 
-  /** Get the item at the specified index in the model.
-   *
-   * @param index The index.
-   * @return The item at the specified index.
-   */
+    int getItemCount();
 
-  public T getItemAt(int index);
+    /**
+     * Return an iterator to the items in the model.
+     *
+     * @return An iterator to the items.
+     */
 
-  /** Get the index of the specified item in the model.
-   *
-   * @param item The item.
-   * @return The index of the item, or <code>-1</code> if the item is not in
-   * the model.
-   */
-  
-  public int indexOf(T item);
+    Iterator<T> iterator();
 
-  /** Add an item to the model. The item is added as the last item in the
-   * model.
-   *
-   * @param item The new item.
-   */
-    
-  public void addItem(T item);
+    /**
+     * Get the item at the specified index in the model.
+     *
+     * @param index The index.
+     * @return The item at the specified index.
+     */
 
-  /** Insert an item at the specified index in the model.
-   *
-   * @param item The new item.
-   * @param index The index.
-   */
-  
-  public void insertItemAt(T item, int index);
+    T getItemAt(int index);
 
-  /** Remove the item at the specified index from the model.
-   *
-   * @param index The index.
-   */
-  
-  public void removeItemAt(int index);
+    /**
+     * Get the index of the specified item in the model.
+     *
+     * @param item The item.
+     * @return The index of the item, or <code>-1</code> if the item is not in
+     * the model.
+     */
 
-  /** Remove the specified item from the model.
-   *
-   * @param item The item.
-   */
-  
-  public void removeItem(T item);
+    int indexOf(T item);
 
-  /** Indicate to listeners that the specified item has changed.
-   *
-   * @param item The item.
-   */
+    /**
+     * Add an item to the model. The item is added as the last item in the
+     * model.
+     *
+     * @param item The new item.
+     */
 
-  public void updateItem(T item);
+    void addItem(T item);
 
-  /** Indicate to listeners that the specified item field has changed.
-   *
-   * @param item The item.
-   * @param field The field number that has changed.
-   *
-   * @since Kiwi 2.4.1
-   */
+    /**
+     * Insert an item at the specified index in the model.
+     *
+     * @param item  The new item.
+     * @param index The index.
+     */
 
-  public void updateItem(T item, int field);
-  
-  /** Indicate to listeners that the item at the specified index has changed.
-   *
-   * @param index The index.
-   */
+    void insertItemAt(T item, int index);
 
-  public void updateItemAt(int index);
+    /**
+     * Remove the item at the specified index from the model.
+     *
+     * @param index The index.
+     */
 
-  /** Indicate to listeners that the item at the specified index has changed.
-   *
-   * @param index The index.
-   * @param field The field number that has changed.
-   *
-   * @since Kiwi 2.4.1
-   */
+    void removeItemAt(int index);
 
-  public void updateItemAt(int index, int field);
-  
-  /** Add a <code>ListModelListener</code> to this model's list of listeners.
-   *
-   * @param listener The listener to add.
-   */
+    /**
+     * Remove the specified item from the model.
+     *
+     * @param item The item.
+     */
 
-  public void addListModelListener(KListModelListener listener);
+    void removeItem(T item);
 
-  /** Remove a <code>KListModelListener</code> from this model's list of
-   * listeners.
-   *
-   * @param listener The listener to remove.
-   */
-  
-  public void removeListModelListener(KListModelListener listener);
+    /**
+     * Indicate to listeners that the specified item has changed.
+     *
+     * @param item The item.
+     */
 
-  /** Get the label for an item.
-   *
-   * @param item The item.
-   * @return A string label for the item.
-   */
-  
-  public String getLabel(T item);
+    void updateItem(T item);
 
-  /** Get the icon for an item.
-   *
-   * @param item The item.
-   * @return An icon for the item.
-   */
-  
-  public Icon getIcon(T item);
+    /**
+     * Indicate to listeners that the specified item field has changed.
+     *
+     * @param item  The item.
+     * @param field The field number that has changed.
+     * @since Kiwi 2.4.1
+     */
 
-  /** Get the field count for this model.
-   *
-   * @return The field count.
-   *
-   * @since Kiwi 2.3
-   */
+    void updateItem(T item, int field);
 
-  public int getFieldCount();
+    /**
+     * Indicate to listeners that the item at the specified index has changed.
+     *
+     * @param index The index.
+     */
 
-  /** Get the label for the given field.
-   *
-   * @param field The field index.
-   * @return The label for the field.
-   *
-   * @since Kiwi 2.3
-   */
+    void updateItemAt(int index);
 
-  public String getFieldLabel(int field);
+    /**
+     * Indicate to listeners that the item at the specified index has changed.
+     *
+     * @param index The index.
+     * @param field The field number that has changed.
+     * @since Kiwi 2.4.1
+     */
 
-  /** Get the type of the given field.
-   *
-   * @param field The field index.
-   * @return The type of the field.
-   *
-   * @since Kiwi 2.3
-   */
-  
-  public Class getFieldType(int field);
+    void updateItemAt(int index, int field);
 
-  /** Get the value for a field in the given item.
-   *
-   * @param item The item.
-   * @param field The field index.
-   * @return The value of the field.
-   *
-   * @since Kiwi 2.3
-   */
+    /**
+     * Add a <code>ListModelListener</code> to this model's list of listeners.
+     *
+     * @param listener The listener to add.
+     */
 
-  public Object getField(T item, int field);
+    void addListModelListener(KListModelListener listener);
 
-  /** Set the value of a field in the given item.
-   * 
-   * @param item The item.
-   * @param field The field index.
-   * @param value The new value for the field.
-   * @throws MutatorException If an error occurs.
-   *
-   * @since Kiwi 2.3
-   */
-  
-  public void setField(T item, int field, Object value)
-    throws MutatorException;
+    /**
+     * Remove a <code>KListModelListener</code> from this model's list of
+     * listeners.
+     *
+     * @param listener The listener to remove.
+     */
 
-  /** Determine if a field is mutable in the given item.
-   *
-   * @param item The item.
-   * @param field The field index.
-   * @return <b>true</b> if the field is mutable, <b>false</b> otherwise.
-   *
-   * @since Kiwi 2.3
-   */
+    void removeListModelListener(KListModelListener listener);
 
-  public boolean isFieldMutable(T item, int field);
- 
+    /**
+     * Get the label for an item.
+     *
+     * @param item The item.
+     * @return A string label for the item.
+     */
+
+    String getLabel(T item);
+
+    /**
+     * Get the icon for an item.
+     *
+     * @param item The item.
+     * @return An icon for the item.
+     */
+
+    Icon getIcon(T item);
+
+    /**
+     * Get the field count for this model.
+     *
+     * @return The field count.
+     * @since Kiwi 2.3
+     */
+
+    int getFieldCount();
+
+    /**
+     * Get the label for the given field.
+     *
+     * @param field The field index.
+     * @return The label for the field.
+     * @since Kiwi 2.3
+     */
+
+    String getFieldLabel(int field);
+
+    /**
+     * Get the type of the given field.
+     *
+     * @param field The field index.
+     * @return The type of the field.
+     * @since Kiwi 2.3
+     */
+
+    Class getFieldType(int field);
+
+    /**
+     * Get the value for a field in the given item.
+     *
+     * @param item  The item.
+     * @param field The field index.
+     * @return The value of the field.
+     * @since Kiwi 2.3
+     */
+
+    Object getField(T item, int field);
+
+    /**
+     * Set the value of a field in the given item.
+     *
+     * @param item  The item.
+     * @param field The field index.
+     * @param value The new value for the field.
+     * @throws MutatorException If an error occurs.
+     * @since Kiwi 2.3
+     */
+
+    void setField(T item, int field, Object value)
+        throws MutatorException;
+
+    /**
+     * Determine if a field is mutable in the given item.
+     *
+     * @param item  The item.
+     * @param field The field index.
+     * @return <b>true</b> if the field is mutable, <b>false</b> otherwise.
+     * @since Kiwi 2.3
+     */
+
+    boolean isFieldMutable(T item, int field);
+
 }
-
-/* end of source file */

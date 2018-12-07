@@ -21,48 +21,50 @@ package com.hyperrealm.kiwi.ui.model;
 
 import javax.swing.Icon;
 
-/** An interface that defines a data source for <code>KListModel</code>s.
+/**
+ * An interface that defines a data source for <code>KListModel</code>s.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public interface ListDataSource<T> extends ModelProperties
-{
-  /** Get all of the items from the data source.
-   *
-   * @return An array of objects.
-   */
+public interface ListDataSource<T> extends ModelProperties {
+    /**
+     * Get all of the items from the data source.
+     *
+     * @return An array of objects.
+     */
 
-  public T[] getItems();
+    T[] getItems();
 
-  /** Get the value of an arbitrary property for a given item.
-   *
-   * @param item The item.
-   * @param property The name of the property.
-   *
-   * @return The value of the specified property, or <code>null</code> if
-   * there is no value for this property.
-   */
+    /**
+     * Get the value of an arbitrary property for a given item.
+     *
+     * @param item     The item.
+     * @param property The name of the property.
+     * @return The value of the specified property, or <code>null</code> if
+     * there is no value for this property.
+     */
 
-  public Object getValueForProperty(T item, String property);
+    Object getValueForProperty(T item, String property);
 
-  /** Get the label for an item.
-   *
-   * @param item The item.
-   * @return A label for the item.
-   */
+    /**
+     * Get the label for an item.
+     *
+     * @param item The item.
+     * @return A label for the item.
+     */
 
-  public String getLabel(T item);
+    String getLabel(T item);
 
-  /** Get the icon for an item.
-   *
-   * @param item The item.
-   * @return An icon for the item.
-   */
+    /**
+     * Get the icon for an item.
+     *
+     * @param item The item.
+     * @return An icon for the item.
+     */
 
-  public Icon getIcon(T item);  
-  
+    Icon getIcon(T item);
+
 }
-
-/* end of source file */

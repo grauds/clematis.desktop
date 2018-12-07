@@ -19,155 +19,162 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import com.hyperrealm.kiwi.util.*;
-
 import javax.swing.Icon;
-import javax.swing.table.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
-/** An interface that describes an adapter for accessing fields in a domain
+/**
+ * An interface that describes an adapter for accessing fields in a domain
  * object. Consider a domain object as an array of fields which map to
  * corresponding columns in a table (specifically, a <code>JTable</code>).
  * In order to display a domain object as a row in such a table, data
  * members of the domain object must be mapped to cardinal fields. This adapter
  * provides the interface to accomplish this.
  *
+ * @param <T>
  * @author Mark Lindner
- *
  * @see javax.swing.JTable
  */
 
-public interface DomainObjectFieldAdapter<T>
-{
-  /** Get the field count.
-   *
-   * @return The number of fields in the domain object.
-   */
-  
-  public int getFieldCount();
+public interface DomainObjectFieldAdapter<T> {
+    /**
+     * Get the field count.
+     *
+     * @return The number of fields in the domain object.
+     */
 
-  /** Get the name of a field. The name may be used for display purposes, such
-   * as in a table column header.
-   *
-   * @param field The field number.
-   * @return The name of the field.
-   */
-  
-  public String getFieldName(int field);
+    int getFieldCount();
 
-  /** Get a field value.
-   *
-   * @param object The domain object for which a field value is being
-   * requested.
-   * @param field The field number.
-   * @return The value of the field.
-   */
+    /**
+     * Get the name of a field. The name may be used for display purposes, such
+     * as in a table column header.
+     *
+     * @param field The field number.
+     * @return The name of the field.
+     */
 
-  public Object getField(T object, int field);
+    String getFieldName(int field);
 
-  /** Set a field value.
-   *
-   * @param object The domain object for which a field value is being set.
-   * @param field The field number.
-   * @param value The new value for the field.
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the value could
-   * not be set.
-   */
-  
-  public void setField(T object, int field, Object value)
-    throws MutatorException;
+    /**
+     * Get a field value.
+     *
+     * @param object The domain object for which a field value is being
+     *               requested.
+     * @param field  The field number.
+     * @return The value of the field.
+     */
 
-  /** Get a cell renderer that is appropriate for rendering a given field.
-   *
-   * @param field The field number.
-   * @return A <code>TableCellRenderer</code> that can be used to render the
-   * value of this field.
-   */  
+    Object getField(T object, int field);
 
-  public TableCellRenderer getCellRenderer(int field);
+    /**
+     * Set a field value.
+     *
+     * @param object The domain object for which a field value is being set.
+     * @param field  The field number.
+     * @param value  The new value for the field.
+     */
 
-  /** Get a cell editor that is appropriate for editing a given field.
-   *
-   * @param field The field number.
-   * @return A <code>TableCellEditor</code> that can be used to edit the
-   * value of this field.
-   */  
-  
-  public TableCellEditor getCellEditor(int field);
+    void setField(T object, int field, Object value);
 
-  /** Determine if the given field is editable.
-   *
-   * @param object The domain object for which a field editable state is being
-   * requested.
-   * @param field The field number.
-   * @return <code>true</code> if the field can be edited by external means
-   * (such as through a table control), and <code>false</code> if it is
-   * immutable (display-only).
-   */
-  
-  public boolean isFieldEditable(T object, int field);
+    /**
+     * Get a cell renderer that is appropriate for rendering a given field.
+     *
+     * @param field The field number.
+     * @return A <code>TableCellRenderer</code> that can be used to render the
+     * value of this field.
+     */
 
-  /** Determine the type of a given field.
-   *
-   * @param field The field number.
-   * @return The type of the field.
-   */
-  
-  public Class getFieldClass(int field);
+    TableCellRenderer getCellRenderer(int field);
 
-  /** Get the preferered column width for this field. This value is used by
-   * the <code>JTable</code> or similar component to determine column sizing
-   * for the data model that uses this adapter.
-   *
-   * @param field The field number.
-   * @return The preferred width for the field, or 0 if there is no preferred
-   * width.
-   */
-  
-  public int getFieldPreferredWidth(int field);
+    /**
+     * Get a cell editor that is appropriate for editing a given field.
+     *
+     * @param field The field number.
+     * @return A <code>TableCellEditor</code> that can be used to edit the
+     * value of this field.
+     */
 
-  /** Get the minimum column width for this field. This value is used by
-   * the <code>JTable</code> or similar component to determine column sizing
-   * for the data model that uses this adapter.
-   *
-   * @param field The field number.
-   * @return The minimum width for the field, or 0 if there is no minimum
-   * width.
-   */  
-  
-  public int getFieldMinWidth(int field);
+    TableCellEditor getCellEditor(int field);
 
-  /** Get the maximum column width for this field. This value is used by
-   * the <code>JTable</code> or similar component to determine column sizing
-   * for the data model that uses this adapter.
-   *
-   * @param field The field number.
-   * @return The maximum width for the field, or 0 if there is no minimum
-   * width.
-   */
-  
-  public int getFieldMaxWidth(int field);
+    /**
+     * Determine if the given field is editable.
+     *
+     * @param object The domain object for which a field editable state is being
+     *               requested.
+     * @param field  The field number.
+     * @return <code>true</code> if the field can be edited by external means
+     * (such as through a table control), and <code>false</code> if it is
+     * immutable (display-only).
+     */
 
-  /** Get the label for the given item. This is the textual representation
-   * of the item suitable for display in a <code>JList</code> or
-   * <code>JComboBox</code>.
-   *
-   * @param item The item.
-   * @return The label.
-   * @since Kiwi 2.4
-   */
+    boolean isFieldEditable(T object, int field);
 
-  public String getLabel(T item);
+    /**
+     * Determine the type of a given field.
+     *
+     * @param field The field number.
+     * @return The type of the field.
+     */
 
-  /** Get the Icon for the given item. This icon is suitable for display in
-   * a <code>JList</code> or <code>JComboBox</code>.
-   *
-   * @param item The item.
-   * @return The Icon, which may be <b>null</b>.
-   * @since Kiwi 2.4
-   */
-  
-  public Icon getIcon(T item);
-  
+    Class getFieldClass(int field);
+
+    /**
+     * Get the preferered column width for this field. This value is used by
+     * the <code>JTable</code> or similar component to determine column sizing
+     * for the data model that uses this adapter.
+     *
+     * @param field The field number.
+     * @return The preferred width for the field, or 0 if there is no preferred
+     * width.
+     */
+
+    int getFieldPreferredWidth(int field);
+
+    /**
+     * Get the minimum column width for this field. This value is used by
+     * the <code>JTable</code> or similar component to determine column sizing
+     * for the data model that uses this adapter.
+     *
+     * @param field The field number.
+     * @return The minimum width for the field, or 0 if there is no minimum
+     * width.
+     */
+
+    int getFieldMinWidth(int field);
+
+    /**
+     * Get the maximum column width for this field. This value is used by
+     * the <code>JTable</code> or similar component to determine column sizing
+     * for the data model that uses this adapter.
+     *
+     * @param field The field number.
+     * @return The maximum width for the field, or 0 if there is no minimum
+     * width.
+     */
+
+    int getFieldMaxWidth(int field);
+
+    /**
+     * Get the label for the given item. This is the textual representation
+     * of the item suitable for display in a <code>JList</code> or
+     * <code>JComboBox</code>.
+     *
+     * @param item The item.
+     * @return The label.
+     * @since Kiwi 2.4
+     */
+
+    String getLabel(T item);
+
+    /**
+     * Get the Icon for the given item. This icon is suitable for display in
+     * a <code>JList</code> or <code>JComboBox</code>.
+     *
+     * @param item The item.
+     * @return The Icon, which may be <b>null</b>.
+     * @since Kiwi 2.4
+     */
+
+    Icon getIcon(T item);
+
 }
-
-/* end of source file */

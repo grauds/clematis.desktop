@@ -19,14 +19,18 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.util.ArrayList;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.ui.*;
+import javax.swing.JList;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
-/** A model adapter that allows a <code>KListModel</code> to be used with a
+import com.hyperrealm.kiwi.event.KListModelEvent;
+import com.hyperrealm.kiwi.ui.KListModelListCellRenderer;
+
+/**
+ * A model adapter that allows a <code>KListModel</code> to be used with a
  * Swing <code>JList</code> component. This adapter wraps a
  * <code>KListModel</code> implementation and exposes a
  * <code>ListModel</code> interface, and translates the corresponding
@@ -35,192 +39,176 @@ import com.hyperrealm.kiwi.ui.*;
  * be accessed concurrently by multiple threads without explicit
  * synchronization.
  *
+ * @param <E>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class KListModelListAdapter extends KListModelAdapter
-  implements ListModel
-{
-  private ArrayList<ListDataListener> listeners
-    = new ArrayList<ListDataListener>();
-  
-  protected KListModelListCellRenderer renderer;
+public class KListModelListAdapter<E> extends KListModelAdapter<E> implements ListModel<E> {
 
-  /** Construct a new <code>KListModelListAdapter</code>. */
-  
-  protected KListModelListAdapter()
-  {
-    renderer = new KListModelListCellRenderer();
-  }
-  
-  /** Construct a new <code>KListModelListAdapter</code> for the given
-   * <code>JList</code>.
-   *
-   * @param jlist The <code>JList</code> that will be used with this
-   * adapter.
-   */
+    protected KListModelListCellRenderer<E> renderer;
 
-  public KListModelListAdapter(JList jlist)
-  {
-    this();
-    jlist.setCellRenderer(renderer);
-  }
+    private ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>();
 
-  /*
-   */
-  
-  /* implementation of KListModelAdapter */
-  
-  protected void fireModelChangedEvent()
-  {
+    /**
+     * Construct a new <code>KListModelListAdapter</code>.
+     */
 
-    int ct = 0;
-
-    if(model != null)
-    {
-      ct = model.getItemCount();
-      if(ct > 0)
-        ct--;
+    protected KListModelListAdapter() {
+        renderer = new KListModelListCellRenderer<>();
     }
 
-    ListDataEvent evt = null;
-    
-    Iterator<ListDataListener> iter = listeners.iterator();
-    while(iter.hasNext())
-    {
-      if(evt == null)
-        evt = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, ct);
+    /**
+     * Construct a new <code>KListModelListAdapter</code> for the given
+     * <code>JList</code>.
+     *
+     * @param jlist The <code>JList</code> that will be used with this
+     *              adapter.
+     */
 
-      ListDataListener l = iter.next();
-      l.contentsChanged(evt);
+    public KListModelListAdapter(JList<E> jlist) {
+        this();
+        jlist.setCellRenderer(renderer);
     }
-  }
 
-  /*
-   */
-  
-  public void setListModel(KListModel model)
-  {
-    super.setListModel(model);
+    /*
+     */
 
-    renderer.setModel(model);
-  }
-  
-  /* implementation of KListModelListener */
+    /* implementation of KListModelAdapter */
 
-  /*
-   */
-  
-  public void itemsAdded(KListModelEvent evt)
-  {
-    ListDataEvent levt = null;
+    protected void fireModelChangedEvent() {
 
-    Iterator<ListDataListener> iter = listeners.iterator();
-    while(iter.hasNext())
-    {
-      ListDataListener l = iter.next();
-      if(levt == null)
-        levt = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED,
-                                 evt.getStartIndex(), evt.getEndIndex());
-      
-      l.intervalAdded(levt);
+        int ct = 0;
+
+        if (model != null) {
+            ct = model.getItemCount();
+            if (ct > 0) {
+                ct--;
+            }
+        }
+
+        ListDataEvent evt = null;
+
+        for (ListDataListener listener : listeners) {
+            if (evt == null) {
+                evt = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, ct);
+            }
+
+            listener.contentsChanged(evt);
+        }
     }
-  }
 
-  /*
-   */
+    /*
+     */
 
-  public void itemsChanged(KListModelEvent evt)
-  {
-    ListDataEvent levt = null;
+    public void setListModel(KListModel<E> model) {
+        super.setListModel(model);
 
-    Iterator<ListDataListener> iter = listeners.iterator();
-    while(iter.hasNext())
-    {
-      ListDataListener l = iter.next();
-      if(levt == null)
-        levt = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED,
-                                 evt.getStartIndex(), evt.getEndIndex());
-      
-      l.contentsChanged(levt);
+        renderer.setModel(model);
     }
-  }
 
-  /*
-   */
-  
-  public void itemsRemoved(KListModelEvent evt)
-  {
-    ListDataEvent levt = null;
+    /* implementation of KListModelListener */
 
-    Iterator<ListDataListener> iter = listeners.iterator();
-    while(iter.hasNext())
-    {
-      ListDataListener l = iter.next();
-      if(levt == null)
-        levt = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED,
-                                 evt.getStartIndex(), evt.getEndIndex());
-      
-      l.intervalRemoved(levt);
+    /*
+     */
+
+    public void itemsAdded(KListModelEvent evt) {
+        ListDataEvent levt = null;
+
+        for (ListDataListener l : listeners) {
+            if (levt == null) {
+                levt = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED,
+                    evt.getStartIndex(), evt.getEndIndex());
+            }
+
+            l.intervalAdded(levt);
+        }
     }
-  }
 
-  /*
-   */
+    /*
+     */
 
-  public void dataChanged(KListModelEvent evt)
-  {
-    fireModelChangedEvent();
-  }
+    public void itemsChanged(KListModelEvent evt) {
+        ListDataEvent levt = null;
 
-  /* implementation of ListModel */
+        for (ListDataListener l : listeners) {
+            if (levt == null) {
+                levt = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED,
+                    evt.getStartIndex(), evt.getEndIndex());
+            }
 
-  /*
-   */
-  
-  public int getSize()
-  {
-    if(model == null)
-      return(0);
-    
-    return(model.getItemCount());
-  }
+            l.contentsChanged(levt);
+        }
+    }
 
-  /*
-   */
-  
-  public Object getElementAt(int index)
-  {
-    if(model == null)
-      return(null);
-    
-    return(model.getItemAt(index));
-  }
+    /*
+     */
 
-  /** Add a list model listener. Adds a <code>ListDataListener</code> to
-   * this adapter's list of list model listeners.
-   *
-   * @param listener The listener to add.
-   */
-  
-  public void addListDataListener(ListDataListener listener)
-  {
-    listeners.add(listener);
-  }
+    public void itemsRemoved(KListModelEvent evt) {
+        ListDataEvent levt = null;
 
-  /** Remove a list model listener. Removes a <code>ListDataListener</code>
-   * from this adapter's list of list model listeners.
-   *
-   * @param listener The listener to remove.
-   */
-  
-  public void removeListDataListener(ListDataListener listener)
-  {
-    listeners.remove(listener);
-  }
-  
+        for (ListDataListener l : listeners) {
+            if (levt == null) {
+                levt = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED,
+                    evt.getStartIndex(), evt.getEndIndex());
+            }
+
+            l.intervalRemoved(levt);
+        }
+    }
+
+    /*
+     */
+
+    public void dataChanged(KListModelEvent evt) {
+        fireModelChangedEvent();
+    }
+
+    /* implementation of ListModel */
+
+    /*
+     */
+
+    public int getSize() {
+        if (model == null) {
+            return (0);
+        }
+
+        return (model.getItemCount());
+    }
+
+    /*
+     */
+
+    public E getElementAt(int index) {
+        if (model == null) {
+            return (null);
+        }
+
+        return (model.getItemAt(index));
+    }
+
+    /**
+     * Add a list model listener. Adds a <code>ListDataListener</code> to
+     * this adapter's list of list model listeners.
+     *
+     * @param listener The listener to add.
+     */
+
+    public void addListDataListener(ListDataListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Remove a list model listener. Removes a <code>ListDataListener</code>
+     * from this adapter's list of list model listeners.
+     *
+     * @param listener The listener to remove.
+     */
+
+    public void removeListDataListener(ListDataListener listener) {
+        listeners.remove(listener);
+    }
+
 }
-
-/* end of source file */
 

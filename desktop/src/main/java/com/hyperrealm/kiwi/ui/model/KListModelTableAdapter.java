@@ -19,280 +19,255 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import java.util.ArrayList;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 
-/** A model adapter that allows a <code>KListModel</code> to be used with a
+import com.hyperrealm.kiwi.event.KListModelEvent;
+import com.hyperrealm.kiwi.util.ExceptionHandler;
+import com.hyperrealm.kiwi.util.MutatorException;
+
+/**
+ * A model adapter that allows a <code>KListModel</code> to be used with a
  * Swing <code>JTable</code> component. This adapter wraps a
  * <code>KListModel</code> implementation and exposes a <code>TableModel</code>
  * interface, and translates the corresponding model events.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class KListModelTableAdapter extends KListModelAdapter
-  implements TableModel
-{
-  private static final String defaultColumnNames[] = { "Item" };
-  private String columnNames[] = defaultColumnNames;
-  private static final Class defaultColumnTypes[] = { String.class };
-  private Class columnTypes[] = defaultColumnTypes;
-  private boolean columnsAvailable = false;
-  private ArrayList<TableModelListener> listeners
-    = new ArrayList<TableModelListener>();
-  private ExceptionHandler errorHandler = null;
+public class KListModelTableAdapter<T> extends KListModelAdapter<T> implements TableModel {
 
-  /** Construct a new <code>KListModelTableAdapter</code>.
-   */
+    private static final String[] DEFAULT_COLUMN_NAMES = {"Item"};
 
-  public KListModelTableAdapter()
-  {
-  }
+    private static final Class[] DEFAULT_COLUMN_TYPES = {String.class};
 
-  /** Construct a new <code>KListModelTableAdapter</code> for the given
-   * list model. The <code>TableModel</code> will have a single column,
-   * marked "Item".
-   *
-   * @param model The <code>KListModel</code>.
-   */
-  
-  public KListModelTableAdapter(KListModel model)
-  {
-    setListModel(model);    
-  }
+    private String[] columnNames = DEFAULT_COLUMN_NAMES;
 
-  /*
-   */
-  
-  public void setListModel(KListModel model)
-  {
-    super.setListModel(model);
+    private Class[] columnTypes = DEFAULT_COLUMN_TYPES;
 
-    if(model != null)
-    {
-      int cols = model.getFieldCount();
-      columnNames = new String[cols];
-      columnTypes = new Class[cols];
+    private boolean columnsAvailable = false;
 
-      for(int i = 0; i < cols; i++)
-      {
-        columnNames[i] = model.getFieldLabel(i);
-        columnTypes[i] = model.getFieldType(i);
-      }
+    private final ArrayList<TableModelListener> listeners = new ArrayList<TableModelListener>();
 
-      columnsAvailable = true;
+    private ExceptionHandler errorHandler = null;
+
+    /**
+     * Construct a new <code>KListModelTableAdapter</code>.
+     */
+
+    public KListModelTableAdapter() {
     }
-    else
-    {
-      columnNames = defaultColumnNames;
-      columnTypes = defaultColumnTypes;
-      columnsAvailable = false;
+
+    /**
+     * Construct a new <code>KListModelTableAdapter</code> for the given
+     * list model. The <code>TableModel</code> will have a single column,
+     * marked "Item".
+     *
+     * @param model The <code>KListModel</code>.
+     */
+
+    public KListModelTableAdapter(KListModel<T> model) {
+        setListModel(model);
     }
-  }
-  
-  /* Fire table events.
-   */
 
-  private void fireTableEvent(KListModelEvent evt, int type)
-  {
-    TableModelEvent tevt = null;
+    /*
+     */
 
-    synchronized(listeners)
-    {
-      Iterator<TableModelListener> iter = listeners.iterator();
-      while(iter.hasNext())
-      {
-        TableModelListener l = iter.next();
-        if(tevt == null)
-          tevt = new TableModelEvent(this, evt.getStartIndex(),
-                                     evt.getEndIndex(),
-                                     TableModelEvent.ALL_COLUMNS, type);
-        
-        l.tableChanged(tevt);
-      }
+    public void setListModel(KListModel<T> model) {
+        super.setListModel(model);
+
+        if (model != null) {
+            int cols = model.getFieldCount();
+            columnNames = new String[cols];
+            columnTypes = new Class[cols];
+
+            for (int i = 0; i < cols; i++) {
+                columnNames[i] = model.getFieldLabel(i);
+                columnTypes[i] = model.getFieldType(i);
+            }
+
+            columnsAvailable = true;
+        } else {
+            columnNames = DEFAULT_COLUMN_NAMES;
+            columnTypes = DEFAULT_COLUMN_TYPES;
+            columnsAvailable = false;
+        }
     }
-  }
 
-  /* implementation of KListModelListener */
+    /* Fire table events.
+     */
 
-  /*
-   */
-  
-  public void itemsAdded(KListModelEvent evt)
-  {
-    fireTableEvent(evt, TableModelEvent.INSERT);
-  }
+    private void fireTableEvent(KListModelEvent evt, int type) {
+        TableModelEvent tevt = null;
 
-  /*
-   */
-  
-  public void itemsChanged(KListModelEvent evt)
-  {
-    fireTableEvent(evt, TableModelEvent.UPDATE);
-  }
+        synchronized (listeners) {
+            for (TableModelListener l : listeners) {
+                if (tevt == null) {
+                    tevt = new TableModelEvent(this, evt.getStartIndex(),
+                        evt.getEndIndex(),
+                        TableModelEvent.ALL_COLUMNS, type);
+                }
 
-  /*
-   */
-
-  public void itemsRemoved(KListModelEvent evt)
-  {
-    fireTableEvent(evt, TableModelEvent.DELETE);
-  }
-
-  /*
-   */
-
-  public void dataChanged(KListModelEvent evt)
-  {
-    fireModelChangedEvent();
-  }
-
-  /* implementation of ListModelAdapter */
-
-  protected void fireModelChangedEvent()
-  {
-    TableModelEvent evt = null;
-
-    synchronized(listeners)
-    {
-      Iterator<TableModelListener> iter = listeners.iterator();
-      while(iter.hasNext())
-      {
-        if(evt == null)
-          evt = new TableModelEvent(this);
-        TableModelListener l = iter.next();
-        l.tableChanged(evt);
-      }
+                l.tableChanged(tevt);
+            }
+        }
     }
-  }
-  
-  /* implementation of TableModel */
 
-  /*
-   */
+    /* implementation of KListModelListener */
 
-  public Class getColumnClass(int col)
-  {
-    return(columnTypes[col]);
-  }
+    /*
+     */
 
-  /*
-   */
-  
-  public String getColumnName(int col)
-  {
-    return(columnNames[col]);
-  }
-
-  /*
-   */
-  
-  public int getColumnCount()
-  {    
-    return(columnNames.length);
-  }
-
-  /*
-   */
-  
-  public int getRowCount()
-  {
-    if(model == null)
-      return(0);
-    
-    return(model.getItemCount());
-  }
-
-  /*
-   */
-  
-  public Object getValueAt(int row, int column)
-  {
-    if(model == null)
-      return(null);
-    
-    Object item = model.getItemAt(row);
-
-    if(columnsAvailable)
-      return(model.getField(item, column));
-    else
-      return(model.getLabel(item));
-  }
-
-  /** 
-   */
-  
-  public void setValueAt(Object value, int row, int column)
-  {
-    Object item = model.getItemAt(row);
-    try
-    {
-      model.setField(item, column, value);
+    public void itemsAdded(KListModelEvent evt) {
+        fireTableEvent(evt, TableModelEvent.INSERT);
     }
-    catch(MutatorException ex)
-    {
-      _deliverException(ex);
+
+    /*
+     */
+
+    public void itemsChanged(KListModelEvent evt) {
+        fireTableEvent(evt, TableModelEvent.UPDATE);
     }
-  }
 
-  /*
-   */
-  
-  public boolean isCellEditable(int row, int column)
-  {
-    Object item = model.getItemAt(row);
-    return(model.isFieldMutable(item, column));
-  }
+    /*
+     */
 
-  /*
-   */
-  
-  public void addTableModelListener(TableModelListener listener)
-  {
-    synchronized(listeners)
-    {
-      listeners.add(listener);
+    public void itemsRemoved(KListModelEvent evt) {
+        fireTableEvent(evt, TableModelEvent.DELETE);
     }
-  }
 
-  /*
-   */
-  
-  public void removeTableModelListener(TableModelListener listener)
-  {
-    synchronized(listeners)
-    {
-      listeners.remove(listener);
+    /*
+     */
+
+    public void dataChanged(KListModelEvent evt) {
+        fireModelChangedEvent();
     }
-  }
 
-  /** Set the <code>ExceptionHandler</code> for this model. If an exception
-   * occurs while a domain object is being updated as a result of a change
-   * to one of the values in this model, the exception is caught and delivered
-   * to the handler (if one is registered).
-   *
-   * @param handler The new (possibly <code>null</code>) exception handler.
-   */
-  
-  public void setExceptionHandler(ExceptionHandler handler)
-  {
-    this.errorHandler = handler;
-  }
-  
-  /* Deliver an exception to a handler, if one is registered. */
+    /* implementation of ListModelAdapter */
 
-  private void _deliverException(Exception ex)
-  {
-    if(errorHandler != null)
-      errorHandler.exceptionRaised(ex);
-  }
-  
+    protected void fireModelChangedEvent() {
+        TableModelEvent evt = null;
+
+        synchronized (listeners) {
+            for (TableModelListener listener : listeners) {
+                if (evt == null) {
+                    evt = new TableModelEvent(this);
+                }
+                listener.tableChanged(evt);
+            }
+        }
+    }
+
+    /* implementation of TableModel */
+
+    /*
+     */
+
+    public Class getColumnClass(int col) {
+        return (columnTypes[col]);
+    }
+
+    /*
+     */
+
+    public String getColumnName(int col) {
+        return (columnNames[col]);
+    }
+
+    /*
+     */
+
+    public int getColumnCount() {
+        return (columnNames.length);
+    }
+
+    /*
+     */
+
+    public int getRowCount() {
+        if (model == null) {
+            return (0);
+        }
+
+        return (model.getItemCount());
+    }
+
+    /*
+     */
+
+    public Object getValueAt(int row, int column) {
+        if (model == null) {
+            return (null);
+        }
+
+        T item = model.getItemAt(row);
+
+        return columnsAvailable ? model.getField(item, column) : model.getLabel(item);
+    }
+
+    /**
+     *
+     */
+
+    public void setValueAt(Object value, int row, int column) {
+        T item = model.getItemAt(row);
+        try {
+            model.setField(item, column, value);
+        } catch (MutatorException ex) {
+            deliverException(ex);
+        }
+    }
+
+    /*
+     */
+
+    public boolean isCellEditable(int row, int column) {
+        T item = model.getItemAt(row);
+        return (model.isFieldMutable(item, column));
+    }
+
+    /*
+     */
+
+    public void addTableModelListener(TableModelListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    /*
+     */
+
+    public void removeTableModelListener(TableModelListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
+    }
+
+    /**
+     * Set the <code>ExceptionHandler</code> for this model. If an exception
+     * occurs while a domain object is being updated as a result of a change
+     * to one of the values in this model, the exception is caught and delivered
+     * to the handler (if one is registered).
+     *
+     * @param handler The new (possibly <code>null</code>) exception handler.
+     */
+
+    public void setExceptionHandler(ExceptionHandler handler) {
+        this.errorHandler = handler;
+    }
+
+    /* Deliver an exception to a handler, if one is registered. */
+
+    private void deliverException(Exception ex) {
+        if (errorHandler != null) {
+            errorHandler.exceptionRaised(ex);
+        }
+    }
+
 }
-
-/* end of source file */

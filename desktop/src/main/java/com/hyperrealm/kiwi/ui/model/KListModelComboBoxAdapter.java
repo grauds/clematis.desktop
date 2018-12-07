@@ -19,59 +19,52 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.ui.*;
-
-/** A model adapter that allows a <code>KListModel</code> to be used with a
+/**
+ * A model adapter that allows a <code>KListModel</code> to be used with a
  * Swing <code>JComboBox</code> component. This adapter wraps a
  * <code>KListModel</code> implementation and exposes a
  * <code>ComboBoxModel</code> interface, and translates the corresponding
  * model events.
  *
+ * @param <E>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class KListModelComboBoxAdapter extends KListModelListAdapter
-  implements ComboBoxModel
-{
-  private Object selectedItem = null;
+public class KListModelComboBoxAdapter<E> extends KListModelListAdapter<E> implements ComboBoxModel<E> {
 
-  /** Construct a new <code>KListModelComboBoxAdapter</code> for the given
-   * <code>JComboBox</code>.
-   *
-   * @param jcombobox The <code>JComboBox</code> that will be used with this
-   * adapter.
-   */
-  
-  public KListModelComboBoxAdapter(JComboBox jcombobox)
-  {
-    super();
-    jcombobox.setRenderer(renderer);
-  }
-  
-  /* implementation of ComboBoxModel */
-  
-  /*
-   */
+    private Object selectedItem = null;
 
-  public Object getSelectedItem()
-  {
-    return(selectedItem);
-  }
+    /**
+     * Construct a new <code>KListModelComboBoxAdapter</code> for the given
+     * <code>JComboBox</code>.
+     *
+     * @param jcombobox The <code>JComboBox</code> that will be used with this
+     *                  adapter.
+     */
 
-  /*
-   */
+    public KListModelComboBoxAdapter(JComboBox<E> jcombobox) {
+        super();
+        jcombobox.setRenderer(renderer);
+    }
 
-  public void setSelectedItem(Object item)
-  {
-    selectedItem = item;
-  }
+    /* implementation of ComboBoxModel */
+
+    /*
+     */
+
+    public Object getSelectedItem() {
+        return (selectedItem);
+    }
+
+    /*
+     */
+
+    public void setSelectedItem(Object item) {
+        selectedItem = item;
+    }
 
 }
-
-/* end of source file */

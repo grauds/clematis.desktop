@@ -19,169 +19,174 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
+import java.util.Collections;
+
 import javax.swing.Icon;
 
-/** An implementation of <code>KListModel</code> that obtains its data from
+/**
+ * An implementation of <code>KListModel</code> that obtains its data from
  * an external data source.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class ExternalKListModel<T> extends DefaultKListModel<T>
-{
-  private String columnNames[];
-  private Class columnTypes[];
-  
-  /** The data source for this model. */
-  
-  protected ListDataSource<T> source = null;
+public class ExternalKListModel<T> extends DefaultKListModel<T> {
 
-  /** Construct a new <code>ExternalKListModel</code> with the given
-   * data source.
-   *
-   * @param source The data source.
-   */
-  
-  public ExternalKListModel(ListDataSource<T> source)
-  {
-    super();
+    /**
+     * The data source for this model.
+     */
+    protected ListDataSource<T> source;
 
-    this.source = source;
+    private String[] columnNames;
 
-    reload();
-  }
+    private Class[] columnTypes;
 
-  /** Reload the list model from the data source.
-   */
+    /**
+     * Construct a new <code>ExternalKListModel</code> with the given
+     * data source.
+     *
+     * @param source The data source.
+     */
 
-  public void reload()
-  {
-    if(source == null)
-      return;
+    public ExternalKListModel(ListDataSource<T> source) {
+        super();
 
-    // load metadata
+        this.source = source;
 
-    columnNames = (String[])source.getValueForProperty(
-      null, ListDataSource.COLUMN_NAMES_PROPERTY);
-    columnTypes = (Class[])source.getValueForProperty(
-      null, ListDataSource.COLUMN_TYPES_PROPERTY);
-    
-    // load data
-    
-    data.clear();
-    T items[] = source.getItems();
-    if(items != null)
-      for(int i = 0; i < items.length; i++)
-        data.add(items[i]);
+        reload();
+    }
 
-    support.fireDataChanged();
-  }
+    /**
+     * Reload the list model from the data source.
+     */
 
-  /**
-   */
+    public void reload() {
+        if (source == null) {
+            return;
+        }
 
-  public void addItem(T item)
-  {
-    throw(new ImmutableModelException());
-  }
+        // load metadata
 
-  /**
-   */
-  
-  public void insertItemAt(T item, int index)
-  {
-    throw(new ImmutableModelException());
-  }
+        columnNames = (String[]) source.getValueForProperty(
+            null, ListDataSource.COLUMN_NAMES_PROPERTY);
+        columnTypes = (Class[]) source.getValueForProperty(
+            null, ListDataSource.COLUMN_TYPES_PROPERTY);
 
-  /**
-   */
-  
-  public void removeItemAt(int index)
-  {
-    throw(new ImmutableModelException());    
-  }
+        // load data
 
-  /**
-   */
-  
-  public void removeItem(T item)
-  {
-    throw(new ImmutableModelException());
-  }
+        data.clear();
+        T[] items = source.getItems();
+        if (items != null) {
+            Collections.addAll(data, items);
+        }
 
-  /**
-   */
-  
-  public void updateItem(T item)
-  {
-    throw(new ImmutableModelException());
-  }
+        support.fireDataChanged();
+    }
 
-  /**
-   */
-  
-  public void updateItemAt(int index)
-  {
-    throw(new ImmutableModelException());
-  }
+    /**
+     *
+     */
 
-  /** Get the label for an item.
-   *
-   * @param item The item.
-   * @return A string label for the item.
-   */
+    public void addItem(T item) {
+        throw (new ImmutableModelException());
+    }
 
-  public String getLabel(T item)
-  {
-    String label = source.getLabel(item);
-    
-    return(label == null ? item.toString() : label);
-  }
+    /**
+     *
+     */
 
-  /** Get the icon for an item.
-   *
-   * @param item The item.
-   * @return An icon for the item.
-   */
+    public void insertItemAt(T item, int index) {
+        throw (new ImmutableModelException());
+    }
 
-  public Icon getIcon(T item)
-  {
-    return(source.getIcon(item));
-  }
+    /**
+     *
+     */
 
-  /**
-   */
+    public void removeItemAt(int index) {
+        throw (new ImmutableModelException());
+    }
 
-  public Object getField(T item, int field)
-  {
-    return(source.getValueForProperty(item, columnNames[field]));
-  }
+    /**
+     *
+     */
 
-  /**
-   */
+    public void removeItem(T item) {
+        throw (new ImmutableModelException());
+    }
 
-  public int getFieldCount()
-  {
-    return(columnNames.length);
-  }
+    /**
+     *
+     */
 
-  /**
-   */
+    public void updateItem(T item) {
+        throw (new ImmutableModelException());
+    }
 
-  public String getFieldLabel(int field)
-  {
-    return(columnNames[field]);
-  }
+    /**
+     *
+     */
 
-  /**
-   */
+    public void updateItemAt(int index) {
+        throw (new ImmutableModelException());
+    }
 
-  public Class getFieldType(int field)
-  {
-    return(columnTypes[field]);
-  }
-  
+    /**
+     * Get the label for an item.
+     *
+     * @param item The item.
+     * @return A string label for the item.
+     */
+
+    public String getLabel(T item) {
+        String label = source.getLabel(item);
+
+        return (label == null ? item.toString() : label);
+    }
+
+    /**
+     * Get the icon for an item.
+     *
+     * @param item The item.
+     * @return An icon for the item.
+     */
+
+    public Icon getIcon(T item) {
+        return (source.getIcon(item));
+    }
+
+    /**
+     *
+     */
+
+    public Object getField(T item, int field) {
+        return (source.getValueForProperty(item, columnNames[field]));
+    }
+
+    /**
+     *
+     */
+
+    public int getFieldCount() {
+        return (columnNames.length);
+    }
+
+    /**
+     *
+     */
+
+    public String getFieldLabel(int field) {
+        return (columnNames[field]);
+    }
+
+    /**
+     *
+     */
+
+    public Class getFieldType(int field) {
+        return (columnTypes[field]);
+    }
+
 }
-
-/* end of source file */

@@ -19,11 +19,13 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import javax.swing.table.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
-/** A mapping object for <code>TableModel</code>s.  In a chain of data
+/**
+ * A mapping object for <code>TableModel</code>s.  In a chain of data
  * manipulators some behavior is common.
  * <code>ProxyTableModel</code> provides most of this behavior and
  * can be subclassed by filters that only need to override a handful
@@ -35,90 +37,82 @@ import javax.swing.event.TableModelEvent;
  * which has not been subclassed into a chain of table filters should
  * have no effect.
  *
+ * @author Mark Lindner
  * @see javax.swing.table.TableModel
  * @see com.hyperrealm.kiwi.ui.model.TableSorter
- *
- * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
 public class ProxyTableModel extends AbstractTableModel
-  implements TableModelListener
-{
-  /** The <code>TableModel</code> that this model proxies for. */
-  protected TableModel model;
+    implements TableModelListener {
+    /**
+     * The <code>TableModel</code> that this model proxies for.
+     */
+    protected TableModel model;
 
-  /** Construct a new <code>ProxyTableModel</code>. */
-  
-  public ProxyTableModel()
-  {
-  }
-  
-  /** Get the <code>TableModel</code> used by this map. */
+    /**
+     * Construct a new <code>ProxyTableModel</code>.
+     */
 
-  public TableModel getModel()
-  {
-    return model;
-  }
+    public ProxyTableModel() {
+    }
 
-  /** Set the <code>TableModel</code> to use with this map.
-   *
-   * @param model The <code>TableModel</code> to use.
-   */
+    /**
+     * Get the <code>TableModel</code> used by this map.
+     */
 
-  public void setModel(TableModel model)
-  {
-    this.model = model;
-    model.addTableModelListener(this);
-  }
+    public TableModel getModel() {
+        return model;
+    }
+
+    /**
+     * Set the <code>TableModel</code> to use with this map.
+     *
+     * @param model The <code>TableModel</code> to use.
+     */
+
+    public void setModel(TableModel model) {
+        this.model = model;
+        model.addTableModelListener(this);
+    }
 
   /* By default, Implement TableModel by forwarding all messages to the
      inner model. */
 
-  public Object getValueAt(int row, int col)
-  {
-    return(model.getValueAt(row, col));
-  }
+    public Object getValueAt(int row, int col) {
+        return (model.getValueAt(row, col));
+    }
 
-  public void setValueAt(Object value, int row, int col)
-  {
-    model.setValueAt(value, row, col);
-  }
+    public void setValueAt(Object value, int row, int col) {
+        model.setValueAt(value, row, col);
+    }
 
-  public int getRowCount()
-  {
-    return((model == null) ? 0 : model.getRowCount());
-  }
+    public int getRowCount() {
+        return ((model == null) ? 0 : model.getRowCount());
+    }
 
-  public int getColumnCount()
-  {
-    return((model == null) ? 0 : model.getColumnCount());
-  }
+    public int getColumnCount() {
+        return ((model == null) ? 0 : model.getColumnCount());
+    }
 
-  public String getColumnName(int col)
-  {
-    return model.getColumnName(col);
-  }
+    public String getColumnName(int col) {
+        return model.getColumnName(col);
+    }
 
-  public Class getColumnClass(int col)
-  {
-    return model.getColumnClass(col);
-  }
+    public Class getColumnClass(int col) {
+        return model.getColumnClass(col);
+    }
 
-  public boolean isCellEditable(int row, int col)
-  {
-    return model.isCellEditable(row, col);
-  }
+    public boolean isCellEditable(int row, int col) {
+        return model.isCellEditable(row, col);
+    }
 
-  /* Implementation of the TableModelListener interface. By default
-   * forward all events to all the listeners.
-   */
+    /* Implementation of the TableModelListener interface. By default
+     * forward all events to all the listeners.
+     */
 
-  public void tableChanged(TableModelEvent e)
-  {
-    fireTableChanged(e);
-  }
+    public void tableChanged(TableModelEvent e) {
+        fireTableChanged(e);
+    }
 
 }
-
-/* end of source file */

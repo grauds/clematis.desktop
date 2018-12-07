@@ -21,62 +21,68 @@ package com.hyperrealm.kiwi.ui.model;
 
 import javax.swing.Icon;
 
-/** This interface defines a data source for populating tree data structures.
+/**
+ * This interface defines a data source for populating tree data structures.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public interface TreeDataSource<T> extends ModelProperties
-{
-  /** Get the root object. */
+public interface TreeDataSource<T> extends ModelProperties {
+    /**
+     * Get the root object.
+     */
 
-  public T getRoot();
+    T getRoot();
 
-  /** Get the children of a given node in the tree. 
-   *
-   * @param node The node that children are being requested for.
-   * @return A (possibly empty) array of children for the node.
-   */
+    /**
+     * Get the children of a given node in the tree.
+     *
+     * @param node The node that children are being requested for.
+     * @return A (possibly empty) array of children for the node.
+     */
 
-  public T[] getChildren(T node);
+    T[] getChildren(T node);
 
-  /** Get the value of an arbitrary property for a given node.
-   *
-   * @param node The node.
-   * @param property The name of the property; one of the constants defined
-   * above, or some arbitrary application-defined property.
-   * @return The value of the specified property, or <code>null</code> if
-   * there is no value for this property.
-   */
+    /**
+     * Get the value of an arbitrary property for a given node.
+     *
+     * @param node     The node.
+     * @param property The name of the property; one of the constants defined
+     *                 above, or some arbitrary application-defined property.
+     * @return The value of the specified property, or <code>null</code> if
+     * there is no value for this property.
+     */
 
-  public Object getValueForProperty(T node, String property);
+    Object getValueForProperty(T node, String property);
 
-  /** Determine if this node is expandable.
-   *
-   * @param node The node.
-   * @return <b>true</b> if the node is expandable, <b>false</b> otherwise.
-   */
+    /**
+     * Determine if this node is expandable.
+     *
+     * @param node The node.
+     * @return <b>true</b> if the node is expandable, <b>false</b> otherwise.
+     */
 
-  public boolean isExpandable(T node);
+    boolean isExpandable(T node);
 
-  /** Get the icon for a node.
-   *
-   * @param node The node.
-   * @param expanded The current expanded state of the node.
-   * @return An icon for the item.
-   */
+    /**
+     * Get the icon for a node.
+     *
+     * @param node     The node.
+     * @param expanded The current expanded state of the node.
+     * @return An icon for the item.
+     */
 
-  public Icon getIcon(T node, boolean expanded);
+    Icon getIcon(T node, boolean expanded);
 
-  /** Get the label for a node.
-   *
-   * @param node The node.
-   * @return A string label for the node.
-   */
+    /**
+     * Get the label for a node.
+     *
+     * @param node The node.
+     * @return A string label for the node.
+     */
 
-  public String getLabel(T node);
-  
+    String getLabel(T node);
+
 }
-
-/* end of source file */

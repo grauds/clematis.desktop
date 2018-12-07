@@ -19,243 +19,258 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.util.Iterator;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.Icon;
 
-/** This interface defines the behavior for a data model for tree data
+import com.hyperrealm.kiwi.event.KTreeModelListener;
+
+/**
+ * This interface defines the behavior for a data model for tree data
  * structures.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public interface KTreeModel<T>
-{
-  /** Get the root node.
-   *
-   * @return The root node.
-   */
+public interface KTreeModel<T> {
+    /**
+     * Get the root node.
+     *
+     * @return The root node.
+     */
 
-  public T getRoot();
+    T getRoot();
 
-  /** Set the root node. (For immutable data models, this method may be
-   * implemented as a no-op.)
-   *
-   * @param root The new root node.
-   */
-  
-  public void setRoot(T root);
+    /**
+     * Set the root node. (For immutable data models, this method may be
+     * implemented as a no-op.)
+     *
+     * @param root The new root node.
+     */
 
-  /** Get a child count for a node.
-   *
-   * @param parent The parent node.
-   *
-   * @return The number of children that the given node has.
-   */
-  
-  public int getChildCount(T parent);
-  
-  /** Get a child of a node.
-   *
-   * @param parent The parent node.
-   * @param index The index of the child within the parent's list of children.
-   *
-   * @return The node, or <code>null</code> if no such node exists.
-   */
+    void setRoot(T root);
 
-  public T getChild(T parent, int index);
+    /**
+     * Get a child count for a node.
+     *
+     * @param parent The parent node.
+     * @return The number of children that the given node has.
+     */
 
-  /** Get the children of a node.
-   *
-   * @param parent The parent node.
-   *
-   * @return An iterator to the list of child nodes.
-   */
-  
-  public Iterator<T> getChildren(T parent);
+    int getChildCount(T parent);
 
-  /** Get the index of a child node in its parent's list of children.
-   *
-   * @param parent The parent node.
-   * @param node The child node.
-   * @return The index of the node, or -1 if the node is not a child of the
-   * given parent.
-   */
+    /**
+     * Get a child of a node.
+     *
+     * @param parent The parent node.
+     * @param index  The index of the child within the parent's list of children.
+     * @return The node, or <code>null</code> if no such node exists.
+     */
 
-  public int getIndexOfChild(T parent, T node);
+    T getChild(T parent, int index);
 
-  /** Remove all of the children of a given parent node.  (For
-   * immutable data models, this method may be implemented as a
-   * no-op.)
-   *
-   * @param parent The parent node.
-   */
+    /**
+     * Get the children of a node.
+     *
+     * @param parent The parent node.
+     * @return An iterator to the list of child nodes.
+     */
 
-  public void removeChildren(T parent);
+    Iterator<T> getChildren(T parent);
 
-  /** Remove a child node of a given parent node. (For immutable data
-   * models, this method may be implemented as a no-op.)
-   *
-   * @param parent The parent node.
-   * @param index The index of the child to remove within the parent's list of
-   * children.
-   */
-  
-  public void removeChild(T parent, int index);
+    /**
+     * Get the index of a child node in its parent's list of children.
+     *
+     * @param parent The parent node.
+     * @param node   The child node.
+     * @return The index of the node, or -1 if the node is not a child of the
+     * given parent.
+     */
 
-  /** Add a new child node to the given parent node. The child is
-   * added at the end of the parent's list of children. (For immutable
-   * data models, this method may be implemented as a no-op.)
-   *
-   * @param parent The parent node.
-   * @param node The new child node.
-   */
-  
-  public void addChild(T parent, T node);
+    int getIndexOfChild(T parent, T node);
 
-  /** Add a new child node to the given parent node. (For immutable
-   * data models, this method may be implemented as a no-op.)
-   *
-   * @param parent The parent node.
-   * @param node The new child node.
-   * @param index The offset in the list of children at which the new node
-   * should be inserted.
-   */
-  
-  public void addChild(T parent, T node, int index);
+    /**
+     * Remove all of the children of a given parent node.  (For
+     * immutable data models, this method may be implemented as a
+     * no-op.)
+     *
+     * @param parent The parent node.
+     */
 
-  /** Get the parent of a node.
-   *
-   * @param node The child node.
-   * return The parent of the specified child node.
-   */
+    void removeChildren(T parent);
 
-  public T getParent(T node);
+    /**
+     * Remove a child node of a given parent node. (For immutable data
+     * models, this method may be implemented as a no-op.)
+     *
+     * @param parent The parent node.
+     * @param index  The index of the child to remove within the parent's list of
+     *               children.
+     */
 
-  /** Determine if a node is expandable.
-   *
-   * @param node The node to test.
-   * @return <code>true</code> if the node is expandable, <code>false</code>
-   * otherwise.
-   */
+    void removeChild(T parent, int index);
 
-  public boolean isExpandable(T node);
+    /**
+     * Add a new child node to the given parent node. The child is
+     * added at the end of the parent's list of children. (For immutable
+     * data models, this method may be implemented as a no-op.)
+     *
+     * @param parent The parent node.
+     * @param node   The new child node.
+     */
 
-  /** Get the icon for a node.
-   *
-   * @param node The node.
-   * @param isExpanded The current expanded state for the node.
-   * @return An icon for the node.
-   */
-  
-  public Icon getIcon(T node, boolean isExpanded);
+    void addChild(T parent, T node);
 
-  /** Get the label for a node.
-   *
-   * @param node The node.
-   * @return A string label for the node.
-   */
-  
-  public String getLabel(T node);
+    /**
+     * Add a new child node to the given parent node. (For immutable
+     * data models, this method may be implemented as a no-op.)
+     *
+     * @param parent The parent node.
+     * @param node   The new child node.
+     * @param index  The offset in the list of children at which the new node
+     *               should be inserted.
+     */
 
-  /** Get the field count for this model.
-   *
-   * @return The field count.
-   *
-   * @since Kiwi 2.3
-   */
+    void addChild(T parent, T node, int index);
 
-  public int getFieldCount();
+    /**
+     * Get the parent of a node.
+     *
+     * @param node The child node.
+     *             return The parent of the specified child node.
+     */
 
-  /** Get the label for the given field.
-   *
-   * @param index The field index.
-   * @return The label for the field.
-   *
-   * @since Kiwi 2.3
-   */
+    T getParent(T node);
 
-  public String getFieldLabel(int index);
+    /**
+     * Determine if a node is expandable.
+     *
+     * @param node The node to test.
+     * @return <code>true</code> if the node is expandable, <code>false</code>
+     * otherwise.
+     */
 
-  /** Get the type of the given field.
-   *
-   * @param index The field index.
-   * @return The type of the field.
-   *
-   * @since Kiwi 2.3
-   */
-  
-  public Class getFieldType(int index);
+    boolean isExpandable(T node);
 
-  /** Get the value for a field in the given node.
-   *
-   * @param node The node.
-   * @param index The field index.
-   * @return The value of the field.
-   *
-   * @since Kiwi 2.3
-   */
+    /**
+     * Get the icon for a node.
+     *
+     * @param node       The node.
+     * @param isExpanded The current expanded state for the node.
+     * @return An icon for the node.
+     */
 
-  public Object getField(T node, int index);
-  
-  /** Indicate to listeners that the specified node has changed.
-   *
-   * @param node The node.
-   */
-  
-  public void updateNode(T node);
+    Icon getIcon(T node, boolean isExpanded);
 
-  /** Indicate to listeners that the list of children of the specified node
-   * has changed.
-   *
-   * @param parent The parent node.
-   */
-  
-  public void updateChildren(T parent);
+    /**
+     * Get the label for a node.
+     *
+     * @param node The node.
+     * @return A string label for the node.
+     */
 
-  /** Preload the children of a given node. This method is intended
-   * for data models that are dynamically loaded from an external data
-   * source; it may be desirable to instruct a model to prefetch the
-   * children for a given node when that node is expanding. For models
-   * where this is not desirable or not applicable, this method may be
-   * implemented as a no-op.
-   *
-   * @param parent The node for which children should be preloaded.
-   */
+    String getLabel(T node);
 
-  public void preloadChildren(T parent);
-  
-  /** Release the children of a given parent node. This method is
-   * intended for data models that are dynamically loaded from an
-   * external data source; it may be desirable to instruct a model to
-   * "forget" the subtree rooted at a given node when that node is
-   * collapsed. For models where this is not desirable or not
-   * applicable, the method may be implemented as a no-op.
-   *
-   * @param parent The root node of the subtree that should be released.
-   */
+    /**
+     * Get the field count for this model.
+     *
+     * @return The field count.
+     * @since Kiwi 2.3
+     */
 
-  public void releaseChildren(T parent);
+    int getFieldCount();
 
-  /** Add a <code>KTreeModelListener</code> to this model's list of listeners.
-   *
-   * @param listener The listener to add.
-   */
-  
-  public void addTreeModelListener(KTreeModelListener listener);
+    /**
+     * Get the label for the given field.
+     *
+     * @param index The field index.
+     * @return The label for the field.
+     * @since Kiwi 2.3
+     */
 
-  /** Remove a <code>KTreeModelListener</code> from this model's list of
-   * listeners.
-   *
-   * @param listener The listener to remove.
-   */
+    String getFieldLabel(int index);
 
-  public void removeTreeModelListener(KTreeModelListener listener);
-  
+    /**
+     * Get the type of the given field.
+     *
+     * @param index The field index.
+     * @return The type of the field.
+     * @since Kiwi 2.3
+     */
+
+    Class getFieldType(int index);
+
+    /**
+     * Get the value for a field in the given node.
+     *
+     * @param node  The node.
+     * @param index The field index.
+     * @return The value of the field.
+     * @since Kiwi 2.3
+     */
+
+    Object getField(T node, int index);
+
+    /**
+     * Indicate to listeners that the specified node has changed.
+     *
+     * @param node The node.
+     */
+
+    void updateNode(T node);
+
+    /**
+     * Indicate to listeners that the list of children of the specified node
+     * has changed.
+     *
+     * @param parent The parent node.
+     */
+
+    void updateChildren(T parent);
+
+    /**
+     * Preload the children of a given node. This method is intended
+     * for data models that are dynamically loaded from an external data
+     * source; it may be desirable to instruct a model to prefetch the
+     * children for a given node when that node is expanding. For models
+     * where this is not desirable or not applicable, this method may be
+     * implemented as a no-op.
+     *
+     * @param parent The node for which children should be preloaded.
+     */
+
+    void preloadChildren(T parent);
+
+    /**
+     * Release the children of a given parent node. This method is
+     * intended for data models that are dynamically loaded from an
+     * external data source; it may be desirable to instruct a model to
+     * "forget" the subtree rooted at a given node when that node is
+     * collapsed. For models where this is not desirable or not
+     * applicable, the method may be implemented as a no-op.
+     *
+     * @param parent The root node of the subtree that should be released.
+     */
+
+    void releaseChildren(T parent);
+
+    /**
+     * Add a <code>KTreeModelListener</code> to this model's list of listeners.
+     *
+     * @param listener The listener to add.
+     */
+
+    void addTreeModelListener(KTreeModelListener listener);
+
+    /**
+     * Remove a <code>KTreeModelListener</code> from this model's list of
+     * listeners.
+     *
+     * @param listener The listener to remove.
+     */
+
+    void removeTreeModelListener(KTreeModelListener listener);
+
 }
-
-/* end of source file */

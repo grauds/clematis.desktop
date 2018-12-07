@@ -19,35 +19,33 @@
 
 package com.hyperrealm.kiwi.ui.model;
 
-/** An exception that is thrown when an attempt is made to modify an
+/**
+ * An exception that is thrown when an attempt is made to modify an
  * immutable data model.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class ImmutableModelException extends RuntimeException
-{
-  
-  /** Construct a new <code>ImmutableModelException</code>.
-   */
-  
-  ImmutableModelException()
-  {
-    super();
-  }
+public class ImmutableModelException extends RuntimeException {
 
-  /** Construct a new <code>ImmutableModelException</code> with the given
-   * message.
-   *
-   * @param message The message.
-   */
-  
-  ImmutableModelException(String message)
-  {
-    super(message);
-  }
-  
+    /**
+     * Construct a new <code>ImmutableModelException</code>.
+     */
+
+    ImmutableModelException() {
+        super();
+    }
+
+    /**
+     * Construct a new <code>ImmutableModelException</code> with the given
+     * message.
+     *
+     * @param message The message.
+     */
+
+    ImmutableModelException(String message) {
+        super(message);
+    }
+
 }
-
-/* end of source file */
