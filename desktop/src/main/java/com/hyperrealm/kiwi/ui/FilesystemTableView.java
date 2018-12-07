@@ -19,17 +19,22 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.io.File;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
 
-import com.hyperrealm.kiwi.ui.model.*;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 
-/** This class represents a filesystem table component. It displays
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
+import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
+import com.hyperrealm.kiwi.ui.model.FilesystemDataSource;
+import com.hyperrealm.kiwi.ui.model.KTreeModel;
+
+/**
+ * This class represents a filesystem table component. It displays
  * hierarchical data (ultimately obtained from a
  * <code>FilesystemDataSource</code>) in a <code>KTreeTable</code> component.
  * The filesystem (or portion thereof) being displayed by the component can
@@ -40,128 +45,125 @@ import com.hyperrealm.kiwi.ui.model.*;
  * <i>An example FilesystemTableView.</i>
  * </center>
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.ui.model.FilesystemDataSource
  * @see com.hyperrealm.kiwi.ui.KTreeTable
- *
- * @author Mark Lindner
  */
 
-public class FilesystemTableView extends KPanel
-{
-  private KTreeTable table;
-  private KTreeModel model = null;
-  private boolean ignoreFiles = false;
+public class FilesystemTableView extends KPanel {
 
-  /** Construct a new <code>FilesystemTableView</code>. The table initially has
-   * no data model; use <code>setRoot()</code> to initialize the component.
-   *
-   * @see #setRoot
-   */
+    private KTreeTable table;
 
-  public FilesystemTableView()
-  {
-    this(false);
-  }
+    private boolean ignoreFiles;
 
-  /** Construct a new <code>FilesystemTableView</code>. The view initially has
-   * no data model; use <code>setRoot()</code> to initialize one.
-   *
-   * @param ignoreFiles A flag specifying whether this table should ignore
-   * files and only display directories.
-   * @see #setRoot
-   */
+    /**
+     * Construct a new <code>FilesystemTableView</code>. The table initially has
+     * no data model; use <code>setRoot()</code> to initialize the component.
+     *
+     * @see #setRoot
+     */
 
-  public FilesystemTableView(boolean ignoreFiles)
-  {
-    this.ignoreFiles = ignoreFiles;
+    public FilesystemTableView() {
+        this(false);
+    }
 
-    table = new KTreeTable();
-    table.setRowHeight(18);
-    table.setBackground(Color.white);
+    /**
+     * Construct a new <code>FilesystemTableView</code>. The view initially has
+     * no data model; use <code>setRoot()</code> to initialize one.
+     *
+     * @param ignoreFiles A flag specifying whether this table should ignore
+     *                    files and only display directories.
+     * @see #setRoot
+     */
 
-    KScrollPane scrollPane = new KScrollPane(table);
-    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants
-                                          .VERTICAL_SCROLLBAR_ALWAYS);
+    public FilesystemTableView(boolean ignoreFiles) {
+        this.ignoreFiles = ignoreFiles;
 
-    setLayout(new GridLayout(1, 0));
-    add(scrollPane);
+        table = new KTreeTable();
+        table.setRowHeight(ComponentDialog.DEFAULT_ROW_HEIGHT);
+        table.setBackground(Color.white);
 
-    setMultipleSelectionsAllowed(false);
-  }
+        KScrollPane scrollPane = new KScrollPane(table);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants
+            .VERTICAL_SCROLLBAR_ALWAYS);
 
-  /** Specify whether multiple selections are allowed in this component.
-   *
-   * @param flag If <code>true</code>, multiple discontiguous selections will
-   * be allowed; otherwise only single selection is allowed (the default).
-   */
+        setLayout(new GridLayout(1, 0));
+        add(scrollPane);
 
-  public void setMultipleSelectionsAllowed(boolean flag)
-  {
-    table.getSelectionModel()
-      .setSelectionMode(flag ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
-                        : ListSelectionModel.SINGLE_SELECTION);
-  }
-  
-  /** Set the root of the filesystem to be displayed by this component. This
-   * causes the component to be reset and repainted.
-   *
-   * @param root The root directory of the filesystem to display. May be
-   * <code>null</code>, indicating that all available filesystems should be
-   * displayed.
-   */
+        setMultipleSelectionsAllowed(false);
+    }
 
-  public void setRoot(File root)
-  {
-    FilesystemDataSource fds = new FilesystemDataSource(root, ignoreFiles);
-    model = new ExternalKTreeModel(fds);
+    /**
+     * Specify whether multiple selections are allowed in this component.
+     *
+     * @param flag If <code>true</code>, multiple discontiguous selections will
+     *             be allowed; otherwise only single selection is allowed (the default).
+     */
 
-    table.setTreeModel(model);
+    public void setMultipleSelectionsAllowed(boolean flag) {
+        table.getSelectionModel()
+            .setSelectionMode(flag ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
+                : ListSelectionModel.SINGLE_SELECTION);
+    }
 
-    DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-    rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+    /**
+     * Set the root of the filesystem to be displayed by this component. This
+     * causes the component to be reset and repainted.
+     *
+     * @param root The root directory of the filesystem to display. May be
+     *             <code>null</code>, indicating that all available filesystems should be
+     *             displayed.
+     */
+    @SuppressWarnings("all")
+    public void setRoot(File root) {
+        FilesystemDataSource fds = new FilesystemDataSource(root, ignoreFiles);
+        KTreeModel model = new ExternalKTreeModel(fds);
 
-    table.configureColumn(0, 100, 100, 1000);
-    table.configureColumn(1, 70, 70, 70, rightRenderer, null);
-    table.configureColumn(2, 100, 100, 100, rightRenderer, null);
-    table.configureColumn(3, 70, 70, 70, rightRenderer, null);
-    
-    repaint();
-  }
-  
-  /** Get the currently selected item in the table. If there is more than one
-   * item selected in the table, gets the last or most recently selected item.
-   *
-   * @return The <code>File</code> object for the currently selected item in
-   * the table, or <code>null</code> if there is no selection.
-   * @see #getSelectedFiles
-   */
+        table.setTreeModel(model);
 
-  public File getSelectedFile()
-  {
-    return((File)table.getSelectedItem());
-  }
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 
-  /** Get the currently selected items in the table.
-   *
-   * @return An array of <code>File</code> objects corresponding to the
-   * currently selected items in the table. If there is no selection, an empty
-   * array is returned.
-   * @see #getSelectedFile
-   */
-  
-  public File[] getSelectedFiles()
-  {
-    return((File[])table.getSelectedItems());
-  }
+        table.configureColumn(0, 100, 100, 1000);
+        table.configureColumn(1, 70, 70, 70, rightRenderer, null);
+        table.configureColumn(2, 100, 100, 100, rightRenderer, null);
+        table.configureColumn(3, 70, 70, 70, rightRenderer, null);
 
-  /** Get the <code>KTreeTable</code> component for this component.
-   */
+        repaint();
+    }
 
-  public KTreeTable getTable()
-  {
-    return(table);
-  }
-  
+    /**
+     * Get the currently selected item in the table. If there is more than one
+     * item selected in the table, gets the last or most recently selected item.
+     *
+     * @return The <code>File</code> object for the currently selected item in
+     * the table, or <code>null</code> if there is no selection.
+     * @see #getSelectedFiles
+     */
+
+    public File getSelectedFile() {
+        return ((File) table.getSelectedItem());
+    }
+
+    /**
+     * Get the currently selected items in the table.
+     *
+     * @return An array of <code>File</code> objects corresponding to the
+     * currently selected items in the table. If there is no selection, an empty
+     * array is returned.
+     * @see #getSelectedFile
+     */
+
+    public File[] getSelectedFiles() {
+        return ((File[]) table.getSelectedItems());
+    }
+
+    /**
+     * Get the <code>KTreeTable</code> component for this component.
+     */
+
+    public KTreeTable getTable() {
+        return (table);
+    }
+
 }
-
-/* end of source file */

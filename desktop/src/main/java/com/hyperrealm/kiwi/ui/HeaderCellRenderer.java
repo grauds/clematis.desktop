@@ -19,78 +19,89 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
-/** A customized header table cell renderer that left-justifies the header
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableCellRenderer;
+
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.EAST_POSITION;
+
+/**
+ * A customized header table cell renderer that left-justifies the header
  * text and may optionally render an icon.
  *
  * @author Mark Lindner
  */
 
-public class HeaderCellRenderer extends JPanel implements TableCellRenderer
-{
-  private static final Border headerBorder
-    = new CompoundBorder(new BevelBorder(BevelBorder.RAISED),
-                         new EmptyBorder(0, 3, 0, 3));
-  private JLabel l_text, l_icon;
-   
-  /** Construct a new <code>HeaderCellRenderer</code>.
-   */
-   
-  public HeaderCellRenderer()
-  {
-    setOpaque(false);
-    setBorder(headerBorder);
-    setLayout(new BorderLayout(0, 0));
+public class HeaderCellRenderer extends JPanel implements TableCellRenderer {
 
-    l_text = new KLabel();
-    l_text.setVerticalTextPosition(SwingConstants.CENTER);
-    l_text.setHorizontalTextPosition(SwingConstants.LEFT);
-    add("Center", l_text);
+    private static final Border HEADER_BORDER = new CompoundBorder(new BevelBorder(BevelBorder.RAISED),
+        new EmptyBorder(0, 3, 0, 3));
 
-    l_icon = new KLabel();
-    add("East", l_icon);
-  }
+    private JLabel lText, lIcon;
 
-  /** Set the icon for the renderer. The icon is rendered against the right
-   * edge of the renderer.
-   *
-   * @param icon The icon.
-   */
+    /**
+     * Construct a new <code>HeaderCellRenderer</code>.
+     */
 
-  public void setIcon(Icon icon)
-  {
-    l_icon.setIcon(icon);
-  }
+    public HeaderCellRenderer() {
+        setOpaque(false);
+        setBorder(HEADER_BORDER);
+        setLayout(new BorderLayout(0, 0));
 
-  /** Set the alignment for the renderer's text; should be one of
-   * <code>SwingConstants.LEFT</code>, <code>SwingConstants.CENTER</code>,
-   * <code>SwingConstants.RIGHT</code>.
-   *
-   * @since Kiwi 2.4
-   */
+        lText = new KLabel();
+        lText.setVerticalTextPosition(SwingConstants.CENTER);
+        lText.setHorizontalTextPosition(SwingConstants.LEFT);
+        add(CENTER_POSITION, lText);
 
-  public void setTextAlignment(int alignment)
-  {
-    l_text.setHorizontalAlignment(alignment);
-  }
-  
-  /** Get the cell renderer component.
-   */
-   
-  public Component getTableCellRendererComponent(JTable table, Object value,
-                                                 boolean isSelected,
-                                                 boolean hasFocus, int row,
-                                                 int column)
-  {
-    l_text.setText(value.toString());
-    
-    return(this);
-  }
+        lIcon = new KLabel();
+        add(EAST_POSITION, lIcon);
+    }
+
+    /**
+     * Set the icon for the renderer. The icon is rendered against the right
+     * edge of the renderer.
+     *
+     * @param icon The icon.
+     */
+
+    public void setIcon(Icon icon) {
+        lIcon.setIcon(icon);
+    }
+
+    /**
+     * Set the alignment for the renderer's text; should be one of
+     * <code>SwingConstants.LEFT</code>, <code>SwingConstants.CENTER</code>,
+     * <code>SwingConstants.RIGHT</code>.
+     *
+     * @since Kiwi 2.4
+     */
+
+    public void setTextAlignment(int alignment) {
+        lText.setHorizontalAlignment(alignment);
+    }
+
+    /**
+     * Get the cell renderer component.
+     */
+
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus, int row,
+                                                   int column) {
+        lText.setText(value.toString());
+
+        return (this);
+    }
 
 }
-
-/* end of source file */

@@ -158,7 +158,7 @@ public class AboutFrame extends KFrame {
 
         main.add(CENTER_POSITION, bContent);
 
-        main.add("South", bButtons);
+        main.add(SOUTH_POSITION, bButtons);
 
         setSize(DEFAULT_FRAME_SIZE);
     }

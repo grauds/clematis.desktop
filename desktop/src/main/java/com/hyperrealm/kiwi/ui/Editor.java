@@ -21,46 +21,53 @@ package com.hyperrealm.kiwi.ui;
 
 import javax.swing.JComponent;
 
-/** An interface that prescribes common behavior for editor components.
+/**
+ * An interface that prescribes common behavior for editor components.
  *
+ * @param <T>
  * @author Mark Lindner
- *
  * @since Kiwi 2.0
  */
 
-public interface Editor<T>
-{
-  /** Set the object to be edited.
-   *
-   * @param obj The object to edit.
-   */
-  
-  public void setObject(T obj);
+public interface Editor<T> {
+    /**
+     * Get the object being edited.
+     *
+     * @return The object.
+     */
 
-  /** Get the object being edited.
-   *
-   * @return The object.
-   */
-  
-  public T getObject();
+    T getObject();
 
-  /** Clear the editor. Equivalent to calling <code>setObject(null)</code>.
-   */
+    /**
+     * Set the object to be edited.
+     *
+     * @param obj The object to edit.
+     */
 
-  public void clear();
+    void setObject(T obj);
 
-  /** Get the editor component. */
+    /**
+     * Clear the editor. Equivalent to calling <code>setObject(null)</code>.
+     */
 
-  public JComponent getEditorComponent();
+    void clear();
 
-  /** Validate the input in the editor. */
+    /**
+     * Get the editor component.
+     */
 
-  public boolean validateInput();
+    JComponent getEditorComponent();
 
-  /** Enable or disable the editor. */
+    /**
+     * Validate the input in the editor.
+     */
 
-  public void setEnabled(boolean enabled);
+    boolean validateInput();
+
+    /**
+     * Enable or disable the editor.
+     */
+
+    void setEnabled(boolean enabled);
 
 }
-
-/* end of source file */

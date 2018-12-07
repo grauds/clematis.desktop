@@ -22,7 +22,9 @@ package com.hyperrealm.kiwi.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
@@ -86,7 +88,7 @@ public class ConsoleFrame extends KFrame implements LoggingEndpoint {
         main.setBorder(KiwiUtils.defaultBorder);
 
         console = new ConsolePanel();
-        main.add("Center", console);
+        main.add(CENTER_POSITION, console);
 
         // buttons
 
@@ -100,7 +102,7 @@ public class ConsoleFrame extends KFrame implements LoggingEndpoint {
         bDismiss.addActionListener(actionListener);
         buttons.addButton(bDismiss);
 
-        main.add("South", buttons);
+        main.add(SOUTH_POSITION, buttons);
 
         if (getTitle().length() == 0) {
             setTitle(loc.getMessage("kiwi.dialog.title.console"));
