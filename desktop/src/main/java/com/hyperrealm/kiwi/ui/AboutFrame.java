@@ -19,19 +19,30 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.net.URL;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.*;
+import java.net.URL;
+
+import javax.swing.JEditorPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLEditorKit;
 
-import com.hyperrealm.kiwi.util.*;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_FRAME_SIZE;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
 
-/** An "About..." style window. The window displays an HTML document in a
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
+
+/**
+ * An "About..." style window. The window displays an HTML document in a
  * scroll pane and provides <i>Home</i> and <i>Close</i> buttons. This
  * component is hyperlink sensitive and will follow links embedded in the
  * documents it displays. Clicking the optional <i>Home</i> button causes the
@@ -45,204 +56,189 @@ import com.hyperrealm.kiwi.util.*;
  * <i>An example AboutFrame.</i>
  * </center>
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.util.ResourceManager#getURL
  * @see com.hyperrealm.kiwi.util.ResourceLoader#getResourceAsURL
- *
- * @author Mark Lindner
  */
+@SuppressWarnings("unused")
+public class AboutFrame extends KFrame {
 
-public class AboutFrame extends KFrame
-{
-  private KButton b_ok, b_home = null;
-  private JEditorPane edit;
-  private URL startPage;
-  private String defaultTitle = null;
-  private _ActionListener actionListener;
-  private LocaleData loc, loc2;
-  private KPanel p_content;
+    private KButton bOk, bHome = null;
 
-  /** Construct a new <code>AboutFrame</code> without a <i>Home</i> button.
-   *
-   * @param title The title for the window.
-   * @param source The URL of the initial HTML document to display.
-   */
-  
-  public AboutFrame(String title, URL source)
-  {
-    this(title, source, false);
-  }
+    private JEditorPane edit;
 
-  /** Construct a new <code>AboutFrame</code>.
-   *
-   * @param title The title for the window.
-   * @param source The URL of the initial HTML document to display.
-   * @param hasHomeButton A flag specifying whether the dialog will be created
-   * with a <i>Home</i> button for URL navigation.
-   */
+    private URL startPage;
 
-  public AboutFrame(String title, URL source, boolean hasHomeButton)
-  {
-    super(title);
+    private String defaultTitle;
 
-    defaultTitle = title;
-    startPage = source;
+    private LocaleData loc2;
 
-    actionListener = new _ActionListener();
+    /**
+     * Construct a new <code>AboutFrame</code> without a <i>Home</i> button.
+     *
+     * @param title  The title for the window.
+     * @param source The URL of the initial HTML document to display.
+     */
 
-    loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
-    loc2 = LocaleManager.getDefault().getLocaleData("KiwiMisc");
-    
-    KPanel main = getMainContainer();    
-
-    main.setLayout(new BorderLayout(5, 5));
-    main.setBorder(KiwiUtils.defaultBorder);
-    
-    ButtonPanel p_buttons = new ButtonPanel();
-
-    if(hasHomeButton)
-    {
-      b_home = new KButton(loc.getMessage("kiwi.button.home"));
-      b_home.addActionListener(actionListener);
-      b_home.setEnabled(false);
-      p_buttons.addButton(b_home);
+    public AboutFrame(String title, URL source) {
+        this(title, source, false);
     }
 
-    b_ok = new KButton(loc.getMessage("kiwi.button.close"));
-    b_ok.addActionListener(actionListener);
-    p_buttons.addButton(b_ok);
+    /**
+     * Construct a new <code>AboutFrame</code>.
+     *
+     * @param title         The title for the window.
+     * @param source        The URL of the initial HTML document to display.
+     * @param hasHomeButton A flag specifying whether the dialog will be created
+     *                      with a <i>Home</i> button for URL navigation.
+     */
 
-    addWindowListener(new WindowAdapter()
-      {
-        public void windowClosing(WindowEvent evt)
-        {
-          _hide();
+    public AboutFrame(String title, URL source, boolean hasHomeButton) {
+        super(title);
+
+        defaultTitle = title;
+        startPage = source;
+
+        ActionListener actionListener = new ActionListener();
+
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
+        loc2 = LocaleManager.getDefault().getLocaleData("KiwiMisc");
+
+        KPanel main = getMainContainer();
+
+        main.setLayout(DEFAULT_BORDER_LAYOUT);
+        main.setBorder(KiwiUtils.defaultBorder);
+
+        ButtonPanel bButtons = new ButtonPanel();
+
+        if (hasHomeButton) {
+            bHome = new KButton(loc.getMessage("kiwi.button.home"));
+            bHome.addActionListener(actionListener);
+            bHome.setEnabled(false);
+            bButtons.addButton(bHome);
         }
-      });
 
-    edit = new JEditorPane();
+        bOk = new KButton(loc.getMessage("kiwi.button.close"));
+        bOk.addActionListener(actionListener);
+        bButtons.addButton(bOk);
 
-    // the order here is IMPORTANT!
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent evt) {
+                doHide();
+            }
+        });
 
-    edit.setEditable(false);
-    edit.addHyperlinkListener(new HyperlinkListener()
-      {
-        public void hyperlinkUpdate(HyperlinkEvent evt)
-        {
-          if(evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-          {
-            _showDocument(evt.getURL());
-            if(b_home != null)
-              b_home.setEnabled(true);
-          }
+        edit = new JEditorPane();
+
+        // the order here is IMPORTANT!
+
+        edit.setEditable(false);
+        edit.addHyperlinkListener(evt -> {
+            if (evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                doShowDocument(evt.getURL());
+                if (bHome != null) {
+                    bHome.setEnabled(true);
+                }
+            }
+        });
+        edit.setEditorKit(new HTMLEditorKit());
+
+        KScrollPane scroll = new KScrollPane(edit);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        KPanel bContent = new KPanel();
+        bContent.setLayout(DEFAULT_BORDER_LAYOUT);
+
+        Component content = buildContentPanel();
+        if (content != null) {
+            bContent.add(SOUTH_POSITION, content);
         }
-      });
-    edit.setEditorKit(new HTMLEditorKit());
-    
-    KScrollPane scroll = new KScrollPane(edit);
-    scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants
-                                        .HORIZONTAL_SCROLLBAR_NEVER);
 
-    p_content = new KPanel();
-    p_content.setLayout(new BorderLayout(5, 5));
+        bContent.add(CENTER_POSITION, scroll);
 
-    Component content = buildContentPanel();
-    if(content != null)
-      p_content.add("South", content);
+        main.add(CENTER_POSITION, bContent);
 
-    p_content.add("Center", scroll);
-    
-    main.add("Center", p_content);
+        main.add("South", bButtons);
 
-    main.add("South", p_buttons);
-
-    setSize(500, 600);
-  }
-
-  /** This method may be overridden to produce a component that will
-   * be added below the HTML pane in the frame. This can be used to
-   * provide additional content, in the frame. The default
-   * implementation returns <code>null</code>.
-   *
-   * @return A component to add to the frame.
-   *
-   * @since Kiwi 1.3
-   */
-
-  protected Component buildContentPanel()
-  {
-    return(null);
-  }
-  
-  /* hide the window */
-
-  private void _hide()
-  {
-    setVisible(false);
-    dispose();
-  }
-
-  /** Show or hide the window. */
-
-  public void setVisible(boolean flag)
-  {
-    if(flag)
-      _showDocument(startPage);
-
-    super.setVisible(flag);
-  }
-
-  /**
-   */
-
-  protected void startFocus()
-  {
-    b_ok.requestFocus();
-  }
-
-  /** show document */
-
-  private void _showDocument(URL url)
-  {
-    try
-    {
-      edit.setPage(url);
-      String docTitle = (String)edit.getDocument()
-        .getProperty(Document.TitleProperty);
-      setTitle((docTitle != null) ? docTitle : defaultTitle);
+        setSize(DEFAULT_FRAME_SIZE);
     }
-    catch(IOException ex)
-    {
-      _showError(url);
-    }
-  }
-  
-  /* show error message */
 
-  private void _showError(URL url)
-  {
-    edit.setText(loc2.getMessage("kiwi.warning.html.doc_not_found",
-                                 url.toString()));
-  }
+    /**
+     * This method may be overridden to produce a component that will
+     * be added below the HTML pane in the frame. This can be used to
+     * provide additional content, in the frame. The default
+     * implementation returns <code>null</code>.
+     *
+     * @return A component to add to the frame.
+     * @since Kiwi 1.3
+     */
 
-  /* handle button events */
-  
-  private class _ActionListener implements ActionListener
-  {
-    public void actionPerformed(ActionEvent evt)
-    {
-      Object o = evt.getSource();
-      
-      if(o == b_ok)
-        _hide();
-      
-      else if((b_home != null) && (o == b_home))
-      {
-        _showDocument(startPage);
-        b_home.setEnabled(false);
-      }
+    protected Component buildContentPanel() {
+        return (null);
     }
-  }
+
+    /* doHide the window */
+
+    private void doHide() {
+        setVisible(false);
+        dispose();
+    }
+
+    /**
+     * Show or doHide the window.
+     */
+
+    public void setVisible(boolean flag) {
+        if (flag) {
+            doShowDocument(startPage);
+        }
+
+        super.setVisible(flag);
+    }
+
+    /**
+     *
+     */
+
+    protected void startFocus() {
+        bOk.requestFocus();
+    }
+
+    /**
+     * show document
+     */
+
+    private void doShowDocument(URL url) {
+        try {
+            edit.setPage(url);
+            String docTitle = (String) edit.getDocument()
+                .getProperty(Document.TitleProperty);
+            setTitle((docTitle != null) ? docTitle : defaultTitle);
+        } catch (IOException ex) {
+            doShowError(url);
+        }
+    }
+
+    /* show error message */
+
+    private void doShowError(URL url) {
+        edit.setText(loc2.getMessage("kiwi.warning.html.doc_not_found",
+            url.toString()));
+    }
+
+    /* handle button events */
+
+    private class ActionListener implements java.awt.event.ActionListener {
+        public void actionPerformed(ActionEvent evt) {
+            Object o = evt.getSource();
+
+            if (o == bOk) {
+                doHide();
+            } else if ((bHome != null) && (o == bHome)) {
+                doShowDocument(startPage);
+                bHome.setEnabled(false);
+            }
+        }
+    }
 
 }
-
-/* end of source file */

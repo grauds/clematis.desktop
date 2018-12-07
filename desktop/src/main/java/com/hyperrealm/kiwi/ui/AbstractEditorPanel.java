@@ -27,12 +27,13 @@ package com.hyperrealm.kiwi.ui;
  * synchronized between the content object and these fields via calls
  * to the methods <code>commit()</code> and <code>update()</code>.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.1
  */
 
 public abstract class AbstractEditorPanel<T> extends KPanel
-        implements Editor<T> {
+    implements Editor<T> {
     /**
      * The current content object.
      */
@@ -45,7 +46,7 @@ public abstract class AbstractEditorPanel<T> extends KPanel
     public AbstractEditorPanel() {
     }
 
-    /** Synchronize a <code>DomainObject</code> with the
+    /* Synchronize a <code>DomainObject</code> with the
      *  <code>ContentPanel</code>. Subclassers should define this method to
      *  copy the appropriate values from the domain object to the corresponding
      *  input elements in the interface. The reference to the domain object must
@@ -58,14 +59,6 @@ public abstract class AbstractEditorPanel<T> extends KPanel
      */
 
     /**
-     * Equivalent to <code>setContent()</code>.
-     */
-
-    public void setObject(T object) {
-        setContent(object);
-    }
-
-    /**
      * Equivalent to <code>getContent()</code>.
      */
 
@@ -74,11 +67,11 @@ public abstract class AbstractEditorPanel<T> extends KPanel
     }
 
     /**
-     * Set the content object for this panel.
+     * Equivalent to <code>setContent()</code>.
      */
 
-    public final void setContent(T content) {
-        this.content = content;
+    public void setObject(T object) {
+        setContent(object);
     }
 
     /**
@@ -90,6 +83,14 @@ public abstract class AbstractEditorPanel<T> extends KPanel
     }
 
     /**
+     * Set the content object for this panel.
+     */
+
+    public final void setContent(T content) {
+        this.content = content;
+    }
+
+    /**
      * Commit the user input supplied in this panel to the content
      * object that was provided with the most recent call to
      * <code>setContent()</code> or
@@ -97,11 +98,9 @@ public abstract class AbstractEditorPanel<T> extends KPanel
      * to copy the appropriate values from the input elements in the
      * panel to the corresponding fields in the content object.
      *
-     * @throws DataValidationException If there was an input validation
-     *                                 error.
      */
 
-    public abstract void commit() throws DataValidationException;
+    public abstract void commit();
 
     /**
      * Update this panel to reflect the data in the content object that
@@ -168,5 +167,3 @@ public abstract class AbstractEditorPanel<T> extends KPanel
     }
 
 }
-
-/* end of source file */

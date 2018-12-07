@@ -19,48 +19,50 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.Color;
-
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.ListCellRenderer;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.SwingConstants;
 
-import com.hyperrealm.kiwi.text.ColorFormatter;
+import com.hyperrealm.kiwi.util.BooleanHolder;
 
 /**
- * A cell renderer for color swatches.
+ * A table cell renderer for displaying boolean values. Renders a value,
+ * which may be either a <code>Boolean</code> object or a
+ * <code>BooleanHolder</code> object, as a non-editable checkbox.
  *
  * @author Mark Lindner
+ * @see Boolean
+ * @see com.hyperrealm.kiwi.util.BooleanHolder
  */
 
-public class ColorSwatchCellRenderer extends AbstractCellRenderer implements ListCellRenderer, TableCellRenderer {
-
-    private static ColorSwatch swatch = new ColorSwatch();
-
-    private JLabel renderer;
+public class BooleanCellRenderer extends AbstractCellRenderer {
+    private JCheckBox renderer;
 
     /**
-     * Construct a new <code>ColorSwatchCellRenderer</code>.
+     * Construct a new <code>BooleanCellRenderer</code>
      */
 
-    public ColorSwatchCellRenderer() {
-        renderer = new JLabel();
-        renderer.setIcon(swatch);
+    public BooleanCellRenderer() {
+        renderer = new JCheckBox();
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     /**
-     *
+     * Get a reference to the renderer component.
      */
 
     protected JComponent getCellRenderer(JComponent component, Object value,
                                          int row, int column) {
-        Color c = (Color) value;
+        boolean flag;
+        if (value instanceof BooleanHolder) {
+            flag = ((BooleanHolder) value).getValue();
+        } else if (value instanceof Boolean) {
+            flag = (Boolean) value;
+        } else {
+            flag = false;
+        }
 
-        renderer.setFont(component.getFont());
-
-        swatch.setColor(c);
-        renderer.setText(ColorFormatter.nameForColor(c));
+        renderer.setSelected(flag);
 
         return (renderer);
     }

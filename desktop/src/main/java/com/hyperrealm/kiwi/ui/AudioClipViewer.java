@@ -19,89 +19,94 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.JComponent;
 
-/** An implementation of <code>UIElementViewer</code> for previewing
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_PADDING;
+
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.ResourceManager;
+
+/**
+ * An implementation of <code>UIElementViewer</code> for previewing
  * audio clips. The viewer consists of <i>Play</i> and <i>Stop</i> buttons,
  * for playing and stopping the audio clip, respectively.
  *
  * @author Mark Lindner
  */
 
-public class AudioClipViewer extends KPanel implements UIElementViewer,
-                                            ActionListener
-{
-  private KButton b_play, b_stop;
-  private AudioClip clip = null;
+public class AudioClipViewer extends KPanel implements UIElementViewer, ActionListener {
 
-  /** Construct a new <code>AudioClipViewer</code>.
-   */
-  
-  public AudioClipViewer()
-  {
-    setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+    private KButton bPlay, bStop;
 
-    ResourceManager rm = KiwiUtils.getResourceManager();
-    
-    b_play = new KButton(rm.getIcon("play_blue.png"));
-    b_play.addActionListener(this);
-    add(b_play);
+    private AudioClip clip = null;
 
-    b_stop = new KButton(rm.getIcon("stop_blue.png"));
-    b_stop.addActionListener(this);
-    add(b_stop);   
-  }
+    /**
+     * Construct a new <code>AudioClipViewer</code>.
+     */
 
-  /** Get a reference to the viewer component.
-   *
-   * @return The viewer component.
-   */
-  
-  public JComponent getViewerComponent()
-  {
-    return(this);
-  }
+    public AudioClipViewer() {
+        setLayout(new FlowLayout(FlowLayout.CENTER, DEFAULT_PADDING, DEFAULT_PADDING));
 
-  /** Show the specified element.
-   *
-   * @param element An object, assumed to be an instance of
-   * <code>AudioClip</code>, to display.
-   */
-  
-  public void showElement(UIElement element)
-  {
-    Object obj = element.getObject();
-    
-    if(obj instanceof AudioClip)
-    {
-      if(clip != null)
-        clip.stop();
-      
-      clip = (AudioClip)obj;
+        ResourceManager rm = KiwiUtils.getResourceManager();
+
+        bPlay = new KButton(rm.getIcon("play_blue.png"));
+        bPlay.addActionListener(this);
+        add(bPlay);
+
+        bStop = new KButton(rm.getIcon("stop_blue.png"));
+        bStop.addActionListener(this);
+        add(bStop);
     }
-  }
 
-  /** This method is public as an implementation side-effect.
-   */
-  
-  public void actionPerformed(ActionEvent evt)
-  {
-    if(clip == null)
-      return;
-    
-    Object o = evt.getSource();
-    
-    if(o == b_play)
-      clip.play();
+    /**
+     * Get a reference to the viewer component.
+     *
+     * @return The viewer component.
+     */
 
-    else if(o == b_stop)
-      clip.stop();
-  }
+    public JComponent getViewerComponent() {
+        return (this);
+    }
+
+    /**
+     * Show the specified element.
+     *
+     * @param element An object, assumed to be an instance of
+     *                <code>AudioClip</code>, to display.
+     */
+
+    public void showElement(UIElement element) {
+        Object obj = element.getObject();
+
+        if (obj instanceof AudioClip) {
+            if (clip != null) {
+                clip.stop();
+            }
+
+            clip = (AudioClip) obj;
+        }
+    }
+
+    /**
+     * This method is public as an implementation side-effect.
+     */
+
+    public void actionPerformed(ActionEvent evt) {
+        if (clip == null) {
+            return;
+        }
+
+        Object o = evt.getSource();
+
+        if (o == bPlay) {
+            clip.play();
+        } else if (o == bStop) {
+            clip.stop();
+        }
+    }
 
 }
-
-/* end of source file */
