@@ -57,19 +57,20 @@ import com.hyperrealm.kiwi.util.ResourceDecoder;
  * the plugin.
  * <p>
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 1.3
  */
 
 public class PluginLocator<T> {
 
-    private PluginContext context;
-
-    private ResourceDecoder decoder;
-
     private final ArrayList<String> forbiddenPackages;
 
     private final ArrayList<String> restrictedPackages;
+
+    private PluginContext context;
+
+    private ResourceDecoder decoder;
 
     /**
      * Construct a new <code>PluginLocator</code> with the specified plugin
@@ -133,7 +134,7 @@ public class PluginLocator<T> {
      */
 
     private Plugin<T> loadPlugin(String jarFile, String type)
-            throws PluginException {
+        throws PluginException {
 
         return new Plugin<T>(this, jarFile, type);
     }
@@ -172,5 +173,3 @@ public class PluginLocator<T> {
     }
 
 }
-
-/* end of source file */

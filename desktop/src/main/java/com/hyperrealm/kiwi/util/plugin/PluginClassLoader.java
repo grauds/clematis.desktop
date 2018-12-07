@@ -51,11 +51,12 @@ import java.util.jar.JarFile;
 
 class PluginClassLoader extends ClassLoader {
 
+    public static final int PATH_EXTRA_LENGTH = 6;
+    private final ArrayList<JarFile> jars;
+
     private ArrayList<String> forbiddenPackages;
 
     private ArrayList<String> restrictedPackages;
-
-    private final ArrayList<JarFile> jars;
 
     /*
      */
@@ -71,6 +72,17 @@ class PluginClassLoader extends ClassLoader {
     /*
      */
 
+    private static String classNameToPath(String className) {
+        return (className.replace('.', '/') + ".class");
+    }
+
+    static String pathToClassName(String path) {
+        return (path.substring(0, path.length() - PATH_EXTRA_LENGTH).replace('/', '.'));
+    }
+
+    /*
+     */
+
     void addJarFile(JarFile file) {
         synchronized (jars) {
             if ((file != null) && !jars.contains(file)) {
@@ -79,12 +91,15 @@ class PluginClassLoader extends ClassLoader {
         }
     }
 
+    /*
+     */
+
     /**
      *
      */
-
+    @SuppressWarnings("all")
     public synchronized Class loadClass(String className, boolean resolve)
-            throws ClassNotFoundException {
+        throws ClassNotFoundException {
 
         Class result;
 
@@ -151,7 +166,9 @@ class PluginClassLoader extends ClassLoader {
                         }
 
                         if (r != size) // got less or more bytes than we expected?
+                        {
                             throw (new ClassFormatError(className));
+                        }
 
                         result = defineClass(className, b, 0, size);
                         break;
@@ -178,33 +195,35 @@ class PluginClassLoader extends ClassLoader {
         return findPackage(packageName, forbiddenPackages);
     }
 
-    /*
-     */
-
     private boolean isRestrictedPackage(String packageName) {
         return findPackage(packageName, restrictedPackages);
     }
 
-    /*
+    /* convert a class name to its corresponding JAR entry name
      */
 
     private synchronized boolean findPackage(String packageName,
                                              ArrayList<String> packageList) {
-
+        boolean ret = false;
 
         for (String pkg : packageList) {
 
             if (pkg.endsWith(".*")) {
                 if (packageName.startsWith(pkg.substring(0, pkg.length() - 1))) {
-                    return true;
+                    ret = true;
+                    break;
                 }
             } else if (pkg.equals(packageName)) {
-                return true;
+                ret = true;
+                break;
             }
         }
 
-        return false;
+        return ret;
     }
+
+    /* convert a JAR entry name to its corresponding class name
+     */
 
     /**
      *
@@ -228,20 +247,4 @@ class PluginClassLoader extends ClassLoader {
         return (null);
     }
 
-    /* convert a class name to its corresponding JAR entry name
-     */
-
-    private static String classNameToPath(String className) {
-        return (className.replace('.', '/') + ".class");
-    }
-
-    /* convert a JAR entry name to its corresponding class name
-     */
-
-    static String pathToClassName(String path) {
-        return (path.substring(0, path.length() - 6).replace('/', '.'));
-    }
-
 }
-
-/* end of source file */

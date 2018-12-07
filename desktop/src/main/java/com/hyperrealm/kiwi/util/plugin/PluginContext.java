@@ -19,17 +19,14 @@
 
 package com.hyperrealm.kiwi.util.plugin;
 
-/** The application context for a plugin. This interface provides a means for
+/**
+ * The application context for a plugin. This interface provides a means for
  * a plugin to communicate with the application in which it resides. This is
  * merely a tagging interface, and thus has no methods of its own.
  *
- * @since Kiwi 1.3
- *
  * @author Mark Lindner
+ * @since Kiwi 1.3
  */
 
-public interface PluginContext
-{
+public interface PluginContext {
 }
-
-/* end of source file */

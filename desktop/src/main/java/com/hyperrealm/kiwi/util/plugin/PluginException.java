@@ -70,5 +70,3 @@ public class PluginException extends Exception {
     }
 
 }
-
-/* end of source file */

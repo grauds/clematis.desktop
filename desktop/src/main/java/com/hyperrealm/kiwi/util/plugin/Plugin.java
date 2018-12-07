@@ -34,6 +34,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.event.EventListenerList;
@@ -47,11 +48,14 @@ import com.hyperrealm.kiwi.event.PluginReloadListener;
  * entry in a JAR Manifest. Instances of the plugin object itself can be
  * created with the <code>newInstance()</code> method.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 1.3
  */
 
 public final class Plugin<T> {
+
+    private static final String FAILED_TO_INSTANTIATE_PLUGIN = "failed to instantiate plugin ";
 
     private boolean loaded = false;
 
@@ -96,7 +100,7 @@ public final class Plugin<T> {
      */
 
     Plugin(PluginLocator<T> locator, String jarFile, String expectedType)
-            throws PluginException {
+        throws PluginException {
 
         this.locator = locator;
         this.jarFile = jarFile;
@@ -252,7 +256,7 @@ public final class Plugin<T> {
      * @throws com.hyperrealm.kiwi.util.plugin.PluginException If the plugin
      *                                                         could not be loaded.
      */
-
+    @SuppressWarnings("all")
     private void load() throws PluginException {
 
         Manifest mf;
@@ -325,7 +329,6 @@ public final class Plugin<T> {
                     try {
                         helpURL = new URL(v);
                     } catch (MalformedURLException ex) { /* ignore */ }
-                    ;
                     break;
                 default:
                     props.put(a, v);
@@ -336,7 +339,7 @@ public final class Plugin<T> {
         if ((type == null) || (name == null)) {
             try {
                 jar.close();
-            } catch (IOException ex) {
+            } catch (IOException ignored) {
             }
             throw new PluginException("Invalid plugin manifest entry");
         }
@@ -344,7 +347,7 @@ public final class Plugin<T> {
         if (!type.equals(expectedType)) {
             try {
                 jar.close();
-            } catch (IOException ex) {
+            } catch (IOException ignored) {
             }
             throw new PluginException("Plugin type mismatch");
         }
@@ -363,8 +366,9 @@ public final class Plugin<T> {
                 try {
                     InputStream in = jar.getInputStream(entry);
                     Image im = locator.getDecoder().decodeImage(in);
-                    if (im != null)
+                    if (im != null) {
                         icon = new ImageIcon(im);
+                    }
                     in.close();
                 } catch (IOException ex) {
                     icon = null;
@@ -452,16 +456,16 @@ public final class Plugin<T> {
             }
 
         } catch (Exception ex) {
-            throw (new PluginException("failed to instantiate plugin "
-                    + pluginClass.getName(), ex));
+            throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN
+                + pluginClass.getName(), ex));
         }
 
         if (obj == null) {
             try {
                 obj = pluginClass.newInstance();
             } catch (Exception ex) {
-                throw (new PluginException("failed to instantiate plugin "
-                        + pluginClass.getName(), ex));
+                throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN
+                    + pluginClass.getName(), ex));
             }
         }
 
@@ -471,7 +475,7 @@ public final class Plugin<T> {
             instance = (T) obj;
         } catch (ClassCastException ex) {
             throw (new PluginException("plugin class " + pluginClass.getName()
-                    + " is of incompatible type", ex));
+                + " is of incompatible type", ex));
         }
 
         return (instance);
@@ -541,5 +545,3 @@ public final class Plugin<T> {
         return (n);
     }
 }
-
-/* end of source file */
