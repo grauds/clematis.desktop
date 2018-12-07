@@ -54,7 +54,7 @@ public class WizardDialog extends KDialog {
         super(parent, title, modal);
 
         KPanel main = getMainContainer();
-        main.setBorder(KiwiUtils.defaultBorder);
+        main.setBorder(KiwiUtils.DEFAULT_BORDER);
         main.setLayout(new GridLayout(1, 0));
         main.add(view);
         view.addActionListener(evt -> {

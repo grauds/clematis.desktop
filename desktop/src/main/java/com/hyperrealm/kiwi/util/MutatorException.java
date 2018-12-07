@@ -19,31 +19,29 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** General-purpose mutator exception. This exception is thrown by a problem
+/**
+ * General-purpose mutator exception. This exception is thrown by a problem
  * domain object when an invalid value is passed to a mutator method.
  *
  * @author Mark Lindner
  */
 
-public class MutatorException extends Exception
-{
-  /** Construct a new <code>MutatorException</code>.
-   */
-  
-  public MutatorException()
-  {
-    super();
-  }
+public class MutatorException extends Exception {
+    /**
+     * Construct a new <code>MutatorException</code>.
+     */
 
-  /** Construct a new <code>MutatorException</code> with the given message.
-   *
-   * @param message The message for the exception.
-   */
-  
-  public MutatorException(String message)
-  {
-    super(message);
-  }
+    public MutatorException() {
+        super();
+    }
+
+    /**
+     * Construct a new <code>MutatorException</code> with the given message.
+     *
+     * @param message The message for the exception.
+     */
+
+    public MutatorException(String message) {
+        super(message);
+    }
 }
-
-/* end of source file */

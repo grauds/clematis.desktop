@@ -97,7 +97,7 @@ public class ImageView extends KPanel {
 
         ResourceManager rm = KiwiUtils.getResourceManager();
 
-        setBorder(KiwiUtils.defaultBorder);
+        setBorder(KiwiUtils.DEFAULT_BORDER);
         setLayout(DEFAULT_BORDER_LAYOUT);
 
         KPanel p1 = new KPanel();

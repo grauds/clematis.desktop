@@ -103,7 +103,7 @@ public class StatusBar extends KPanel implements ProgressObserver,
         gbc.ipadx = 2;
 
         label = new JTextField();
-        label.setFont(KiwiUtils.boldFont);
+        label.setFont(KiwiUtils.BOLD_FONT);
         label.setHighlighter(null);
         label.setEditable(false);
         label.setForeground(Color.black);

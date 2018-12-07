@@ -19,14 +19,13 @@
 
 package com.hyperrealm.kiwi;
 
-/** For internal package use only.
+/**
+ * For internal package use only.
  *
  * @author Mark Lindner
  */
 
-public final class ResourceAnchor
-{
-  private ResourceAnchor() {}
+public final class ResourceAnchor {
+    private ResourceAnchor() {
+    }
 }
-
-/* end of source file */

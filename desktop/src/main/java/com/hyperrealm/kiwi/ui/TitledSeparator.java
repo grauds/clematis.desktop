@@ -78,7 +78,7 @@ public class TitledSeparator extends KPanel {
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.firstBottomInsets;
+        gbc.insets = KiwiUtils.FIRST_BOTTOM_INSETS;
 
         add(new JSeparator(), gbc);
 
@@ -90,7 +90,7 @@ public class TitledSeparator extends KPanel {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         add(new JSeparator(), gbc);
     }
 

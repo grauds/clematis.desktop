@@ -19,70 +19,74 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
-/** An implementation of <code>LoggingEndpoint</code> for ordinary files.
+/**
+ * An implementation of <code>LoggingEndpoint</code> for ordinary files.
  *
  * @author Mark Lindner
  */
 
-public class FileLoggingEndpoint implements LoggingEndpoint
-{
-  private static final String types[]
-    = {"INFO   ", "STATUS ", "WARNING", "ERROR  " };
-  private BufferedWriter out;
+public class FileLoggingEndpoint implements LoggingEndpoint {
 
-  /** Construct a new <code>FileLoggingEndpoint</code>.
-   *
-   * @param filename The name of the file to which log messages will be
-   * written.
-   *
-   * @exception java.io.IOException If the file could not be opened for
-   * writing.
-   */
+    private static final String[] TYPES = {"INFO   ", "STATUS ", "WARNING", "ERROR  "};
 
-  public FileLoggingEndpoint(String filename) throws IOException
-  {
-    FileOutputStream f = new FileOutputStream(filename, true);
-    out = new BufferedWriter(new OutputStreamWriter(f));
-  }
+    private static final int MAX_TYPE = 3;
 
-  /** Write a message to the log file.
-   *
-   * @param type The message type; one of the static constants defined in
-   * <code>LoggingEndpoint</code>.
-   * @param message The message to be written.
-   */
+    private BufferedWriter out;
 
-  public void logMessage(int type, String message)
-  {
-    if((type < 0) || (type > 3)) type = 1;
+    /**
+     * Construct a new <code>FileLoggingEndpoint</code>.
+     *
+     * @param filename The name of the file to which log messages will be
+     *                 written.
+     * @throws java.io.IOException If the file could not be opened for
+     *                             writing.
+     */
 
-    try
-    {
-      out.write(types[type] + " - " + message);
-      out.newLine();
-      out.flush();
+    public FileLoggingEndpoint(String filename) throws IOException {
+        FileOutputStream f = new FileOutputStream(filename, true);
+        out = new BufferedWriter(new OutputStreamWriter(f));
     }
-    catch(IOException ex)
-    {
-    }
-  }
 
-  /** Close the log file. Once the file is closed, this logging endpoint can no
-   * longer be used.
-   */
+    /**
+     * Write a message to the log file.
+     *
+     * @param type    The message type; one of the static constants defined in
+     *                <code>LoggingEndpoint</code>.
+     * @param message The message to be written.
+     */
 
-  public void close()
-  {
-    try
-    {
-      out.close();
+    public void logMessage(int type, String message) {
+
+        int typeInt = type;
+
+        if ((type < 0) || (type > MAX_TYPE)) {
+            typeInt = 1;
+        }
+
+        try {
+            out.write(TYPES[typeInt] + " - " + message);
+            out.newLine();
+            out.flush();
+        } catch (IOException ignored) {
+        }
     }
-    catch(IOException ex) {}
-    out = null;
-  }
+
+    /**
+     * Close the log file. Once the file is closed, this logging endpoint can no
+     * longer be used.
+     */
+
+    public void close() {
+        try {
+            out.close();
+        } catch (IOException ignored) {
+        }
+        out = null;
+    }
 
 }
-
-/* end of source file */

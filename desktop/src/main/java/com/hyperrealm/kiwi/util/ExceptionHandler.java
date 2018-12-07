@@ -19,7 +19,8 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** An interface for delivering an exception to a handler without using the
+/**
+ * An interface for delivering an exception to a handler without using the
  * <i>try / catch</i> programming construct. Sometimes an exception may be
  * thrown within a method that cannot itself throw an exception, for example if
  * the method is an implementation of an interface and that interface does not
@@ -31,14 +32,12 @@ package com.hyperrealm.kiwi.util;
  * @author Mark Lindner
  */
 
-public interface ExceptionHandler
-{
-  /** Handle an exception.
-   *
-   * @param ex The exception that was raised.
-   */
-  
-  public void exceptionRaised(Exception ex);
-}
+public interface ExceptionHandler {
+    /**
+     * Handle an exception.
+     *
+     * @param ex The exception that was raised.
+     */
 
-/* end of source file */
+    void exceptionRaised(Exception ex);
+}

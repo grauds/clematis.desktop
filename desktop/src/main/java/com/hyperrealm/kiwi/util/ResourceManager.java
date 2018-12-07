@@ -20,14 +20,21 @@
 package com.hyperrealm.kiwi.util;
 
 import java.awt.Image;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import javax.swing.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Properties;
 
-import com.hyperrealm.kiwi.ui.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-/** This class provides base functionality for a resource manager; it includes
+import com.hyperrealm.kiwi.ui.AudioClip;
+import com.hyperrealm.kiwi.ui.ColorTheme;
+
+/**
+ * This class provides base functionality for a resource manager; it includes
  * support for the caching of images and sounds, and provides convenience
  * methods for retrieving other types of resources. All resources are
  * retrieved relative to an <i>anchor class</i>. The resource manager assumes
@@ -51,540 +58,572 @@ import com.hyperrealm.kiwi.ui.*;
  * <li><a href="../../../../sounds_index.html">sounds</a>
  * </ul>
  *
- * @see com.hyperrealm.kiwi.util.ResourceLoader
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.util.ResourceLoader
  */
+@SuppressWarnings("unused")
+public class ResourceManager {
+    /**
+     * The default base path for images.
+     */
+    private static final String IMAGE_PATH = "images";
+    /**
+     * The default base path for audio clips.
+     */
+    private static final String SOUND_PATH = "sounds";
+    /**
+     * The default base path for HTML documents.
+     */
+    private static final String HTML_PATH = "html";
+    /**
+     * The default base path for color themes.
+     */
+    private static final String THEME_PATH = "themes";
+    /**
+     * The default base path for textures.
+     */
+    private static final String TEXTURE_PATH = "textures";
+    /**
+     * The default base path for property files.
+     */
+    private static final String PROPERTY_PATH = "properties";
+    /**
+     * The default base path for message bundles.
+     */
+    private static final String RESBUNDLE_PATH = "locale";
+    /**
+     * The file extension for resource bundles.
+     */
+    private static final String RESBUNDLE_EXT = ".msg";
+    /**
+     * The file extension for color themes.
+     */
+    private static final String THEME_EXT = ".thm";
 
-public class ResourceManager
-{
-  private HashMap<String, Image> images;
-  private HashMap<String, Icon> icons;
-  private HashMap<String, AudioClip> sounds;
-  private HashMap<String, Image> textures;
-  private HashMap<String, LocaleData> bundles;
-  private ResourceLoader loader;
-  private static ResourceManager kiwiResourceManager = null;
-  private static final String respathSeparator = "/";
-  /** The default base path for images. */
-  public static final String IMAGE_PATH = "images";
-  /** The default base path for audio clips. */
-  public static final String SOUND_PATH = "sounds";
-  /** The default base path for HTML documents. */
-  public static final String HTML_PATH = "html";
-  /** The default base path for color themes. */
-  public static final String THEME_PATH = "themes";
-  /** The default base path for textures. */
-  public static final String TEXTURE_PATH = "textures";
-  /** The default base path for property files. */
-  public static final String PROPERTY_PATH = "properties";
-  /** The default base path for message bundles. */
-  public static final String RESBUNDLE_PATH = "locale";
-  /** The file extension for resource bundles. */
-  public static final String RESBUNDLE_EXT = ".msg";
-  /** The file extension for color themes. */
-  public static final String THEME_EXT = ".thm";
+    private static final String RES_PATH_SEPARATOR = "/";
 
-  /** The base path for images. */
-  protected String imagePath;
-  /** The base path for audio clips. */
-  protected String soundPath;
-  /** The base path for HTML documents. */
-  protected String htmlPath;
-  /** The base path for color themes. */
-  protected String themePath;
-  /** The base path for textures. */
-  protected String texturePath;
-  /** The base path for property files. */
-  protected String propertyPath;
-  /** The base path for message bundles. */
-  protected String resbundlePath;
-  
-  /** Construct a new <code>ResourceManager</code>.
-   *
-   * @param clazz The resource anchor class.
-   */
+    private static final int INITIAL_CAPACITY = 5;
 
-  public ResourceManager(Class clazz)
-  {
-    loader = new ResourceLoader(clazz);
-    images = new HashMap<String, Image>();
-    icons = new HashMap<String, Icon>();
-    textures = new HashMap<String, Image>();
-    sounds = new HashMap<String, AudioClip>();
-    bundles = new HashMap<String, LocaleData>();
+    private static final String NAME_DIVIDER = "_";
 
-    setImagePath(IMAGE_PATH);
-    setSoundPath(SOUND_PATH);
-    setHTMLPath(HTML_PATH);
-    setThemePath(THEME_PATH);
-    setTexturePath(TEXTURE_PATH);
-    setPropertyPath(PROPERTY_PATH);
-    setResourceBundlePath(RESBUNDLE_PATH);
-  }
+    private static ResourceManager kiwiResourceManager = null;
+    /**
+     * The base path for images.
+     */
+    private String imagePath;
+    /**
+     * The base path for audio clips.
+     */
+    private String soundPath;
+    /**
+     * The base path for HTML documents.
+     */
+    private String htmlPath;
+    /**
+     * The base path for color themes.
+     */
+    private String themePath;
+    /**
+     * The base path for textures.
+     */
+    private String texturePath;
+    /**
+     * The base path for property files.
+     */
+    private String propertyPath;
+    /**
+     * The base path for message bundles.
+     */
+    private String resbundlePath;
 
-  /*
-   */
+    private HashMap<String, Image> images;
 
-  private String _checkPath(String path)
-  {
-    if(path == null)
-      return(respathSeparator);
-    
-    return(path.endsWith(respathSeparator) ? path
-           : (path + respathSeparator));
-  }
-  
-  /** Set an alternate path (relative to the anchor class) for image and icon
-   * resources.
-   *
-   * @param path The new resource path.
-   * @since Kiwi 1.3.4
-   */
+    private HashMap<String, Icon> icons;
 
-  public void setImagePath(String path)
-  {
-    imagePath = _checkPath(path);
-  }
+    private HashMap<String, AudioClip> sounds;
 
-  /** Set an alternate path (relative to the anchor class) for audio clip
-   * resources.
-   *
-   * @param path The new resource path.
-   * @since Kiwi 1.3.4
-   */
+    private HashMap<String, Image> textures;
 
-  public void setSoundPath(String path)
-  {
-    soundPath = _checkPath(path);
-  }
+    private HashMap<String, LocaleData> bundles;
 
-  /** Set an alternate path (relative to the anchor class) for HTML document
-   * resources.
-   *
-   * @param path The new resource path.
-   * @since Kiwi 1.3.4
-   */
+    private ResourceLoader loader;
 
-  public void setHTMLPath(String path)
-  {
-    htmlPath = _checkPath(path);
-  }
+    /**
+     * Construct a new <code>ResourceManager</code>.
+     *
+     * @param clazz The resource anchor class.
+     */
 
-  /** Set an alternate path (relative to the anchor class) for theme
-   * resources.
-   *
-   * @param path The new resource path.
-   * @since Kiwi 1.3.4
-   */
+    public ResourceManager(Class clazz) {
 
-  public void setThemePath(String path)
-  {
-    themePath = _checkPath(path);
-  }
+        loader = new ResourceLoader(clazz);
+        images = new HashMap<>();
+        icons = new HashMap<>();
+        textures = new HashMap<>();
+        sounds = new HashMap<>();
+        bundles = new HashMap<>();
 
-  /** Set an alternate path (relative to the anchor class) for texture
-   * resources.
-   *
-   * @param path The new resource path.
-   * @since Kiwi 1.3.4
-   */
-
-  public void setTexturePath(String path)
-  {
-    texturePath = _checkPath(path);
-  }
-
-  /** Set an alternate path (relative to the anchor class) for property
-   * resources.
-   *
-   * @param path The new resource path.
-   * @since Kiwi 1.3.4
-   */
-
-  public void setPropertyPath(String path)
-  {
-    propertyPath = _checkPath(path);
-  }
-
-  /** Set an alternate path (relative to the anchor class) for message bundle
-   * resources.
-   *
-   * @param path The new resource path.
-   * @since Kiwi 1.3.4
-   */
-
-  public void setResourceBundlePath(String path)
-  {
-    resbundlePath = _checkPath(path);
-  }
-  
-  /** Get a reference to the internal Kiwi resource manager.
-   */
-
-  public static ResourceManager getKiwiResourceManager()
-  {
-    if(kiwiResourceManager == null)
-      kiwiResourceManager = new ResourceManager(com.hyperrealm.kiwi.ResourceAnchor.class);
-
-    return(kiwiResourceManager);
-  }
-
-  /** Clear the image resource cache. */
-  
-  public void clearImageCache()
-  {
-    images.clear();
-  }
-
-  /** Clear the icon resource cache. */
-  
-  public void clearIconCache()
-  {
-    icons.clear();
-  }
-
-  /** Clear the texture resource cache. */
-  
-  public void clearTextureCache()
-  {
-    textures.clear();
-  }
-
-  /** Clear the audio clip resource cache. */
-  
-  public void clearAudioClipCache()
-  {
-    sounds.clear();
-  }
-  
-  /** Clear the resource bundle cache. */
-  
-  public void clearResourceBundleCache()
-  {
-    bundles.clear();
-  }
-  
-  /** Retrieve an internal <code>Icon</code> resource. This is a convenience
-   * method that makes a call to <code>getImage()</code> and then wraps the
-   * result in a Swing <code>ImageIcon</code> object.
-   *
-   * @param name The name of the resource.
-   * @return An <code>Icon</code> for the specified image. If an icon for this
-   * image has previously been constructed, the cached copy is returned.
-   *
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   * @see javax.swing.ImageIcon
-   */
-
-  public Icon getIcon(String name)
-  {
-    Icon icon = icons.get(name);
-    if(icon != null)
-      return(icon);
-
-    icon = new ImageIcon(getImage(name));
-    icons.put(name, icon);
-
-    return(icon);
-  }
-
-  /** Retrieve an internal <code>Image</code> resource. If the named image has
-   * previously been loaded, a cached copy is returned.
-   *
-   * @param name The name of the resource.
-   * @return The <code>Image</code> object representing the resource.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-  
-  public Image getImage(String name)
-  {
-    checkResourceName(name);
-    
-    Image image = images.get(name);
-    if(image != null)
-      return(image);
-
-    String path = imagePath + name;
-    image = loader.getResourceAsImage(path);
-    if(image == null)
-      throw(new ResourceNotFoundException(path));
-    images.put(name, image);
-
-    return(image);
-  }
-  
-  /** Retrieve an internal texture resource. If the named texture has
-   * previously been loaded, a cached copy is returned.
-   *
-   * @param name The name of the resource.
-   * @return The <code>Image</code> object representing the resource.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-
-  public Image getTexture(String name)
-  {
-    checkResourceName(name);
-    
-    Image image = textures.get(name);
-    if(image != null)
-      return(image);
-
-    String path = texturePath + name;
-    image = loader.getResourceAsImage(path);
-    if(image == null)
-      throw(new ResourceNotFoundException(path));
-    textures.put(name, image);
-
-    return(image);
-  }
-
-  /** Retrieve an internal <code>URL</code> resource.
-   *
-   * @param name The name of the resource.
-   * @return A URL for the resource.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-
-  public URL getURL(String name)
-  {
-    checkResourceName(name);
-    
-    String path = htmlPath + name;
-    URL url = loader.getResourceAsURL(path);
-    if(url == null)
-      throw(new ResourceNotFoundException(path));
-    
-    return(url);
-  }
-
-  /** Retrieve an internal <code>AudioClip</code> resource. If the named sound
-   * has previously been loaded, a cached copy is returned.
-   *
-   * @param name The name of the resource.
-   * @return The <code>AudioClip</code> object representing the resource.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-
-  public AudioClip getSound(String name)
-  {
-    checkResourceName(name);
-
-    AudioClip clip = sounds.get(name);
-    if(clip != null)
-      return(clip);
-    
-    String path = soundPath + name;
-    clip = loader.getResourceAsAudioClip(soundPath + name);
-    if(clip == null)
-      throw(new ResourceNotFoundException(path));
-    sounds.put(name, clip);
-    
-    return(clip);
-  }
-
-  /** Get a reference to a <code>Properties</code> resource.
-   *
-   * @param name The name of the resource.
-   * @return The <code>Properties</code> object representing the resource.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-
-  public Properties getProperties(String name)
-  {
-    checkResourceName(name);
-    
-    Properties props = null;
-    String path = propertyPath + name;
-    
-    try
-    {
-      props = loader.getResourceAsProperties(path);
-    }
-    catch(IOException ex) { }
-    
-    if(props == null)
-      throw(new ResourceNotFoundException(path));
-
-    return(props);
-  }
-
-  /** Get a reference to a <code>LocaleData</code> object for the default
-   * locale. The locale naming convention
-   * <i>basename_language_country_variant</i> is
-   * supported; a search is performed starting with the most specific name
-   * and ending with the most generic.
-   *
-   * @param name The name of the resource; this should be the base name of
-   * the resource bundle; the appropriate locale country, language, and
-   * variant codes and the ".msg" extension will be automatically
-   * appended to the name.
-   * @return The <code>LocaleData</code> object representing the resource.
-   * If the resource bundle has been previously loaded, a cached copy is
-   * returned.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-
-  public LocaleData getResourceBundle(String name)
-    throws ResourceNotFoundException
-  {    
-    return(getResourceBundle(name, Locale.getDefault()));
-  }
-  
-  /** Get a reference to a <code>LocaleData</code> object for a specified
-   * locale. The locale naming convention
-   * <i>basename_language_country_variant</i> is
-   * supported; a search is performed starting with the most specific name
-   * and ending with the most generic. If the resource bundle has been
-   * previously loaded, a cached copy is returned.
-   *
-   * @param name The name of the resource; this should be the base name of
-   * the resource bundle; the appropriate locale contry, language, and
-   * variant codes and the ".msg" extension will be automatically
-   * appended to the name.
-   * @param locale The locale for the resource.
-   * @return The <code>LocaleData</code> object representing the resource.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-
-  public LocaleData getResourceBundle(String name, Locale locale)
-    throws ResourceNotFoundException
-  {
-    checkResourceName(name);
-    
-    String path = resbundlePath + name, cpath = null;
-    LocaleData bundle = null;
-    LocaleData baseBundle = null;
-    LocaleData prevBundle = null;
-
-    com.hyperrealm.kiwi.util.Stack<String> paths
-      = new com.hyperrealm.kiwi.util.Stack<String>(5);
-    paths.push(path + RESBUNDLE_EXT);
-    path += "_" + locale.getLanguage();
-    paths.push(path + RESBUNDLE_EXT);
-    String country = locale.getCountry();
-    if((country != null) && (country.length() > 0))
-    {
-      path += "_" + country;
-      paths.push(path + RESBUNDLE_EXT);
-      String variant = locale.getVariant();
-      if((variant != null) && (variant.length() > 0))
-      {
-        path += "_" + variant;
-        paths.push(variant + RESBUNDLE_EXT);
-      }
+        setImagePath(IMAGE_PATH);
+        setSoundPath(SOUND_PATH);
+        setHTMLPath(HTML_PATH);
+        setThemePath(THEME_PATH);
+        setTexturePath(TEXTURE_PATH);
+        setPropertyPath(PROPERTY_PATH);
+        setResourceBundlePath(RESBUNDLE_PATH);
     }
 
-    while(!paths.empty())
-    {
-      cpath = paths.pop();
+    /*
+     */
 
-      bundle = bundles.get(cpath);
-      if(bundle == null)
-      {
-        try
-        {
-          InputStream is = loader.getResourceAsStream(cpath);
-          bundle = new LocaleData(is);
-          bundles.put(cpath, bundle);
+    /**
+     * Get a reference to the internal Kiwi resource manager.
+     */
+
+    public static ResourceManager getKiwiResourceManager() {
+        if (kiwiResourceManager == null) {
+            kiwiResourceManager = new ResourceManager(com.hyperrealm.kiwi.ResourceAnchor.class);
         }
-        catch(IOException ex)
-        {
-          bundle = null;
+
+        return (kiwiResourceManager);
+    }
+
+    private String checkPath(String path) {
+        if (path == null) {
+            return (RES_PATH_SEPARATOR);
         }
-      }
 
-      if(bundle != null)
-      {
-        if (baseBundle == null)
-          baseBundle = bundle;
-        if (prevBundle != null)
-          prevBundle.setParent(bundle);
-        prevBundle = bundle;
-      }
-    }
-    if(baseBundle == null)
-      throw(new ResourceNotFoundException(cpath));
-
-    return(baseBundle);
-  }
-
-  /** Get a reference to a <code>ColorTheme</code> resource.
-   *
-   * @param name The name of the resource; this should be the base name of
-   * the color theme; the ".thm" extension will be automatically
-   * appended to the name.
-   * @return The <code>ColorTheme</code> object representing the resource.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If the
-   * resource was not found.
-   */
-
-  public ColorTheme getTheme(String name)
-  {
-    checkResourceName(name);
-    
-    String path = themePath + name + THEME_EXT;
-    ColorTheme theme = null;
-    
-    try
-    {
-      InputStream is = loader.getResourceAsStream(path);
-      Config cfg = new Config();
-      cfg.load(is);
-      theme = new ColorTheme(cfg);
-    }
-    catch(IOException ex)
-    {
-      throw(new ResourceNotFoundException(path));
+        return (path.endsWith(RES_PATH_SEPARATOR) ? path
+            : (path + RES_PATH_SEPARATOR));
     }
 
-    return(theme);
-  }
+    /**
+     * Set an alternate path (relative to the anchor class) for image and icon
+     * resources.
+     *
+     * @param path The new resource path.
+     * @since Kiwi 1.3.4
+     */
 
-  /** Get a stream to a resource.
-   *
-   * @param name The name of the resource.
-   * @return An <code>InputStream</code> from which the resource can be read.
-   * @exception com.hyperrealm.kiwi.util.ResourceNotFoundException If
-   * the resource was not found.
-   * @since Kiwi 1.3
-   */
-
-  public InputStream getStream(String name) throws ResourceNotFoundException
-  {
-    checkResourceName(name);
-    
-    InputStream is;
-
-    try
-    {
-      is = loader.getResourceAsStream(name);
+    public void setImagePath(String path) {
+        imagePath = checkPath(path);
     }
-    catch(IOException ex)
-    {
-      throw(new ResourceNotFoundException(name));
+
+    /**
+     * Set an alternate path (relative to the anchor class) for audio clip
+     * resources.
+     *
+     * @param path The new resource path.
+     * @since Kiwi 1.3.4
+     */
+
+    public void setSoundPath(String path) {
+        soundPath = checkPath(path);
     }
-    
-    return(is);
-  }
 
-  /*
-   */
+    /**
+     * Set an alternate path (relative to the anchor class) for HTML document
+     * resources.
+     *
+     * @param path The new resource path.
+     * @since Kiwi 1.3.4
+     */
 
-  private void checkResourceName(String name) throws IllegalArgumentException
-  {
-    if((name == null) || name.equals(""))
-      throw(new IllegalArgumentException("Null or empty resource name"));
-  }
-  
+    public void setHTMLPath(String path) {
+        htmlPath = checkPath(path);
+    }
+
+    /**
+     * Set an alternate path (relative to the anchor class) for theme
+     * resources.
+     *
+     * @param path The new resource path.
+     * @since Kiwi 1.3.4
+     */
+
+    public void setThemePath(String path) {
+        themePath = checkPath(path);
+    }
+
+    /**
+     * Set an alternate path (relative to the anchor class) for texture
+     * resources.
+     *
+     * @param path The new resource path.
+     * @since Kiwi 1.3.4
+     */
+
+    public void setTexturePath(String path) {
+        texturePath = checkPath(path);
+    }
+
+    /**
+     * Set an alternate path (relative to the anchor class) for property
+     * resources.
+     *
+     * @param path The new resource path.
+     * @since Kiwi 1.3.4
+     */
+
+    public void setPropertyPath(String path) {
+        propertyPath = checkPath(path);
+    }
+
+    /**
+     * Set an alternate path (relative to the anchor class) for message bundle
+     * resources.
+     *
+     * @param path The new resource path.
+     * @since Kiwi 1.3.4
+     */
+
+    public void setResourceBundlePath(String path) {
+        resbundlePath = checkPath(path);
+    }
+
+    /**
+     * Clear the image resource cache.
+     */
+
+    public void clearImageCache() {
+        images.clear();
+    }
+
+    /**
+     * Clear the icon resource cache.
+     */
+
+    public void clearIconCache() {
+        icons.clear();
+    }
+
+    /**
+     * Clear the texture resource cache.
+     */
+
+    public void clearTextureCache() {
+        textures.clear();
+    }
+
+    /**
+     * Clear the audio clip resource cache.
+     */
+
+    public void clearAudioClipCache() {
+        sounds.clear();
+    }
+
+    /**
+     * Clear the resource bundle cache.
+     */
+
+    public void clearResourceBundleCache() {
+        bundles.clear();
+    }
+
+    /**
+     * Retrieve an internal <code>Icon</code> resource. This is a convenience
+     * method that makes a call to <code>getImage()</code> and then wraps the
+     * result in a Swing <code>ImageIcon</code> object.
+     *
+     * @param name The name of the resource.
+     * @return An <code>Icon</code> for the specified image. If an icon for this
+     * image has previously been constructed, the cached copy is returned.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     * @see javax.swing.ImageIcon
+     */
+
+    public Icon getIcon(String name) {
+        Icon icon = icons.get(name);
+        if (icon != null) {
+            return (icon);
+        }
+
+        icon = new ImageIcon(getImage(name));
+        icons.put(name, icon);
+
+        return (icon);
+    }
+
+    /**
+     * Retrieve an internal <code>Image</code> resource. If the named image has
+     * previously been loaded, a cached copy is returned.
+     *
+     * @param name The name of the resource.
+     * @return The <code>Image</code> object representing the resource.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public Image getImage(String name) {
+        return getImage(name, images, imagePath);
+    }
+
+    private Image getImage(String name, HashMap<String, Image> images, String imagePath) {
+        checkResourceName(name);
+
+        Image image = images.get(name);
+        if (image != null) {
+            return (image);
+        }
+
+        String path = imagePath + name;
+        image = loader.getResourceAsImage(path);
+        if (image == null) {
+            throw (new ResourceNotFoundException(path));
+        }
+        images.put(name, image);
+
+        return (image);
+    }
+
+    /**
+     * Retrieve an internal texture resource. If the named texture has
+     * previously been loaded, a cached copy is returned.
+     *
+     * @param name The name of the resource.
+     * @return The <code>Image</code> object representing the resource.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public Image getTexture(String name) {
+        return getImage(name, textures, texturePath);
+    }
+
+    /**
+     * Retrieve an internal <code>URL</code> resource.
+     *
+     * @param name The name of the resource.
+     * @return A URL for the resource.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public URL getURL(String name) {
+        checkResourceName(name);
+
+        String path = htmlPath + name;
+        URL url = loader.getResourceAsURL(path);
+        if (url == null) {
+            throw (new ResourceNotFoundException(path));
+        }
+
+        return (url);
+    }
+
+    /**
+     * Retrieve an internal <code>AudioClip</code> resource. If the named sound
+     * has previously been loaded, a cached copy is returned.
+     *
+     * @param name The name of the resource.
+     * @return The <code>AudioClip</code> object representing the resource.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public AudioClip getSound(String name) {
+        checkResourceName(name);
+
+        AudioClip clip = sounds.get(name);
+        if (clip != null) {
+            return (clip);
+        }
+
+        String path = soundPath + name;
+        clip = loader.getResourceAsAudioClip(soundPath + name);
+        if (clip == null) {
+            throw (new ResourceNotFoundException(path));
+        }
+        sounds.put(name, clip);
+
+        return (clip);
+    }
+
+    /**
+     * Get a reference to a <code>Properties</code> resource.
+     *
+     * @param name The name of the resource.
+     * @return The <code>Properties</code> object representing the resource.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public Properties getProperties(String name) {
+        checkResourceName(name);
+
+        Properties props = null;
+        String path = propertyPath + name;
+
+        try {
+            props = loader.getResourceAsProperties(path);
+        } catch (IOException ignored) {
+        }
+
+        if (props == null) {
+            throw (new ResourceNotFoundException(path));
+        }
+
+        return (props);
+    }
+
+    /**
+     * Get a reference to a <code>LocaleData</code> object for the default
+     * locale. The locale naming convention
+     * <i>basename_language_country_variant</i> is
+     * supported; a search is performed starting with the most specific name
+     * and ending with the most generic.
+     *
+     * @param name The name of the resource; this should be the base name of
+     *             the resource bundle; the appropriate locale country, language, and
+     *             variant codes and the ".msg" extension will be automatically
+     *             appended to the name.
+     * @return The <code>LocaleData</code> object representing the resource.
+     * If the resource bundle has been previously loaded, a cached copy is
+     * returned.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public LocaleData getResourceBundle(String name)
+        throws ResourceNotFoundException {
+        return (getResourceBundle(name, Locale.getDefault()));
+    }
+
+    /**
+     * Get a reference to a <code>LocaleData</code> object for a specified
+     * locale. The locale naming convention
+     * <i>basename_language_country_variant</i> is
+     * supported; a search is performed starting with the most specific name
+     * and ending with the most generic. If the resource bundle has been
+     * previously loaded, a cached copy is returned.
+     *
+     * @param name   The name of the resource; this should be the base name of
+     *               the resource bundle; the appropriate locale contry, language, and
+     *               variant codes and the ".msg" extension will be automatically
+     *               appended to the name.
+     * @param locale The locale for the resource.
+     * @return The <code>LocaleData</code> object representing the resource.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public LocaleData getResourceBundle(String name, Locale locale)
+        throws ResourceNotFoundException {
+        checkResourceName(name);
+
+        String path = resbundlePath + name, cpath = null;
+        LocaleData bundle = null;
+        LocaleData baseBundle = null;
+        LocaleData prevBundle = null;
+
+        com.hyperrealm.kiwi.util.Stack<String> paths
+            = new com.hyperrealm.kiwi.util.Stack<>(INITIAL_CAPACITY);
+        paths.push(path + RESBUNDLE_EXT);
+        path += NAME_DIVIDER + locale.getLanguage();
+        paths.push(path + RESBUNDLE_EXT);
+        String country = locale.getCountry();
+        if ((country != null) && (country.length() > 0)) {
+            path += NAME_DIVIDER + country;
+            paths.push(path + RESBUNDLE_EXT);
+            String variant = locale.getVariant();
+            if ((variant != null) && (variant.length() > 0)) {
+                path += NAME_DIVIDER + variant;
+                paths.push(variant + RESBUNDLE_EXT);
+            }
+        }
+
+        while (!paths.empty()) {
+            cpath = paths.pop();
+
+            bundle = bundles.get(cpath);
+            if (bundle == null) {
+                try {
+                    InputStream is = loader.getResourceAsStream(cpath);
+                    bundle = new LocaleData(is);
+                    bundles.put(cpath, bundle);
+                } catch (IOException ex) {
+                    bundle = null;
+                }
+            }
+
+            if (bundle != null) {
+                if (baseBundle == null) {
+                    baseBundle = bundle;
+                }
+                if (prevBundle != null) {
+                    prevBundle.setParent(bundle);
+                }
+                prevBundle = bundle;
+            }
+        }
+        if (baseBundle == null) {
+            throw (new ResourceNotFoundException(cpath));
+        }
+
+        return (baseBundle);
+    }
+
+    /**
+     * Get a reference to a <code>ColorTheme</code> resource.
+     *
+     * @param name The name of the resource; this should be the base name of
+     *             the color theme; the ".thm" extension will be automatically
+     *             appended to the name.
+     * @return The <code>ColorTheme</code> object representing the resource.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If the
+     *                                                            resource was not found.
+     */
+
+    public ColorTheme getTheme(String name) {
+        checkResourceName(name);
+
+        String path = themePath + name + THEME_EXT;
+        ColorTheme theme = null;
+
+        try {
+            InputStream is = loader.getResourceAsStream(path);
+            Config cfg = new Config();
+            cfg.load(is);
+            theme = new ColorTheme(cfg);
+        } catch (IOException ex) {
+            throw (new ResourceNotFoundException(path));
+        }
+
+        return (theme);
+    }
+
+    /**
+     * Get a stream to a resource.
+     *
+     * @param name The name of the resource.
+     * @return An <code>InputStream</code> from which the resource can be read.
+     * @throws com.hyperrealm.kiwi.util.ResourceNotFoundException If
+     *                                                            the resource was not found.
+     * @since Kiwi 1.3
+     */
+
+    public InputStream getStream(String name) throws ResourceNotFoundException {
+        checkResourceName(name);
+
+        InputStream is;
+
+        try {
+            is = loader.getResourceAsStream(name);
+        } catch (IOException ex) {
+            throw (new ResourceNotFoundException(name));
+        }
+
+        return (is);
+    }
+
+    /*
+     */
+
+    private void checkResourceName(String name) throws IllegalArgumentException {
+        if ((name == null) || name.equals("")) {
+            throw (new IllegalArgumentException("Null or empty resource name"));
+        }
+    }
+
 }
-
-/* end of source file */

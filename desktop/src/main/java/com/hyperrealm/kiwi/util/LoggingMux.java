@@ -19,97 +19,99 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-/** A logging multiplexor. This class manages a set of
+/**
+ * A logging multiplexor. This class manages a set of
  * <code>LoggingEndpoint</code>s and itself implements the
  * <code>LoggingEndpoint</code> interface. It may be use to direct logging
  * messages to several endpoints simultaneously. For example, an application
  * may send messages to both a console and a file.
  *
- * @see com.hyperrealm.kiwi.util.LoggingEndpoint
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.util.LoggingEndpoint
  */
 
-public class LoggingMux implements LoggingEndpoint
-{
-  private ArrayList<LoggingEndpoint> v;
+public class LoggingMux implements LoggingEndpoint {
 
-  /** Construct a new <code>LoggingMux</code>.
-   */
-  
-  public LoggingMux()
-  {
-    v = new ArrayList<LoggingEndpoint>(5);
-  }
+    private static final int INITIAL_CAPACITY = 5;
 
-  /** Log a message to all endpoints in this set.
-   */
-  
-  public void logMessage(int type, String message)
-  {
-    int l = v.size();
-    for(int i = 0; i < l; i++)
-      v.get(i).logMessage(type, message);
-  }
+    private List<LoggingEndpoint> v;
 
-  /** Close this set of endpoints. Equivalent to <code>close(false)</code>.
-   */
-  
-  public void close()
-  {
-    close(false);
-  }
-  
-  /** Close this set of endpoints.
-   *
-   * @param closeEndpoints If <code>true</code>, in addition to removing every
-   * <code>LoggingEndpoint</code> from its list, the <code>LoggingMux</code>
-   * closes each <code>LoggingEndpoint</code> explicitly via a call to its
-   * <code>close()</code> method.
-   */
-  
-  public void close(boolean closeEndpoints)
-  {
-    if(closeEndpoints)
-    {
-      int l = v.size();
-      for(int i = 0; i < l; i++)
-        v.get(i).close();
+    /**
+     * Construct a new <code>LoggingMux</code>.
+     */
+
+    public LoggingMux() {
+        v = new ArrayList<LoggingEndpoint>(INITIAL_CAPACITY);
     }
-    
-    removeAllLoggingEndpoints();
-  }
 
-  /** Add a <code>LoggingEndpoint</code> to the set.
-   *
-   * @param endpoint The <code>LoggingEndpoint</code> to add.
-   */
-  
-  public void addLoggingEndpoint(LoggingEndpoint endpoint)
-  {
-    v.add(endpoint);
-  }
+    /**
+     * Log a message to all endpoints in this set.
+     */
 
-  /** Remove a <code>LoggingEndpoint</code> from the set.
-   *
-   * @param endpoint The <code>LoggingEndpoint</code> to remove.
-   */
-  
-  public void removeLoggingEndpoint(LoggingEndpoint endpoint)
-  {
-    v.remove(endpoint);
-  }
+    public void logMessage(int type, String message) {
+        int l = v.size();
+        for (LoggingEndpoint loggingEndpoint : v) {
+            loggingEndpoint.logMessage(type, message);
+        }
+    }
 
-  /** Remove all <code>LoggingEndpoint</code>s from the set.
-   */
-  
-  public void removeAllLoggingEndpoints()
-  {
-    v.clear();
-  }
-  
+    /**
+     * Close this set of endpoints. Equivalent to <code>close(false)</code>.
+     */
+
+    public void close() {
+        close(false);
+    }
+
+    /**
+     * Close this set of endpoints.
+     *
+     * @param closeEndpoints If <code>true</code>, in addition to removing every
+     *                       <code>LoggingEndpoint</code> from its list, the <code>LoggingMux</code>
+     *                       closes each <code>LoggingEndpoint</code> explicitly via a call to its
+     *                       <code>close()</code> method.
+     */
+
+    public void close(boolean closeEndpoints) {
+        if (closeEndpoints) {
+            int l = v.size();
+            for (LoggingEndpoint loggingEndpoint : v) {
+                loggingEndpoint.close();
+            }
+        }
+
+        removeAllLoggingEndpoints();
+    }
+
+    /**
+     * Add a <code>LoggingEndpoint</code> to the set.
+     *
+     * @param endpoint The <code>LoggingEndpoint</code> to add.
+     */
+
+    public void addLoggingEndpoint(LoggingEndpoint endpoint) {
+        v.add(endpoint);
+    }
+
+    /**
+     * Remove a <code>LoggingEndpoint</code> from the set.
+     *
+     * @param endpoint The <code>LoggingEndpoint</code> to remove.
+     */
+
+    public void removeLoggingEndpoint(LoggingEndpoint endpoint) {
+        v.remove(endpoint);
+    }
+
+    /**
+     * Remove all <code>LoggingEndpoint</code>s from the set.
+     */
+
+    public void removeAllLoggingEndpoints() {
+        v.clear();
+    }
+
 }
-
-/* end of source file */

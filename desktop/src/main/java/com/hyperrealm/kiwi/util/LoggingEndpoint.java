@@ -19,43 +19,49 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.io.IOException;
-
-/** Logging endpoint interface. A logging endpoint accepts messages and writes
+/**
+ * Logging endpoint interface. A logging endpoint accepts messages and writes
  * them to a file, a graphical console window, or some other type of data
  * sink.
  *
  * @author Mark Lindner
  */
 
-public interface LoggingEndpoint
-{
+public interface LoggingEndpoint {
 
-  /** Informational message type. */
-  public static final int INFO = 0;
+    /**
+     * Informational message type.
+     */
+    int INFO = 0;
 
-  /** Status message type. */
-  public static final int STATUS = 1;
+    /**
+     * Status message type.
+     */
+    int STATUS = 1;
 
-  /** Warning message type. */
-  public static final int WARNING = 2;
+    /**
+     * Warning message type.
+     */
+    int WARNING = 2;
 
-  /** Error condition message type. */
-  public static final int ERROR = 3;
+    /**
+     * Error condition message type.
+     */
+    int ERROR = 3;
 
-  /** Accept a new message. Writes the message to the data sink.
-   *
-   * @param type The message type; one of the static constants defined above.
-   * @param message The message.
-   */
+    /**
+     * Accept a new message. Writes the message to the data sink.
+     *
+     * @param type    The message type; one of the static constants defined above.
+     * @param message The message.
+     */
 
-  public void logMessage(int type, String message);
+    void logMessage(int type, String message);
 
-  /** Close the logging endpoint. The logging endpoint is closed. Once a
-   * logging endpoint is closed, it cannot accept any more messages.
-   */
+    /**
+     * Close the logging endpoint. The logging endpoint is closed. Once a
+     * logging endpoint is closed, it cannot accept any more messages.
+     */
 
-  public void close();
+    void close();
 }
-
-/* end of source file */

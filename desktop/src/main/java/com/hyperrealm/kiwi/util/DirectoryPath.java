@@ -19,117 +19,120 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
-/** A convenience class for maintaining a directory path (that is, an ordered
+/**
+ * A convenience class for maintaining a directory path (that is, an ordered
  * list of directories).
  *
  * @author Mark Lindner
  */
 
-public class DirectoryPath
-{
-  private String psep;
-  private ArrayList<String> _dirs;
+public class DirectoryPath {
 
-  /** Construct a new, empty <code>DirectoryPath</code>. */
-      
-  public DirectoryPath()
-  {
-    this(null);
-  }
+    private String psep;
 
-  /** Construct a new <code>DirectoryPath</code> for the given directories.
-   *
-   * @param dirs An array of directory names.
-   */
-  
-  public DirectoryPath(String dirs[])
-  {
-    psep = System.getProperty("path.separator");
-    _dirs = new ArrayList<String>();
-    
-    if(dirs != null)
-      for(int i = 0; i < dirs.length; i++)
-        _dirs.add(dirs[i]);
-  }
+    private ArrayList<String> dirs;
 
-  /** Prepend a directory to the beginning of the path.
-   *
-   * @param dir The directory to add.
-   */
+    /**
+     * Construct a new, empty <code>DirectoryPath</code>.
+     */
 
-  public synchronized void prepend(String dir)
-  {
-    _dirs.add(0, dir);
-  }
-
-  /** Prepend a list directories to the beginning of the path. The order of
-   * the directories is preserved.
-   *
-   * @param dirs The directories to add.
-   */
-  
-  public synchronized void prepend(String dirs[])
-  {
-    for(int i = 0; i < dirs.length; i++)
-      _dirs.add(i, dirs[i]);
-  }
-  
-  /** Append a directory to the end of the path.
-   *
-   * @param dir The directory to add.
-   */
-  
-  public synchronized void append(String dir)
-  {
-    _dirs.add(dir);
-  }
-
-  /** Append a list directories to the end of the path. The order of the
-   * directories is preserved.
-   *
-   * @param dirs The directories to add.
-   */
-
-  public synchronized void append(String dirs[])
-  {
-    for(int i = 0; i < dirs.length; i++)
-      _dirs.add(dirs[i]);
-  }
-  
-  /** Get the list of directories for this path.
-   *
-   * @return An array of directory names.
-   */
-  
-  public synchronized String[] getDirectories()
-  {
-    String s[] = new String[_dirs.size()];
-
-    return(_dirs.toArray(s));
-  }
-
-  /** Convert this path to a string, using the appropriate path separator for
-   * this platform.
-   */
-  
-  public String toString()
-  {
-    StringBuilder sb = new StringBuilder();
-
-    int l = _dirs.size();
-    for(int i = 0; i < l; i++)
-    {
-      if(i > 0)
-        sb.append(psep);
-
-      sb.append(_dirs.get(i));
+    public DirectoryPath() {
+        this(null);
     }
 
-    return(sb.toString());
-  }
-  
-}
+    /**
+     * Construct a new <code>DirectoryPath</code> for the given directories.
+     *
+     * @param dirs An array of directory names.
+     */
 
-/* end of source file */
+    public DirectoryPath(String[] dirs) {
+        psep = System.getProperty("path.separator");
+        this.dirs = new ArrayList<>();
+
+        if (dirs != null) {
+            Collections.addAll(this.dirs, dirs);
+        }
+    }
+
+    /**
+     * Prepend a directory to the beginning of the path.
+     *
+     * @param dir The directory to add.
+     */
+
+    public synchronized void prepend(String dir) {
+        dirs.add(0, dir);
+    }
+
+    /**
+     * Prepend a list directories to the beginning of the path. The order of
+     * the directories is preserved.
+     *
+     * @param dirs The directories to add.
+     */
+
+    public synchronized void prepend(String[] dirs) {
+        for (int i = 0; i < dirs.length; i++) {
+            this.dirs.add(i, dirs[i]);
+        }
+    }
+
+    /**
+     * Append a directory to the end of the path.
+     *
+     * @param dir The directory to add.
+     */
+
+    public synchronized void append(String dir) {
+        dirs.add(dir);
+    }
+
+    /**
+     * Append a list directories to the end of the path. The order of the
+     * directories is preserved.
+     *
+     * @param dirs The directories to add.
+     */
+
+    public synchronized void append(String[] dirs) {
+        this.dirs.addAll(Arrays.asList(dirs));
+    }
+
+    /**
+     * Get the list of directories for this path.
+     *
+     * @return An array of directory names.
+     */
+
+    public synchronized String[] getDirectories() {
+        String[] s = new String[dirs.size()];
+
+        return (dirs.toArray(s));
+    }
+
+    /**
+     * Convert this path to a string, using the appropriate path separator for
+     * this platform.
+     */
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        int l = dirs.size();
+        for (int i = 0; i < l; i++) {
+            if (i > 0) {
+                sb.append(psep);
+            }
+
+            sb.append(dirs.get(i));
+        }
+
+        return (sb.toString());
+    }
+
+}

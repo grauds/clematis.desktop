@@ -78,7 +78,7 @@ public abstract class WizardPanel extends KPanel {
         add(NORTH_POSITION, pTop);
 
         KPanel pCenter = new KPanel();
-        pCenter.setBorder(new CompoundBorder(new SoftBevelBorder(BevelBorder.LOWERED), KiwiUtils.defaultBorder));
+        pCenter.setBorder(new CompoundBorder(new SoftBevelBorder(BevelBorder.LOWERED), KiwiUtils.DEFAULT_BORDER));
         pCenter.setLayout(new GridLayout(1, 0));
 
         pCenter.add(buildUI());

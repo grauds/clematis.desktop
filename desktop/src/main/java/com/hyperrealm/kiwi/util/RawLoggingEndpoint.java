@@ -19,47 +19,45 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.io.*;
-
-/** An implementation of <code>LoggingEndpoint</code> for standard error.
+/**
+ * An implementation of <code>LoggingEndpoint</code> for standard error.
  *
  * @author Mark Lindner
  */
+@SuppressWarnings("all")
+public class RawLoggingEndpoint implements LoggingEndpoint {
 
-public class RawLoggingEndpoint implements LoggingEndpoint
-{
-  private static final String types[]
-    = {"INFO   ", "STATUS ", "WARNING", "ERROR  " };
+    private static final String[] TYPES = {"INFO   ", "STATUS ", "WARNING", "ERROR  "};
 
-  /** Construct a new <code>RawLoggingEndpoint</code>.
-   */
+    /**
+     * Construct a new <code>RawLoggingEndpoint</code>.
+     */
 
-  public RawLoggingEndpoint()
-  {
-  }
-  
-  /** Write a message to standard error.
-   *
-   * @param type The message type; one of the constants defined in
-   * <code>LoggingEndpoint</code>.
-   * @param message The message.
-   */
+    public RawLoggingEndpoint() {
+    }
 
-  public void logMessage(int type, String message)
-  {
-    if((type < 0) || (type > 3)) type = 1;
+    /**
+     * Write a message to standard error.
+     *
+     * @param type    The message type; one of the constants defined in
+     *                <code>LoggingEndpoint</code>.
+     * @param message The message.
+     */
 
-    System.err.println(types[type] + " - " + message);
-  }
+    public void logMessage(int type, String message) {
+        if ((type < 0) || (type > 3)) {
+            type = 1;
+        }
 
-  /** Close the logging endpoint. This method is effectively a no-op, since it
-   * is usually undesirable to close the standard error stream.
-   */
+        System.err.println(TYPES[type] + " - " + message);
+    }
 
-  public void close()
-  {
-  }
-  
+    /**
+     * Close the logging endpoint. This method is effectively a no-op, since it
+     * is usually undesirable to close the standard error stream.
+     */
+
+    public void close() {
+    }
+
 }
-
-/* end of source file */

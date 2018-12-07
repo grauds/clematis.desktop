@@ -45,7 +45,7 @@ public class URLField extends DataField<URL> {
     public URLField(int width) {
         super(width);
 
-        setFont(KiwiUtils.boldFont);
+        setFont(KiwiUtils.BOLD_FONT);
     }
 
     /**

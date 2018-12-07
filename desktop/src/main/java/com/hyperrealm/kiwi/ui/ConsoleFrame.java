@@ -85,7 +85,7 @@ public class ConsoleFrame extends KFrame implements LoggingEndpoint {
         KPanel main = getMainContainer();
 
         main.setLayout(DEFAULT_BORDER_LAYOUT);
-        main.setBorder(KiwiUtils.defaultBorder);
+        main.setBorder(KiwiUtils.DEFAULT_BORDER);
 
         console = new ConsolePanel();
         main.add(CENTER_POSITION, console);

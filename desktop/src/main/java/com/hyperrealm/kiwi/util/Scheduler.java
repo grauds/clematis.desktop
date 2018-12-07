@@ -19,9 +19,14 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
 
-/** A real-time scheduler with a resolution of one minute. The scheduler
+import static com.hyperrealm.kiwi.ui.SplashScreen.MILLISEC_IN_SECOND;
+
+/**
+ * A real-time scheduler with a resolution of one minute. The scheduler
  * maintains a list of timers. Each timer has a time specification (as
  * described by an instance of {@link com.hyperrealm.kiwi.util.TimeSpec}), a
  * unique numeric ID, and can be associated with an arbitrary user-supplied
@@ -31,192 +36,180 @@ import java.util.*;
  * <p>
  * This class is threadsafe.
  *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.2
  */
 
-public abstract class Scheduler<T> extends Thread
-{
-  private int timerID = 0;
-  private ArrayList<TimerDef<T>> timers;
-  private static final int MAX_TIMERS = 10;
+public abstract class Scheduler<T> extends Thread {
 
-  /*
-   */
+    private static final int SECONDS_IN_MINUTE = 60;
 
-  private class TimerDef<T>
-  {
-    T object;
-    TimeSpec timeSpec;
-    int id;
-    boolean once;
+    private final ArrayList<TimerDef<T>> timers;
+
+    private int timerID = 0;
 
     /*
      */
-    
-    TimerDef(T object, TimeSpec timeSpec,  boolean once, int id)
-    {
-      this.object = object;
-      this.timeSpec = timeSpec;
-      this.once = once;
-      this.id = id;
-    }
 
-    /*
+    /**
+     * Construct a new <code>Scheduler</code>. The scheduler must be explicitly
+     * started via a call to the inherited <code>start()</code> method.
      */
-    
-    TimeSpec getTimeSpec()
-    {
-      return(timeSpec);
+
+    public Scheduler() {
+        super("Kiwi Scheduler");
+
+        timers = new ArrayList<>();
+
+        setDaemon(true);
     }
 
-    /*
+    /**
+     * Add a new timer to the scheduler.
+     *
+     * @param timeSpec  The time specification for the timer.
+     * @param repeating A flag indicating whether the timer is repeating or
+     *                  should only fire once.
+     * @param object    An arbitrary user object to associate with the timer. This
+     *                  may be <b>null</b>.
+     * @return The ID of the new timer.
      */
-    
-    T getObject()
-    {
-      return(object);
-    }
 
-    /*
-     */
-    
-    int getID()
-    {
-      return(id);
-    }
-  }
-  
-  /** Construct a new <code>Scheduler</code>. The scheduler must be explicitly
-   * started via a call to the inherited <code>start()</code> method.
-   */
-  
-  public Scheduler()
-  {
-    super("Kiwi Scheduler");
-    
-    timers = new ArrayList<TimerDef<T>>();
+    public int addTimer(TimeSpec timeSpec, boolean repeating, T object) {
+        int id = 0;
 
-    setDaemon(true);
-  }
-
-  /** Add a new timer to the scheduler.
-   *
-   * @param timeSpec The time specification for the timer.
-   * @param repeating A flag indicating whether the timer is repeating or
-   * should only fire once.
-   * @param object An arbitrary user object to associate with the timer. This
-   * may be <b>null</b>.
-   * @return The ID of the new timer.
-   */
-
-  public int addTimer(TimeSpec timeSpec, boolean repeating, T object)
-  {
-    int id = 0;
-    
-    synchronized(timers)
-    {
-      id = ++timerID;
-      timers.add(new TimerDef(object, timeSpec, !repeating, id));
-    }
-      
-    return(id);
-  }
-
-  /** Remove a timer from the scheduler.
-   *
-   * @param id The ID of the timer to remove.
-   * @throws IllegalArgumentException If the ID does not refer to
-   * an existing timer.
-   */
-  
-  public void removeTimer(int id) throws IllegalArgumentException
-  {
-    synchronized(timers)
-    {
-      Iterator<TimerDef<T>> iter = timers.iterator();
-        
-      while(iter.hasNext())
-      {
-        TimerDef tdef = iter.next();
-          
-        if(tdef.getID() == id)
-        {
-          iter.remove();
-          return;
+        synchronized (timers) {
+            id = ++timerID;
+            timers.add(new TimerDef(object, timeSpec, !repeating, id));
         }
-      }
-    }
-    
-    throw new IllegalArgumentException("no such timer");
-  }
 
-  /** Remove all timers from the scheduler.
-   */
-  
-  public void removeAllTimers()
-  {
-    synchronized(timers)
-    {
-      timers.clear();
+        return (id);
     }
-  }
-        
-  /** Main scheduler loop.
-   */
-  
-  public void run()
-  {
-    // sweep & sleep loop
-    
-    Calendar now = Calendar.getInstance();
-    
-    while(! isInterrupted())
-    {
-      // sweep
-      
-      now.setTimeInMillis(System.currentTimeMillis());
-      
-      synchronized(timers)
-      {
-        Iterator<TimerDef<T>> iter = timers.iterator();
-        while(iter.hasNext())
-        {
-          TimerDef<T> timer = iter.next();
-          
-          if(timer.getTimeSpec().match(now))
-          {
-            timerFired(timer.getID(), timer.getObject());
-            
-            if(timer.once)
-              iter.remove();
-          }
+
+    /**
+     * Remove a timer from the scheduler.
+     *
+     * @param id The ID of the timer to remove.
+     * @throws IllegalArgumentException If the ID does not refer to
+     *                                  an existing timer.
+     */
+
+    public void removeTimer(int id) throws IllegalArgumentException {
+        synchronized (timers) {
+            Iterator<TimerDef<T>> iter = timers.iterator();
+
+            while (iter.hasNext()) {
+                TimerDef tdef = iter.next();
+
+                if (tdef.getID() == id) {
+                    iter.remove();
+                    return;
+                }
+            }
         }
-      }
-      
-      // sleep
-      
-      now.setTimeInMillis(System.currentTimeMillis());
 
-      int sec = 60 - now.get(Calendar.SECOND);
-      
-      try
-      {
-        Thread.currentThread().sleep(sec * 1000);
-      }
-      catch(InterruptedException ex) { }
+        throw new IllegalArgumentException("no such timer");
     }
-  }
 
-  /** Timer callback. This method is called when a timer fires.
-   *
-   * @param ID the ID of the timer that fired.
-   * @param object The user object that is associated with the timer. May be
-   * <b>null</b>.
-   */
-  
-  protected abstract void timerFired(int ID, T object);
-  
+    /**
+     * Remove all timers from the scheduler.
+     */
+
+    public void removeAllTimers() {
+        synchronized (timers) {
+            timers.clear();
+        }
+    }
+
+    /**
+     * Main scheduler loop.
+     */
+
+    public void run() {
+        // sweep & sleep loop
+
+        Calendar now = Calendar.getInstance();
+
+        while (!isInterrupted()) {
+            // sweep
+
+            now.setTimeInMillis(System.currentTimeMillis());
+
+            synchronized (timers) {
+                Iterator<TimerDef<T>> iter = timers.iterator();
+                while (iter.hasNext()) {
+                    TimerDef<T> timer = iter.next();
+
+                    if (timer.getTimeSpec().match(now)) {
+                        timerFired(timer.getID(), timer.getObject());
+
+                        if (timer.once) {
+                            iter.remove();
+                        }
+                    }
+                }
+            }
+
+            // sleep
+
+            now.setTimeInMillis(System.currentTimeMillis());
+
+            int sec = SECONDS_IN_MINUTE - now.get(Calendar.SECOND);
+
+            try {
+                sleep(sec * MILLISEC_IN_SECOND);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    /**
+     * Timer callback. This method is called when a timer fires.
+     *
+     * @param id     the id of the timer that fired.
+     * @param object The user object that is associated with the timer. May be
+     *               <b>null</b>.
+     */
+
+    abstract void timerFired(int id, T object);
+
+    private class TimerDef<M> {
+        M object;
+        TimeSpec timeSpec;
+        int id;
+        boolean once;
+
+        /*
+         */
+
+        TimerDef(M object, TimeSpec timeSpec, boolean once, int id) {
+            this.object = object;
+            this.timeSpec = timeSpec;
+            this.once = once;
+            this.id = id;
+        }
+
+        /*
+         */
+
+        TimeSpec getTimeSpec() {
+            return (timeSpec);
+        }
+
+        /*
+         */
+
+        M getObject() {
+            return (object);
+        }
+
+        /*
+         */
+
+        int getID() {
+            return (id);
+        }
+    }
+
 }
-
-/* end of source file */

@@ -19,89 +19,91 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** An object-id or object-tag pair. Sometimes it is useful to assign a tag
+/**
+ * An object-id or object-tag pair. Sometimes it is useful to assign a tag
  * or numeric ID to an object for purposes of identification. Most commonly
  * the identifier is a unique integer, but in some circumstances it is more
  * appropriate to use another object as an identifier. This class allows
  * an object to be associated with either an integer or an arbitrary object.
  *
+ * @param <T>
  * @author Mark Lindner
  */
 
-public class TaggedObject<T, O>
-{
-  private O obj;
-  private T tag = null;
-  private int id = -1;
+public class TaggedObject<T, O> {
 
-  /** Construct a new <code>TaggedObject</code> for the given user object
-   * and identifier object.
-   *
-   * @param obj The user object.
-   * @param tag The identifier object.
-   */
-  
-  public TaggedObject(O obj, T tag)
-  {
-    this.obj = obj;
-    this.tag = tag;
-  }
+    private O obj;
 
-  /** Construct a new <code>TaggedObject</code> for the given user object
-   * and numerical ID.
-   *
-   * @param obj The user object.
-   * @param id The numerical ID.
-   */
-  
-  public TaggedObject(O obj, int id)
-  {
-    this.obj = obj;
-    this.id = id;
-  }
+    private T tag = null;
 
-  /** Get the user object.
-   *
-   * @return The user object.
-   */
-  
-  public final O getObject()
-  {
-    return(obj);
-  }
+    private int id = -1;
 
-  /** Get the numerical ID.
-   *
-   * @return The numerical ID, or <code>-1</code> if there is no numerical ID
-   * for this object.
-   */
-  
-  public final int getID()
-  {
-    return(id);
-  }
+    /**
+     * Construct a new <code>TaggedObject</code> for the given user object
+     * and identifier object.
+     *
+     * @param obj The user object.
+     * @param tag The identifier object.
+     */
 
-  /** Get the identifier object.
-   *
-   * @return The identifier object, or <code>null</code> if there is no
-   * identifier object for this object.
-   */
-  
-  public final T getTag()
-  {
-    return(tag);
-  }
+    public TaggedObject(O obj, T tag) {
+        this.obj = obj;
+        this.tag = tag;
+    }
 
-  /** Get a string representation of the tagged object.
-   *
-   * @since Kiwi 1.3
-   */
+    /**
+     * Construct a new <code>TaggedObject</code> for the given user object
+     * and numerical ID.
+     *
+     * @param obj The user object.
+     * @param id  The numerical ID.
+     */
 
-  public String toString()
-  {
-    return(obj.toString());
-  }
-  
+    public TaggedObject(O obj, int id) {
+        this.obj = obj;
+        this.id = id;
+    }
+
+    /**
+     * Get the user object.
+     *
+     * @return The user object.
+     */
+
+    public final O getObject() {
+        return (obj);
+    }
+
+    /**
+     * Get the numerical ID.
+     *
+     * @return The numerical ID, or <code>-1</code> if there is no numerical ID
+     * for this object.
+     */
+
+    public final int getID() {
+        return (id);
+    }
+
+    /**
+     * Get the identifier object.
+     *
+     * @return The identifier object, or <code>null</code> if there is no
+     * identifier object for this object.
+     */
+
+    public final T getTag() {
+        return (tag);
+    }
+
+    /**
+     * Get a string representation of the tagged object.
+     *
+     * @since Kiwi 1.3
+     */
+
+    public String toString() {
+        return (obj.toString());
+    }
+
 }
-
-/* end of source file */

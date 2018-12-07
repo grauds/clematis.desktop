@@ -75,7 +75,7 @@ public class KLabelArea extends JTextArea {
         setEditable(false);
         setOpaque(false);
         setHighlighter(null);
-        setFont(KiwiUtils.boldFont);
+        setFont(KiwiUtils.BOLD_FONT);
         setLineWrap(true);
         setWrapStyleWord(true);
     }

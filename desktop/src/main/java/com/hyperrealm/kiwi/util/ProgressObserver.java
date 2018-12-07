@@ -19,21 +19,20 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** This class defines the behavior of an object that wishes to receive
+/**
+ * This class defines the behavior of an object that wishes to receive
  * periodic updates on the progress of a lengthy task.
  *
  * @author Mark Lindner
  */
 
-public interface ProgressObserver 
-{
-  /** Set the progress amount to <code>progress</code>, which is a value
-   * between 0 and 100. (Out of range values should be silently clipped.)
-   *
-   * @param progress The percentage of the task completed.
-   */
+public interface ProgressObserver {
+    /**
+     * Set the progress amount to <code>progress</code>, which is a value
+     * between 0 and 100. (Out of range values should be silently clipped.)
+     *
+     * @param progress The percentage of the task completed.
+     */
 
-  public void setProgress(int progress);
+    void setProgress(int progress);
 }
-
-/* end of source file */

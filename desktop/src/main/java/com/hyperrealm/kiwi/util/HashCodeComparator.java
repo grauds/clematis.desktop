@@ -19,57 +19,59 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.util.*;
+import java.util.Comparator;
 
-/** A hash code comparator. This class compares the hash codes of two objects.
+/**
+ * A hash code comparator. This class compares the hash codes of two objects.
  *
+ * @param <T>
  * @author Mark Lindner
  */
 
-public class HashCodeComparator implements Comparator
-{
+public class HashCodeComparator<T> implements Comparator<T> {
 
-  /** Construct a new <code>HashCodeComparator</code>.
-   */
-  
-  public HashCodeComparator()
-  {
-  }
-  
-  /** Compare the hash codes of two objects. A
-   * <code>hashCode()</code> is performed on both objects, and then the
-   * resulting integers are compared.
-   *
-   * @param a The first object.
-   * @param b The second object.
-   *
-   * @return <code>0</code> if the objects are equal, <code>-1</code>
-   * if <code>a</code> is less than <code>b</code>, and <code>1</code>
-   * if <code>a</code> is greater than <code>b</code>.
-   */
+    /**
+     * Construct a new <code>HashCodeComparator</code>.
+     */
 
-  public int compare(Object a, Object b)
-  {
-    if((a == null) && (b != null))
-      return(-1);
-    else if((a != null) && (b == null))
-      return(1);
-    else if((a == null) && (b == null))
-      return(0);
-    
-    int ha = a.hashCode(), hb = b.hashCode();
+    public HashCodeComparator() {
+    }
 
-    return((ha == hb) ? 0 : ((ha > hb) ? 1 : -1));
-  }
+    /**
+     * Compare the hash codes of two objects. A
+     * <code>hashCode()</code> is performed on both objects, and then the
+     * resulting integers are compared.
+     *
+     * @param a The first object.
+     * @param b The second object.
+     * @return <code>0</code> if the objects are equal, <code>-1</code>
+     * if <code>a</code> is less than <code>b</code>, and <code>1</code>
+     * if <code>a</code> is greater than <code>b</code>.
+     */
 
-  /*
-   */
+    public int compare(T a, T b) {
+        int result;
 
-  public boolean equals(Object obj)
-  {
-    return(obj.getClass() == HashCodeComparator.class);
-  }
-  
+        if ((a == null) && (b != null)) {
+            result = (-1);
+        } else if ((a != null) && (b == null)) {
+            result = (1);
+        } else if (a == null) {
+            result = (0);
+        } else {
+            int ha = a.hashCode(), hb = b.hashCode();
+            result = Integer.compare(ha, hb);
+        }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj.getClass() == HashCodeComparator.class;
+    }
 }
-
-/* end of source file */

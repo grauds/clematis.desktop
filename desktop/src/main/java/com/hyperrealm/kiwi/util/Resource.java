@@ -19,25 +19,26 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** An interface that describes a <i>resource</i>. A resource is an exclusive
+/**
+ * An interface that describes a <i>resource</i>. A resource is an exclusive
  * entity that may be in use by one thread at a time; a thread must reserve a
- *  resource from a resource pool, use the resource, and then release the
+ * resource from a resource pool, use the resource, and then release the
  * resource so that it may be used by another thread.
  *
- * @see com.hyperrealm.kiwi.util.ResourcePool
- * 
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.util.ResourcePool
  */
 
-public interface Resource
-{
-  /** Reserve the resource. */
-  
-  public void reserve();
+public interface Resource {
+    /**
+     * Reserve the resource.
+     */
 
-  /** Release the resource. */
-  
-  public void release();
+    void reserve();
+
+    /**
+     * Release the resource.
+     */
+
+    void release();
 }
-
-/* end of source file */

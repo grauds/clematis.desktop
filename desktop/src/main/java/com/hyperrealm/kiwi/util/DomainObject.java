@@ -20,7 +20,8 @@
 package com.hyperrealm.kiwi.util;
 
 
-/** A base class for problem domain objects; the class provides some
+/**
+ * A base class for problem domain objects; the class provides some
  * rudimentary data validation methods that are intended for use by
  * mutators. For example, if a domain object has a member called 'lastName'
  * which cannot be a null or empty string, the mutator can be implemented as
@@ -36,195 +37,189 @@ package com.hyperrealm.kiwi.util;
  * @author Mark Lindner
  */
 
-public abstract class DomainObject
-{
+public abstract class DomainObject {
 
-  /** Construct a new <code>DomainObject</code>.
-   */
+    private static final String KIWI_DB = "KiwiDB";
 
-  public DomainObject()
-  {
-  }
-  
-  /** Ensure that a String value is not <code>null</code>.
-   *
-   * @param s The string check.
-   * @return An empty string if <code>s</code> is <code>null</code>,
-   * and <code>s</code> otherwise.
-   */
-  
-  protected String trapNull(String s)
-  {
-    return((s == null) ? "" : s);
-  }
-  
-  /** Ensure that an integer value is greater than zero.
-   *
-   * @param value The value to check.
-   * @param desc A description of the field that this value represents.
-   *
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the validation fails.
-   */
-  
-  public int ensurePositive(int value, String desc) throws MutatorException
-  {
-    if(value <= 0)
-      positiveWarning(desc);
+    /**
+     * Construct a new <code>DomainObject</code>.
+     */
 
-    return(value);
-  }
+    public DomainObject() {
+    }
 
-  /** Ensure that a floating point value is greater than zero.
-   *
-   * @param value The value to check.
-   * @param desc A description of the field that this value represents.
-   *
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the validation fails.
-   */
-  
-  public float ensurePositive(float value, String desc) throws MutatorException
-  {
-    if(value <= 0.0)
-      positiveWarning(desc);
-    
-    return(value);
-  }
+    private static void nullWarning(String fieldName) throws MutatorException {
+        String msg = LocaleManager.getDefault()
+            .getLocaleData(KIWI_DB).getMessage("kiwi.db.message.not_null",
+                fieldName);
 
-  /** Ensure that a double precision value is greater than zero.
-   *
-   * @param value The value to check.
-   * @param desc A description of the field that this value represents.
-   *
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the validation fails.
-   */
-  
-  public double ensurePositive(double value, String desc)
-    throws MutatorException
-  {
-    if(value <= 0.0)
-      positiveWarning(desc);
-    
-    return(value);
-  }
-  
-  /** Ensure that an integer value is greater than or equal to zero.
-   *
-   * @param value The value to check.
-   * @param desc A description of the field that this value represents.
-   *
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the validation fails.
-   */
-  
-  public int ensureNonNegative(int value, String desc) throws MutatorException
-  {
-    if(value < 0)
-      negativeWarning(desc);
+        throw (new MutatorException(msg));
+    }
 
-    return(value);
-  }
+    private static void positiveWarning(String fieldName)
+        throws MutatorException {
+        String msg = LocaleManager.getDefault()
+            .getLocaleData(KIWI_DB).getMessage("kiwi.db.message.greater_than_zero",
+                fieldName);
 
-  /** Ensure that a floating point value is greater than or equal to zero.
-   *
-   * @param value The value to check.
-   * @param desc A description of the field that this value represents.
-   *
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the validation fails.
-   */
-  
-  public float ensureNonNegative(float value, String desc)
-    throws MutatorException
-  {
-    if(value < 0.0)
-      negativeWarning(desc);
-    
-    return(value);
-  }
+        throw (new MutatorException(msg));
+    }
 
-  /** Ensure that a double precision value is greater than or equal to zero.
-   *
-   * @param value The value to check.
-   * @param desc A description of the field that this value represents.
-   *
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the validation fails.
-   */
-  
-  public double ensureNonNegative(double value, String desc)
-    throws MutatorException
-  {
-    if(value < 0.0)
-      negativeWarning(desc);
-    
-    return(value);
-  }
-  
-  /** Ensure that a String is neither null nor of length zero.
-   *
-   * @param value The value to check.
-   * @param desc A description of the field that this value represents.
-   *
-   * @exception com.hyperrealm.kiwi.db.MutatorException If the validation fails.
-   */
-  
-  public String ensureNotNull(String value, String desc)
-    throws MutatorException
-  {
-    if(value == null)
-      nullWarning(desc);
-    
-    value = value.trim();
+    private static void negativeWarning(String fieldName)
+        throws MutatorException {
+        String msg = LocaleManager.getDefault()
+            .getLocaleData(KIWI_DB).getMessage("kiwi.db.message.not_negative",
+                fieldName);
 
-    if(value.length() == 0)
-      nullWarning(desc);
+        throw (new MutatorException(msg));
+    }
 
-    return(value);
-  }
+    private static void selectionWarning(String fieldName)
+        throws MutatorException {
+        String msg = LocaleManager.getDefault()
+            .getLocaleData(KIWI_DB).getMessage("kiwi.db.message.no_selection",
+                fieldName);
 
-  /* Generate a null value warning. */
-  
-  private static void nullWarning(String fieldName) throws MutatorException
-  {
-    String msg = LocaleManager.getDefault()
-      .getLocaleData("KiwiDB").getMessage("kiwi.db.message.not_null",
-                                          fieldName);
-    
-    throw(new MutatorException(msg));
-  }
+        throw (new MutatorException(msg));
+    }
 
-  /* Generate a <= 0 value warning. */
+    /**
+     * Ensure that a String value is not <code>null</code>.
+     *
+     * @param s The string check.
+     * @return An empty string if <code>s</code> is <code>null</code>,
+     * and <code>s</code> otherwise.
+     */
 
-  private static void positiveWarning(String fieldName)
-    throws MutatorException
-  {
-    String msg = LocaleManager.getDefault()
-      .getLocaleData("KiwiDB").getMessage("kiwi.db.message.greater_than_zero",
-                                          fieldName);
+    protected String trapNull(String s) {
+        return ((s == null) ? "" : s);
+    }
 
-    throw(new MutatorException(msg));
-  }
+    /**
+     * Ensure that an integer value is greater than zero.
+     *
+     * @param value The value to check.
+     * @param desc  A description of the field that this value represents.
+, 
+     */
 
-  /* Generate a < 0 value warning. */
+    public int ensurePositive(int value, String desc) throws MutatorException {
+        if (value <= 0) {
+            positiveWarning(desc);
+        }
 
-  private static void negativeWarning(String fieldName)
-    throws MutatorException
-  {
-    String msg = LocaleManager.getDefault()
-      .getLocaleData("KiwiDB").getMessage("kiwi.db.message.not_negative",
-                                          fieldName);
+        return (value);
+    }
 
-    throw(new MutatorException(msg));
-  }
+    /**
+     * Ensure that a floating point value is greater than zero.
+     *
+     * @param value The value to check.
+     * @param desc  A description of the field that this value represents.
+, 
+     */
 
-  /* Generate an item selection warning. */
-  
-  private static void selectionWarning(String fieldName)
-    throws MutatorException
-  {
-    String msg = LocaleManager.getDefault()
-      .getLocaleData("KiwiDB").getMessage("kiwi.db.message.no_selection",
-                                          fieldName);
+    public float ensurePositive(float value, String desc) throws MutatorException {
+        if (value <= 0.0) {
+            positiveWarning(desc);
+        }
 
-    throw(new MutatorException(msg));
-  }
+        return (value);
+    }
+
+    /**
+     * Ensure that a double precision value is greater than zero.
+     *
+     * @param value The value to check.
+     * @param desc  A description of the field that this value represents.
+, 
+     */
+
+    public double ensurePositive(double value, String desc)
+        throws MutatorException {
+        if (value <= 0.0) {
+            positiveWarning(desc);
+        }
+
+        return (value);
+    }
+
+    /* Generate a null value warning. */
+
+    /**
+     * Ensure that an integer value is greater than or equal to zero.
+     *
+     * @param value The value to check.
+     * @param desc  A description of the field that this value represents.
+, 
+     */
+
+    public int ensureNonNegative(int value, String desc) throws MutatorException {
+        if (value < 0) {
+            negativeWarning(desc);
+        }
+
+        return (value);
+    }
+
+    /* Generate a <= 0 value warning. */
+
+    /**
+     * Ensure that a floating point value is greater than or equal to zero.
+     *
+     * @param value The value to check.
+     * @param desc  A description of the field that this value represents.
+, 
+     */
+
+    public float ensureNonNegative(float value, String desc)
+        throws MutatorException {
+        if (value < 0.0) {
+            negativeWarning(desc);
+        }
+
+        return (value);
+    }
+
+    /* Generate a < 0 value warning. */
+
+    /**
+     * Ensure that a double precision value is greater than or equal to zero.
+     *
+     * @param value The value to check.
+     * @param desc  A description of the field that this value represents.
+, 
+     */
+
+    public double ensureNonNegative(double value, String desc)
+        throws MutatorException {
+        if (value < 0.0) {
+            negativeWarning(desc);
+        }
+
+        return (value);
+    }
+
+    /* Generate an item selection warning. */
+
+    /**
+     * Ensure that a String is neither null nor of length zero.
+     *
+     * @param value The value to check.
+     * @param desc  A description of the field that this value represents.
+, 
+     */
+
+    public String ensureNotNull(String value, String desc)
+        throws MutatorException {
+        if (value == null) {
+            nullWarning(desc);
+        }
+
+        if (value != null && value.trim().length() == 0) {
+            nullWarning(desc);
+        }
+
+        return (value);
+    }
 }
-
-/* end of source file */

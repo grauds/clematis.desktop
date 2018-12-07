@@ -169,14 +169,14 @@ public class ExceptionDialog extends ComponentDialog {
         pDetail.setLayout(DEFAULT_BORDER_LAYOUT);
 
         tException = new JTextField();
-        tException.setFont(KiwiUtils.boldFont);
+        tException.setFont(KiwiUtils.BOLD_FONT);
         tException.setOpaque(false);
         tException.setEditable(false);
 
         pDetail.add(NORTH_POSITION, tException);
 
         lTrace = new JList<>();
-        lTrace.setFont(KiwiUtils.plainFont);
+        lTrace.setFont(KiwiUtils.PLAIN_FONT);
         KScrollPane scroll = new KScrollPane(lTrace);
         scroll.setSize(DEFAULT_LIST_SIZE);
         scroll.setPreferredSize(DEFAULT_LIST_SIZE);

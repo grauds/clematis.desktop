@@ -19,36 +19,34 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** General-purpose "not implemented" exception. This exception can be used to
+/**
+ * General-purpose "not implemented" exception. This exception can be used to
  * "bookmark" unfinished sections of code.
  *
  * @author Mark Lindner
  */
 
-public class NotImplementedException extends RuntimeException
-{
+public class NotImplementedException extends RuntimeException {
 
-  /** Construct a new <code>NotImplementedException</code>.
-   *
-   * @since Kiwi 1.3
-   */
+    /**
+     * Construct a new <code>NotImplementedException</code>.
+     *
+     * @since Kiwi 1.3
+     */
 
-  public NotImplementedException()
-  {
-    super();
-  }
+    public NotImplementedException() {
+        super();
+    }
 
-  /** Construct a new <code>NotImplementedException</code> with the specified
-   * message.
-   *
-   * @param message The exception message.
-   */
-  
-  public NotImplementedException(String message)
-  {
-    super(message);
-  }
-  
+    /**
+     * Construct a new <code>NotImplementedException</code> with the specified
+     * message.
+     *
+     * @param message The exception message.
+     */
+
+    public NotImplementedException(String message) {
+        super(message);
+    }
+
 }
-
-/* end of source file */

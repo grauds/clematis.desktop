@@ -195,7 +195,7 @@ public class DateChooser extends KPanel implements ActionListener {
         top.add(WEST_POSITION, p1);
 
         bLmonth = new KButton(I_LEFT);
-        bLmonth.setMargin(KiwiUtils.emptyInsets);
+        bLmonth.setMargin(KiwiUtils.EMPTY_INSETS);
         bLmonth.setFocusPainted(false);
         bLmonth.setOpaque(false);
         bLmonth.addActionListener(this);
@@ -205,7 +205,7 @@ public class DateChooser extends KPanel implements ActionListener {
         p1.add(lMonth);
 
         bRmonth = new KButton(I_RIGHT);
-        bRmonth.setMargin(KiwiUtils.emptyInsets);
+        bRmonth.setMargin(KiwiUtils.EMPTY_INSETS);
         bRmonth.setFocusPainted(false);
         bRmonth.setOpaque(false);
         bRmonth.addActionListener(this);
@@ -216,7 +216,7 @@ public class DateChooser extends KPanel implements ActionListener {
         top.add(EAST_POSITION, p2);
 
         bLyear = new KButton(I_LEFT);
-        bLyear.setMargin(KiwiUtils.emptyInsets);
+        bLyear.setMargin(KiwiUtils.EMPTY_INSETS);
         bLyear.setFocusPainted(false);
         bLyear.setOpaque(false);
         bLyear.addActionListener(this);
@@ -226,7 +226,7 @@ public class DateChooser extends KPanel implements ActionListener {
         p2.add(lYear);
 
         bRyear = new KButton(I_RIGHT);
-        bRyear.setMargin(KiwiUtils.emptyInsets);
+        bRyear.setMargin(KiwiUtils.EMPTY_INSETS);
         bRyear.setFocusPainted(false);
         bRyear.setOpaque(false);
         bRyear.addActionListener(this);

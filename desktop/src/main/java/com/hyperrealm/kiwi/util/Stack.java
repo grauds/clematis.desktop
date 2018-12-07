@@ -19,97 +19,99 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EmptyStackException;
 
-/** An unsynchronized replacement for <code>java.util.Stack</code>.
+/**
+ * An unsynchronized replacement for <code>java.util.Stack</code>.
  *
+ * @param <E>
  * @author Mark Lindner
  * @since Kiwi 2.1
  */
 
-public class Stack<E> extends ArrayList<E>
-{
-  /** Construct a new <code>Stack</code> with the given initial capacity.
-   *
-   * @param initialCapacity The initial capacity.
-   */
+public class Stack<E> extends ArrayList<E> {
+    /**
+     * Construct a new <code>Stack</code> with the given initial capacity.
+     *
+     * @param initialCapacity The initial capacity.
+     */
 
-  public Stack(int initialCapacity)
-  {
-    super(initialCapacity);
-  }
-  
-  /** Construct a new <code>Stack</code>.
-   */
-  
-  public Stack()
-  {
-    super();
-  }
+    public Stack(int initialCapacity) {
+        super(initialCapacity);
+    }
 
-  /** Determine if the stack is empty.
-   */
-  
-  public boolean empty()
-  {
-    return(size() == 0);
-  }
+    /**
+     * Construct a new <code>Stack</code>.
+     */
 
-  /** Push an item onto the stack.
-   *
-   * @param item The item.
-   * @return The item.
-   */
+    public Stack() {
+        super();
+    }
 
-  public E push(E item)
-  {
-    add(item);
+    /**
+     * Determine if the stack is empty.
+     */
 
-    return(item);
-  }
+    public boolean empty() {
+        return (size() == 0);
+    }
 
-  /** Pop the topmost item off the stack.
-   *
-   * @return The item.
-   * @throws java.util.EmptyStackException If the stack is empty.
-   */
+    /**
+     * Push an item onto the stack.
+     *
+     * @param item The item.
+     * @return The item.
+     */
 
-  public E pop() throws EmptyStackException
-  {
-    int s = size();
-    if(s == 0)
-      throw(new EmptyStackException());
+    public E push(E item) {
+        add(item);
 
-    return(remove(--s));
-  }
+        return (item);
+    }
 
-  /** Fetch the topmost item from the stack, without removing it from
-   * the stack.
-   *
-   * @return The item.
-   * @throws java.util.EmptyStackException If the stack is empty.
-   */
+    /**
+     * Pop the topmost item off the stack.
+     *
+     * @return The item.
+     * @throws java.util.EmptyStackException If the stack is empty.
+     */
 
-  public E peek() throws EmptyStackException
-  {
-    int s = size();
-    if(s == 0)
-      throw(new EmptyStackException());
+    public E pop() throws EmptyStackException {
+        int s = size();
+        if (s == 0) {
+            throw (new EmptyStackException());
+        }
 
-    return(get(--s));
-  }
+        return (remove(--s));
+    }
 
-  /** Search for an item on the stack.
-   *
-   * @param item The item.
-   * @return The index of the item, or -1 if not found.
-   */
+    /**
+     * Fetch the topmost item from the stack, without removing it from
+     * the stack.
+     *
+     * @return The item.
+     * @throws java.util.EmptyStackException If the stack is empty.
+     */
 
-  public int search(E item)
-  {
-    return(indexOf(item));
-  }
-  
+    public E peek() throws EmptyStackException {
+        int s = size();
+        if (s == 0) {
+            throw (new EmptyStackException());
+        }
+
+        return (get(--s));
+    }
+
+    /**
+     * Search for an item on the stack.
+     *
+     * @param item The item.
+     * @return The index of the item, or -1 if not found.
+     */
+
+    public int search(E item) {
+        return (indexOf(item));
+    }
+
 }
-
-/* end of source file */

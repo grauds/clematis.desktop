@@ -107,7 +107,7 @@ public class AboutFrame extends KFrame {
         KPanel main = getMainContainer();
 
         main.setLayout(DEFAULT_BORDER_LAYOUT);
-        main.setBorder(KiwiUtils.defaultBorder);
+        main.setBorder(KiwiUtils.DEFAULT_BORDER);
 
         ButtonPanel bButtons = new ButtonPanel();
 

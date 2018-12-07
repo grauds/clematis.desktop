@@ -19,70 +19,75 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-/** A simple LRU cache.
+/**
+ * A simple LRU cache.
  *
+ * @param <K>
+ * @param <V>
  * @author Mark Lindner
  * @since Kiwi 2.1.4
  */
 
-public class LRUCache<K, V> extends LinkedHashMap<K, V>
-{
-  private int maxSize;
+public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
-  /** Construct a new <code>LRUCache</code> with the given initial capacity
-   * and maximum size.
-   *
-   * @param initialCapacity The initial capacity.
-   * @param maxSize The maximum size; that is, the maximum number of items
-   * that can ever be in the cache.
-   */
-  
-  public LRUCache(int initialCapacity, int maxSize)
-  {
-    super(initialCapacity, 0.75f, true);
+    private static final float LOAD_FACTOR = 0.75f;
 
-    this.maxSize = maxSize;
-  }
+    private static final int INITIAL_CAPACITY = 100;
 
-  /** Construct a new <code>LRUCache</code> with a default initial capacity
-   * of 100 and the given maximum size.
-   *
-   * @param maxSize The maximum size; that is, the maximum number of items
-   * that can ever be in the cache.
-   */
-  
-  public LRUCache(int maxSize)
-  {
-    this(100, maxSize);
-  }
+    private int maxSize;
 
-  /**
-   */
-  
-  protected final boolean removeEldestEntry(Map.Entry<K, V> oldest)
-  {
-    if(size() > maxSize)
-    {
-      itemDropped(oldest.getValue());
-      return(true);
+    /**
+     * Construct a new <code>LRUCache</code> with the given initial capacity
+     * and maximum size.
+     *
+     * @param initialCapacity The initial capacity.
+     * @param maxSize         The maximum size; that is, the maximum number of items
+     *                        that can ever be in the cache.
+     */
+
+    public LRUCache(int initialCapacity, int maxSize) {
+        super(initialCapacity, LOAD_FACTOR, true);
+
+        this.maxSize = maxSize;
     }
-    else
-      return(false);
-  }
 
-  /** This method is called whenever the oldest item is removed from
-   * the cache to make room for a new item. The default implementation
-   * does nothing.
-   *
-   * @param item The item that was removed.
-   */
+    /**
+     * Construct a new <code>LRUCache</code> with a default initial capacity
+     * of 100 and the given maximum size.
+     *
+     * @param maxSize The maximum size; that is, the maximum number of items
+     *                that can ever be in the cache.
+     */
 
-  protected void itemDropped(V item)
-  {
-  }
-  
+    public LRUCache(int maxSize) {
+        this(INITIAL_CAPACITY, maxSize);
+    }
+
+    /**
+     *
+     */
+
+    protected final boolean removeEldestEntry(Map.Entry<K, V> oldest) {
+        if (size() > maxSize) {
+            itemDropped(oldest.getValue());
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+     * This method is called whenever the oldest item is removed from
+     * the cache to make room for a new item. The default implementation
+     * does nothing.
+     *
+     * @param item The item that was removed.
+     */
+
+    protected void itemDropped(V item) {
+    }
+
 }
-
-/* end of source file */

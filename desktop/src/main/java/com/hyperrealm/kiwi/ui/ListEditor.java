@@ -123,7 +123,7 @@ public class ListEditor extends KPanel implements ActionListener {
         }
 
 
-        gbc.insets = KiwiUtils.firstBottomInsets;
+        gbc.insets = KiwiUtils.FIRST_BOTTOM_INSETS;
         add(editComponent, gbc);
 
         bAdd = new KButton(resmgr.getIcon("plus.png"));
@@ -133,7 +133,7 @@ public class ListEditor extends KPanel implements ActionListener {
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.weightx = 0;
         add(bAdd, gbc);
 
@@ -160,7 +160,7 @@ public class ListEditor extends KPanel implements ActionListener {
         gbc.gridwidth = 1;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = KiwiUtils.firstBottomInsets;
+        gbc.insets = KiwiUtils.FIRST_BOTTOM_INSETS;
         add(sp, gbc);
 
         bRemove = new KButton(resmgr.getIcon("minus.png"));
@@ -170,7 +170,7 @@ public class ListEditor extends KPanel implements ActionListener {
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.weightx = 0;
         add(bRemove, gbc);
     }

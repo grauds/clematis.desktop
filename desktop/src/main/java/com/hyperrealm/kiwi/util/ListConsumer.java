@@ -22,18 +22,17 @@ package com.hyperrealm.kiwi.util;
 /**
  * An interface for receiving a list of objects from another object.
  *
+ * @param <T>
  * @author Mark Lindner
  */
 
-public interface ListConsumer<T>
-{
-  
-  /** Receive the next item from the source.
-   *
-   * @param item The item.
-   */
+public interface ListConsumer<T> {
 
-  public void addItem(T item);
+    /**
+     * Receive the next item from the source.
+     *
+     * @param item The item.
+     */
+
+    void addItem(T item);
 }
-
-/* end of source file */

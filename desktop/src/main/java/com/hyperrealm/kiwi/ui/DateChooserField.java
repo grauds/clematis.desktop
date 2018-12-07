@@ -127,7 +127,7 @@ public class DateChooserField extends KPanel {
 
         KPanel pPopup = new KPanel(UIChangeManager.getDefaultTexture());
         pPopup.setLayout(new GridLayout(1, 0));
-        pPopup.setBorder(KiwiUtils.defaultBorder);
+        pPopup.setBorder(KiwiUtils.DEFAULT_BORDER);
         pPopup.add(chooser);
         menu.add(pPopup);
 

@@ -19,15 +19,17 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.awt.*;
-import java.awt.image.ImageObserver;
-import java.io.*;
-import java.util.Properties;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Properties;
 
 import com.hyperrealm.kiwi.ui.AudioClip;
 
-/** A utility class containing methods for retrieving application resources;
+/**
+ * A utility class containing methods for retrieving application resources;
  * these resources typically reside within a JAR file among the classes that
  * make up an application. The location of a resource is specified as a path
  * relative to the location of a class within the application's class
@@ -39,144 +41,136 @@ import com.hyperrealm.kiwi.ui.AudioClip;
  * <p>
  * See <code>ResourceManager</code> for a higher-level interface.
  *
- * @see com.hyperrealm.kiwi.util.ResourceManager
- * 
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.util.ResourceManager
  */
 
-public class ResourceLoader
-{
-  private ResourceDecoder decoder;
+public class ResourceLoader {
+    /**
+     * The class object associated with this resource loader.
+     */
+    protected Class clazz;
 
-  /** The class object associated with this resource loader. */
-  protected Class clazz = null;
+    private ResourceDecoder decoder;
 
-  /** Construct a new <code>ResourceLoader</code>. A new resource loader is
-   * created with a default input buffer size.
-   */
+    /**
+     * Construct a new <code>ResourceLoader</code>. A new resource loader is
+     * created with a default input buffer size.
+     */
 
-  public ResourceLoader(Class clazz)
-  {
-    this.clazz = clazz;
+    public ResourceLoader(Class clazz) {
+        this.clazz = clazz;
 
-    decoder = new ResourceDecoder();
-  }
-
-  /** Retrieve a resource as a URL.
-   *
-   * @param path The location of the resource.
-   *
-   * @return A <code>URL</code> reference to the resource.
-   */
-
-  public URL getResourceAsURL(String path)
-  {
-    return(clazz.getResource(path));
-  }
-
-  /** Retrieve a resource as a stream.
-   *
-   * @param path The location of the resource.
-   *
-   * @return An <code>InputStream</code> from which the resource data may be
-   * read.
-   *
-   * @exception java.io.IOException If the resource was not found.
-   */
-
-  public InputStream getResourceAsStream(String path) throws IOException
-  {
-    InputStream is = clazz.getResourceAsStream(path);
-
-    if(is == null)
-      throw(new IOException("Resource not found"));
-
-    return(is);
-  }
-
-  /** Retrieve a resource as a <code>String</code>. Retrieves the specified
-   * resource, returning its data as a <code>String</code>. It is assumed that
-   * the resource contains printable text.
-   *
-   * @param path The location of the resource.
-   *
-   * @exception java.io.IOException If an error occurred while reading the
-   * resource's data.
-   */
-
-  public final String getResourceAsString(String path) throws IOException
-  {
-    InputStream is = getResourceAsStream(path);
-    String s = decoder.decodeString(is);
-    is.close();
-
-    return(s);
-  }
-
-  /** Retrieve a resource as an <code>AudioClip</code>. Retrieves the specified
-   * resource, returning its data as an <code>AudioClip</code>. It is assumed
-   * that the resource contains valid audio data.
-   *
-   * @param path The location of the resource.
-   */
-
-  public final AudioClip getResourceAsAudioClip(String path)
-  {
-    AudioClip clip = null;
-
-    try
-    {
-      InputStream is = getResourceAsStream(path);
-      clip = decoder.decodeAudioClip(is);
+        decoder = new ResourceDecoder();
     }
-    catch(IOException ex) {}
 
-    return(clip);
-  }
+    /**
+     * Retrieve a resource as a URL.
+     *
+     * @param path The location of the resource.
+     * @return A <code>URL</code> reference to the resource.
+     */
 
-  /** Retrieve a resource as an <code>Image</code>. Retrieves the specified
-   * resource, returning its data as an <code>Image</code>. It is assumed that
-   * the resource contains valid image data.
-   *
-   * @param path The location of the resource.
-   */
-
-  public synchronized final Image getResourceAsImage(String path)
-  {
-    Toolkit tk = Toolkit.getDefaultToolkit();
-    Image im = null;
-
-    try
-    {
-      InputStream is = getResourceAsStream(path);
-      im = decoder.decodeImage(is);
+    public URL getResourceAsURL(String path) {
+        return (clazz.getResource(path));
     }
-    catch(IOException ex) {  }
 
-    return(im);
-  }
+    /**
+     * Retrieve a resource as a stream.
+     *
+     * @param path The location of the resource.
+     * @return An <code>InputStream</code> from which the resource data may be
+     * read.
+     * @throws java.io.IOException If the resource was not found.
+     */
 
-  /** Retrieve a resource as a <code>Properties</code> object. Retrieves the
-   * specified resource, returning its data as a <code>Properties</code>
-   * object. It is assumed that the resource is a properly-formatted property
-   * list.
-   *
-   * @param path The location of the resource.
-   *
-   * @exception java.io.IOException If an error occurred while reading the
-   * resource's data.
-   */
+    public InputStream getResourceAsStream(String path) throws IOException {
+        InputStream is = clazz.getResourceAsStream(path);
 
-  public final Properties getResourceAsProperties(String path)
-    throws IOException
-  {
-    InputStream is = getResourceAsStream(path);
-    Properties prop = decoder.decodeProperties(is);
-    is.close();
+        if (is == null) {
+            throw (new IOException("Resource not found"));
+        }
 
-    return(prop);
-  }
+        return (is);
+    }
+
+    /**
+     * Retrieve a resource as a <code>String</code>. Retrieves the specified
+     * resource, returning its data as a <code>String</code>. It is assumed that
+     * the resource contains printable text.
+     *
+     * @param path The location of the resource.
+     * @throws java.io.IOException If an error occurred while reading the
+     *                             resource's data.
+     */
+
+    public final String getResourceAsString(String path) throws IOException {
+        InputStream is = getResourceAsStream(path);
+        String s = decoder.decodeString(is);
+        is.close();
+
+        return (s);
+    }
+
+    /**
+     * Retrieve a resource as an <code>AudioClip</code>. Retrieves the specified
+     * resource, returning its data as an <code>AudioClip</code>. It is assumed
+     * that the resource contains valid audio data.
+     *
+     * @param path The location of the resource.
+     */
+
+    public final AudioClip getResourceAsAudioClip(String path) {
+        AudioClip clip = null;
+
+        try {
+            InputStream is = getResourceAsStream(path);
+            clip = decoder.decodeAudioClip(is);
+        } catch (IOException ignored) {
+        }
+
+        return (clip);
+    }
+
+    /**
+     * Retrieve a resource as an <code>Image</code>. Retrieves the specified
+     * resource, returning its data as an <code>Image</code>. It is assumed that
+     * the resource contains valid image data.
+     *
+     * @param path The location of the resource.
+     */
+
+    public synchronized Image getResourceAsImage(String path) {
+
+        Image im = null;
+
+        try {
+            InputStream is = getResourceAsStream(path);
+            im = decoder.decodeImage(is);
+        } catch (IOException ignored) {
+        }
+
+        return (im);
+    }
+
+    /**
+     * Retrieve a resource as a <code>Properties</code> object. Retrieves the
+     * specified resource, returning its data as a <code>Properties</code>
+     * object. It is assumed that the resource is a properly-formatted property
+     * list.
+     *
+     * @param path The location of the resource.
+     * @throws java.io.IOException If an error occurred while reading the
+     *                             resource's data.
+     */
+
+    public final Properties getResourceAsProperties(String path)
+        throws IOException {
+        InputStream is = getResourceAsStream(path);
+        Properties prop = decoder.decodeProperties(is);
+        is.close();
+
+        return (prop);
+    }
 
 }
-
-/* end of source file */

@@ -80,7 +80,7 @@ public class DateField extends DataField<Date> {
             dateFormat = new SimpleDateFormat(format);
         }
 
-        setFont(KiwiUtils.boldFont);
+        setFont(KiwiUtils.BOLD_FONT);
     }
 
     /**

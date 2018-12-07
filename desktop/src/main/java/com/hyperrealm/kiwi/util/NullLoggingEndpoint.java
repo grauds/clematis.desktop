@@ -19,36 +19,34 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** An implementation of <code>LoggingEndpoint</code> that serves as a "bit
+/**
+ * An implementation of <code>LoggingEndpoint</code> that serves as a "bit
  * bucket," discarding all messages.
  *
  * @author Mark Lindner
  */
 
-public class NullLoggingEndpoint implements LoggingEndpoint
-{
+public class NullLoggingEndpoint implements LoggingEndpoint {
 
-  /** Construct a new <code>NullLoggingEndpoint</code>.
-   */
+    /**
+     * Construct a new <code>NullLoggingEndpoint</code>.
+     */
 
-  public NullLoggingEndpoint()
-  {
-  }
-  
-  /** Accept (and discard) a message. This method is effectively a no-op.
-   */
+    public NullLoggingEndpoint() {
+    }
 
-  public void logMessage(int type, String s)
-  {
-  }
+    /**
+     * Accept (and discard) a message. This method is effectively a no-op.
+     */
 
-  /** Close the logging endpoint. This method is effectively a no-op.
-   */
+    public void logMessage(int type, String s) {
+    }
 
-  public void close()
-  {
-  }
-  
+    /**
+     * Close the logging endpoint. This method is effectively a no-op.
+     */
+
+    public void close() {
+    }
+
 }
-
-/* end of source file */

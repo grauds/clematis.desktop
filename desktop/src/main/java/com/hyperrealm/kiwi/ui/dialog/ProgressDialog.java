@@ -125,7 +125,7 @@ public class ProgressDialog extends KDialog implements ProgressObserver {
         KPanel main = getMainContainer();
 
         main.setLayout(DEFAULT_BORDER_LAYOUT);
-        main.setBorder(KiwiUtils.defaultBorder);
+        main.setBorder(KiwiUtils.DEFAULT_BORDER);
 
         label = new KLabel(loc.getMessage("kiwi.dialog.prompt.wait"));
 

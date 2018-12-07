@@ -63,7 +63,7 @@ public class DocumentBrowserFrame extends KFrame {
 
         KPanel panel = getMainContainer();
 
-        panel.setBorder(KiwiUtils.defaultBorder);
+        panel.setBorder(KiwiUtils.DEFAULT_BORDER);
         panel.setLayout(DEFAULT_BORDER_LAYOUT);
 
         KLabel l = new KLabel(comment);

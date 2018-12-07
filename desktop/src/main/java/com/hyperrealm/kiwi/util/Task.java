@@ -19,73 +19,80 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.util.*;
+import java.util.ArrayList;
 
-/** This class represents an asynchronous task whose progress can be tracked
+/**
+ * This class represents an asynchronous task whose progress can be tracked
  * by a <code>ProgressObserver</code>.
  *
  * @author Mark Lindner
- *
  * @see com.hyperrealm.kiwi.util.ProgressObserver
  * @see com.hyperrealm.kiwi.ui.dialog.ProgressDialog
  * @see Runnable
  */
 
-public abstract class Task implements Runnable
-{
-  private ArrayList<ProgressObserver> observers;
+public abstract class Task implements Runnable {
 
-  /** Construct a new <code>Task</code>. */
-  
-  public Task()
-  {
-    observers = new ArrayList<ProgressObserver>();
-  }
+    private static final int MAX_PERCENT = 100;
 
-  /** Run the task. This method is the body of the thread for this task. */
-  
-  public abstract void run();
+    private ArrayList<ProgressObserver> observers;
 
-  /** Add a progress observer to this task's list of observers. Observers are
-   * notified by the task of progress made.
-   *
-   * @param observer The observer to add.
-   */
-   
-  public final void addProgressObserver(ProgressObserver observer)
-  {
-    observers.add(observer);
-  }
+    /**
+     * Construct a new <code>Task</code>.
+     */
 
-  /** Remove a progress observer from this task's list of observers.
-   *
-   * @param observer The observer to remove.
-   */
-  
-  public final void removeProgressObserver(ProgressObserver observer)
-  {
-    observers.remove(observer);
-  }
+    public Task() {
+        observers = new ArrayList<ProgressObserver>();
+    }
 
-  /** Notify all observers about the percentage of the task completed.
-   *
-   * @param percent The percentage of the task completed, an integer value
-   * between 0 and 100 inclusive. Values outside of this range are silently
-   * clipped.
-   */
-  
-  protected final void notifyObservers(int percent)
-  {
-    if(percent < 0)
-      percent = 0;
-    else if(percent > 100)
-      percent = 100;
+    /**
+     * Run the task. This method is the body of the thread for this task.
+     */
 
-    int l = observers.size();
-    for(int i = 0; i < l; i++)
-      observers.get(i).setProgress(percent);
-  }
-  
+    public abstract void run();
+
+    /**
+     * Add a progress observer to this task's list of observers. Observers are
+     * notified by the task of progress made.
+     *
+     * @param observer The observer to add.
+     */
+
+    public final void addProgressObserver(ProgressObserver observer) {
+        observers.add(observer);
+    }
+
+    /**
+     * Remove a progress observer from this task's list of observers.
+     *
+     * @param observer The observer to remove.
+     */
+
+    public final void removeProgressObserver(ProgressObserver observer) {
+        observers.remove(observer);
+    }
+
+    /**
+     * Notify all observers about the percentage of the task completed.
+     *
+     * @param percent The percentage of the task completed, an integer value
+     *                between 0 and 100 inclusive. Values outside of this range are silently
+     *                clipped.
+     */
+
+    protected final void notifyObservers(int percent) {
+
+        int percentInt = percent;
+
+        if (percentInt < 0) {
+            percentInt = 0;
+        } else if (percentInt > MAX_PERCENT) {
+            percentInt = MAX_PERCENT;
+        }
+
+        for (ProgressObserver observer : observers) {
+            observer.setProgress(percentInt);
+        }
+    }
+
 }
-
-/* end of source file */

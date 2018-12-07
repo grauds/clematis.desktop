@@ -118,7 +118,7 @@ public class AppletPanel extends KPanel {
 
         add(SOUTH_POSITION, statusField);
 
-        setBorder(KiwiUtils.defaultBorder);
+        setBorder(KiwiUtils.DEFAULT_BORDER);
     }
 
     /**

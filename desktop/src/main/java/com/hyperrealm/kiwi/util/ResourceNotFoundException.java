@@ -19,32 +19,27 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** An exception that is thrown by <code>ResourceManager</code> to signify
+/**
+ * An exception that is thrown by <code>ResourceManager</code> to signify
  * that a resource could not be located.
  *
- * @see com.hyperrealm.kiwi.util.ResourceManager
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.util.ResourceManager
  */
 
-public class ResourceNotFoundException extends RuntimeException
-{
-  /*
-   */
-  
-  ResourceNotFoundException()
-  {
-    super();
-  }
+public class ResourceNotFoundException extends RuntimeException {
+    /*
+     */
 
-  /*
-   */
-  
-  ResourceNotFoundException(String message)
-  {
-    super(message);
-  }
-  
+    ResourceNotFoundException() {
+        super();
+    }
+
+    /*
+     */
+
+    ResourceNotFoundException(String message) {
+        super(message);
+    }
+
 }
-
-/* end of source file */

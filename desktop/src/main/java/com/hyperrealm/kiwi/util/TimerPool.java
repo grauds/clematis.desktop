@@ -19,34 +19,32 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** A concrete implementation of <code>ResourcePool</code> for managing a
+/**
+ * A concrete implementation of <code>ResourcePool</code> for managing a
  * pool of <code>IntervalTimer</code>s.
  *
  * @author Mark Lindner
  */
 
-public class TimerPool extends ResourcePool<IntervalTimer>
-{
-  /** Construct a new <code>TimerPool</code> of the specified size.
-   *
-   * @param size The number of <code>IntervalTimer</code>s to preallocate.
-   */
+public class TimerPool extends ResourcePool<IntervalTimer> {
+    /**
+     * Construct a new <code>TimerPool</code> of the specified size.
+     *
+     * @param size The number of <code>IntervalTimer</code>s to preallocate.
+     */
 
-  public TimerPool(int size)
-  {
-    super(size);
-  }
+    public TimerPool(int size) {
+        super(size);
+    }
 
-  /** Construct a new <code>IntervalTimer</code>.
-   *
-   * @return The new <code>IntervalTimer</code>.
-   */
-   
-  protected IntervalTimer construct()
-  {
-    return(new IntervalTimer());
-  }
+    /**
+     * Construct a new <code>IntervalTimer</code>.
+     *
+     * @return The new <code>IntervalTimer</code>.
+     */
+
+    protected IntervalTimer construct() {
+        return (new IntervalTimer());
+    }
 
 }
-
-/* end of source file */

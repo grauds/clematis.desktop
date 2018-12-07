@@ -75,7 +75,7 @@ public class NumericField extends DataField<Number> {
 
         setType(type);
         setHorizontalAlignment(SwingConstants.RIGHT);
-        setFont(KiwiUtils.boldFont);
+        setFont(KiwiUtils.BOLD_FONT);
     }
 
     /**

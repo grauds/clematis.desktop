@@ -19,142 +19,142 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.ui.AudioClip;
 
-/** A class that decodes various types of resources from input streams. This
+/**
+ * A class that decodes various types of resources from input streams. This
  * class is used by resource loaders to read resources from files or network
  * connections. The functionality is provided for its possible use in other
  * contexts.
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.util.ResourceLoader
  * @see com.hyperrealm.kiwi.util.ResourceManager
  * @since Kiwi 1.3
- *
- * @author Mark Lindner
  */
 
-public class ResourceDecoder implements ImageObserver
-{
-  private static boolean imageLoaded = false;
+public class ResourceDecoder implements ImageObserver {
 
-  /** Construct a new <code>ResourceDecoder</code>.
-   */
+    private static boolean imageLoaded = false;
 
-  public ResourceDecoder()
-  {
-  }
+    /**
+     * Construct a new <code>ResourceDecoder</code>.
+     */
 
-  /** Decode a string from an input stream. Constructs a <code>String</code>
-   * object from all of the data read from an input stream.
-   *
-   * @param stream The input stream.
-   * @return The resulting <code>String</code> object.
-   * @throws java.io.IOException If an error occurred while reading from the
-   * stream.
-   */
-  
-  public String decodeString(InputStream stream) throws IOException
-  {
-    return(StreamUtils.readStreamToString(stream));
-  }
-
-  /** Decode an audio clip from an input stream. Constructs an
-   * <code>AudioClip</code> object from all of the data read from an input
-   * stream.
-   *
-   * @param stream The input stream.
-   * @return The resulting <code>AudioCip</code> object.
-   * @throws java.io.IOException If an error occurred while reading from the
-   * stream.
-   */
-
-  public AudioClip decodeAudioClip(InputStream stream) throws IOException
-  {
-    return(new AudioClip(stream));
-  }
-
-  /** Decode an image from an input stream. Constructs an <code>Image</code>
-   * object from all of the data read from an input stream.
-   *
-   * @param stream The input stream.
-   * @return The resulting <code>Image</code> object.
-   * @throws java.io.IOException If an error occurred while reading from the
-   * stream.
-   */
-
-  public synchronized Image decodeImage(InputStream stream) throws IOException
-  {
-    Toolkit toolkit = Toolkit.getDefaultToolkit();
-    byte data[] = StreamUtils.readStreamToByteArray(stream);
-    Image im = toolkit.createImage(data);
-    imageLoaded = false;
-    toolkit.prepareImage(im, -1, -1, this);
-    
-    while(!imageLoaded)
-    {
-      try { wait(); }
-      catch(InterruptedException ex) {}
+    public ResourceDecoder() {
     }
 
-    return(im);
-  }
+    /**
+     * Decode a string from an input stream. Constructs a <code>String</code>
+     * object from all of the data read from an input stream.
+     *
+     * @param stream The input stream.
+     * @return The resulting <code>String</code> object.
+     * @throws java.io.IOException If an error occurred while reading from the
+     *                             stream.
+     */
 
-  /** Decode a properties list from an input stream. Constructs a
-   * <code>Properties</code> object from all of the data read from an input
-   * stream.
-   *
-   * @param stream The input stream.
-   * @return The resulting <code>Properties</code> object.
-   * @throws java.io.IOException If an error occurred while reading from the
-   * stream.
-   */
-
-  public Properties decodeProperties(InputStream stream) throws IOException
-  {
-    Properties prop = new Properties();
-    prop.load(stream);
-
-    return(prop);
-  }
-
-  /** Decode a configuration from an input stream. Constructs a
-   * <code>Config</code> object from all of the data read from an input
-   * stream.
-   *
-   * @param stream The input stream.
-   * @return The resulting <code>Config</code> object.
-   * @throws java.io.IOException If an error occurred while reading from the
-   * stream.
-   */
-
-  public Config decodeConfig(InputStream stream) throws IOException
-  {
-    Config config = new Config();
-    config.load(stream);
-
-    return(config);
-  }
-  
-  /** Image tracker method. This is an internal method and should not be called
-   * directly.
-   */
-
-  public synchronized boolean imageUpdate(Image img, int infoflags, int x,
-                                          int y, int w, int h)
-  {
-    if((infoflags & (ALLBITS | FRAMEBITS)) != 0)
-    {
-      imageLoaded = true;
-      notifyAll();
+    public String decodeString(InputStream stream) throws IOException {
+        return (StreamUtils.readStreamToString(stream));
     }
-    return(true);
-  }
+
+    /**
+     * Decode an audio clip from an input stream. Constructs an
+     * <code>AudioClip</code> object from all of the data read from an input
+     * stream.
+     *
+     * @param stream The input stream.
+     * @return The resulting <code>AudioCip</code> object.
+     * @throws java.io.IOException If an error occurred while reading from the
+     *                             stream.
+     */
+
+    public AudioClip decodeAudioClip(InputStream stream) throws IOException {
+        return (new AudioClip(stream));
+    }
+
+    /**
+     * Decode an image from an input stream. Constructs an <code>Image</code>
+     * object from all of the data read from an input stream.
+     *
+     * @param stream The input stream.
+     * @return The resulting <code>Image</code> object.
+     * @throws java.io.IOException If an error occurred while reading from the
+     *                             stream.
+     */
+
+    public synchronized Image decodeImage(InputStream stream) throws IOException {
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        byte[] data = StreamUtils.readStreamToByteArray(stream);
+        Image im = toolkit.createImage(data);
+        imageLoaded = false;
+        toolkit.prepareImage(im, -1, -1, this);
+
+        while (!imageLoaded) {
+            try {
+                wait();
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        return (im);
+    }
+
+    /**
+     * Decode a properties list from an input stream. Constructs a
+     * <code>Properties</code> object from all of the data read from an input
+     * stream.
+     *
+     * @param stream The input stream.
+     * @return The resulting <code>Properties</code> object.
+     * @throws java.io.IOException If an error occurred while reading from the
+     *                             stream.
+     */
+
+    public Properties decodeProperties(InputStream stream) throws IOException {
+        Properties prop = new Properties();
+        prop.load(stream);
+
+        return (prop);
+    }
+
+    /**
+     * Decode a configuration from an input stream. Constructs a
+     * <code>Config</code> object from all of the data read from an input
+     * stream.
+     *
+     * @param stream The input stream.
+     * @return The resulting <code>Config</code> object.
+     * @throws java.io.IOException If an error occurred while reading from the
+     *                             stream.
+     */
+
+    public Config decodeConfig(InputStream stream) throws IOException {
+        Config config = new Config();
+        config.load(stream);
+
+        return (config);
+    }
+
+    /**
+     * Image tracker method. This is an internal method and should not be called
+     * directly.
+     */
+
+    public synchronized boolean imageUpdate(Image img, int infoflags, int x,
+                                            int y, int w, int h) {
+        if ((infoflags & (ALLBITS | FRAMEBITS)) != 0) {
+            imageLoaded = true;
+            notifyAll();
+        }
+        return (true);
+    }
 }
-
-/* end of source file */
