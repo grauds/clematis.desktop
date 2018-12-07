@@ -22,116 +22,128 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.awt.geom.*;
-import javax.swing.*;
-import javax.swing.plaf.basic.*;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 
-/** A LabelUI for drawing vertical labels.
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.plaf.basic.BasicLabelUI;
+
+/**
+ * A LabelUI for drawing vertical labels.
  *
  * @author Zafir Anjum
  * @author Mark Lindner
- *
  * @since Kiwi 2.4
  */
 
-public class VerticalLabelUI extends BasicLabelUI
-{
-  private Rectangle paintIconR = new Rectangle();
-  private Rectangle paintTextR = new Rectangle();
-  private Rectangle paintViewR = new Rectangle();
-  private Insets paintViewInsets = new Insets(0, 0, 0, 0);
-  private boolean up;
+public class VerticalLabelUI extends BasicLabelUI {
 
-  /** Construct a new <code>VerticalLabelUI</code> with an orientation of "up",
-   * that is, bottom-to-top.
-   */
+    private Rectangle paintIconR = new Rectangle();
 
-  public VerticalLabelUI()
-  {
-    this(true);
-  }
+    private Rectangle paintTextR = new Rectangle();
 
-  /** Construct a new <code>VerticalLabelUI</code> with the given orientation.
-   *
-   * @param up The orientation; if <b>true</b>, the label is drawn bottom to
-   * top, otherwise top to bottom.
-   */
-  
-  public VerticalLabelUI(boolean up)
-  {
-    this.up = up;
-  }
+    private Rectangle paintViewR = new Rectangle();
 
-  /*
-   */
-  
-  public Dimension getPreferredSize(JComponent c) 
-  {
-    Dimension dim = super.getPreferredSize(c);
-    return new Dimension(dim.height, dim.width);
-  }     
+    private Insets paintViewInsets = new Insets(0, 0, 0, 0);
 
-  /*
-   */
-  
-  public void paint(Graphics g, JComponent c) 
-  {
-    JLabel label = (JLabel)c;
-    String text = label.getText();
-    Icon icon = (label.isEnabled() ? label.getIcon()
-                 : label.getDisabledIcon());
+    private boolean up;
 
-    if ((icon == null) && (text == null))
-      return;
+    /**
+     * Construct a new <code>VerticalLabelUI</code> with an orientation of "up",
+     * that is, bottom-to-top.
+     */
 
-    FontMetrics fm = g.getFontMetrics();
-    paintViewInsets = c.getInsets(paintViewInsets);
-
-    paintViewR.x = paintViewInsets.left;
-    paintViewR.y = paintViewInsets.top;
-        
-    // Use inverted height & width
-    paintViewR.height = (c.getWidth() - (paintViewInsets.left
-                                         + paintViewInsets.right));
-    paintViewR.width = (c.getHeight() - (paintViewInsets.top
-                                         + paintViewInsets.bottom));
-
-    paintIconR.x = paintIconR.y = paintIconR.width = paintIconR.height = 0;
-    paintTextR.x = paintTextR.y = paintTextR.width = paintTextR.height = 0;
-
-    String clippedText = layoutCL(label, fm, text, icon, paintViewR,
-                                  paintIconR, paintTextR);
-
-    Graphics2D g2 = (Graphics2D)g;
-    AffineTransform tr = g2.getTransform();
-    if(up)
-    {
-      g2.rotate(- Math.PI / 2); 
-      g2.translate(- c.getHeight(), 0);
-    }
-    else
-    {
-      g2.rotate(Math.PI / 2); 
-      g2.translate(0, - c.getWidth());
+    public VerticalLabelUI() {
+        this(true);
     }
 
-    if (icon != null)
-      icon.paintIcon(c, g, paintIconR.x, paintIconR.y);
+    /**
+     * Construct a new <code>VerticalLabelUI</code> with the given orientation.
+     *
+     * @param up The orientation; if <b>true</b>, the label is drawn bottom to
+     *           top, otherwise top to bottom.
+     */
 
-    if(text != null)
-    {
-      int textX = paintTextR.x;
-      int textY = paintTextR.y + fm.getAscent();
-      
-      if(label.isEnabled())
-        paintEnabledText(label, g, clippedText, textX, textY);
-      else
-        paintDisabledText(label, g, clippedText, textX, textY);
+    public VerticalLabelUI(boolean up) {
+        this.up = up;
     }
-    
-    g2.setTransform(tr);
-  }
+
+    /*
+     */
+
+    public Dimension getPreferredSize(JComponent c) {
+        Dimension dim = super.getPreferredSize(c);
+        return new Dimension(dim.height, dim.width);
+    }
+
+    /*
+     */
+
+    public void paint(Graphics g, JComponent c) {
+        JLabel label = (JLabel) c;
+        String text = label.getText();
+        Icon icon = (label.isEnabled() ? label.getIcon()
+            : label.getDisabledIcon());
+
+        if ((icon == null) && (text == null)) {
+            return;
+        }
+
+        FontMetrics fm = g.getFontMetrics();
+        paintViewInsets = c.getInsets(paintViewInsets);
+
+        paintViewR.x = paintViewInsets.left;
+        paintViewR.y = paintViewInsets.top;
+
+        // Use inverted height & width
+        paintViewR.height = (c.getWidth() - (paintViewInsets.left + paintViewInsets.right));
+        paintViewR.width = (c.getHeight() - (paintViewInsets.top + paintViewInsets.bottom));
+
+        paintIconR.x = 0;
+        paintIconR.y = 0;
+        paintIconR.width = 0;
+        paintIconR.height = 0;
+
+        paintTextR.x = 0;
+        paintTextR.y = 0;
+        paintTextR.width = 0;
+        paintTextR.height = 0;
+
+        String clippedText = layoutCL(label, fm, text, icon, paintViewR,
+            paintIconR, paintTextR);
+
+        Graphics2D g2 = (Graphics2D) g;
+        AffineTransform tr = g2.getTransform();
+        if (up) {
+            g2.rotate(-Math.PI / 2);
+            g2.translate(-c.getHeight(), 0);
+        } else {
+            g2.rotate(Math.PI / 2);
+            g2.translate(0, -c.getWidth());
+        }
+
+        if (icon != null) {
+            icon.paintIcon(c, g, paintIconR.x, paintIconR.y);
+        }
+
+        if (text != null) {
+            int textX = paintTextR.x;
+            int textY = paintTextR.y + fm.getAscent();
+
+            if (label.isEnabled()) {
+                paintEnabledText(label, g, clippedText, textX, textY);
+            } else {
+                paintDisabledText(label, g, clippedText, textX, textY);
+            }
+        }
+
+        g2.setTransform(tr);
+    }
 }
-
-/* end of source file */

@@ -50,8 +50,7 @@ public class WizardDialog extends KDialog {
      * @param view   The <code>WizardView</code> to display in this dialog.
      */
 
-    public WizardDialog(Frame parent, String title, boolean modal,
-                        WizardView view) {
+    public WizardDialog(Frame parent, String title, boolean modal, WizardView view) {
         super(parent, title, modal);
 
         KPanel main = getMainContainer();

@@ -27,6 +27,7 @@ import javax.swing.Icon;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_PADDING;
 
@@ -143,7 +144,7 @@ public class ProgressDialog extends KDialog implements ProgressObserver {
         bar.setOpaque(false);
         p.add(bar);
 
-        main.add("Center", p);
+        main.add(CENTER_POSITION, p);
 
         if (getTitle().length() == 0) {
             setTitle(loc.getMessage("kiwi.dialog.title.progress"));

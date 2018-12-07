@@ -19,16 +19,27 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 
-import com.hyperrealm.kiwi.event.*;
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
-/** A wizard-style component. <code>WizardView</code> essentially displays a
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.WEST_POSITION;
+
+import com.hyperrealm.kiwi.event.ActionSupport;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
+
+/**
+ * A wizard-style component. <code>WizardView</code> essentially displays a
  * sequence of panels (or "cards") to the user;  each panel typically
  * contains messages and/or input elements. A <code>WizardPanelSequence</code>
  * object functions as the source of these panels, and determines the order
@@ -61,303 +72,292 @@ import com.hyperrealm.kiwi.util.*;
  * <i>An example WizardView.</i>
  * </center>
  *
+ * @author Mark Lindner
  * @see javax.swing.event.ChangeEvent
  * @see com.hyperrealm.kiwi.ui.WizardPanelSequence
- *
- * @author Mark Lindner
  */
 
-public class WizardView extends KPanel
-{
-  private KButton b_prev, b_next, b_cancel;
-  private KLabel iconLabel;
-  private WizardPanelSequence sequence;
-  private KPanel content;
-  private WizardPanel curPanel = null;
-  private int pos = 0, count = 0;
-  private Icon i_next;
-  private boolean finish = false;
-  private ActionSupport support;
-  private String s_next, s_back, s_finish, s_cancel;
-  private _ActionListener actionListener;
-  private ButtonPanel p_buttons;
+public abstract class WizardView extends KPanel {
 
-  /** Construct a new <code>WizardView</code>. The <code>buildSequence()</code>
-   * method will be called to construct the <code>WizardPanel</code> sequence.
-   *
-   * @since Kiwi 2.0
-   *
-   */
+    private static final Insets DEFAULT_INSETS = new Insets(1, 5, 1, 5);
 
-  public WizardView()
-  {
-    this(null);
-  }
-  
-  /** Construct a new <code>WizardView</code>.
-   *
-   * @param sequence The <code>WizardPanelSequence</code> that will provide
-   * <code>WizardPanel</code>s for the wizard.
-   */
-  
-  public WizardView(WizardPanelSequence sequence)
-  {
-    if(sequence == null)
-      sequence = buildSequence();
-    
-    this.sequence = sequence;
+    private KButton bPrev, bNext, bCancel;
 
-    sequence.addChangeListener(new ChangeListener()
-      {
-        public void stateChanged(ChangeEvent evt)
-        {
-          refresh();
+    private KLabel iconLabel;
+
+    private WizardPanelSequence sequence;
+
+    private KPanel content;
+
+    private WizardPanel curPanel = null;
+
+    private Icon iNext;
+
+    private boolean finish = false;
+
+    private ActionSupport support;
+
+    private String sNext;
+
+    private String sFinish;
+
+    private ButtonPanel bButtons;
+
+    /**
+     * Construct a new <code>WizardView</code>. The <code>buildSequence()</code>
+     * method will be called to construct the <code>WizardPanel</code> sequence.
+     *
+     * @since Kiwi 2.0
+     */
+
+    public WizardView() {
+        this(null);
+    }
+
+    /**
+     * Construct a new <code>WizardView</code>.
+     *
+     * @param sequence The <code>WizardPanelSequence</code> that will provide
+     *                 <code>WizardPanel</code>s for the wizard.
+     */
+
+    public WizardView(WizardPanelSequence sequence) {
+
+        WizardPanelSequence sequenceInt = sequence;
+
+        if (sequenceInt == null) {
+            sequenceInt = buildSequence();
         }
-      });
 
-    LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
+        this.sequence = sequenceInt;
 
-    s_next = loc.getMessage("kiwi.button.next");
-    s_back = loc.getMessage("kiwi.button.back");
-    s_finish = loc.getMessage("kiwi.button.finish");
-    s_cancel = loc.getMessage("kiwi.button.cancel");
-    
-    support = new ActionSupport(this);
-    
-    setLayout(new BorderLayout(5, 5));
+        sequenceInt.addChangeListener(evt -> refresh());
 
-    content = new KPanel();
-    content.setLayout(new GridLayout(1, 0));
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
 
-    iconLabel = new KLabel(KiwiUtils.getResourceManager()
-                           .getIcon("wizard_panel.png"));
-    add("West", iconLabel);
+        sNext = loc.getMessage("kiwi.button.next");
+        String sBack = loc.getMessage("kiwi.button.back");
+        sFinish = loc.getMessage("kiwi.button.finish");
+        String sCancel = loc.getMessage("kiwi.button.cancel");
 
-    add("Center", content);
+        support = new ActionSupport(this);
 
-    Insets margin = new Insets(1, 5, 1, 5);
-    
-    p_buttons = new ButtonPanel();
+        setLayout(DEFAULT_BORDER_LAYOUT);
 
-    actionListener = new _ActionListener();
+        content = new KPanel();
+        content.setLayout(new GridLayout(1, 0));
 
-    b_prev = new KButton(s_back, KiwiUtils.getResourceManager()
-                         .getIcon("wizard_left.png"));
-    b_prev.setFocusPainted(false);
-    b_prev.addActionListener(actionListener);
-    b_prev.setEnabled(false);
-    b_prev.setMargin(margin);
-    p_buttons.addButton(b_prev);
+        iconLabel = new KLabel(KiwiUtils.getResourceManager().getIcon("wizard_panel.png"));
+        add(WEST_POSITION, iconLabel);
 
-    i_next = KiwiUtils.getResourceManager().getIcon("wizard_right.png");
-    
-    b_next = new KButton("");
-    b_next.setHorizontalTextPosition(SwingConstants.LEFT);
-    b_next.setFocusPainted(false);
-    b_next.addActionListener(actionListener);
-    b_next.setMargin(margin);
-    p_buttons.addButton(b_next);
+        add(CENTER_POSITION, content);
 
-    b_cancel = new KButton(s_cancel);
-    b_cancel.setFocusPainted(false);
-    b_cancel.addActionListener(actionListener);
-    b_cancel.setMargin(margin);
-    p_buttons.addButton(b_cancel);
 
-    KPanel p_bottom = new KPanel();
-    p_bottom.setLayout(new BorderLayout(5, 5));
+        bButtons = new ButtonPanel();
 
-    p_bottom.add("Center", new JSeparator());
-    p_bottom.add("South", p_buttons);
-    
-    add("South", p_bottom);
+        ActionListener actionListener = new ActionListener();
 
-    reset();
-  }
+        bPrev = new KButton(sBack, KiwiUtils.getResourceManager().getIcon("wizard_left.png"));
+        bPrev.setFocusPainted(false);
+        bPrev.addActionListener(actionListener);
+        bPrev.setEnabled(false);
+        bPrev.setMargin(DEFAULT_INSETS);
+        bButtons.addButton(bPrev);
 
-  /** A method for constructing the wizard panel sequence. This method may be
-   * overridden by subclasses to provide the sequence for the view instead of
-   * having it supplied via the constructor. The default implementation returns
-   * <b>null</b>.
-   *
-   * @since Kiwi 2.0
-   */
+        iNext = KiwiUtils.getResourceManager().getIcon("wizard_right.png");
 
-  protected WizardPanelSequence buildSequence()
-  {
-    return(null);
-  }
+        bNext = new KButton("");
+        bNext.setHorizontalTextPosition(SwingConstants.LEFT);
+        bNext.setFocusPainted(false);
+        bNext.addActionListener(actionListener);
+        bNext.setMargin(DEFAULT_INSETS);
+        bButtons.addButton(bNext);
 
-  /** Get a reference to the <i>Cancel</i> button.
-   *
-   * @return The <i>Cancel</i> button.
-   */
-  
-  public JButton getCancelButton()
-  {
-    return(b_cancel);
-  }
+        bCancel = new KButton(sCancel);
+        bCancel.setFocusPainted(false);
+        bCancel.addActionListener(actionListener);
+        bCancel.setMargin(DEFAULT_INSETS);
+        bButtons.addButton(bCancel);
 
-  /** Get a reference to the <i>Finish</i> button.
-   *
-   * @return The <i>Finish</i> button.
-   */
-  
-  public JButton getFinishButton()
-  {
-    return(b_next);
-  }
+        KPanel pBottom = new KPanel();
+        pBottom.setLayout(DEFAULT_BORDER_LAYOUT);
 
-  /** Add a button to the <code>WizardView</code> at the specified position.
-   *
-   * @param button The button to add.
-   * @param pos The position at which to add the button. The value 0 denotes
-   * the first position, and -1 denotes the last position.
-   * @exception IllegalArgumentException If the value of
-   * <code>pos</code> is invalid.
-   */
+        pBottom.add(CENTER_POSITION, new JSeparator());
+        pBottom.add(SOUTH_POSITION, bButtons);
 
-  public void addButton(JButton button, int pos)
-    throws IllegalArgumentException
-  {
-    p_buttons.addButton(button, pos);
-  }
+        add(SOUTH_POSITION, pBottom);
 
-  /** Remove a button from the specified position in the
-   * <code>ButtonPanel</code>.
-   *
-   * @param pos The position of the button to remove, where 0 denotes the
-   * first position.
-   * @exception IllegalArgumentException If an attempt is made
-   * to remove one of the predefined wizard buttons.
-   */
-  
-  public void removeButton(int pos) throws IllegalArgumentException
-  {
-    JButton b = (JButton)p_buttons.getButton(pos);
-    if((b == b_cancel) || (b == b_prev) || (b == b_next))
-      throw(new IllegalArgumentException("Can't remove predefined buttons."));
-    else
-      p_buttons.removeButton(pos);
-  }
-
-  /** Set the component's icon. Animated and/or transparent GIF images add a
-   * professional touch when used with <code>WizardView</code>s.
-   *
-   * @param icon The new icon to use, or <code>null</code> if no icon is
-   * needed.
-   */
-
-  public void setIcon(Icon icon)
-  {
-    iconLabel.setIcon(icon);
-  }
-  
-  /* show a panel */
-  
-  private void showPanel(WizardPanel panel)
-  {
-    if(curPanel != null)
-    {
-      content.remove(curPanel);
-      curPanel.syncData();
+        reset();
     }
-    
-    content.add(curPanel = panel);
-    content.validate();
-    content.repaint();
-    curPanel.syncUI();
-    refresh();
-    curPanel.beginFocus();
-  }
 
-  /** Reset the <code>WizardView</code>. Resets the component so that the first
-   * panel is displayed. This method also calls the
-   * <code>WizardPanelSequence</code>'s <code>reset()</code> method.
-   *
-   * @see com.hyperrealm.kiwi.ui.WizardPanelSequence#reset
-   */
-  
-  public void reset()
-  {
-    sequence.reset();
-    b_next.setText(s_next);
-    b_next.setIcon(i_next);
-    showPanel(sequence.getNextPanel());
-  }
+    /**
+     * A method for constructing the wizard panel sequence. This method may be
+     * overridden by subclasses to provide the sequence for the view instead of
+     * having it supplied via the constructor. The default implementation returns
+     * <b>null</b>.
+     *
+     * @since Kiwi 2.0
+     */
 
-  /* refresh the buttons based on what the sequence tells us */
-  
-  private void refresh()
-  {
-    finish = sequence.isLastPanel();
-    b_next.setEnabled(sequence.canMoveForward());
-    b_prev.setEnabled(sequence.canMoveBackward());
+    abstract WizardPanelSequence buildSequence();
 
-    if(!finish)
-    {
-      b_next.setText(s_next);
-      b_next.setIcon(i_next);
+    /**
+     * Get a reference to the <i>Cancel</i> button.
+     *
+     * @return The <i>Cancel</i> button.
+     */
+
+    public JButton getCancelButton() {
+        return (bCancel);
     }
-    else
-    {
-      b_next.setText(s_finish);
-      b_next.setIcon(null);
+
+    /**
+     * Get a reference to the <i>Finish</i> button.
+     *
+     * @return The <i>Finish</i> button.
+     */
+
+    public JButton getFinishButton() {
+        return (bNext);
     }
-  }
 
-  /** Add an <code>ActionListener</code> to this component's list of listeners.
-   *
-   * @param listener The listener to add.
-   */
+    /**
+     * Add a button to the <code>WizardView</code> at the specified position.
+     *
+     * @param button The button to add.
+     * @param pos    The position at which to add the button. The value 0 denotes
+     *               the first position, and -1 denotes the last position.
+     * @throws IllegalArgumentException If the value of
+     *                                  <code>pos</code> is invalid.
+     */
 
-  public void addActionListener(ActionListener listener)
-  {
-    support.addActionListener(listener);
-  }
+    public void addButton(JButton button, int pos)
+        throws IllegalArgumentException {
+        bButtons.addButton(button, pos);
+    }
 
-  /** Add an <code>ActionListener</code> to this component's list of listeners.
-   *
-   * @param listener The listener to add.
-   */
+    /**
+     * Remove a button from the specified position in the
+     * <code>ButtonPanel</code>.
+     *
+     * @param pos The position of the button to remove, where 0 denotes the
+     *            first position.
+     * @throws IllegalArgumentException If an attempt is made
+     *                                  to remove one of the predefined wizard buttons.
+     */
 
-  public void removeActionListener(ActionListener listener)
-  {
-    support.removeActionListener(listener);
-  }
+    public void removeButton(int pos) throws IllegalArgumentException {
+        JButton b = (JButton) bButtons.getButton(pos);
+        if ((b == bCancel) || (b == bPrev) || (b == bNext)) {
+            throw (new IllegalArgumentException("Can't remove predefined buttons."));
+        } else {
+            bButtons.removeButton(pos);
+        }
+    }
 
-  /* Handle events. */
+    /**
+     * Set the component's icon. Animated and/or transparent GIF images add a
+     * professional touch when used with <code>WizardView</code>s.
+     *
+     * @param icon The new icon to use, or <code>null</code> if no icon is
+     *             needed.
+     */
 
-  private class _ActionListener implements ActionListener
-  {
-    public void actionPerformed(ActionEvent evt)
-    {
-      Object o = evt.getSource();
+    public void setIcon(Icon icon) {
+        iconLabel.setIcon(icon);
+    }
 
-      if(o == b_next)
-      {
-        if(curPanel.accept())
-        {
-          if(finish)
-          {
+    /* show a panel */
+
+    private void showPanel(WizardPanel panel) {
+        if (curPanel != null) {
+            content.remove(curPanel);
             curPanel.syncData();
-            support.fireActionEvent("finish");
-          }
-          else
-            showPanel(sequence.getNextPanel());
         }
-        else
-          curPanel.beginFocus();
-      }
+        curPanel = panel;
 
-      else if(o == b_prev)
-        showPanel(sequence.getPreviousPanel());
-
-      else if(o == b_cancel)
-        support.fireActionEvent("cancel");
+        content.add(curPanel);
+        content.validate();
+        content.repaint();
+        curPanel.syncUI();
+        refresh();
+        curPanel.beginFocus();
     }
-  }
+
+    /**
+     * Reset the <code>WizardView</code>. Resets the component so that the first
+     * panel is displayed. This method also calls the
+     * <code>WizardPanelSequence</code>'s <code>reset()</code> method.
+     *
+     * @see com.hyperrealm.kiwi.ui.WizardPanelSequence#reset
+     */
+
+    public void reset() {
+        sequence.reset();
+        bNext.setText(sNext);
+        bNext.setIcon(iNext);
+        showPanel(sequence.getNextPanel());
+    }
+
+    /* refresh the buttons based on what the sequence tells us */
+
+    private void refresh() {
+        finish = sequence.isLastPanel();
+        bNext.setEnabled(sequence.canMoveForward());
+        bPrev.setEnabled(sequence.canMoveBackward());
+
+        if (!finish) {
+            bNext.setText(sNext);
+            bNext.setIcon(iNext);
+        } else {
+            bNext.setText(sFinish);
+            bNext.setIcon(null);
+        }
+    }
+
+    /**
+     * Add an <code>ActionListener</code> to this component's list of listeners.
+     *
+     * @param listener The listener to add.
+     */
+
+    public void addActionListener(java.awt.event.ActionListener listener) {
+        support.addActionListener(listener);
+    }
+
+    /**
+     * Add an <code>ActionListener</code> to this component's list of listeners.
+     *
+     * @param listener The listener to add.
+     */
+
+    public void removeActionListener(java.awt.event.ActionListener listener) {
+        support.removeActionListener(listener);
+    }
+
+    /* Handle events. */
+    @SuppressWarnings("all")
+    private class ActionListener implements java.awt.event.ActionListener {
+        public void actionPerformed(ActionEvent evt) {
+            Object o = evt.getSource();
+
+            if (o == bNext) {
+                if (curPanel.accept()) {
+                    if (finish) {
+                        curPanel.syncData();
+                        support.fireActionEvent("finish");
+                    } else {
+                        showPanel(sequence.getNextPanel());
+                    }
+                } else {
+                    curPanel.beginFocus();
+                }
+            } else if (o == bPrev) {
+                showPanel(sequence.getPreviousPanel());
+            } else if (o == bCancel) {
+                support.fireActionEvent("cancel");
+            }
+        }
+    }
 
 }
-
-/* end of source file */

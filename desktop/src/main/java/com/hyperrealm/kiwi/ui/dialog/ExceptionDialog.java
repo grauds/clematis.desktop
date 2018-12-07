@@ -134,7 +134,7 @@ public class ExceptionDialog extends ComponentDialog {
                 detailShown = !detailShown;
 
                 if (detailShown) {
-                    pMain.add(DEFAULT_POSITION, pDetail);
+                    pMain.add(CENTER_POSITION, pDetail);
                 } else {
                     pMain.remove(pDetail);
                 }
@@ -163,7 +163,7 @@ public class ExceptionDialog extends ComponentDialog {
         pMain.setLayout(DEFAULT_BORDER_LAYOUT);
 
         lMessage = new KLabelArea(1, DEFAULT_LABEL_LENGTH);
-        pMain.add(POSITION_NORTH, lMessage);
+        pMain.add(NORTH_POSITION, lMessage);
 
         pDetail = new KPanel();
         pDetail.setLayout(DEFAULT_BORDER_LAYOUT);
@@ -173,7 +173,7 @@ public class ExceptionDialog extends ComponentDialog {
         tException.setOpaque(false);
         tException.setEditable(false);
 
-        pDetail.add(POSITION_NORTH, tException);
+        pDetail.add(NORTH_POSITION, tException);
 
         lTrace = new JList<>();
         lTrace.setFont(KiwiUtils.plainFont);
@@ -181,7 +181,7 @@ public class ExceptionDialog extends ComponentDialog {
         scroll.setSize(DEFAULT_LIST_SIZE);
         scroll.setPreferredSize(DEFAULT_LIST_SIZE);
 
-        pDetail.add(DEFAULT_POSITION, scroll);
+        pDetail.add(CENTER_POSITION, scroll);
 
         return (pMain);
     }

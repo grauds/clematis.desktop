@@ -19,9 +19,17 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import com.hyperrealm.kiwi.util.KiwiUtils;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Window;
 
-import java.awt.*;
+import static com.hyperrealm.kiwi.ui.KPanel.DEFAULT_DELAY;
+
+import com.hyperrealm.kiwi.util.KiwiUtils;
 
 /**
  * This class represents a <i>splash screen</i>: an untitled, frameless window
@@ -45,8 +53,12 @@ import java.awt.*;
  */
 
 public class SplashScreen extends Window {
-    private int delay = 5;
+
+    public static final int MILLISEC_IN_SECOND = 1000;
+    private int delay = DEFAULT_DELAY;
+
     private Image image;
+
     private String caption;
 
     /**
@@ -56,9 +68,12 @@ public class SplashScreen extends Window {
      * @param caption A short text caption to display below the image (may be
      *                <code>null</code>).
      */
-
     public SplashScreen(Image image, String caption) {
-        super(KiwiUtils.getPhantomFrame());
+        this(KiwiUtils.getPhantomFrame(), image, caption);
+    }
+
+    public SplashScreen(Frame parent, Image image, String caption) {
+        super(parent);
 
         this.image = image;
         this.caption = caption;
@@ -78,9 +93,9 @@ public class SplashScreen extends Window {
      */
 
     public void setDelay(int seconds) throws IllegalArgumentException {
-        if (seconds < 0)
+        if (seconds < 0) {
             throw (new IllegalArgumentException("Delay must be >= 0 seconds."));
-
+        }
         delay = seconds;
     }
 
@@ -89,6 +104,7 @@ public class SplashScreen extends Window {
      */
 
     public void paint(Graphics gc) {
+
         Dimension size = getSize();
 
         FontMetrics fm = gc.getFontMetrics();
@@ -114,6 +130,7 @@ public class SplashScreen extends Window {
      */
 
     public void setVisible(boolean flag) {
+
         if (flag) {
             pack();
             KiwiUtils.centerWindow(this);
@@ -121,14 +138,12 @@ public class SplashScreen extends Window {
         super.setVisible(flag);
 
         if (flag && (delay > 0)) {
-            Thread thread = new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        Thread.currentThread().sleep(delay * 1000);
-                    } catch (InterruptedException ex) {
-                    }
-                    dispose();
+            Thread thread = new Thread(() -> {
+                try {
+                    Thread.sleep(delay * MILLISEC_IN_SECOND);
+                } catch (InterruptedException ignored) {
                 }
+                dispose();
             });
 
             thread.start();
@@ -142,15 +157,16 @@ public class SplashScreen extends Window {
      */
 
     public Dimension getPreferredSize() {
+
         FontMetrics fm = getGraphics().getFontMetrics();
 
         Dimension d = new Dimension(image.getWidth(null) + 2,
-                image.getHeight(null) + 2);
-        if (caption != null) d.height += fm.getHeight() + 2;
+            image.getHeight(null) + 2);
+        if (caption != null) {
+            d.height += fm.getHeight() + 2;
+        }
 
         return (d);
     }
 
 }
-
-/* end of source file */

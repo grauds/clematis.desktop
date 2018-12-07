@@ -32,6 +32,9 @@ import java.util.Dictionary;
 import javax.swing.JApplet;
 import javax.swing.JTextField;
 
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
+import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
@@ -106,14 +109,14 @@ public class AppletPanel extends KPanel {
         appletPanel.setBackground(Color.black);
         appletPanel.setLayout(new GridLayout(1, 0));
 
-        add("Center", appletPanel);
+        add(CENTER_POSITION, appletPanel);
 
         statusField = new JTextField();
         statusField.setOpaque(false);
         statusField.setEditable(false);
         statusField.setFocusable(false);
 
-        add("South", statusField);
+        add(SOUTH_POSITION, statusField);
 
         setBorder(KiwiUtils.defaultBorder);
     }

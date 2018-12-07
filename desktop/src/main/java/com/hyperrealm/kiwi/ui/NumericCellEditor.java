@@ -19,16 +19,18 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.text.*;
-import javax.swing.*;
+import java.awt.Component;
 
-/** A cell editor for editing numeric fields, including integer, decimal,
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTable;
+import javax.swing.JTree;
+
+/**
+ * A cell editor for editing numeric fields, including integer, decimal,
  * percentage, and currency amounts, formatted according to the rules of the
  * current locale.
  *
  * @author Mark Lindner
- *
  * @see com.hyperrealm.kiwi.text.FormatConstants
  * @see com.hyperrealm.kiwi.util.LocaleManager
  * @see com.hyperrealm.kiwi.ui.NumericField
@@ -36,150 +38,149 @@ import javax.swing.*;
  * @see com.hyperrealm.kiwi.ui.model.DomainObjectFieldAdapter
  */
 
-public class NumericCellEditor extends DefaultCellEditor
-{
-  private NumericField field;
+public class NumericCellEditor extends DefaultCellEditor {
+    private NumericField field;
 
-  /** Construct a new <code>NumericCellEditor</code> of the specified type.
-   *
-   * @param type The data type to be edited by this field; one of the
-   * constants <code>CURRENCY_FORMAT</code>, <code>DECIMAL_FORMAT</code>,
-   * <code>INTEGER_FORMAT</code< or <code>PERCENTAGE_FORMAT</code>, defined in
-   * <code>com.hyperrealm.kiwi.text.FormatConstants</code>.
-   */
-  
-  public NumericCellEditor(int type)
-  {
-    this(type, 2);
-  }
+    /**
+     * Construct a new <code>NumericCellEditor</code> of the specified type.
+     *
+     * @param type The data type to be edited by this field; one of the
+     *             constants <code>CURRENCY_FORMAT</code>, <code>DECIMAL_FORMAT</code>,
+     *             <code>INTEGER_FORMAT</code< or <code>PERCENTAGE_FORMAT</code>, defined in
+     *             <code>com.hyperrealm.kiwi.text.FormatConstants</code>.
+     */
 
-  /** Construct a new <code>NumericCellEditor</code> of the specified type and
-   * number of decimals displayed.
-   *
-   * @param type The data type to be edited by this field; one of the
-   * constants <code>CURRENCY_FORMAT</code>, <code>DECIMAL_FORMAT</code>,
-   * <code>INTEGER_FORMAT</code< or <code>PERCENTAGE_FORMAT</code>, defined in
-   * <code>com.hyperrealm.kiwi.text.FormatConstants</code>.
-   * @param decimals The number of decimal places to be displayed (for
-   * non-integer values only).
-   */
-  
-  public NumericCellEditor(int type, int decimals)
-  {
-    super(new NumericField(1, type));
-    
-    field = (NumericField)editorComponent;
-    field.setDecimals(decimals);
-  }
+    public NumericCellEditor(int type) {
+        this(type, 2);
+    }
 
-  /** Stop cell editing. This method stops cell editing (effectively
-   * committing the edit) only if the data entered is validated successfully.
-   *
-   * @return <code>true</code> if cell editing may stop, and <code>false</code>
-   * otherwise.
-   */
-  
-  public final boolean stopCellEditing()
-  {
-    return(validate());
-  }
+    /**
+     * Construct a new <code>NumericCellEditor</code> of the specified type and
+     * number of decimals displayed.
+     *
+     * @param type     The data type to be edited by this field; one of the
+     *                 constants <code>CURRENCY_FORMAT</code>, <code>DECIMAL_FORMAT</code>,
+     *                 <code>INTEGER_FORMAT</code< or <code>PERCENTAGE_FORMAT</code>, defined in
+     *                 <code>com.hyperrealm.kiwi.text.FormatConstants</code>.
+     * @param decimals The number of decimal places to be displayed (for
+     *                 non-integer values only).
+     */
 
-  /* perform the validation */
-  
-  private boolean validate()
-  {
-    boolean ok = field.validateInput();
+    public NumericCellEditor(int type, int decimals) {
+        super(new NumericField(1, type));
 
-    if(ok)
-      fireEditingStopped();
+        field = (NumericField) editorComponent;
+        field.setDecimals(decimals);
+    }
 
-    return(ok);
-  }
+    /**
+     * Stop cell editing. This method stops cell editing (effectively
+     * committing the edit) only if the data entered is validated successfully.
+     *
+     * @return <code>true</code> if cell editing may stop, and <code>false</code>
+     * otherwise.
+     */
 
-  /** Get the value currently in the cell editor.
-   *
-   * @return The current value, as a <code>Double</code>.
-   */
-   
-  public Object getCellEditorValue()
-  {
-    field.validateInput();
-    
-    return(new Double(field.getValue()));
-  }
+    public final boolean stopCellEditing() {
+        return (validate());
+    }
 
-  /** Set the formatting type.
-   *
-   * @param type The data type to be edited by this cell editor. See the
-   * constructor for more information.
-   */  
-    
-  public void setType(int type)
-  {
-    field.setType(type);
-  }
+    /* perform the validation */
 
-  /** Get the formatting type.
-   *
-   * @return The data type being edited by this cell editor.
-   */
-  
-  public int getType()
-  {
-    return(field.getType());
-  }
+    private boolean validate() {
+        boolean ok = field.validateInput();
 
-  /** Set the number of decimal places to display for non-integer values.
-   *
-   * @param decimals The number of decimal places.
-   * @exception IllegalArgumentException If <code>decimals</code>
-   * is less than 0.
-   */
-  
-  public void setDecimals(int decimals)
-  {
-    field.setDecimals(decimals);
-  }
+        if (ok) {
+            fireEditingStopped();
+        }
 
-  /** Get the number of decimal places being displayed by this cell editor.
-   *
-   * @return The number of decimal places.
-   */
-  
-  public int getDecimals()
-  {
-    return(field.getDecimals());
-  }
+        return (ok);
+    }
 
-  /* Prepare the editor for a value. */
-  
-  private Component _prepareEditor(Object value)
-  {
-    if(value.getClass().getSuperclass() == Number.class)
-      field.setValue(((Number)value).doubleValue());
+    /**
+     * Get the value currently in the cell editor.
+     *
+     * @return The current value, as a <code>Double</code>.
+     */
 
-    return(field);
-  }
+    public Object getCellEditorValue() {
+        field.validateInput();
 
-  /** Get an editor for a JTable. */
-  
-  public Component getTableCellEditorComponent(JTable table, Object value,
-                                               boolean isSelected, int row,
-                                               int column)
-  {
-    return(_prepareEditor(value));
-  }
+        return field.getValue();
+    }
 
-  /** Get an editor for a JTree. */
-  
-  public Component getTreeCellEditorComponent(JTree tree, Object value,
-                                              boolean isSelected,
-                                              boolean expanded, boolean leaf,
-                                              int row)
-  {
-    return(_prepareEditor(value));
-  }
+    /**
+     * Get the formatting type.
+     *
+     * @return The data type being edited by this cell editor.
+     */
+
+    public int getType() {
+        return (field.getType());
+    }
+
+    /**
+     * Set the formatting type.
+     *
+     * @param type The data type to be edited by this cell editor. See the
+     *             constructor for more information.
+     */
+
+    public void setType(int type) {
+        field.setType(type);
+    }
+
+    /**
+     * Get the number of decimal places being displayed by this cell editor.
+     *
+     * @return The number of decimal places.
+     */
+
+    public int getDecimals() {
+        return (field.getDecimals());
+    }
+
+    /**
+     * Set the number of decimal places to display for non-integer values.
+     *
+     * @param decimals The number of decimal places.
+     * @throws IllegalArgumentException If <code>decimals</code>
+     *                                  is less than 0.
+     */
+
+    public void setDecimals(int decimals) {
+        field.setDecimals(decimals);
+    }
+
+    /* Prepare the editor for a value. */
+
+    private Component prepareEditor(Object value) {
+        if (value.getClass().getSuperclass() == Number.class) {
+            field.setValue(((Number) value).doubleValue());
+        }
+
+        return (field);
+    }
+
+    /**
+     * Get an editor for a JTable.
+     */
+
+    public Component getTableCellEditorComponent(JTable table, Object value,
+                                                 boolean isSelected, int row,
+                                                 int column) {
+        return (prepareEditor(value));
+    }
+
+    /**
+     * Get an editor for a JTree.
+     */
+
+    public Component getTreeCellEditorComponent(JTree tree, Object value,
+                                                boolean isSelected,
+                                                boolean expanded, boolean leaf,
+                                                int row) {
+        return (prepareEditor(value));
+    }
 
 }
-
-/* end of source file */

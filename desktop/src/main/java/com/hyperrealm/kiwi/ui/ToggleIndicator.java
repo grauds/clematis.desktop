@@ -19,12 +19,14 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-/** A graphical toggle component. This component displays one of two images,
+/**
+ * A graphical toggle component. This component displays one of two images,
  * depending on whether it is "toggled" on or off. This component can be used
  * to create LEDs and other types of on-off indicators.
  *
@@ -36,54 +38,53 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  * @author Mark Lindner
  */
 
-public class ToggleIndicator extends JLabel
-{
-  private Icon icon, altIcon;
-  private boolean state = false;
+public class ToggleIndicator extends JLabel {
 
-  /** Construct a new <code>ToggleIndicator</code> with the specified icons for
-   * the "on" and "off" states.
-   *
-   * @param icon The icon to display when the toggle is off
-   * @param altIcon The icon to display when the toggle is on.
-   */
-  
-  public ToggleIndicator(Icon icon, Icon altIcon)
-  {
-    this.icon = icon;
-    this.altIcon = altIcon;
+    private Icon icon, altIcon;
 
-    setHorizontalAlignment(SwingConstants.CENTER);
-    setVerticalAlignment(SwingConstants.CENTER);
+    private boolean state = false;
 
-    setIcon(icon);
-  }
+    /**
+     * Construct a new <code>ToggleIndicator</code> with the specified icons for
+     * the "on" and "off" states.
+     *
+     * @param icon    The icon to display when the toggle is off
+     * @param altIcon The icon to display when the toggle is on.
+     */
 
-  /** Set the toggle state.
-   *
-   * @param state <code>true</code> to turn the toggle "on",
-   * <code>false</code> to turn it "off." The toggle will be repainted
-   * immediately.
-   */
-  
-  public synchronized void setState(boolean state)
-  {
-    this.state = state;
-    
-    setIcon(state ? altIcon : icon);
-    KiwiUtils.paintImmediately(this);
-  }
+    public ToggleIndicator(Icon icon, Icon altIcon) {
+        this.icon = icon;
+        this.altIcon = altIcon;
 
-  /** Get the current state of the toggle.
-   *
-   * @return The current toggle state.
-   */
+        setHorizontalAlignment(SwingConstants.CENTER);
+        setVerticalAlignment(SwingConstants.CENTER);
 
-  public synchronized boolean getState()
-  {
-    return(state);
-  }
+        setIcon(icon);
+    }
+
+    /**
+     * Get the current state of the toggle.
+     *
+     * @return The current toggle state.
+     */
+
+    public synchronized boolean getState() {
+        return (state);
+    }
+
+    /**
+     * Set the toggle state.
+     *
+     * @param state <code>true</code> to turn the toggle "on",
+     *              <code>false</code> to turn it "off." The toggle will be repainted
+     *              immediately.
+     */
+
+    public synchronized void setState(boolean state) {
+        this.state = state;
+
+        setIcon(state ? altIcon : icon);
+        KiwiUtils.paintImmediately(this);
+    }
 
 }
-
-/* end of source file */

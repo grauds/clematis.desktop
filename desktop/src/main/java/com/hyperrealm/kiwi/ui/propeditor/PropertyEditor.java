@@ -78,7 +78,7 @@ public class PropertyEditor extends KPanel {
         tree.setCellEditor(cellEditor);
 
         KScrollPane sp = new KScrollPane(tree);
-        add("Center", sp);
+        add(CENTER_POSITION, sp);
 
         adapter = new KTreeModelTreeAdapter(tree);
         tree.setModel(adapter);

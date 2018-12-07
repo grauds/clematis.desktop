@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
@@ -57,13 +58,29 @@ import com.hyperrealm.kiwi.util.LocaleManager;
 @SuppressWarnings("unused")
 public abstract class ComponentDialog extends KDialog {
 
-    protected static final String DEFAULT_POSITION = "Center";
+    public static final String CENTER_POSITION = "Center";
 
-    protected static final String POSITION_NORTH = "North";
+    public static final String NORTH_POSITION = "North";
 
-    protected static final BorderLayout DEFAULT_BORDER_LAYOUT = new BorderLayout(5, 5);
+    public static final String SOUTH_POSITION = "South";
 
-    protected static final Dimension DEFAULT_LIST_SIZE = new Dimension(350, 150);
+    public static final String EAST_POSITION = "East";
+
+    public static final String WEST_POSITION = "West";
+
+    public static final BorderLayout DEFAULT_BORDER_LAYOUT = new BorderLayout(5, 5);
+
+    public static final Dimension DEFAULT_FRAME_SIZE = new Dimension(500, 600);
+
+    public static final Dimension DEFAULT_LIST_SIZE = new Dimension(350, 150);
+
+    public static final int DEFAULT_PADDING = 5;
+
+    public static final Insets DEFAULT_INSETS = new Insets(3, 3, 3, 3);
+
+    public static final int DEFAULT_ROW_HEIGHT = 18;
+
+    public static final int MAXIMUM = 100;
 
     protected static final int DEFAULT_LABEL_LENGTH = 30;
 
@@ -71,11 +88,8 @@ public abstract class ComponentDialog extends KDialog {
 
     protected static final int DEFAULT_ROWS_NUMBER = 3;
 
-    protected static final int DEFAULT_PADDING = 5;
-
     protected static final String POSITION_OUT_OF_RANGE = "Position out of range.";
 
-    protected static final int MAXIMUM = 100;
     /**
      * The OK button.
      */
@@ -170,7 +184,7 @@ public abstract class ComponentDialog extends KDialog {
         main.setLayout(new BorderLayout(DEFAULT_PADDING, DEFAULT_PADDING));
 
         commentLabel = new KLabel(loc.getMessage("kiwi.dialog.prompt"));
-        main.add(POSITION_NORTH, commentLabel);
+        main.add(NORTH_POSITION, commentLabel);
 
         iconLabel = new KLabel();
         iconLabel.setBorder(new EmptyBorder(DEFAULT_PADDING, 0, DEFAULT_PADDING, 0));
@@ -190,7 +204,7 @@ public abstract class ComponentDialog extends KDialog {
             fixedButtons++;
         }
 
-        main.add("South", buttons);
+        main.add(SOUTH_POSITION, buttons);
 
         installDialogUI();
     }
@@ -207,7 +221,7 @@ public abstract class ComponentDialog extends KDialog {
     private void installDialogUI() {
         Component c = buildDialogUI();
         if (c != null) {
-            main.add(DEFAULT_POSITION, c);
+            main.add(CENTER_POSITION, c);
             pack();
         }
     }
@@ -304,7 +318,7 @@ public abstract class ComponentDialog extends KDialog {
     public void setIcon(Icon icon) {
         if (icon != null) {
             iconLabel.setIcon(icon);
-            main.add("West", iconLabel);
+            main.add(WEST_POSITION, iconLabel);
         } else {
             main.remove(iconLabel);
         }

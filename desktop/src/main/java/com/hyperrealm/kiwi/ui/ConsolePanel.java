@@ -47,9 +47,9 @@ import com.hyperrealm.kiwi.util.LoggingEndpoint;
 
 public class ConsolePanel extends KPanel implements LoggingEndpoint {
 
-    private static final int DEFAULT_BUFFER_SIZE = 4096; // 4K
+    static final int DEFAULT_FONT_SIZE = 14;
 
-    private static final int FONT_SIZE = 14;
+    private static final int DEFAULT_BUFFER_SIZE = 4096; // 4K
 
     private static final String CR = "\n";
 
@@ -87,7 +87,7 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
         StyleContext sc = new StyleContext();
         Style def = sc.getStyle(StyleContext.DEFAULT_STYLE);
         StyleConstants.setFontFamily(def, "Serif");
-        StyleConstants.setFontSize(def, FONT_SIZE);
+        StyleConstants.setFontSize(def, DEFAULT_FONT_SIZE);
         doc = new DefaultStyledDocument(sc);
         tBuffer.setDocument(doc);
 

@@ -84,7 +84,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
         editorLabel.setBorder(_noborder);
         _MouseListener mouseListener = new _MouseListener();
         editorLabel.addMouseListener(mouseListener);
-        editorPanel.add("West", editorLabel);
+        editorPanel.add(WEST_POSITION, editorLabel);
 
         editors = new HashMap<PropertyType, PropertyValueEditor>();
 
@@ -158,7 +158,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
         if (editor != null) {
             c = editor.getEditorComponent();
             editor.addActionListener(this);
-            editorPanel.add("Center", c);
+            editorPanel.add(CENTER_POSITION, c);
 //      c.setBorder(_noborder);
             editor.startFocus();
         }

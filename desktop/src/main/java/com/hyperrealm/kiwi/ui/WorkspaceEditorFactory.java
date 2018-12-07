@@ -19,30 +19,34 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import javax.swing.JComponent;
-
 /**
- * An interface that describes the behavior of a viewer for
- * <code>UIElement</code>s.
+ * This interface represents a factory that creates appropriate
+ * <code>WorkspaceEditor</code>s for specified objects and classes.
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.ui.UIElementChooser
  */
 
-public interface UIElementViewer {
-    /**
-     * Get a reference to the viewer component.
-     *
-     * @return The viewer component itself.
-     */
-
-    JComponent getViewerComponent();
+public interface WorkspaceEditorFactory {
 
     /**
-     * Display the given element in the viewer.
+     * General-purpose factory method for <code>WorkspaceEditor</code>s. Returns
+     * a <code>WorkspaceEditor</code> instance that is appropriate for editing
+     * the specified object.
      *
-     * @param element The element to display.
+     * @param obj The object to edit.
+     * @see #getEditorForType
      */
 
-    void showElement(UIElement element);
+    WorkspaceEditor getEditorForObject(Object obj);
+
+    /**
+     * General-purpose factory method for <code>WorkspaceEditor</code>s. Returns
+     * a <code>WorkspaceEditor</code> instance that is appropriate for editing
+     * an object of the specified type.
+     *
+     * @param clazz The type of object to edit.
+     * @see #getEditorForObject
+     */
+
+    WorkspaceEditor getEditorForType(Class clazz);
 }

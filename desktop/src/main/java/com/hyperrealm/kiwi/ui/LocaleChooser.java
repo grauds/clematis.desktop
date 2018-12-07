@@ -19,13 +19,15 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Locale;
+
+import javax.swing.JComboBox;
 
 import com.hyperrealm.kiwi.util.StringUtils;
 
-/** This class represents a combo box for selecting a locale. Locales may be
+/**
+ * This class represents a combo box for selecting a locale. Locales may be
  * presented in their own specific localized form (the default), or in the
  * current locale.
  *
@@ -38,79 +40,76 @@ import com.hyperrealm.kiwi.util.StringUtils;
  * @author Mark Lindner
  */
 
-public class LocaleChooser extends JComboBox
-{
-  private ArrayList<Locale> supportedLocales = new ArrayList<Locale>();
+public class LocaleChooser extends JComboBox {
 
-  /** Construct a new <code>LocaleChooser</code>.
-   *
-   * @param locales The list of locales to display.
-   * @since Kiwi 2.1
-   */
-  
-  public LocaleChooser(Locale locales[])
-  {
-    this(locales, true);
-  }
-  
-  /** Construct a new <code>LocaleChooser</code>.
-   *
-   * @param locales The list of locales to display.
-   * @param localizeDisplay If <b>true</b>, each locale entry is
-   * localized to itself. Otherwise, all entries are displayed in the current
-   * locale.
-   * @since Kiwi 2.1
-   */
-   
-  public LocaleChooser(Locale locales[], boolean localizeDisplay)
-  {
-    for(int i = 0; i < locales.length; i++)
-    {
-      String country = (localizeDisplay ? locales[i].getDisplayCountry()
-                        : locales[i].getCountry());
-      String variant = (localizeDisplay ? locales[i].getDisplayVariant()
-                        : locales[i].getVariant());
-      String name = (localizeDisplay ? locales[i].getDisplayName(locales[i])
-                     : locales[i].getDisplayName());
-      
-      supportedLocales.add(locales[i]);
+    private ArrayList<Locale> supportedLocales = new ArrayList<Locale>();
 
-      String item = StringUtils.uppercaseFirst(name);
-      if(country != null)
-        name += " (" + country + ")";
+    /**
+     * Construct a new <code>LocaleChooser</code>.
+     *
+     * @param locales The list of locales to display.
+     * @since Kiwi 2.1
+     */
 
-      addItem(item);
+    public LocaleChooser(Locale[] locales) {
+        this(locales, true);
     }
-  }
 
-  /** Get the currently selected locale.
-   *
-   * @return A <code>Locale</code> object corresponding to the currently-
-   * selected locale, or <code>null</code> if there is no selection.
-   */
-   
-  public Locale getSelectedLocale()
-  {
-    int x = getSelectedIndex();
-    if(x < 0)
-      return(null);
-    
-    return(supportedLocales.get(x));
-  }
+    /**
+     * Construct a new <code>LocaleChooser</code>.
+     *
+     * @param locales         The list of locales to display.
+     * @param localizeDisplay If <b>true</b>, each locale entry is
+     *                        localized to itself. Otherwise, all entries are displayed in the current
+     *                        locale.
+     * @since Kiwi 2.1
+     */
 
-  /** Set the currently selected locale.
-   *
-   * @param locale The locale.
-   * @since Kiwi 2.1
-   */
+    public LocaleChooser(Locale[] locales, boolean localizeDisplay) {
 
-  public void setSelectedLocale(Locale locale)
-  {
-    int index = supportedLocales.indexOf(locale);
+        for (Locale locale : locales) {
 
-    setSelectedIndex(index);
-  }
+            String country = (localizeDisplay ? locale.getDisplayCountry() : locale.getCountry());
+            String name = (localizeDisplay ? locale.getDisplayName(locale) : locale.getDisplayName());
+
+            supportedLocales.add(locale);
+
+            String item = StringUtils.uppercaseFirst(name);
+            if (country != null) {
+                item += " (" + country + ")";
+            }
+
+            addItem(item);
+        }
+    }
+
+    /**
+     * Get the currently selected locale.
+     *
+     * @return A <code>Locale</code> object corresponding to the currently-
+     * selected locale, or <code>null</code> if there is no selection.
+     */
+
+    public Locale getSelectedLocale() {
+        int x = getSelectedIndex();
+        if (x < 0) {
+            return (null);
+        }
+
+        return (supportedLocales.get(x));
+    }
+
+    /**
+     * Set the currently selected locale.
+     *
+     * @param locale The locale.
+     * @since Kiwi 2.1
+     */
+
+    public void setSelectedLocale(Locale locale) {
+        int index = supportedLocales.indexOf(locale);
+
+        setSelectedIndex(index);
+    }
 
 }
-
-/* end of source file */

@@ -20,11 +20,11 @@
 package com.hyperrealm.kiwi.ui;
 
 import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.*;
 import java.net.URL;
+import java.text.MessageFormat;
 
-/** A class that represents a web browser and provides URL opening capability.
+/**
+ * A class that represents a web browser and provides URL opening capability.
  * This class allows a Java program to open a URL in a web browser. It
  * currently works on Windows and UNIX systems.
  * <p>
@@ -55,159 +55,145 @@ import java.net.URL;
  * <pre>
  * com.apple.mrj.MRJUtils.openURL(String url) throws IOException
  * </pre>
- *
+ * <p>
  * Since this call relies on an OS-specific class library, MacOS support has
  * not been added to this class, as doing so would break the compilation on
  * non-MacOS systems.
  *
  * @author Mark Lindner
- *
  * @since Kiwi 1.3.4
  */
 
-public class WebBrowser
-{
-  private boolean windows = false;
-  private String browserPath = null;
-  private static final String[] unixCommands
-    = { "{0} -remote openURL({1})", "{0} {1} &" };
-  private static final String[] unixBrowsers = { "mozilla", "firefox",
-                                                 "netscape" };
-  private static final String[] windowsCommands
-    = { "rundll32 url.dll,FileProtocolHandler {1}" };
-  private static final String[] windowsBrowsers = { "" };
+public class WebBrowser {
 
-  /**
-   * Construct a new <code>WebBrowser</code>, with no browser path specified.
-   * An attempt will be made to use mozilla or netscape, in that order. It
-   * will be assumed that a browser binary can be found in the command
-   * search path.
-   */
-  
-  public WebBrowser()
-  {
-    windows = isWindows();
-  }
+    private static final String[] UNIX_COMMANDS = {"{0} -remote openURL({1})", "{0} {1} &"};
 
-  /** Specify the path to a Netscape-compatible browser (such as Netscape,
-   * Mozilla, or any other browser that supports the ``-remote'' switch). It
-   * is assumed (but not required) that <i>path</i> is an absolute path to
-   * a browser executable.
-   * <p>
-   * This method has no effect on Windows systems.
-   *
-   * @param path The path to the browser.
-   */
+    private static final String[] UNIX_BROWSERS = {"mozilla", "firefox", "netscape"};
 
-  public void setBrowserPath(String path)
-  {
-    if(! windows)
-      browserPath = path;
-  }
+    private static final String[] WINDOWS_COMMANDS = {"rundll32 url.dll,FileProtocolHandler {1}"};
 
-  /** Open the specified URL in the web browser.
-   *
-   * @param url The URL to open.
-   * @throws java.io.IOException If the browser could not be launched.
-   */
-  
-  public void openURL(URL url) throws IOException
-  {
-    openURL(url.toString());
-  }
-  
-  /** Open the specified URL in the web browser.
-   *
-   * @param url The URL to open.
-   * @throws java.io.IOException If the browser could not be launched.
-   */
+    private static final String[] WINDOWS_BROWSERS = {""};
 
-  public void openURL(String url) throws IOException
-  {
-    String commands[] = (windows ? windowsCommands : unixCommands);
-    String browsers[] = (windows ? windowsBrowsers : unixBrowsers);
-    boolean ok = false;
+    private boolean windows;
 
-    if(!windows && (browserPath != null))
-    {
-      openURL(url, browserPath, commands);
-      return;
+    private String browserPath = null;
+
+    /**
+     * Construct a new <code>WebBrowser</code>, with no browser path specified.
+     * An attempt will be made to use mozilla or netscape, in that order. It
+     * will be assumed that a browser binary can be found in the command
+     * search path.
+     */
+
+    public WebBrowser() {
+        windows = isWindows();
     }
-    else
-    {
-      for(int i = 0; i < browsers.length; i++)
-      {
-        try
-        {
-          openURL(url, browsers[i], commands);
-          browserPath = browsers[i]; // save for next time
-          return;
+
+    /**
+     * Specify the path to a Netscape-compatible browser (such as Netscape,
+     * Mozilla, or any other browser that supports the ``-remote'' switch). It
+     * is assumed (but not required) that <i>path</i> is an absolute path to
+     * a browser executable.
+     * <p>
+     * This method has no effect on Windows systems.
+     *
+     * @param path The path to the browser.
+     */
+
+    public void setBrowserPath(String path) {
+        if (!windows) {
+            browserPath = path;
         }
-        catch(IOException ex) { /* ignore */ }
-      }
-
-      throw(new IOException("Unable to launch browser."));
     }
-       
-  }
 
-  /*
-   */
+    /**
+     * Open the specified URL in the web browser.
+     *
+     * @param url The URL to open.
+     * @throws java.io.IOException If the browser could not be launched.
+     */
 
-  private void openURL(String url, String browser,
-                       String commandList[]) throws IOException
-  {
-    String cmd;
-    int exitCode = 0;
-    Process p;
-    boolean wait = true;
-    
-    for(int i = 0; i < commandList.length; i++)
-    {
-      MessageFormat mf = new MessageFormat(commandList[i]);
-      cmd = mf.format(new Object[] { browser, url });
+    public void openURL(URL url) throws IOException {
+        openURL(url.toString());
+    }
 
-      if(cmd.endsWith("&"))
-      {
-        wait = false;
-        cmd = cmd.substring(0, cmd.length() - 1);
-      }
+    /**
+     * Open the specified URL in the web browser.
+     *
+     * @param url The URL to open.
+     * @throws java.io.IOException If the browser could not be launched.
+     */
 
-      // System.err.println("browser command: " + cmd);
+    public void openURL(String url) throws IOException {
 
-      p = Runtime.getRuntime().exec(cmd);
+        String[] commands = (windows ? WINDOWS_COMMANDS : UNIX_COMMANDS);
+        String[] browsers = (windows ? WINDOWS_BROWSERS : UNIX_BROWSERS);
 
-      if(wait)
-      {
-        for(;;)
-        {
-          try
-          {
-            exitCode = p.waitFor();
-            break;
-          }
-          catch(InterruptedException ex) { /* ignore */ }
+        if (!windows && (browserPath != null)) {
+            openURL(url, browserPath, commands);
+        } else {
+            for (String browser : browsers) {
+                try {
+                    openURL(url, browser, commands);
+                    browserPath = browser; // save for next time
+                    break;
+                } catch (IOException ex) { /* ignore */ }
+            }
+
+            throw (new IOException("Unable to launch browser."));
         }
 
-        if(exitCode == 0)
-          break;
-      }
-    }    
-  }
-  
-  /*
-   */
+    }
 
-  private boolean isWindows()
-  {
-    String os = System.getProperty("os.name");
+    /*
+     */
 
-    return(os != null && os.startsWith("Windows"));
-  }
+    private void openURL(String url, String browser,
+                         String[] commandList) throws IOException {
+        String cmd;
+        int exitCode;
+        Process p;
+        boolean wait = true;
 
-  /*
-   * For testing...
-   */
+        for (String s : commandList) {
+
+            MessageFormat mf = new MessageFormat(s);
+            cmd = mf.format(new Object[]{browser, url});
+
+            if (cmd.endsWith("&")) {
+                wait = false;
+                cmd = cmd.substring(0, cmd.length() - 1);
+            }
+
+            p = Runtime.getRuntime().exec(cmd);
+
+            if (wait) {
+                for (;;) {
+                    try {
+                        exitCode = p.waitFor();
+                        break;
+                    } catch (InterruptedException ex) { /* ignore */ }
+                }
+
+                if (exitCode == 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+    /*
+     */
+
+    private boolean isWindows() {
+        String os = System.getProperty("os.name");
+
+        return (os != null && os.startsWith("Windows"));
+    }
+
+    /*
+     * For testing...
+     */
 
   /*
 
@@ -221,12 +207,10 @@ public class WebBrowser
   }
   catch(Exception ex)
   {
-  ex.printStackTrace();
+
   }
   }
 
   */
-  
-}
 
-/* end of source file */
+}

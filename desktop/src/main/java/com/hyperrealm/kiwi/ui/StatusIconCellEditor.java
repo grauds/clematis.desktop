@@ -19,11 +19,16 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.text.*;
-import javax.swing.*;
+import java.awt.Component;
 
-/** A cell editor that complements
+import javax.swing.DefaultCellEditor;
+import javax.swing.Icon;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.JTree;
+
+/**
+ * A cell editor that complements
  * {@link com.hyperrealm.kiwi.ui.StatusIconCellRenderer} which allows the
  * selection of a state by displaying the state icons in a JComboBox. The
  * editor assumes that the values being edited are objects of type
@@ -33,66 +38,67 @@ import javax.swing.*;
  * @since Kiwi 2.4.1
  */
 
-public class StatusIconCellEditor extends DefaultCellEditor
-{
-  private JComboBox combo = new JComboBox();
+public class StatusIconCellEditor extends DefaultCellEditor {
 
-  /** Construct a new <code>StatusIconCellEditor</code>.
-   *
-   * @param icons The set of icons that represent the various states. The array
-   * must contain at least one icon.
-   * @throws IllegalArgumentException If <code>icons</code> is
-   * <code>null</code> or a zero-length array.
-   */
+    private JComboBox combo;
 
-  public StatusIconCellEditor(Icon icons[])
-  {
-    super(new JComboBox(icons));
+    /**
+     * Construct a new <code>StatusIconCellEditor</code>.
+     *
+     * @param icons The set of icons that represent the various states. The array
+     *              must contain at least one icon.
+     * @throws IllegalArgumentException If <code>icons</code> is
+     *                                  <code>null</code> or a zero-length array.
+     */
 
-    if((icons == null) || (icons.length < 1))
-      throw(new IllegalArgumentException("Cannot be null or an empty array."));
+    public StatusIconCellEditor(Icon[] icons) {
+        super(new JComboBox(icons));
 
-    combo = (JComboBox)getComponent();
-  }
+        if (icons.length < 1) {
+            throw (new IllegalArgumentException("Cannot be null or an empty array."));
+        }
 
-  /** Get the value currently in the cell editor.
-   *
-   * @return The current value, as a <code>Integer</code>.
-   */
+        combo = (JComboBox) getComponent();
+    }
 
-  public Object getCellEditorValue()
-  {
-    return(new Integer(combo.getSelectedIndex()));
-  }
+    /**
+     * Get the value currently in the cell editor.
+     *
+     * @return The current value, as a <code>Integer</code>.
+     */
 
-  /* Prepare the editor for a value. */
+    public Object getCellEditorValue() {
+        return combo.getSelectedIndex();
+    }
 
-  private Component _prepareEditor(Object value)
-  {
-    if(value.getClass().getSuperclass() == Integer.class)
-      combo.setSelectedIndex(((Integer)value).intValue());
+    /* Prepare the editor for a value. */
 
-    return(combo);
-  }
+    private Component prepareEditor(Object value) {
+        if (value.getClass().getSuperclass() == Integer.class) {
+            combo.setSelectedIndex((Integer) value);
+        }
 
-  /** Get an editor for a JTable. */
+        return combo;
+    }
 
-  public Component getTableCellEditorComponent(JTable table, Object value,
-                                               boolean isSelected, int row,
-                                               int column)
-  {
-    return(_prepareEditor(value));
-  }
+    /**
+     * Get an editor for a JTable.
+     */
 
-  /** Get an editor for a JTree. */
+    public Component getTableCellEditorComponent(JTable table, Object value,
+                                                 boolean isSelected, int row,
+                                                 int column) {
+        return prepareEditor(value);
+    }
 
-  public Component getTreeCellEditorComponent(JTree tree, Object value,
-                                              boolean isSelected,
-                                              boolean expanded, boolean leaf,
-                                              int row)
-  {
-    return(_prepareEditor(value));
-  }
+    /**
+     * Get an editor for a JTree.
+     */
+
+    public Component getTreeCellEditorComponent(JTree tree, Object value,
+                                                boolean isSelected,
+                                                boolean expanded, boolean leaf,
+                                                int row) {
+        return prepareEditor(value);
+    }
 }
-
-/* end of source file */

@@ -65,7 +65,7 @@ import javax.swing.Timer;
 
 public class KPanel extends JPanel {
 
-    private static final int DEFAULT_DELAY = 30;
+    static final int DEFAULT_DELAY = 30;
 
     private static final int DIVIDER = 10;
 

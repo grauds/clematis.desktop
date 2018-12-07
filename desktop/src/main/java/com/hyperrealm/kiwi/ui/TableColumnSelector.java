@@ -19,15 +19,19 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import java.awt.event.ActionEvent;
 
-import com.hyperrealm.kiwi.ui.model.*;
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.table.TableColumn;
 
-/** A button and associated popup menu which allows the user to select the
+import com.hyperrealm.kiwi.ui.model.KTableColumnModel;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.LocaleData;
+import com.hyperrealm.kiwi.util.LocaleManager;
+
+/**
+ * A button and associated popup menu which allows the user to select the
  * visible columns in a table column model.
  * <p>
  * Typically, the button should be installed in the top-right corner of a
@@ -56,95 +60,87 @@ import com.hyperrealm.kiwi.util.*;
  * <i>An example TableColumnSelector.</i>
  * </center>
  * <p>
- * @see com.hyperrealm.kiwi.ui.KTable
- * @see com.hyperrealm.kiwi.ui.model.KTableColumnModel
  *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.KTable
+ * @see com.hyperrealm.kiwi.ui.model.KTableColumnModel
  * @since Kiwi 2.1
  */
 
-public class TableColumnSelector extends KButton
-{
-  private JPopupMenu menu;
-  private KTableColumnModel colModel;
-  private KButton button;
-  private JCheckBoxMenuItem menuItems[];
+public class TableColumnSelector extends KButton {
 
-  /** Construct a new <code>TableColumnSelector</code> for the given
-   * table column model.
-   *
-   * @param colModel The <code>KTableColumnModel</code>.
-   */
-  
-  public TableColumnSelector(KTableColumnModel colModel)
-  {
-    super(KiwiUtils.getResourceManager()
-          .getIcon("column_select.png"));
+    private JPopupMenu menu;
 
-    LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
-    setToolTipText(loc.getMessage("kiwi.button.column_sel"));
-    setFocusPainted(false);
+    private KTableColumnModel colModel;
 
-    menu = new JPopupMenu();
-    
-    this.colModel = colModel;
-    int c = colModel.getRealColumnCount();
+    private JCheckBoxMenuItem[] menuItems;
 
-    menuItems = new JCheckBoxMenuItem[c];
-    
-    for(int i = 1; i < c; i++)
-    {
-      TableColumn tcol = colModel.getRealColumn(i);
-      
-      menuItems[i] = new JCheckBoxMenuItem((String)tcol.getHeaderValue());
-      menuItems[i].addActionListener(new _ActionListener(i));
-      menu.add(menuItems[i]);
-    }
+    /**
+     * Construct a new <code>TableColumnSelector</code> for the given
+     * table column model.
+     *
+     * @param colModel The <code>KTableColumnModel</code>.
+     */
 
-    addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent evt)
-        {
-          refresh();
-          
-          int mw = menu.getWidth();
-          if(mw == 0)
-            mw = menu.getPreferredSize().width;
-          
-          menu.show(TableColumnSelector.this, getWidth() - mw,
-                    getHeight());
+    public TableColumnSelector(KTableColumnModel colModel) {
+        super(KiwiUtils.getResourceManager()
+            .getIcon("column_select.png"));
+
+        LocaleData loc = LocaleManager.getDefault().getLocaleData("KiwiDialogs");
+        setToolTipText(loc.getMessage("kiwi.button.column_sel"));
+        setFocusPainted(false);
+
+        menu = new JPopupMenu();
+
+        this.colModel = colModel;
+        int c = colModel.getRealColumnCount();
+
+        menuItems = new JCheckBoxMenuItem[c];
+
+        for (int i = 1; i < c; i++) {
+            TableColumn tcol = colModel.getRealColumn(i);
+
+            menuItems[i] = new JCheckBoxMenuItem((String) tcol.getHeaderValue());
+            menuItems[i].addActionListener(new ActionListener(i));
+            menu.add(menuItems[i]);
         }
-      });
-  }
 
-  /*
-   */
-  
-  private void refresh()
-  {
-    for(int i = 1; i < menuItems.length; i++)
-      menuItems[i].setState(colModel.isColumnVisible(i));
-  }
+        addActionListener(evt -> {
+            refresh();
 
-  /*
-   */
-  
-  private class _ActionListener implements ActionListener
-  {
-    private int index;
-    
-    _ActionListener(int index)
-    {
-      this.index = index;
+            int mw = menu.getWidth();
+            if (mw == 0) {
+                mw = menu.getPreferredSize().width;
+            }
+
+            menu.show(TableColumnSelector.this, getWidth() - mw,
+                getHeight());
+        });
     }
 
-    public void actionPerformed(ActionEvent evt)
-    {
-      colModel.setColumnVisible(index, menuItems[index].getState());
+    /*
+     */
+
+    private void refresh() {
+        for (int i = 1; i < menuItems.length; i++) {
+            menuItems[i].setState(colModel.isColumnVisible(i));
+        }
     }
-  }
-  
+
+    /*
+     */
+
+    private class ActionListener implements java.awt.event.ActionListener {
+        private int index;
+
+        ActionListener(int index) {
+            this.index = index;
+        }
+
+        public void actionPerformed(ActionEvent evt) {
+            colModel.setColumnVisible(index, menuItems[index].getState());
+        }
+    }
+
 }
-
-/* end of source file */
 

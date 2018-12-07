@@ -19,30 +19,54 @@
 
 package com.hyperrealm.kiwi.ui;
 
+import java.awt.Dimension;
+import java.awt.Image;
+
 import javax.swing.JComponent;
 
 /**
- * An interface that describes the behavior of a viewer for
- * <code>UIElement</code>s.
+ * An implementation of <code>UIElementViewer</code> for previewing textures.
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.ui.UIElementChooser
  */
 
-public interface UIElementViewer {
+public class TextureViewer extends KPanel implements UIElementViewer {
+
+    private static final Dimension PREFERRED_SIZE = new Dimension(150, 150);
+
+    /**
+     * Construct a new <code>TextureViewer</code>.
+     */
+
+    public TextureViewer() {
+        setOpaque(true);
+        setTexture(null);
+        setPreferredSize(PREFERRED_SIZE);
+    }
+
     /**
      * Get a reference to the viewer component.
      *
-     * @return The viewer component itself.
+     * @return The viewer component.
      */
 
-    JComponent getViewerComponent();
+    public JComponent getViewerComponent() {
+        return (this);
+    }
 
     /**
-     * Display the given element in the viewer.
+     * Show the specified element.
      *
-     * @param element The element to display.
+     * @param element An object, assumed to be an instance of <code>Image</code>,
+     *                to display.
      */
 
-    void showElement(UIElement element);
+    public void showElement(UIElement element) {
+        Object obj = element.getObject();
+
+        if (obj instanceof Image) {
+            setTexture((Image) obj);
+        }
+    }
+
 }

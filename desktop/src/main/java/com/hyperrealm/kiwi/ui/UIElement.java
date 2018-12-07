@@ -19,68 +19,68 @@
 
 package com.hyperrealm.kiwi.ui;
 
-/** This class represents a user interface element, such as a texture, icon,
+/**
+ * This class represents a user interface element, such as a texture, icon,
  * or audio clip.
  *
  * @author Mark Lindner
  */
 
-public class UIElement
-{
-  private Object element;
-  private String name;
+public class UIElement {
 
-  /** Construct a new <code>UIElement</code>.
-   */
-  
-  public UIElement()
-  {
-    this(null, null);
-  }
+    private Object element;
 
-  /** Construct a new <code>UIElement</code> for the specified element and
-   * name.
-   *
-   * @param element The user interface element object proper.
-   * @param name A descriptive name for the element.
-   */
-  
-  public UIElement(Object element, String name)
-  {
-    this.element = element;
-    this.name = name;
-  }
+    private String name;
 
-  /** Get the name of the element.
-   *
-   * @return The name of the element.
-   */
-  
-  public String getName()
-  {
-    return(name);
-  }
+    /**
+     * Construct a new <code>UIElement</code>.
+     */
 
-  /** Get the element object.
-   *
-   * @return The user interface element object proper.
-   */
-  
-  public Object getObject()
-  {
-    return(element);
-  }
+    public UIElement() {
+        this(null, null);
+    }
 
-  /** Get a string representation for this object.
-   *
-   * @return The name of the element.
-   */
+    /**
+     * Construct a new <code>UIElement</code> for the specified element and
+     * name.
+     *
+     * @param element The user interface element object proper.
+     * @param name    A descriptive name for the element.
+     */
 
-  public String toString()
-  {
-    return(name);
-  }
-  
+    public UIElement(Object element, String name) {
+        this.element = element;
+        this.name = name;
+    }
+
+    /**
+     * Get the name of the element.
+     *
+     * @return The name of the element.
+     */
+
+    public String getName() {
+        return (name);
+    }
+
+    /**
+     * Get the element object.
+     *
+     * @return The user interface element object proper.
+     */
+
+    public Object getObject() {
+        return (element);
+    }
+
+    /**
+     * Get a string representation for this object.
+     *
+     * @return The name of the element.
+     */
+
+    public String toString() {
+        return (name);
+    }
+
 }
-
-/* end of source file */

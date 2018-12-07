@@ -19,30 +19,37 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import javax.swing.JComponent;
-
 /**
- * An interface that describes the behavior of a viewer for
- * <code>UIElement</code>s.
+ * This exception is thrown by MDI-related classes such as
+ * <code>WorkspaceManager</code> when an appropriate editor for a given class
+ * or object cannot be created.
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.ui.UIElementChooser
+ * @see com.hyperrealm.kiwi.ui.WorkspaceEditorFactory
  */
 
-public interface UIElementViewer {
-    /**
-     * Get a reference to the viewer component.
-     *
-     * @return The viewer component itself.
-     */
+public class NoAppropriateEditorException extends Exception {
 
-    JComponent getViewerComponent();
+    private Class clazz;
 
     /**
-     * Display the given element in the viewer.
+     * Construct a new <code>NoAppropriateEditorException</code>.
      *
-     * @param element The element to display.
+     * @param msg   The message.
+     * @param clazz The class object associated with the requested editor.
      */
 
-    void showElement(UIElement element);
+    public NoAppropriateEditorException(String msg, Class clazz) {
+        super(msg);
+        this.clazz = clazz;
+    }
+
+    /**
+     * Get the class object associated with the requested editor.
+     */
+
+    public Class getObjectType() {
+        return (clazz);
+    }
+
 }

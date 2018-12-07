@@ -20,50 +20,55 @@
 package com.hyperrealm.kiwi.ui;
 
 import java.awt.Color;
-import javax.swing.*;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
 import javax.swing.border.LineBorder;
 
-import com.hyperrealm.kiwi.text.*;
-
-/** A <code>MarkupProxy</code> is a graphical element that serves as a proxy
+/**
+ * A <code>MarkupProxy</code> is a graphical element that serves as a proxy
  * for a data structure that cannot easily be rendered in-line within a
  * <code>SimpleStyledEditor</code>.
  *
+ * @author Mark Lindner
  * @see com.hyperrealm.kiwi.ui.SimpleStyledEditor
  * @see com.hyperrealm.kiwi.ui.MarkupProxyFactory
- *
- * @author Mark Lindner
  */
 
-public abstract class MarkupProxy extends JLabel
-{
-  /** The text for this proxy. */
-  protected String text;
+public abstract class MarkupProxy extends JLabel {
 
-  /** Construct a new <code>MarkupProxy</code>.
-   *
-   * @param icon The icon for this proxy.
-   * @param text The text to display in this proxy.
-   */
+    private static final Color DEFAULT_SELECTION_BACKGROUND = new Color(200, 200, 200);
+    /**
+     * The text for this proxy.
+     */
+    protected String text;
 
-  public MarkupProxy(Icon icon, String text)
-  {
-    setText(text);
-    setIcon(icon);
-    setBackground(new Color(200, 200, 200));
-    setOpaque(true);
-    setToolTipText(getDescription());
-    setBorder(new LineBorder(Color.black, 1));
-  }
+    /**
+     * Construct a new <code>MarkupProxy</code>.
+     *
+     * @param icon The icon for this proxy.
+     * @param text The text to display in this proxy.
+     */
 
-  /** Get the textual markup used to encode this proxy. */
+    public MarkupProxy(Icon icon, String text) {
+        setText(text);
+        setIcon(icon);
+        setBackground(DEFAULT_SELECTION_BACKGROUND);
+        setOpaque(true);
+        setToolTipText(getDescription());
+        setBorder(new LineBorder(Color.black, 1));
+    }
 
-  public abstract String getMarkup();
+    /**
+     * Get the textual markup used to encode this proxy.
+     */
 
-  /** Get a description of this proxy. */
+    public abstract String getMarkup();
 
-  public abstract String getDescription();
+    /**
+     * Get a description of this proxy.
+     */
+
+    public abstract String getDescription();
 
 }
-
-/* end of source file */

@@ -19,12 +19,17 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.Icon;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-/** A separator much like a <code>JSeparator</code> that also displays
+/**
+ * A separator much like a <code>JSeparator</code> that also displays
  * a title and/or icon in its center.
  *
  * <p><center>
@@ -36,60 +41,57 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  * @since Kiwi 2.4
  */
 
-public class TitledSeparator extends KPanel
-{
-  /** Construct a new <code>TitledSeparator</code> with the given icon.
-   *
-   * @param icon The icon.
-   */
-  
-  public TitledSeparator(Icon icon)
-  {
-    this(null, icon);
-  }
+public class TitledSeparator extends KPanel {
+    /**
+     * Construct a new <code>TitledSeparator</code> with the given icon.
+     *
+     * @param icon The icon.
+     */
 
-  /** Construct a new <code>TitledSeparator</code> with the given title.
-   *
-   * @param title The title.
-   */
-  
-  public TitledSeparator(String title)
-  {
-    this(title, null);
-  }
+    public TitledSeparator(Icon icon) {
+        this(null, icon);
+    }
 
-  /** Construct a new <code>TitledSeparator</code> with the given title
-   * and icon.
-   *
-   * @param title The title.
-   * @param icon The icon.
-   */
-  
-  public TitledSeparator(String title, Icon icon)
-  {
-    setLayout(new GridBagLayout());
-    GridBagConstraints gbc = new GridBagConstraints();
+    /**
+     * Construct a new <code>TitledSeparator</code> with the given title.
+     *
+     * @param title The title.
+     */
 
-    gbc.anchor = gbc.WEST;
-    gbc.gridwidth = 1;
-    gbc.fill = gbc.HORIZONTAL;
-    gbc.weightx = 1;
-    gbc.insets = KiwiUtils.firstBottomInsets;
+    public TitledSeparator(String title) {
+        this(title, null);
+    }
 
-    add(new JSeparator(), gbc);
+    /**
+     * Construct a new <code>TitledSeparator</code> with the given title
+     * and icon.
+     *
+     * @param title The title.
+     * @param icon  The icon.
+     */
 
-    KLabel label = new KLabel(title, icon, SwingConstants.LEFT);
-    gbc.fill = gbc.NONE;
-    gbc.weightx = 0;
-    add(label, gbc);
+    public TitledSeparator(String title, Icon icon) {
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-    gbc.gridwidth = gbc.REMAINDER;
-    gbc.fill = gbc.HORIZONTAL;
-    gbc.weightx = 1;
-    gbc.insets = KiwiUtils.lastBottomInsets;
-    add(new JSeparator(), gbc);
-  }
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+        gbc.insets = KiwiUtils.firstBottomInsets;
+
+        add(new JSeparator(), gbc);
+
+        KLabel label = new KLabel(title, icon, SwingConstants.LEFT);
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        add(label, gbc);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+        gbc.insets = KiwiUtils.lastBottomInsets;
+        add(new JSeparator(), gbc);
+    }
 
 }
-
-/* end of source file */

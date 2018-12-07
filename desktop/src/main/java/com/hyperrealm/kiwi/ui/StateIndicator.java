@@ -19,13 +19,16 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.util.HashMap;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-/** A graphical state indicator component. This component displays one
+/**
+ * A graphical state indicator component. This component displays one
  * of a collection of images, depending on what its current "state"
  * is. Each state is indicated by a unique string; the component maintains a
  * mapping of these strings to the corresponding state icons.
@@ -33,100 +36,94 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  * This component can be used to create status icons and other
  * types of multi-state indicators.
  *
- * @see com.hyperrealm.kiwi.ui.ToggleIndicator
- *
- * @since Kiwi 1.4.3
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.ui.ToggleIndicator
+ * @since Kiwi 1.4.3
  */
 
-public class StateIndicator extends JLabel
-{
-  private String state = null;
-  private HashMap<String, Icon> icons = new HashMap<String, Icon>();
-  private Icon defaultIcon;
+public class StateIndicator extends JLabel {
 
-  /** Construct a new <code>StateIndicator</code>.
-   *
-   * @param defaultIcon The default icon to display when the state is unknown.
-   */
-  
-  public StateIndicator(Icon defaultIcon)
-  {
-    this.defaultIcon = defaultIcon;
+    private String state = null;
 
-    setHorizontalAlignment(SwingConstants.CENTER);
-    setVerticalAlignment(SwingConstants.CENTER);
+    private HashMap<String, Icon> icons = new HashMap<String, Icon>();
 
-    setIcon(defaultIcon);
-  }
+    private Icon defaultIcon;
 
-  /**
-   * Remove all states from the indicator.
-   */
+    /**
+     * Construct a new <code>StateIndicator</code>.
+     *
+     * @param defaultIcon The default icon to display when the state is unknown.
+     */
 
-  public void clearStates()
-  {
-    icons.clear();
-  }
+    public StateIndicator(Icon defaultIcon) {
+        this.defaultIcon = defaultIcon;
 
-  /**
-   * Add a new state to the indicator.
-   *
-   * @param state The name of the state.
-   * @param icon The icon to display for this state.
-   */
+        setHorizontalAlignment(SwingConstants.CENTER);
+        setVerticalAlignment(SwingConstants.CENTER);
 
-  public void addState(String state, Icon icon)
-  {
-    icons.put(state, icon);
-  }
-
-  /**
-   * Remove a state from the indicator.
-   *
-   * @param state The name of the state.
-   */
-
-  public void removeState(String state)
-  {
-    icons.remove(state);
-  }
-
-  /** Set the state of the indicator.
-   *
-   * @param state The new state for the indicator. The indicator will
-   * be repainted immediately. If the specified <code>state</code> is
-   * invalid, the state will be set to <code>null</code> and the icon
-   * to default icon.
-   */
-  
-  public synchronized void setState(String state)
-  {
-    Icon icon = icons.get(state);
-    if(icon == null)
-    {
-      icon = defaultIcon;
-      this.state = null;
+        setIcon(defaultIcon);
     }
-    else
-      this.state = state;
-    
-    setIcon(icon);
-    KiwiUtils.paintImmediately(this);
-  }
 
-  /** Get the current state of the indicator.
-   *
-   * @return The current state of the indicator, which may be
-   * <code>null</code>.
-   */
+    /**
+     * Remove all states from the indicator.
+     */
 
-  public synchronized String getState()
-  {
-    return(state);
-  }
+    public void clearStates() {
+        icons.clear();
+    }
+
+    /**
+     * Add a new state to the indicator.
+     *
+     * @param state The name of the state.
+     * @param icon  The icon to display for this state.
+     */
+
+    public void addState(String state, Icon icon) {
+        icons.put(state, icon);
+    }
+
+    /**
+     * Remove a state from the indicator.
+     *
+     * @param state The name of the state.
+     */
+
+    public void removeState(String state) {
+        icons.remove(state);
+    }
+
+    /**
+     * Get the current state of the indicator.
+     *
+     * @return The current state of the indicator, which may be
+     * <code>null</code>.
+     */
+
+    public synchronized String getState() {
+        return (state);
+    }
+
+    /**
+     * Set the state of the indicator.
+     *
+     * @param state The new state for the indicator. The indicator will
+     *              be repainted immediately. If the specified <code>state</code> is
+     *              invalid, the state will be set to <code>null</code> and the icon
+     *              to default icon.
+     */
+
+    public synchronized void setState(String state) {
+        Icon icon = icons.get(state);
+        if (icon == null) {
+            icon = defaultIcon;
+            this.state = null;
+        } else {
+            this.state = state;
+        }
+
+        setIcon(icon);
+        KiwiUtils.paintImmediately(this);
+    }
 
 }
-
-/* end of source file */

@@ -19,30 +19,24 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import javax.swing.JComponent;
+import com.hyperrealm.kiwi.text.XMLElement;
 
 /**
- * An interface that describes the behavior of a viewer for
- * <code>UIElement</code>s.
+ * This class defines a markup proxy; an object that generates
+ * <code>MarkupProxy</code> objects appropriate for rendering given
+ * <code>XMLElement</code> objects.
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.ui.UIElementChooser
  */
 
-public interface UIElementViewer {
-    /**
-     * Get a reference to the viewer component.
-     *
-     * @return The viewer component itself.
-     */
-
-    JComponent getViewerComponent();
+public interface MarkupProxyFactory {
 
     /**
-     * Display the given element in the viewer.
+     * Return a <code>MarkupProxy</code> appropriate for rendering an element.
      *
-     * @param element The element to display.
+     * @param element The <code>XMLElement</code> to create a proxy for.
      */
 
-    void showElement(UIElement element);
+    MarkupProxy getMarkupProxy(XMLElement element);
+
 }

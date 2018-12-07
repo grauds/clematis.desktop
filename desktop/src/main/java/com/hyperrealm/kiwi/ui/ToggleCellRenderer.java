@@ -19,58 +19,52 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
 
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.util.BooleanHolder;
 
-/** A cell renderer that displays a boolean value using a ToggleIndicator.
+/**
+ * A cell renderer that displays a boolean value using a ToggleIndicator.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class ToggleCellRenderer extends AbstractCellRenderer
-{
-  private ToggleIndicator toggle;
+public class ToggleCellRenderer extends AbstractCellRenderer {
+    private ToggleIndicator toggle;
 
-  /** Construct a new <code>ToggleTableCellRenderer</code>.
-   *
-   * @param icon The icon that represents the <b>true</b> value.
-   * @param altIcon The icon that represents the <b>false</b> value.
-   */
-  
-  public ToggleCellRenderer(Icon icon, Icon altIcon)
-  {
-    toggle = new ToggleIndicator(icon, altIcon);
-  }
+    /**
+     * Construct a new <code>ToggleTableCellRenderer</code>.
+     *
+     * @param icon    The icon that represents the <b>true</b> value.
+     * @param altIcon The icon that represents the <b>false</b> value.
+     */
 
-  /**
-   */
-  
-  protected JComponent getCellRenderer(JComponent component, Object value,
-                                       int row, int column)
-  {
-    boolean flag = false;
-
-    if(value == null)
-      flag = false;
-    else if(value.getClass() == Boolean.class)
-    {
-      Boolean b = (Boolean)value;
-      flag = b.booleanValue();
-    }
-    else if(value.getClass() == BooleanHolder.class)
-    {
-      BooleanHolder b = (BooleanHolder)value;
-      flag = b.getValue();
+    public ToggleCellRenderer(Icon icon, Icon altIcon) {
+        toggle = new ToggleIndicator(icon, altIcon);
     }
 
-    toggle.setState(flag);
+    /**
+     *
+     */
 
-    return(toggle);
-  }
+    protected JComponent getCellRenderer(JComponent component, Object value,
+                                         int row, int column) {
+        boolean flag = false;
+
+        if (value == null) {
+            flag = false;
+        } else if (value.getClass() == Boolean.class) {
+            flag = (Boolean) value;
+        } else if (value.getClass() == BooleanHolder.class) {
+            BooleanHolder b = (BooleanHolder) value;
+            flag = b.getValue();
+        }
+
+        toggle.setState(flag);
+
+        return (toggle);
+    }
 
 }
-
-/* end of source file */
