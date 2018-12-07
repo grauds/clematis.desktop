@@ -19,48 +19,46 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** An integer counter object.
+/**
+ * An integer counter object.
  *
  * @author Mark Lindner
  */
 
-public class Counter extends IntegerHolder
-{
+public class Counter extends IntegerHolder {
 
-  /** Construct a new <code>Counter</code> with a specified initial value.
-   *
-   * @param value The initial value.
-   */
-  
-  public Counter(int value)
-  {
-    super(value);
-  }
+    /**
+     * Construct a new <code>Counter</code> with a specified initial value.
+     *
+     * @param value The initial value.
+     */
 
-  /** Construct a new <code>Counter</code> with an initial value of 0.
-   */
-  
-  public Counter()
-  {
-    super();
-  }
+    public Counter(int value) {
+        super(value);
+    }
 
-  /** Increment the counter by 1.
-   */
-  
-  public synchronized final int increment()
-  {
-    return(++value);
-  }
+    /**
+     * Construct a new <code>Counter</code> with an initial value of 0.
+     */
 
-  /** Decrement the counter by 1.
-   */
-  
-  public synchronized final int decrement()
-  {
-    return(--value);
-  }
-  
+    public Counter() {
+        super();
+    }
+
+    /**
+     * Increment the counter by 1.
+     */
+
+    public synchronized int increment() {
+        return (++value);
+    }
+
+    /**
+     * Decrement the counter by 1.
+     */
+
+    public synchronized int decrement() {
+        return (--value);
+    }
+
 }
-
-/* end of source file */

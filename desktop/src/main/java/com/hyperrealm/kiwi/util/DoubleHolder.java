@@ -19,93 +19,96 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** A mutable holder for a <code>double</code> value.
+/**
+ * A mutable holder for a <code>double</code> value.
  *
  * @author Mark Lindner
  */
 
-public class DoubleHolder extends ValueHolder
-{
-  /** The current value. */
-  protected double value;
+public class DoubleHolder extends ValueHolder {
+    /**
+     * The current value.
+     */
+    protected double value;
 
-  /** Construct a new <code>DoubleHolder</code> with an initial value of
-   * <code>0.0</code> and default subtype of <code>0</code>.
-   */
-  
-  public DoubleHolder()
-  {
-    this(0.0, 0);
-  }
+    /**
+     * Construct a new <code>DoubleHolder</code> with an initial value of
+     * <code>0.0</code> and default subtype of <code>0</code>.
+     */
 
-  /** Construct a new <code>DoubleHolder</code> with a specified initial
-   * value and default subtype of <code>0</code>.
-   *
-   * @param value The initial value.
-   */
-  
-  public DoubleHolder(double value)
-  {
-    this(value, 0);
-  }
+    public DoubleHolder() {
+        this(0.0, 0);
+    }
 
-  /** Construct a new <code>DoubleHolder</code> with a specified initial
-   * value and subtype.
-   *
-   * @param value The initial value.
-   * @param subtype The subtype for this value.
-   */
-  
-  public DoubleHolder(double value, int subtype)
-  {
-    super(subtype);
-    
-    this.value = value;
-  }
-  
-  /** Set the <code>DoubleHolder</code>'s value.
-   *
-   * @param value The new value.
-   */
-  
-  public final void setValue(double value)
-  {
-    this.value = value;
-  }
+    /**
+     * Construct a new <code>DoubleHolder</code> with a specified initial
+     * value and default subtype of <code>0</code>.
+     *
+     * @param value The initial value.
+     */
 
-  /** Get the <code>DoubleHolder</code>'s value.
-   *
-   * @return The current value.
-   */
-  
-  public final double getValue()
-  {
-    return(value);
-  }
+    public DoubleHolder(double value) {
+        this(value, 0);
+    }
 
-  /** Get a string representation for this object. */
-  
-  public String toString()
-  {
-    return(String.valueOf(value));
-  }
+    /**
+     * Construct a new <code>DoubleHolder</code> with a specified initial
+     * value and subtype.
+     *
+     * @param value   The initial value.
+     * @param subtype The subtype for this value.
+     */
 
-  /** Compare this holder object to another. */
-  
-  public int compareTo(Object other)
-  {
-    double v = ((DoubleHolder)other).getValue();
+    public DoubleHolder(double value, int subtype) {
+        super(subtype);
 
-    return((value < v) ? -1 : ((value > v) ? 1 : 0));
-  }
-  
-  /** Clone this object. */
+        this.value = value;
+    }
 
-  public Object clone() throws CloneNotSupportedException
-  {
-    return(new DoubleHolder(value, subtype));
-  }
+    /**
+     * Get the <code>DoubleHolder</code>'s value.
+     *
+     * @return The current value.
+     */
+
+    public final double getValue() {
+        return (value);
+    }
+
+    /**
+     * Set the <code>DoubleHolder</code>'s value.
+     *
+     * @param value The new value.
+     */
+
+    public final void setValue(double value) {
+        this.value = value;
+    }
+
+    /**
+     * Get a string representation for this object.
+     */
+
+    public String toString() {
+        return (String.valueOf(value));
+    }
+
+    /**
+     * Compare this holder object to another.
+     */
+
+    public int compareTo(Object other) {
+        double v = ((DoubleHolder) other).getValue();
+
+        return Double.compare(value, v);
+    }
+
+    /**
+     * Clone this object.
+     */
+
+    public Object copy() {
+        return new DoubleHolder(value, subtype);
+    }
 
 }
-
-/* end of source file */

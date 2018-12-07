@@ -19,100 +19,104 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** A mutable holder for a <code>String</code> value.
+/**
+ * A mutable holder for a <code>String</code> value.
  *
  * @author Mark Lindner
  */
 
-public class StringHolder extends ValueHolder
-{
-  /** The current value. */
-  protected String value;
+public class StringHolder extends ValueHolder {
+    /**
+     * The current value.
+     */
+    protected String value;
 
-  /** Construct a new <code>StringHolder</code> with an initial value of
-   * <code>null</code> and default subtype of <code>0</code>.
-   */
-  
-  public StringHolder()
-  {
-    this(null, 0);
-  }
+    /**
+     * Construct a new <code>StringHolder</code> with an initial value of
+     * <code>null</code> and default subtype of <code>0</code>.
+     */
 
-  /** Construct a new <code>StringHolder</code> with a specified initial
-   * value and default subtype of <code>0</code>.
-   *
-   * @param value The initial value.
-   */
-  
-  public StringHolder(String value)
-  {
-    this(value, 0);
-  }
+    public StringHolder() {
+        this(null, 0);
+    }
 
-  /** Construct a new <code>StringHolder</code> with a specified initial
-   * value and subtype.
-   *
-   * @param value The initial value.
-   * @param subtype The subtype for this value.
-   */
-  
-  public StringHolder(String value, int subtype)
-  {
-    super(subtype);
-    
-    this.value = value;
-  }
-  
-  /** Set the <code>StringHolder</code>'s value.
-   *
-   * @param value The new value.
-   */
-  
-  public final void setValue(String value)
-  {
-    this.value = value;
-  }
+    /**
+     * Construct a new <code>StringHolder</code> with a specified initial
+     * value and default subtype of <code>0</code>.
+     *
+     * @param value The initial value.
+     */
 
-  /** Get the <code>StringHolder</code>'s value.
-   *
-   * @return The current value.
-   */
-  
-  public final String getValue()
-  {
-    return(value);
-  }
+    public StringHolder(String value) {
+        this(value, 0);
+    }
 
-  /** Get a string representation for this object. */
-  
-  public String toString()
-  {
-    return(value);
-  }
+    /**
+     * Construct a new <code>StringHolder</code> with a specified initial
+     * value and subtype.
+     *
+     * @param value   The initial value.
+     * @param subtype The subtype for this value.
+     */
 
-  /** Compare this holder object to another. */
-  
-  public int compareTo(Object other)
-  {
-    String v = ((StringHolder)other).getValue();
+    public StringHolder(String value, int subtype) {
+        super(subtype);
 
-    if((v == null) && (value == null))
-      return(0);
-    else if((v == null) && (value != null))
-      return(1);
-    else if((v != null) && (value == null))
-      return(-1);
-    else
-      return(value.compareTo(v));
-  }
+        this.value = value;
+    }
 
-  /** Clone this object. */
+    /**
+     * Get the <code>StringHolder</code>'s value.
+     *
+     * @return The current value.
+     */
 
-  public Object clone() throws CloneNotSupportedException
-  {
-    return(new StringHolder(value, subtype));
-  }  
-  
+    public final String getValue() {
+        return (value);
+    }
+
+    /**
+     * Set the <code>StringHolder</code>'s value.
+     *
+     * @param value The new value.
+     */
+
+    public final void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * Get a string representation for this object.
+     */
+
+    public String toString() {
+        return (value);
+    }
+
+    /**
+     * Compare this holder object to another.
+     */
+    @SuppressWarnings("all")
+    public int compareTo(Object other) {
+        String v = ((StringHolder) other).getValue();
+
+        if ((v == null) && (value == null)) {
+            return (0);
+        } else if (v == null) {
+            return (1);
+        } else if (value == null) {
+            return (-1);
+        } else {
+            return (value.compareTo(v));
+        }
+    }
+
+    /**
+     * Clone this object.
+     */
+
+    public Object copy() {
+        return new StringHolder(value, subtype);
+    }
+
 }
-
-/* end of source file */

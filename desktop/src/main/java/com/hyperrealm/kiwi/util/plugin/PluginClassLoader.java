@@ -51,7 +51,8 @@ import java.util.jar.JarFile;
 
 class PluginClassLoader extends ClassLoader {
 
-    public static final int PATH_EXTRA_LENGTH = 6;
+    private static final int PATH_EXTRA_LENGTH = 6;
+
     private final ArrayList<JarFile> jars;
 
     private ArrayList<String> forbiddenPackages;

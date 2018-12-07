@@ -19,7 +19,8 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** An abstract base class for mutable holder objects. This base class declares
+/**
+ * An abstract base class for mutable holder objects. This base class declares
  * a comparator method that may be used to determine the relative order of
  * two holder objects, based on the cardinality of their respective values.
  * It also introduces the notion of a <i>subtype</i>, which is an arbitrary
@@ -29,70 +30,72 @@ package com.hyperrealm.kiwi.util;
  * <code>com.hyperrealm.kiwi.text.FormatConstants</code> interface); such
  * information can be useful to tree and table cell renderers, for example.
  *
- * @see com.hyperrealm.kiwi.text.FormatConstants
- *
  * @author Mark Lindner
+ * @see com.hyperrealm.kiwi.text.FormatConstants
  */
 
-public abstract class ValueHolder implements Comparable, Cloneable
-{
-  /** The subtype for the value stored by this holder. */
-  protected int subtype;
+public abstract class ValueHolder implements Comparable {
 
-  /** Construct a new <code>ValueHolder</code>. */
-  
-  protected ValueHolder()
-  {
-    this(0);
-  }
+    /**
+     * The subtype for the value stored by this holder.
+     */
+    int subtype;
 
-  /** Construct a new <code>ValueHolder</code> with the specified subtype.
-   *
-   * @param subtype The subtype.
-   */
-  
-  protected ValueHolder(int subtype)
-  {
-    this.subtype = subtype;
-  }
-  
-  /** Compare the value in this <code>ValueHolder</code> to the value in
-   * another <code>ValueHolder</code>. It is assumed that the two values
-   * are of the same type (hence that the holders are also of the same type).
-   *
-   * @param other The <code>ValueHolder</code> to compare against.
-   * @return <code>-1</code> if this object is "less than" the other object;
-   * <code>1</code> if this object is "greater than" the other object, and
-   * <code>0</code> if the objects are "equal."
-   */
-  
-  public abstract int compareTo(Object other);
+    /**
+     * Construct a new <code>ValueHolder</code>.
+     */
 
-  /** Set the subtype for the value stored by this holder.
-   *
-   * @param subtype The new subtype.
-   */
-  
-  public void setSubtype(int subtype)
-  {
-    this.subtype = subtype;
-  }
+    protected ValueHolder() {
+        this(0);
+    }
 
-  /** Get the subtype for the value stored by this holder.
-   *
-   * @return The current subtype. The default subtype is 0.
-   */
-  
-  public int getSubtype()
-  {
-    return(subtype);
-  }
+    /**
+     * Construct a new <code>ValueHolder</code> with the specified subtype.
+     *
+     * @param subtype The subtype.
+     */
 
-  /** Clone this object.
-   */
-  
-  public abstract Object clone() throws CloneNotSupportedException;
-  
+    ValueHolder(int subtype) {
+        this.subtype = subtype;
+    }
+
+    /**
+     * Compare the value in this <code>ValueHolder</code> to the value in
+     * another <code>ValueHolder</code>. It is assumed that the two values
+     * are of the same type (hence that the holders are also of the same type).
+     *
+     * @param other The <code>ValueHolder</code> to compare against.
+     * @return <code>-1</code> if this object is "less than" the other object;
+     * <code>1</code> if this object is "greater than" the other object, and
+     * <code>0</code> if the objects are "equal."
+     */
+
+    public abstract int compareTo(Object other);
+
+    /**
+     * Get the subtype for the value stored by this holder.
+     *
+     * @return The current subtype. The default subtype is 0.
+     */
+
+    public int getSubtype() {
+        return (subtype);
+    }
+
+    /**
+     * Set the subtype for the value stored by this holder.
+     *
+     * @param subtype The new subtype.
+     */
+
+    public void setSubtype(int subtype) {
+        this.subtype = subtype;
+    }
+
+    /**
+     * Clone this object.
+     */
+
+    public abstract Object copy();
+
 }
-
-/* end of source file */

@@ -19,18 +19,25 @@
 
 package com.hyperrealm.kiwi.util;
 
-import java.awt.*;
-import java.awt.print.*;
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 
-/** A class for printing arbitrary components. To print a given component,
+import javax.swing.RepaintManager;
+
+/**
+ * A class for printing arbitrary components. To print a given component,
  * simply use the class as follows:
  *
  * <pre>
  * ComponentPrinter cp = new ComponentPrinter(someComponent);
  * cp.print();
  * </pre>
- *
+ * <p>
  * The <code>print()</code> method may be invoked multiple times.
  *
  * @author <a href="http://www.apl.jhu.edu/~hall/java/">Marty Hall</a>
@@ -39,67 +46,66 @@ import javax.swing.*;
  * @since Kiwi 1.3.4
  */
 
-public class ComponentPrinter implements Printable
-{
-  private Component component;
+public class ComponentPrinter implements Printable {
+    private Component component;
 
-  /** Construct a new <code>ComponentPrinter</code> for printing the specified
-   * component.
-   *
-   * @param component The component to be printed.
-   */
-  
-  public ComponentPrinter(Component component)
-  {
-    this.component = component;
-  }
+    /**
+     * Construct a new <code>ComponentPrinter</code> for printing the specified
+     * component.
+     *
+     * @param component The component to be printed.
+     */
 
-  /** Specify a different component to be printed.
-   *
-   * @param component The new component.
-   */
+    public ComponentPrinter(Component component) {
+        this.component = component;
+    }
 
-  public void setComponent(Component component)
-  {
-    this.component = component;
-  }
+    /**
+     * Specify a different component to be printed.
+     *
+     * @param component The new component.
+     */
 
-  /** Print the component.
-   *
-   * @throws java.awt.print.PrinterException If an error occurred during
-   * printing.
-   */
-  
-  public void print() throws PrinterException
-  {
-    PrinterJob printJob = PrinterJob.getPrinterJob();
-    PageFormat pageformat = printJob.pageDialog(printJob.defaultPage());
-    printJob.setPrintable(this);
-    if(printJob.printDialog())
-      printJob.print();
-  }
-  
-  /** Implementation of the <code>Printable</code> interface; this method
-   *  should not be called directly.
-   */
-  
-  public int print(Graphics g, PageFormat pageFormat, int pageIndex)
-  {
-    if(pageIndex != 0)
-      return(NO_SUCH_PAGE);
-    
-    RepaintManager repmgr = RepaintManager.currentManager(component);
-    
-    Graphics2D g2d = (Graphics2D)g;
-    g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-    boolean flag = repmgr.isDoubleBufferingEnabled();
-    repmgr.setDoubleBufferingEnabled(false);
-    component.paint(g2d);
-    repmgr.setDoubleBufferingEnabled(flag);
-    
-    return(PAGE_EXISTS);
-  }
-    
+    public void setComponent(Component component) {
+        this.component = component;
+    }
+
+    /**
+     * Print the component.
+     *
+     * @throws java.awt.print.PrinterException If an error occurred during
+     *                                         printing.
+     */
+
+    public void print() throws PrinterException {
+
+        PrinterJob printJob = PrinterJob.getPrinterJob();
+        printJob.setPrintable(this);
+        if (printJob.printDialog()) {
+            printJob.print();
+        }
+    }
+
+    /**
+     * Implementation of the <code>Printable</code> interface; this method
+     * should not be called directly.
+     */
+
+    public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
+        if (pageIndex != 0) {
+            return (NO_SUCH_PAGE);
+        }
+
+        RepaintManager repmgr = RepaintManager.currentManager(component);
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+        boolean flag = repmgr.isDoubleBufferingEnabled();
+        repmgr.setDoubleBufferingEnabled(false);
+        component.paint(g2d);
+        repmgr.setDoubleBufferingEnabled(flag);
+
+        return (PAGE_EXISTS);
+    }
+
 }
-
-/* end of source file */

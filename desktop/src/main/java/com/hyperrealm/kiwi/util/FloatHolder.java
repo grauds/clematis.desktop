@@ -19,93 +19,96 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** A mutable holder for a <code>float</code> value.
+/**
+ * A mutable holder for a <code>float</code> value.
  *
  * @author Mark Lindner
  */
 
-public class FloatHolder extends ValueHolder
-{
-  /** The current value. */
-  protected float value;
+public class FloatHolder extends ValueHolder {
+    /**
+     * The current value.
+     */
+    protected float value;
 
-  /** Construct a new <code>FloatHolder</code> with an initial value of
-   * <code>0.0f</code> and default subtype of <code>0</code>.
-   */
-  
-  public FloatHolder()
-  {
-    this(0.0f, 0);
-  }
+    /**
+     * Construct a new <code>FloatHolder</code> with an initial value of
+     * <code>0.0f</code> and default subtype of <code>0</code>.
+     */
 
-  /** Construct a new <code>FloatHolder</code> with a specified initial
-   * value and default subtype of <code>0</code>.
-   *
-   * @param value The initial value.
-   */
-  
-  public FloatHolder(float value)
-  {
-    this(value, 0);
-  }
+    public FloatHolder() {
+        this(0.0f, 0);
+    }
 
-  /** Construct a new <code>FloatHolder</code> with a specified initial
-   * value and subtype.
-   *
-   * @param value The initial value.
-   * @param subtype The subtype for this value.
-   */
-  
-  public FloatHolder(float value, int subtype)
-  {
-    super(subtype);
-    
-    this.value = value;
-  }
-  
-  /** Set the <code>FloatHolder</code>'s value.
-   *
-   * @param value The new value.
-   */
-  
-  public final void setValue(float value)
-  {
-    this.value = value;
-  }
+    /**
+     * Construct a new <code>FloatHolder</code> with a specified initial
+     * value and default subtype of <code>0</code>.
+     *
+     * @param value The initial value.
+     */
 
-  /** Get the <code>FloatHolder</code>'s value.
-   *
-   * @return The current value.
-   */
-  
-  public final float getValue()
-  {
-    return(value);
-  }
+    public FloatHolder(float value) {
+        this(value, 0);
+    }
 
-  /** Get a string representation for this object. */
-  
-  public String toString()
-  {
-    return(String.valueOf(value));
-  }
+    /**
+     * Construct a new <code>FloatHolder</code> with a specified initial
+     * value and subtype.
+     *
+     * @param value   The initial value.
+     * @param subtype The subtype for this value.
+     */
 
-  /** Compare this holder object to another. */
-  
-  public int compareTo(Object other)
-  {
-    float v = ((FloatHolder)other).getValue();
+    public FloatHolder(float value, int subtype) {
+        super(subtype);
 
-    return((value < v) ? -1 : ((value > v) ? 1 : 0));
-  }
+        this.value = value;
+    }
 
-  /** Clone this object. */
+    /**
+     * Get the <code>FloatHolder</code>'s value.
+     *
+     * @return The current value.
+     */
 
-  public Object clone() throws CloneNotSupportedException
-  {
-    return(new FloatHolder(value, subtype));
-  }
-  
+    public final float getValue() {
+        return (value);
+    }
+
+    /**
+     * Set the <code>FloatHolder</code>'s value.
+     *
+     * @param value The new value.
+     */
+
+    public final void setValue(float value) {
+        this.value = value;
+    }
+
+    /**
+     * Get a string representation for this object.
+     */
+
+    public String toString() {
+        return (String.valueOf(value));
+    }
+
+    /**
+     * Compare this holder object to another.
+     */
+
+    public int compareTo(Object other) {
+        float v = ((FloatHolder) other).getValue();
+
+        return Float.compare(value, v);
+    }
+
+    /**
+     * Clone this object.
+     */
+
+    public Object copy() {
+        return (new FloatHolder(value, subtype));
+    }
+
 }
-
-/* end of source file */

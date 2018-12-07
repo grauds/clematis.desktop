@@ -19,93 +19,96 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** A mutable holder for a <code>boolean</code> value.
+/**
+ * A mutable holder for a <code>boolean</code> value.
  *
  * @author Mark Lindner
  */
 
-public class BooleanHolder extends ValueHolder
-{
-  /** The current value. */
-  protected boolean value;
+public class BooleanHolder extends ValueHolder {
+    /**
+     * The current value.
+     */
+    protected boolean value;
 
-  /** Construct a new <code>BooleanHolder</code> with an initial value of
-   * <code>false</code> and default subtype of 0.
-   */
-  
-  public BooleanHolder()
-  {
-    this(false, 0);
-  }
+    /**
+     * Construct a new <code>BooleanHolder</code> with an initial value of
+     * <code>false</code> and default subtype of 0.
+     */
 
-  /** Construct a new <code>BooleanHolder</code> with a specified initial
-   * value and default subtype of 0.
-   *
-   * @param value The initial value.
-   */
-  
-  public BooleanHolder(boolean value)
-  {
-    this(value, 0);
-  }
-  
-  /** Construct a new <code>BooleanHolder</code> with a specified initial
-   * value and subtype.
-   *
-   * @param value The initial value.
-   * @param subtype The subtype for this value.
-   */
-  
-  public BooleanHolder(boolean value, int subtype)
-  {
-    super(subtype);
-    
-    this.value = value;
-  }
+    public BooleanHolder() {
+        this(false, 0);
+    }
 
-  /** Set the <code>BooleanHolder</code>'s value.
-   *
-   * @param value The new value.
-   */
-  
-  public final void setValue(boolean value)
-  {
-    this.value = value;
-  }
+    /**
+     * Construct a new <code>BooleanHolder</code> with a specified initial
+     * value and default subtype of 0.
+     *
+     * @param value The initial value.
+     */
 
-  /** Get the <code>BooleanHolder</code>'s value.
-   *
-   * @return The current value.
-   */
-  
-  public final boolean getValue()
-  {
-    return(value);
-  }
+    public BooleanHolder(boolean value) {
+        this(value, 0);
+    }
 
-  /** Get a string representation for this object. */
-  
-  public String toString()
-  {
-    return(String.valueOf(value));
-  }
+    /**
+     * Construct a new <code>BooleanHolder</code> with a specified initial
+     * value and subtype.
+     *
+     * @param value   The initial value.
+     * @param subtype The subtype for this value.
+     */
 
-  /** Compare this holder object to another. */
-  
-  public int compareTo(Object other)
-  {
-    boolean v = ((BooleanHolder)other).getValue();
+    public BooleanHolder(boolean value, int subtype) {
+        super(subtype);
 
-    return((value == v) ? 0 : (value ? 1 : -1));
-  }
+        this.value = value;
+    }
 
-  /** Clone this object. */
+    /**
+     * Get the <code>BooleanHolder</code>'s value.
+     *
+     * @return The current value.
+     */
 
-  public Object clone() throws CloneNotSupportedException
-  {
-    return(new BooleanHolder(value, subtype));
-  }
-  
+    public final boolean getValue() {
+        return (value);
+    }
+
+    /**
+     * Set the <code>BooleanHolder</code>'s value.
+     *
+     * @param value The new value.
+     */
+
+    public final void setValue(boolean value) {
+        this.value = value;
+    }
+
+    /**
+     * Get a string representation for this object.
+     */
+
+    public String toString() {
+        return (String.valueOf(value));
+    }
+
+    /**
+     * Compare this holder object to another.
+     */
+
+    public int compareTo(Object other) {
+        boolean v = ((BooleanHolder) other).getValue();
+
+        return ((value == v) ? 0 : (value ? 1 : -1));
+    }
+
+    /**
+     * Clone this object.
+     */
+
+    public Object copy() {
+        return (new BooleanHolder(value, subtype));
+    }
+
 }
-
-/* end of source file */

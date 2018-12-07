@@ -19,93 +19,96 @@
 
 package com.hyperrealm.kiwi.util;
 
-/** A mutable holder for an <code>int</code> value.
+/**
+ * A mutable holder for an <code>int</code> value.
  *
  * @author Mark Lindner
  */
 
-public class IntegerHolder extends ValueHolder
-{
-  /** The current value. */
-  protected int value;
+public class IntegerHolder extends ValueHolder {
+    /**
+     * The current value.
+     */
+    protected int value;
 
-  /** Construct a new <code>IntegerHolder</code> with an initial value of
-   * <code>0</code> and default subtype of <code>0</code>.
-   */
-  
-  public IntegerHolder()
-  {
-    this(0, 0);
-  }
-  
-  /** Construct a new <code>IntegerHolder</code> with a specified initial
-   * value and default subtype of <code>0</code>.
-   *
-   * @param value The initial value.
-   */
-  
-  public IntegerHolder(int value)
-  {
-    this(value, 0);
-  }
+    /**
+     * Construct a new <code>IntegerHolder</code> with an initial value of
+     * <code>0</code> and default subtype of <code>0</code>.
+     */
 
-  /** Construct a new <code>IntegerHolder</code> with a specified initial
-   * value and subtype.
-   *
-   * @param value The initial value.
-   * @param subtype The subtype for this value.
-   */
-  
-  public IntegerHolder(int value, int subtype)
-  {
-    super(subtype);
-    
-    this.value = value;
-  }
-  
-  /** Set the <code>IntegerHolder</code>'s value.
-   *
-   * @param value The new value.
-   */
-  
-  public final void setValue(int value)
-  {
-    this.value = value;
-  }
+    public IntegerHolder() {
+        this(0, 0);
+    }
 
-  /** Get the <code>IntegerHolder</code>'s value.
-   *
-   * @return The current value.
-   */
-  
-  public final int getValue()
-  {
-    return(value);
-  }
+    /**
+     * Construct a new <code>IntegerHolder</code> with a specified initial
+     * value and default subtype of <code>0</code>.
+     *
+     * @param value The initial value.
+     */
 
-  /** Get a string representation for this object. */
-  
-  public String toString()
-  {
-    return(String.valueOf(value));
-  }
+    public IntegerHolder(int value) {
+        this(value, 0);
+    }
 
-  /** Compare this holder object to another. */
-  
-  public int compareTo(Object other)
-  {
-    int v = ((IntegerHolder)other).getValue();
+    /**
+     * Construct a new <code>IntegerHolder</code> with a specified initial
+     * value and subtype.
+     *
+     * @param value   The initial value.
+     * @param subtype The subtype for this value.
+     */
 
-    return((value < v) ? -1 : ((value > v) ? 1 : 0));
-  }
+    public IntegerHolder(int value, int subtype) {
+        super(subtype);
 
-  /** Clone this object. */
+        this.value = value;
+    }
 
-  public Object clone() throws CloneNotSupportedException
-  {
-    return(new IntegerHolder(value, subtype));
-  }
-  
+    /**
+     * Get the <code>IntegerHolder</code>'s value.
+     *
+     * @return The current value.
+     */
+
+    public final int getValue() {
+        return (value);
+    }
+
+    /**
+     * Set the <code>IntegerHolder</code>'s value.
+     *
+     * @param value The new value.
+     */
+
+    public final void setValue(int value) {
+        this.value = value;
+    }
+
+    /**
+     * Get a string representation for this object.
+     */
+
+    public String toString() {
+        return (String.valueOf(value));
+    }
+
+    /**
+     * Compare this holder object to another.
+     */
+
+    public int compareTo(Object other) {
+        int v = ((IntegerHolder) other).getValue();
+
+        return Integer.compare(value, v);
+    }
+
+    /**
+     * Clone this object.
+     */
+
+    public Object copy() {
+        return (new IntegerHolder(value, subtype));
+    }
+
 }
-
-/* end of source file */
