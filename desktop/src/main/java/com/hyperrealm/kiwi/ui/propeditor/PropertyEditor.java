@@ -19,16 +19,21 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import java.awt.BorderLayout;
+import java.util.ArrayList;
 
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.ui.model.*;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
-/** A component for editing a hierarchy of properties. There are two types
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.KScrollPane;
+import com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter;
+
+/**
+ * A component for editing a hierarchy of properties. There are two types
  * of properties: grouping properties, which serve merely as containers for
  * other properties, and editable properties, which have values that can be
  * edited. The hierarchy is displayed as an expandable tree, in which editable
@@ -45,216 +50,211 @@ import com.hyperrealm.kiwi.ui.model.*;
  * @since Kiwi 2.0
  */
 
-public class PropertyEditor extends KPanel
-{
-  private JTree tree;
-  private KTreeModelTreeAdapter adapter;
-  private PropertyEditorFactory factory
-    = DefaultPropertyEditorFactory.getInstance();
-  private PropertyCellEditor cellEditor;
-  private ArrayList<PropertySelectionListener> listeners
-    = new ArrayList<PropertySelectionListener>();
+public class PropertyEditor extends KPanel {
+    private JTree tree;
+    private KTreeModelTreeAdapter adapter;
+    private PropertyEditorFactory factory
+        = DefaultPropertyEditorFactory.getInstance();
+    private PropertyCellEditor cellEditor;
+    private ArrayList<PropertySelectionListener> listeners
+        = new ArrayList<PropertySelectionListener>();
 
-  /** Construct a new, empty <code>PropertyEditor</code>.
-   */
-  
-  public PropertyEditor()
-  {
-    setLayout(new BorderLayout(3, 3));
+    /**
+     * Construct a new, empty <code>PropertyEditor</code>.
+     */
 
-    tree = new JTree();
-    tree.setRootVisible(false);
-    
-    tree.setEditable(true);
-    tree.setRowHeight(20);
+    public PropertyEditor() {
+        setLayout(new BorderLayout(3, 3));
 
-    cellEditor = new PropertyCellEditor(factory);
-    
-    tree.setCellRenderer(cellEditor);
-    tree.setCellEditor(cellEditor);
+        tree = new JTree();
+        tree.setRootVisible(false);
 
-    KScrollPane sp = new KScrollPane(tree);
-    add("Center", sp);
+        tree.setEditable(true);
+        tree.setRowHeight(20);
 
-    adapter = new KTreeModelTreeAdapter(tree);
-    tree.setModel(adapter);
+        cellEditor = new PropertyCellEditor(factory);
 
-    tree.addTreeSelectionListener(new TreeSelectionListener()
-      {
-        public void valueChanged(TreeSelectionEvent evt)
-        {
-          Property prop = getSelectedProperty();
+        tree.setCellRenderer(cellEditor);
+        tree.setCellEditor(cellEditor);
 
-          for(PropertySelectionListener listener : listeners)
-            listener.selectedPropertyChanged(PropertyEditor.this);
-        }
-      });
-    tree.getSelectionModel().setSelectionMode(
-      TreeSelectionModel.SINGLE_TREE_SELECTION);
+        KScrollPane sp = new KScrollPane(tree);
+        add("Center", sp);
 
-    tree.setInvokesStopCellEditing(true);
-  }
+        adapter = new KTreeModelTreeAdapter(tree);
+        tree.setModel(adapter);
 
-  /** Set the property editor factory to be used by this property editor.
-   *
-   * @param factory The new <code>PropertyEditorFactory</code>.
-   */
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent evt) {
+                Property prop = getSelectedProperty();
 
-  public void setEditorFactory(PropertyEditorFactory factory)
-  {
-    cellEditor.setEditorFactory(factory);
-  }
+                for (PropertySelectionListener listener : listeners) {
+                    listener.selectedPropertyChanged(PropertyEditor.this);
+                }
+            }
+        });
+        tree.getSelectionModel().setSelectionMode(
+            TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-  /** Get the property editor factory that is used by this property editor.
-   *
-   * @return The current <code>PropertyEditorFactory</code>.
-   */
-
-  public PropertyEditorFactory getEditorFactory()
-  {
-    return(factory);
-  }
-
-  /** Set the data model for this editor.
-   *
-   * @param model The model.
-   *
-   * @since Kiwi 2.3
-   */
-  
-  public void setModel(PropertyModel model)
-  {
-    adapter.setTreeModel(model);
-  }
-
-  /** Show or hide the root Property.
-   *
-   * @since Kiwi 2.3
-   */
-  
-  public void setRootVisible(boolean flag)
-  {
-    tree.setRootVisible(flag);
-  }
-
-  /** Get the currently selected Property.
-   *
-   * @return The selected Property, or <b>null</b> if the selection is
-   * empty.
-   *
-   * @since Kiwi 2.3
-   */
-    
-  public Property getSelectedProperty()
-  {
-    TreePath path = tree.getSelectionPath();
-    if(path == null)
-      return(null);
-
-    Object o = path.getLastPathComponent();
-
-    if(!(o instanceof Property))
-      return(null);
-
-    return((Property)o);
-  }
-
-  /** Expand the given Property (if it has child Properties).
-   *
-   * @since Kiwi 2.3
-   */
-
-  public void expand(Property property)
-  {
-    TreePath path = adapter.getPathForNode(property);
-    tree.expandPath(path);
-  }
-
-  /** Collapse the given Property (if it has child Properties).
-   *
-   * @since Kiwi 2.3
-   */
-    
-  public void collapse(Property property)
-  {
-    TreePath path = adapter.getPathForNode(property);
-    tree.collapsePath(path);
-  }
-
-  /** Expand all Properties in the tree.
-   *
-   * @since Kiwi 2.3
-   */
-    
-  public void expand()
-  {
-    Property root = (Property)tree.getModel().getRoot();
-    if(root != null)
-    {
-      tree.expandPath(new TreePath(root));
-        
-      for(int i = 0; i < tree.getRowCount(); ++i)
-        tree.expandRow(i);
+        tree.setInvokesStopCellEditing(true);
     }
-  }
 
-  /** Collapse all Properties in the tree.
-   *
-   * @since Kiwi 2.3
-   */
-    
-  public void collapse()
-  {
-    for(int i = tree.getRowCount() - 1; i > 0; --i)
-      tree.collapseRow(i);
-  }
+    /**
+     * Get the property editor factory that is used by this property editor.
+     *
+     * @return The current <code>PropertyEditorFactory</code>.
+     */
 
-  /** Set the editable state of the widget.
-   *
-   * @since Kiwi 2.3
-   */
+    public PropertyEditorFactory getEditorFactory() {
+        return (factory);
+    }
 
-  public void setEditable(boolean flag)
-  {
-    tree.setEditable(flag);
-  }
+    /**
+     * Set the property editor factory to be used by this property editor.
+     *
+     * @param factory The new <code>PropertyEditorFactory</code>.
+     */
 
-  /** Get the editable state of the widget.
-   *
-   * @since Kiwi 2.3
-   */
+    public void setEditorFactory(PropertyEditorFactory factory) {
+        cellEditor.setEditorFactory(factory);
+    }
 
-  public boolean isEditable()
-  {
-    return(tree.isEditable());
-  }
+    /**
+     * Set the data model for this editor.
+     *
+     * @param model The model.
+     * @since Kiwi 2.3
+     */
 
-  /** Add a PropertySelectionListener to this component's list of listeners.
-   *
-   * @param listener The listener.
-   *
-   * @since Kiwi 2.4
-   */
-  
-  public void addPropertySelectionListener(PropertySelectionListener listener)
-  {
-    listeners.add(listener);
-  }
+    public void setModel(PropertyModel model) {
+        adapter.setTreeModel(model);
+    }
 
-  /** Remove a PropertySelectionListener from this component's list of
-   * listeners.
-   *
-   * @param listener The listener.
-   *
-   * @since Kiwi 2.4
-   */
-  
-  public void removePropertySelectionListener(
-    PropertySelectionListener listener)
-  {
-    listeners.remove(listener);
-  }
+    /**
+     * Show or hide the root Property.
+     *
+     * @since Kiwi 2.3
+     */
+
+    public void setRootVisible(boolean flag) {
+        tree.setRootVisible(flag);
+    }
+
+    /**
+     * Get the currently selected Property.
+     *
+     * @return The selected Property, or <b>null</b> if the selection is
+     * empty.
+     * @since Kiwi 2.3
+     */
+
+    public Property getSelectedProperty() {
+        TreePath path = tree.getSelectionPath();
+        if (path == null) {
+            return (null);
+        }
+
+        Object o = path.getLastPathComponent();
+
+        if (!(o instanceof Property)) {
+            return (null);
+        }
+
+        return ((Property) o);
+    }
+
+    /**
+     * Expand the given Property (if it has child Properties).
+     *
+     * @since Kiwi 2.3
+     */
+
+    public void expand(Property property) {
+        TreePath path = adapter.getPathForNode(property);
+        tree.expandPath(path);
+    }
+
+    /**
+     * Collapse the given Property (if it has child Properties).
+     *
+     * @since Kiwi 2.3
+     */
+
+    public void collapse(Property property) {
+        TreePath path = adapter.getPathForNode(property);
+        tree.collapsePath(path);
+    }
+
+    /**
+     * Expand all Properties in the tree.
+     *
+     * @since Kiwi 2.3
+     */
+
+    public void expand() {
+        Property root = (Property) tree.getModel().getRoot();
+        if (root != null) {
+            tree.expandPath(new TreePath(root));
+
+            for (int i = 0; i < tree.getRowCount(); ++i) {
+                tree.expandRow(i);
+            }
+        }
+    }
+
+    /**
+     * Collapse all Properties in the tree.
+     *
+     * @since Kiwi 2.3
+     */
+
+    public void collapse() {
+        for (int i = tree.getRowCount() - 1; i > 0; --i) {
+            tree.collapseRow(i);
+        }
+    }
+
+    /**
+     * Get the editable state of the widget.
+     *
+     * @since Kiwi 2.3
+     */
+
+    public boolean isEditable() {
+        return (tree.isEditable());
+    }
+
+    /**
+     * Set the editable state of the widget.
+     *
+     * @since Kiwi 2.3
+     */
+
+    public void setEditable(boolean flag) {
+        tree.setEditable(flag);
+    }
+
+    /**
+     * Add a PropertySelectionListener to this component's list of listeners.
+     *
+     * @param listener The listener.
+     * @since Kiwi 2.4
+     */
+
+    public void addPropertySelectionListener(PropertySelectionListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Remove a PropertySelectionListener from this component's list of
+     * listeners.
+     *
+     * @param listener The listener.
+     * @since Kiwi 2.4
+     */
+
+    public void removePropertySelectionListener(
+        PropertySelectionListener listener) {
+        listeners.remove(listener);
+    }
 
 }
-
-/* end of source file */

@@ -19,66 +19,66 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.ActionListener;
 
-/** A special value editor which does not actually allow editing.
- * 
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+
+/**
+ * A special value editor which does not actually allow editing.
+ *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public final class FixedValueEditor extends PropertyValueEditor
-{
-  private JLabel label;
-  
-  /** Construct a new <code>FixedValueEditor</code>.
-   */
-  
-  public FixedValueEditor()
-  {
-    label = new JLabel();
-  }
-  
-  /**
-   */
-  
-  protected void prepareEditor()
-  {
-    Object value = property.getValue();
-    
-    label.setText(value == null ? null : value.toString());
-  }
-  
-  /**
-   */
-   
-  public JComponent getEditorComponent()
-  {
-    return(label);
-  }
-  
-  /**
-   */
-  
-  public void addActionListener(ActionListener listener)
-  {
-  }
-  
-  /**
-   */
-  
-  public void removeActionListener(ActionListener listener)
-  {
-  }
+public final class FixedValueEditor extends PropertyValueEditor {
+    private JLabel label;
 
-  /**
-   */
+    /**
+     * Construct a new <code>FixedValueEditor</code>.
+     */
 
-  public void startFocus()
-  {
-  }
-  
+    public FixedValueEditor() {
+        label = new JLabel();
+    }
+
+    /**
+     *
+     */
+
+    protected void prepareEditor() {
+        Object value = property.getValue();
+
+        label.setText(value == null ? null : value.toString());
+    }
+
+    /**
+     *
+     */
+
+    public JComponent getEditorComponent() {
+        return (label);
+    }
+
+    /**
+     *
+     */
+
+    public void addActionListener(ActionListener listener) {
+    }
+
+    /**
+     *
+     */
+
+    public void removeActionListener(ActionListener listener) {
+    }
+
+    /**
+     *
+     */
+
+    public void startFocus() {
+    }
+
 }
-
-/* end of source file */

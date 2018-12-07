@@ -19,38 +19,36 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-/** An abstract base class that encapsulates metadata about a property type.
+/**
+ * An abstract base class that encapsulates metadata about a property type.
  * This metadata may include such information as input constraints and
  * formatting directives.
  *
  * @author Mark Lindner
- *
  * @since Kiwi 2.0
  */
 
-public abstract class PropertyType
-{
+public abstract class PropertyType {
 
-  /** Construct a new <code>PropertyType</code> object. */
-  
-  protected PropertyType()
-  {
-  }
+    /**
+     * Construct a new <code>PropertyType</code> object.
+     */
 
-  /** Format a property value as a string. The default implementation calls
-   * the object's <code>toString()</code> method.
-   *
-   * @param value The value, which must be an object compatible with this
-   * property type.
-   * @return A string representation of the value, suitable for display
-   * purposes.
-   */
-  
-  public String formatValue(Object value)
-  {
-    return(value.toString());
-  }
-  
+    protected PropertyType() {
+    }
+
+    /**
+     * Format a property value as a string. The default implementation calls
+     * the object's <code>toString()</code> method.
+     *
+     * @param value The value, which must be an object compatible with this
+     *              property type.
+     * @return A string representation of the value, suitable for display
+     * purposes.
+     */
+
+    public String formatValue(Object value) {
+        return (value.toString());
+    }
+
 }
-
-/* end of source file */

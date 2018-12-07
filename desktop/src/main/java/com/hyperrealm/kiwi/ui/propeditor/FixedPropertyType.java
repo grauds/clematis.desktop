@@ -19,22 +19,20 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-/** A property type representing immutable (non-editable) properties.
+/**
+ * A property type representing immutable (non-editable) properties.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class FixedPropertyType extends PropertyType
-{
+public class FixedPropertyType extends PropertyType {
 
-  /** Construct a new <code>FixedPropertyType</code>.
-   */
+    /**
+     * Construct a new <code>FixedPropertyType</code>.
+     */
 
-  public FixedPropertyType()
-  {
-  }
-  
+    public FixedPropertyType() {
+    }
+
 }
-
-/* end of source file */

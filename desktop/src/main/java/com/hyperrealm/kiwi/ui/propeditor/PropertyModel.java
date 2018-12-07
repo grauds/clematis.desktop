@@ -21,49 +21,47 @@ package com.hyperrealm.kiwi.ui.propeditor;
 
 import javax.swing.Icon;
 
-import com.hyperrealm.kiwi.ui.model.*;
-import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
 
-/** A data model for the PropertyEditor component.
+/**
+ * A data model for the PropertyEditor component.
  *
  * @author Mark Lindner
  * @since Kiwi 2.3
  */
 
-public class PropertyModel extends DefaultKTreeModel<Property>
-{
-  /** Construct a new <code>PropertyModel</code>. */
-  
-  public PropertyModel()
-  {
-  }
+public class PropertyModel extends DefaultKTreeModel<Property> {
+    /**
+     * Construct a new <code>PropertyModel</code>.
+     */
 
-  /**
-   */
-  
-  public final Icon getIcon(Property node, boolean isExpanded)
-  {
-    return(node.getIcon());
-  }
+    public PropertyModel() {
+    }
 
-  /**
-   */
-  
-  public final String getLabel(Property node)
-  {
-    return(node.toString());
-  }
+    /**
+     *
+     */
 
-  /**
-   */
-  
-  public final boolean isExpandable(Property node)
-  {
-    return(getChildCount(node) > 0);
-  }
- 
+    public final Icon getIcon(Property node, boolean isExpanded) {
+        return (node.getIcon());
+    }
+
+    /**
+     *
+     */
+
+    public final String getLabel(Property node) {
+        return (node.toString());
+    }
+
+    /**
+     *
+     */
+
+    public final boolean isExpandable(Property node) {
+        return (getChildCount(node) > 0);
+    }
+
 }
-
-/* end of source file */
 
 

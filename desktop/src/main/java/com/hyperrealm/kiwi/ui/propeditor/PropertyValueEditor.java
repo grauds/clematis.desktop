@@ -19,101 +19,107 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+
 import javax.swing.JComponent;
 
-/** A base class for property value editors.
+/**
+ * A base class for property value editors.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public abstract class PropertyValueEditor
-{
-  /** The property currently being edited by this editor. */
-  protected Property property;
+public abstract class PropertyValueEditor {
+    /**
+     * The property currently being edited by this editor.
+     */
+    protected Property property;
 
-  /** Construct a new <code>PropertyValueEditor</code>. */
-  
-  protected PropertyValueEditor()
-  {
-  }
-  
-  /** Get the actual editor component.
-   *
-   * @return The editor component.
-   */
-  
-  public abstract JComponent getEditorComponent();
+    /**
+     * Construct a new <code>PropertyValueEditor</code>.
+     */
 
-  /** Set the property whose value will be edited by this editor.
-   *
-   * @param property The property.
-   */
-  
-  public void setProperty(Property property)
-  {
-    this.property = property;
+    protected PropertyValueEditor() {
+    }
 
-    prepareEditor();
-  }
+    /**
+     * Get the actual editor component.
+     *
+     * @return The editor component.
+     */
 
-  /** Get the property whose value is being edited by this editor.
-   */
+    public abstract JComponent getEditorComponent();
 
-  public Property getProperty()
-  {
-    return(property);
-  }
+    /**
+     * Get the property whose value is being edited by this editor.
+     */
 
-  /** Prepare the editor for editing. This method is called after the property
-   * has been set with <code>setProperty()</code>, to allow the editor to
-   * populate itself with the current value of the property. The default
-   * implementation does nothing.
-   */
+    public Property getProperty() {
+        return (property);
+    }
 
-  protected void prepareEditor()
-  {
-  }
+    /**
+     * Set the property whose value will be edited by this editor.
+     *
+     * @param property The property.
+     */
 
-  /** Assign keyboard focus to the editor.
-   */
+    public void setProperty(Property property) {
+        this.property = property;
 
-  public abstract void startFocus();
+        prepareEditor();
+    }
 
-  /** Validate the input currently entered in the editor. The default
-   * implementation returns <b>true</b>.
-   *
-   * @return <b>true</b> if the input is valid, <b>false</b> otherwise.
-   */
-  
-  public boolean validateInput()
-  {
-    return(true);
-  }
+    /**
+     * Prepare the editor for editing. This method is called after the property
+     * has been set with <code>setProperty()</code>, to allow the editor to
+     * populate itself with the current value of the property. The default
+     * implementation does nothing.
+     */
 
-  /** Commit the input currently entered in this editor to the property.
-   */
+    protected void prepareEditor() {
+    }
 
-  public void commitInput()
-  {
-  }
+    /**
+     * Assign keyboard focus to the editor.
+     */
 
-  /** Add an <code>ActionListener</code> to this editor's list of listeners.
-   *
-   * @param listener The listener to add.
-   */
-  
-  public abstract void addActionListener(ActionListener listener);
+    public abstract void startFocus();
 
-  /** Remove an <code>ActionListener</code> from this editor's list of
-   * listeners.
-   *
-   * @param listener The listener to remove.
-   */
-  
-  public abstract void removeActionListener(ActionListener listener);
-  
+    /**
+     * Validate the input currently entered in the editor. The default
+     * implementation returns <b>true</b>.
+     *
+     * @return <b>true</b> if the input is valid, <b>false</b> otherwise.
+     */
+
+    public boolean validateInput() {
+        return (true);
+    }
+
+    /**
+     * Commit the input currently entered in this editor to the property.
+     */
+
+    public void commitInput() {
+    }
+
+    /**
+     * Add an <code>ActionListener</code> to this editor's list of listeners.
+     *
+     * @param listener The listener to add.
+     */
+
+    public abstract void addActionListener(ActionListener listener);
+
+    /**
+     * Remove an <code>ActionListener</code> from this editor's list of
+     * listeners.
+     *
+     * @param listener The listener to remove.
+     */
+
+    public abstract void removeActionListener(ActionListener listener);
+
 }
-
-/* end of source file */

@@ -19,7 +19,8 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-/** A default implementation of the <code>PropertyEditorFactory</code>
+/**
+ * A default implementation of the <code>PropertyEditorFactory</code>
  * interface, providing construction of all property editors defined in this
  * package.
  *
@@ -27,48 +28,43 @@ package com.hyperrealm.kiwi.ui.propeditor;
  * @since Kiwi 2.0
  */
 
-public class DefaultPropertyEditorFactory implements PropertyEditorFactory
-{
-  private static DefaultPropertyEditorFactory instance
-    = new DefaultPropertyEditorFactory();
+public class DefaultPropertyEditorFactory implements PropertyEditorFactory {
 
-  /** Get a reference to the singleton instance.
-   */
+    private static DefaultPropertyEditorFactory instance = new DefaultPropertyEditorFactory();
 
-  public static PropertyEditorFactory getInstance()
-  {
-    return(instance);
-  }
+    /**
+     * Construct a new <code>DefaultPropertyEditorFactory</code>.
+     */
 
-  /** Construct a new <code>DefaultPropertyEditorFactory</code>.
-   */
-  
-  protected DefaultPropertyEditorFactory()
-  {
-  }
+    protected DefaultPropertyEditorFactory() {
+    }
 
-  /**
-   */
+    /**
+     * Get a reference to the singleton instance.
+     */
 
-  public PropertyValueEditor createEditor(PropertyType type)
-  {
-    PropertyValueEditor editor = null;
+    public static PropertyEditorFactory getInstance() {
+        return (instance);
+    }
 
-    if(type instanceof TextPropertyType)
-      editor = new TextValueEditor();
+    /**
+     *
+     */
 
-    else if(type instanceof NumericPropertyType)
-      editor = new NumericValueEditor();
+    public PropertyValueEditor createEditor(PropertyType type) {
+        PropertyValueEditor editor = null;
 
-    else if(type instanceof SelectionPropertyType)
-      editor = new SelectionValueEditor();
+        if (type instanceof TextPropertyType) {
+            editor = new TextValueEditor();
+        } else if (type instanceof NumericPropertyType) {
+            editor = new NumericValueEditor();
+        } else if (type instanceof SelectionPropertyType) {
+            editor = new SelectionValueEditor();
+        } else {
+            editor = new FixedValueEditor();
+        }
 
-    else
-      editor = new FixedValueEditor();
+        return (editor);
+    }
 
-    return(editor);
-  }
-  
 }
-
-/* end of source file */

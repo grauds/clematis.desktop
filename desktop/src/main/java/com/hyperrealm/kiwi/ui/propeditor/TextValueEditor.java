@@ -19,80 +19,82 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.ActionListener;
 
-import com.hyperrealm.kiwi.ui.*;
+import javax.swing.JComponent;
 
-/** A property editor for editing textual properties.
- * 
+import com.hyperrealm.kiwi.ui.KTextField;
+
+/**
+ * A property editor for editing textual properties.
+ *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class TextValueEditor extends PropertyValueEditor
-{
-  protected KTextField field;
-  
-  /** Construct a new <code>TextValueEditor</code>.
-   */
-  
-  public TextValueEditor()
-  {
-    field = new KTextField(15);
-  }
-  
-  /**
-   */
-  
-  protected void prepareEditor()
-  {
-    TextPropertyType type = (TextPropertyType)property.getType();
-    field.setMaximumLength(type.getMaximumLength());
+public class TextValueEditor extends PropertyValueEditor {
 
-    field.setText((String)property.getValue());
-  }
+    private static final int DEFAULT_TEXT_LENGTH = 15;
 
-  /**
-   */
-  
-  public void commitInput()
-  {
-    property.setValue(field.getText());
-  }
-  
-  /**
-   */
+    protected KTextField field;
 
-  public void addActionListener(ActionListener listener)
-  {
-    field.addActionListener(listener);
-  }
+    /**
+     * Construct a new <code>TextValueEditor</code>.
+     */
 
-  /**
-   */
+    public TextValueEditor() {
+        field = new KTextField(DEFAULT_TEXT_LENGTH);
+    }
 
-  public void removeActionListener(ActionListener listener)
-  {
-    field.removeActionListener(listener);
-  }
-  
-  /**
-   */
-   
-  public JComponent getEditorComponent()
-  {
-    return(field);
-  }
+    /**
+     *
+     */
 
-  /**
-   */
-  
-  public void startFocus()
-  {
-    field.requestFocus();
-  }
-  
+    protected void prepareEditor() {
+        TextPropertyType type = (TextPropertyType) property.getType();
+        field.setMaximumLength(type.getMaximumLength());
+
+        field.setText((String) property.getValue());
+    }
+
+    /**
+     *
+     */
+
+    public void commitInput() {
+        property.setValue(field.getText());
+    }
+
+    /**
+     *
+     */
+
+    public void addActionListener(ActionListener listener) {
+        field.addActionListener(listener);
+    }
+
+    /**
+     *
+     */
+
+    public void removeActionListener(ActionListener listener) {
+        field.removeActionListener(listener);
+    }
+
+    /**
+     *
+     */
+
+    public JComponent getEditorComponent() {
+        return (field);
+    }
+
+    /**
+     *
+     */
+
+    public void startFocus() {
+        field.requestFocus();
+    }
+
 }
-
-/* end of source file */

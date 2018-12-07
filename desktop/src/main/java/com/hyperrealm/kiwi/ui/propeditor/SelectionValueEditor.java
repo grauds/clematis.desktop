@@ -19,88 +19,86 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.ActionListener;
 
-import com.hyperrealm.kiwi.text.FormatConstants;
-import com.hyperrealm.kiwi.ui.*;
-import com.hyperrealm.kiwi.util.IntegerHolder;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
-/** A property editor for editing properties which may take on one of a fixed
+/**
+ * A property editor for editing properties which may take on one of a fixed
  * list of predefined values.
- * 
+ *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class SelectionValueEditor extends PropertyValueEditor
-{
-  private JComboBox list;
-  
-  /** Construct a new <code>SelectionValueEditor</code>.
-   */
-  
-  public SelectionValueEditor()
-  {
-    list = new JComboBox();
-  }
-  
-  /**
-   */
-  
-  protected void prepareEditor()
-  {
-    SelectionPropertyType type = (SelectionPropertyType)property.getType();
+public class SelectionValueEditor extends PropertyValueEditor {
 
-    list.removeAllItems();
-    Object items[] = type.getItems();
-    for(int i = 0; i < items.length; i++)
-      list.addItem(items[i]);
+    private JComboBox list;
 
-    list.setSelectedItem(property.getValue());
-  }
+    /**
+     * Construct a new <code>SelectionValueEditor</code>.
+     */
 
-  /**
-   */
-  
-  public void startFocus()
-  {
-    list.requestFocus();
-    //list.showPopup();
-  }
+    public SelectionValueEditor() {
+        list = new JComboBox();
+    }
 
-  /**
-   */
-  
-  public void commitInput()
-  {
-    property.setValue(list.getSelectedItem());
-  }
+    /**
+     *
+     */
 
-  /**
-   */
+    protected void prepareEditor() {
+        SelectionPropertyType type = (SelectionPropertyType) property.getType();
 
-  public void addActionListener(ActionListener listener)
-  {
-    list.addActionListener(listener);
-  }
+        list.removeAllItems();
+        Object[] items = type.getItems();
 
-  /**
-   */
+        for (Object item : items) {
+            list.addItem(item);
+        }
 
-  public void removeActionListener(ActionListener listener)
-  {
-    list.removeActionListener(listener);
-  }
-  
-  /**
-   */
-   
-  public JComponent getEditorComponent()
-  {
-    return(list);
-  }
-   
+        list.setSelectedItem(property.getValue());
+    }
+
+    /**
+     *
+     */
+
+    public void startFocus() {
+        list.requestFocus();
+    }
+
+    /**
+     *
+     */
+
+    public void commitInput() {
+        property.setValue(list.getSelectedItem());
+    }
+
+    /**
+     *
+     */
+
+    public void addActionListener(ActionListener listener) {
+        list.addActionListener(listener);
+    }
+
+    /**
+     *
+     */
+
+    public void removeActionListener(ActionListener listener) {
+        list.removeActionListener(listener);
+    }
+
+    /**
+     *
+     */
+
+    public JComponent getEditorComponent() {
+        return (list);
+    }
+
 }
-
-/* end of source file */

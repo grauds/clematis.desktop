@@ -19,19 +19,18 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-/** A listener for selection events in a PropertyEditor.
+/**
+ * A listener for selection events in a PropertyEditor.
  *
  * @author Mark Lindner
  * @since Kiwi 2.4
  */
 
-public interface PropertySelectionListener
-{
-  /** Called when the selected Property changes in a PropertyEditor.
-   */
-  
-  public void selectedPropertyChanged(PropertyEditor editor);
-  
-}
+public interface PropertySelectionListener {
+    /**
+     * Called when the selected Property changes in a PropertyEditor.
+     */
 
-/* end of source file */
+    void selectedPropertyChanged(PropertyEditor editor);
+
+}

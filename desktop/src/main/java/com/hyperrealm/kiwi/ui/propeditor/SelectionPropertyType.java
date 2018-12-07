@@ -19,58 +19,58 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-/** A property type representing properties which may have one of a fixed set
+/**
+ * A property type representing properties which may have one of a fixed set
  * of possible values.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public class SelectionPropertyType extends PropertyType
-{
-  private static final String[] defaultItems = { "One", "Two", "Three" };
-  private Object[] items;
+public class SelectionPropertyType extends PropertyType {
 
-  /** Construct a new <code>SelectionPropertyType</code> with a default set of
-   * possible values.
-   */
-  
-  public SelectionPropertyType()
-  {
-    this(defaultItems);
-  }
+    private static final String[] DEFAULT_ITEMS = {"One", "Two", "Three"};
 
-  /** Construct a new <code>SelectionPropertyType</code> with the given set of
-   * possible values.
-   *
-   * @param items The list of possible values.
-   */
-  
-  public SelectionPropertyType(Object[] items)
-  {
-    this.items = items;
-  }
+    private Object[] items;
 
-  /** Get the list of possible values.
-   *
-   * @return The possible values, as an array.
-   */
-  
-  public Object[] getItems()
-  {
-    return(items);
-  }
+    /**
+     * Construct a new <code>SelectionPropertyType</code> with a default set of
+     * possible values.
+     */
 
-  /** Set the list of possible values.
-   *
-   * @param items The possible values, as an array.
-   */
+    public SelectionPropertyType() {
+        this(DEFAULT_ITEMS);
+    }
 
-  public void setItems(Object[] items)
-  {
-    this.items = items;
-  }
-  
+    /**
+     * Construct a new <code>SelectionPropertyType</code> with the given set of
+     * possible values.
+     *
+     * @param items The list of possible values.
+     */
+
+    public SelectionPropertyType(Object[] items) {
+        this.items = items;
+    }
+
+    /**
+     * Get the list of possible values.
+     *
+     * @return The possible values, as an array.
+     */
+
+    public Object[] getItems() {
+        return (items);
+    }
+
+    /**
+     * Set the list of possible values.
+     *
+     * @param items The possible values, as an array.
+     */
+
+    public void setItems(Object[] items) {
+        this.items = items;
+    }
+
 }
-
-/* end of source file */

@@ -19,23 +19,22 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-/** An interface describing a factory for <code>PropertyValueEditor</code>s.
+/**
+ * An interface describing a factory for <code>PropertyValueEditor</code>s.
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
 
-public interface PropertyEditorFactory
-{
+public interface PropertyEditorFactory {
 
-  /** Construct a new <code>PropertyValueEditor</code> for properties of the
-   * given type.
-   *
-   * @param type The property type.
-   * @return A new editor.
-   */
-  
-  public PropertyValueEditor createEditor(PropertyType type);
+    /**
+     * Construct a new <code>PropertyValueEditor</code> for properties of the
+     * given type.
+     *
+     * @param type The property type.
+     * @return A new editor.
+     */
+
+    PropertyValueEditor createEditor(PropertyType type);
 }
-
-/* end of source file */

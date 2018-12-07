@@ -19,12 +19,12 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
-import java.util.*;
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-/** A class representing an editable property. A property has a textual name,
+/**
+ * A class representing an editable property. A property has a textual name,
  * a type, and a value. The type is represented by a <code>PropertyType</code>
  * object which contains metadata that is useful to a visual editor. The value
  * can be any arbitrary object.
@@ -33,164 +33,162 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  * @since Kiwi 2.0
  */
 
-public class Property
-{
-  private PropertyType type;
-  private Object value;
-  private String name;
-  private Icon icon;
-  private boolean editable = true;
-  private static final Icon PROPERTY_ICON = KiwiUtils.getResourceManager()
-    .getIcon("option.png");
+public class Property {
+    private static final Icon PROPERTY_ICON = KiwiUtils.getResourceManager()
+        .getIcon("option.png");
+    private PropertyType type;
+    private Object value;
+    private String name;
+    private Icon icon;
+    private boolean editable = true;
 
-  /** Construct a new property with the given name and type.
-   *
-   * @param name The textual name for the property.
-   * @param type The <code>PropertyType</code> object describing the type of
-   * this property.
-   */
+    /**
+     * Construct a new property with the given name and type.
+     *
+     * @param name The textual name for the property.
+     * @param type The <code>PropertyType</code> object describing the type of
+     *             this property.
+     */
 
-  public Property(String name, PropertyType type)
-  {
-    this(name, PROPERTY_ICON, type, null);
-  }
+    public Property(String name, PropertyType type) {
+        this(name, PROPERTY_ICON, type, null);
+    }
 
-  /** Construct a new property with the given name, icon, and type.
-   *
-   * @param name The textual name for the property.
-   * @param icon The icon for the property.
-   * @param type The <code>PropertyType</code> object describing the type of
-   * this property.
-   */
-  
-  public Property(String name, Icon icon, PropertyType type)
-  {
-    this(name, icon, type, null);
-  }
+    /**
+     * Construct a new property with the given name, icon, and type.
+     *
+     * @param name The textual name for the property.
+     * @param icon The icon for the property.
+     * @param type The <code>PropertyType</code> object describing the type of
+     *             this property.
+     */
 
-  /** Construct a new property with the given name, type, and value.
-   *
-   * @param name The textual name for the property.
-   * @param type The <code>PropertyType</code> object describing the type of
-   * this property.
-   * @param value The initial value for the property.
-   * @since Kiwi 2.4
-   */
-  
-  public Property(String name, PropertyType type, Object value)
-  {
-    this(name, PROPERTY_ICON, type, value);
-  }
-  
-  /** Construct a new property with the given name, icon, type, and initial
-   * value.
-   *
-   * @param name The textual name for the property.
-   * @param icon The icon for the property.
-   * @param type The <code>PropertyType</code> object describing the type of
-   * this property.
-   * @param value The initial value for the property.
-   */
-  
-  public Property(String name, Icon icon, PropertyType type, Object value)
-  {
-    this.name = name;
-    this.icon = icon;
-    this.type = type;
-    this.value = value;
-  }
+    public Property(String name, Icon icon, PropertyType type) {
+        this(name, icon, type, null);
+    }
 
-  /** Set the editable state of this property.
-   *
-   * @param editable A flag indicating whether the property is editable or not.
-   */
-  
-  public void setEditable(boolean editable)
-  {
-    this.editable = editable;
-  }
-  
-  /** Determine if this property is editable.
-   *
-   * @return <b>true</b> if the property is editable, <b>false</b> otherwise.
-   */
-  
-  public boolean isEditable()
-  {
-    return(editable);
-  }
+    /**
+     * Construct a new property with the given name, type, and value.
+     *
+     * @param name  The textual name for the property.
+     * @param type  The <code>PropertyType</code> object describing the type of
+     *              this property.
+     * @param value The initial value for the property.
+     * @since Kiwi 2.4
+     */
 
-  /** Determine if the property currenty has a (non-null) value.
-   *
-   * @return <b>true</b> if the property has a value, <b>false</b> otherwise.
-   */
-  
-  public boolean hasValue()
-  {
-    return(value != null);
-  }
+    public Property(String name, PropertyType type, Object value) {
+        this(name, PROPERTY_ICON, type, value);
+    }
 
-  /** Get the icon, if any, for this property.
-   *
-   * @return The icon.
-   */
+    /**
+     * Construct a new property with the given name, icon, type, and initial
+     * value.
+     *
+     * @param name  The textual name for the property.
+     * @param icon  The icon for the property.
+     * @param type  The <code>PropertyType</code> object describing the type of
+     *              this property.
+     * @param value The initial value for the property.
+     */
 
-  public Icon getIcon()
-  {
-    return(icon);
-  }
+    public Property(String name, Icon icon, PropertyType type, Object value) {
+        this.name = name;
+        this.icon = icon;
+        this.type = type;
+        this.value = value;
+    }
 
-  /** Get the name of this property.
-   *
-   * @return The textual name.
-   */
-  
-  public String getName()
-  {
-    return(name);
-  }
+    /**
+     * Determine if this property is editable.
+     *
+     * @return <b>true</b> if the property is editable, <b>false</b> otherwise.
+     */
 
-  /** Get the type of this property.
-   *
-   * @return The <code>PropertyType</code> object for this property.
-   */
-   
-  public PropertyType getType()
-  {
-    return(type);
-  }
+    public boolean isEditable() {
+        return (editable);
+    }
 
-  /** Get the (possibly null) value of the property.
-   *
-   * @return The value.
-   */
-    
-  public Object getValue()
-  {
-    return(value);
-  }
+    /**
+     * Set the editable state of this property.
+     *
+     * @param editable A flag indicating whether the property is editable or not.
+     */
 
-  /** Set the value of the property.
-   *
-   * @param value The (possibly null) value for the property.
-   */
-   
-  public void setValue(Object value)
-  {
-    this.value = value;
-  }
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
 
-  /** Return a textual representation of this property, suitable for rendering
-   * purposes.
-   */
-  
-  public String toString()
-  {
-    if(value != null)
-      return(name + ": " + type.formatValue(value));
-    else
-      return(name);
-  }
+    /**
+     * Determine if the property currenty has a (non-null) value.
+     *
+     * @return <b>true</b> if the property has a value, <b>false</b> otherwise.
+     */
+
+    public boolean hasValue() {
+        return (value != null);
+    }
+
+    /**
+     * Get the icon, if any, for this property.
+     *
+     * @return The icon.
+     */
+
+    public Icon getIcon() {
+        return (icon);
+    }
+
+    /**
+     * Get the name of this property.
+     *
+     * @return The textual name.
+     */
+
+    public String getName() {
+        return (name);
+    }
+
+    /**
+     * Get the type of this property.
+     *
+     * @return The <code>PropertyType</code> object for this property.
+     */
+
+    public PropertyType getType() {
+        return (type);
+    }
+
+    /**
+     * Get the (possibly null) value of the property.
+     *
+     * @return The value.
+     */
+
+    public Object getValue() {
+        return (value);
+    }
+
+    /**
+     * Set the value of the property.
+     *
+     * @param value The (possibly null) value for the property.
+     */
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    /**
+     * Return a textual representation of this property, suitable for rendering
+     * purposes.
+     */
+
+    public String toString() {
+        if (value != null) {
+            return (name + ": " + type.formatValue(value));
+        } else {
+            return (name);
+        }
+    }
 }
-
-/* end of source file */
