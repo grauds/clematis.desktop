@@ -19,16 +19,24 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.filechooser.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.io.File;
 
-import com.hyperrealm.kiwi.ui.dialog.*;
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.AbstractButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileSystemView;
 
-/** A direct replacement for <code>JFileChooser</code> that supports background
+import com.hyperrealm.kiwi.ui.dialog.KDialog;
+
+/**
+ * A direct replacement for <code>JFileChooser</code> that supports background
  * texturing. All methods behave equivalently to the superclass, with the
  * exception of <code>getSelectedFile()</code>, which now returns
  * <code>null</code> if the <i>Cancel</i> button was pressed.
@@ -39,185 +47,185 @@ import com.hyperrealm.kiwi.util.*;
  * </center>
  *
  * @author Mark Lindner
- * @since Kiwi 1.4
  * @see com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog
+ * @since Kiwi 1.4
  */
 
-public class KFileChooser extends JFileChooser
-{
-  protected KDialog _dialog = null;
-  protected int _returnValue = ERROR_OPTION;
+public class KFileChooser extends JFileChooser {
 
-  /**
-   */
+    protected KDialog dialog = null;
 
-  public KFileChooser()
-  {
-    super();
+    private int returnValue = ERROR_OPTION;
 
-    _init();
-  }
+    /**
+     *
+     */
 
-  /**
-   */
-  
-  public KFileChooser(File currentDirectory)
-  {
-    super(currentDirectory);
+    public KFileChooser() {
+        super();
 
-    _init();
-  }
-
-  /**
-   */
-  
-  public KFileChooser(File currentDirectory, FileSystemView fsv)
-  {
-    super(currentDirectory, fsv);
-
-    _init();
-  }
-
-  /**
-   */
-  
-  public KFileChooser(FileSystemView fsv)
-  {
-    super(fsv);
-
-    _init();
-  }
-
-  /**
-   */
-  
-  public KFileChooser(String currentDirectoryPath)
-  {
-    super(currentDirectoryPath);
-
-    _init();
-  }
-
-  /**
-   */
-  
-  public KFileChooser(String currentDirectoryPath, FileSystemView fsv)
-  {
-    super(currentDirectoryPath, fsv);
-
-    _init();
-  }
-
-  /*
-   */
-  
-  private void _init()
-  {
-    _removeOpacity(this);
-  }
-
-  /*
-   */
-  
-  private void _removeOpacity(Component c)
-  {
-    if(!(c instanceof JComponent))
-      return;
-    
-    if((c instanceof JPanel) || (c instanceof AbstractButton)
-       || (c instanceof JComboBox))
-      ((JComponent)c).setOpaque(false);
-
-    Container cont = (Container)c;
-    
-    for(int i = 0; i < cont.getComponentCount(); i++)
-      _removeOpacity(cont.getComponent(i));
-  }
-
-  /**
-   */
-
-  public int showDialog(Component parent, String approveButtonText)
-  {
-    if(approveButtonText != null)
-    {
-      setApproveButtonText(approveButtonText);
-      setDialogType(CUSTOM_DIALOG);
+        init();
     }
 
-    Frame frame = ((parent instanceof Frame) ? (Frame)parent
-                   : (Frame)SwingUtilities.getAncestorOfClass(Frame.class,
-                                                              parent));
+    /**
+     *
+     */
 
-    String title = null;
+    public KFileChooser(File currentDirectory) {
+        super(currentDirectory);
 
-    if(getDialogTitle() != null)
-      title = getDialogTitle(); //dialogTitle;
-    else
-      title = getUI().getDialogTitle(this);
-
-    if(_dialog == null)
-      _dialog = new _Dialog(frame, title, true, this);
-    
-    _dialog.setLocationRelativeTo(parent);
-
-    rescanCurrentDirectory();
- 
-    _dialog.setVisible(true);
-
-    return(_returnValue);
-  }
-
-  /*
-   */
-
-  private class _Dialog extends KDialog
-  {
-    public _Dialog(Frame parent, String title, boolean modal,
-                   KFileChooser chooser)
-    {
-      super(parent, title, modal);
-
-      KPanel p = getMainContainer();
-      p.setLayout(new GridLayout(1, 0));
-      p.add(chooser);
-
-      pack();
+        init();
     }
-  }
 
-  /**
-   */
-  
-  public void approveSelection()
-  {
-    // ugly hack because "returnValue" and "dialog" are private in the
-    // superclass
-    
-    super.approveSelection();
-    if(_dialog != null)
-      _dialog.setVisible(false);
-    
-    _returnValue = APPROVE_OPTION;
-  }
+    /**
+     *
+     */
 
-  /**
-   */
-  
-  public void cancelSelection()
-  {
-    // ugly hack because "returnValue" and "dialog" are private in the
-    // superclass
+    public KFileChooser(File currentDirectory, FileSystemView fsv) {
+        super(currentDirectory, fsv);
 
-    super.cancelSelection();
-    if(_dialog != null)
-      _dialog.setVisible(false);
+        init();
+    }
 
-    setSelectedFile(null); // how did they overlook this???
-    setSelectedFiles(null);
-    _returnValue = CANCEL_OPTION;    
-  }
+    /**
+     *
+     */
+
+    public KFileChooser(FileSystemView fsv) {
+        super(fsv);
+
+        init();
+    }
+
+    /**
+     *
+     */
+
+    public KFileChooser(String currentDirectoryPath) {
+        super(currentDirectoryPath);
+
+        init();
+    }
+
+    /**
+     *
+     */
+
+    public KFileChooser(String currentDirectoryPath, FileSystemView fsv) {
+        super(currentDirectoryPath, fsv);
+
+        init();
+    }
+
+    /*
+     */
+
+    private void init() {
+        removeOpacity(this);
+    }
+
+    /*
+     */
+
+    private void removeOpacity(Component c) {
+        if (!(c instanceof JComponent)) {
+            return;
+        }
+
+        if ((c instanceof JPanel) || (c instanceof AbstractButton)
+            || (c instanceof JComboBox)) {
+            ((JComponent) c).setOpaque(false);
+        }
+
+        Container cont = (Container) c;
+
+        for (int i = 0; i < cont.getComponentCount(); i++) {
+            removeOpacity(cont.getComponent(i));
+        }
+    }
+
+    /**
+     *
+     */
+
+    public int showDialog(Component parent, String approveButtonText) {
+        if (approveButtonText != null) {
+            setApproveButtonText(approveButtonText);
+            setDialogType(CUSTOM_DIALOG);
+        }
+
+        Frame frame = ((parent instanceof Frame) ? (Frame) parent
+            : (Frame) SwingUtilities.getAncestorOfClass(Frame.class,
+            parent));
+
+        String title = null;
+
+        if (getDialogTitle() != null) {
+            title = getDialogTitle(); //dialogTitle;
+        } else {
+            title = getUI().getDialogTitle(this);
+        }
+
+        if (dialog == null) {
+            dialog = new Dialog(frame, title, true, this);
+        }
+
+        dialog.setLocationRelativeTo(parent);
+
+        rescanCurrentDirectory();
+
+        dialog.setVisible(true);
+
+        return (returnValue);
+    }
+
+    /*
+     */
+
+    /**
+     *
+     */
+
+    public void approveSelection() {
+        // todo: ugly hack because "returnValue" and "dialog" are private in the superclass
+
+        super.approveSelection();
+        if (dialog != null) {
+            dialog.setVisible(false);
+        }
+
+        returnValue = APPROVE_OPTION;
+    }
+
+    /**
+     *
+     */
+
+    public void cancelSelection() {
+        // todo: ugly hack because "returnValue" and "dialog" are private in the superclass
+
+        super.cancelSelection();
+        if (dialog != null) {
+            dialog.setVisible(false);
+        }
+
+        setSelectedFile(null); // how did they overlook this???
+        setSelectedFiles(null);
+        returnValue = CANCEL_OPTION;
+    }
+
+    private class Dialog extends KDialog {
+
+        Dialog(Frame parent, String title, boolean modal,
+               KFileChooser chooser) {
+            super(parent, title, modal);
+
+            KPanel p = getMainContainer();
+            p.setLayout(new GridLayout(1, 0));
+            p.add(chooser);
+
+            pack();
+        }
+    }
 
 }
-
-/* end of source file */

@@ -19,14 +19,13 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import javax.swing.JTextArea;
 import javax.swing.plaf.ComponentUI;
 
-import com.hyperrealm.kiwi.util.*;
+import com.hyperrealm.kiwi.util.KiwiUtils;
 
-/** A multi-line label. This class renders a string as one or more lines,
+/**
+ * A multi-line label. This class renders a string as one or more lines,
  * breaking text on whitespace and producing a left-justified paragraph. This
  * class is basically a <code>JTextArea</code> that is transparent, non-
  * editable, non-scrollable, and non-highlightable.
@@ -36,76 +35,69 @@ import com.hyperrealm.kiwi.util.*;
  * <i>An example KLabelArea.</i>
  * </center>
  *
- * @since Kiwi 1.3
- *
  * @author Mark Lindner
+ * @since Kiwi 1.3
  */
 
-public class KLabelArea extends JTextArea
-{
-  /** Construct a new <code>KLabelArea</code> with the specified text and rows
-   * and columns.
-   *
-   * @param text The text to display.
-   * @param rows The height of the label in rows.
-   * @param cols The width of the label in columns.
-   */
-  
-  public KLabelArea(String text, int rows, int cols)
-  {
-    super(text, rows, cols);
+public class KLabelArea extends JTextArea {
+    /**
+     * Construct a new <code>KLabelArea</code> with the specified text and rows
+     * and columns.
+     *
+     * @param text The text to display.
+     * @param rows The height of the label in rows.
+     * @param cols The width of the label in columns.
+     */
 
-    _init();
-  }
+    public KLabelArea(String text, int rows, int cols) {
+        super(text, rows, cols);
 
-  /** Construct a new <code>KLabelArea</code> with the specified number of
-   * rows and columns.
-   *
-   * @param rows The height of the label in rows.
-   * @param cols The width of the label in columns.
-   */
-  
-  public KLabelArea(int rows, int cols)
-  {
-    super(rows, cols);
+        init();
+    }
 
-    _init();
-  }
+    /**
+     * Construct a new <code>KLabelArea</code> with the specified number of
+     * rows and columns.
+     *
+     * @param rows The height of the label in rows.
+     * @param cols The width of the label in columns.
+     */
 
-  /* initialize component */
-  
-  private void _init()
-  {
-    setEditable(false);
-    setOpaque(false);
-    setHighlighter(null);
-    setFont(KiwiUtils.boldFont);
-    setLineWrap(true);
-    setWrapStyleWord(true);
-  }
+    public KLabelArea(int rows, int cols) {
+        super(rows, cols);
 
-  /* The following are overridden to counteract Swing bugs. */
-  
-  public void setUI(ComponentUI newUI)
-  {
-    super.setUI(newUI);
-    _init();
-  }
+        init();
+    }
 
-  public void updateUI()
-  {
-    super.updateUI();
-    _init();
-  }
+    /* initialize component */
 
-  /** Overridden to return <code>false</code>.
-   */
-  
-  public final boolean isFocusable()
-  {
-    return(false);
-  }
+    private void init() {
+        setEditable(false);
+        setOpaque(false);
+        setHighlighter(null);
+        setFont(KiwiUtils.boldFont);
+        setLineWrap(true);
+        setWrapStyleWord(true);
+    }
+
+    /* The following are overridden to counteract Swing bugs. */
+
+    public void setUI(ComponentUI newUI) {
+        super.setUI(newUI);
+        init();
+    }
+
+    public void updateUI() {
+        super.updateUI();
+        init();
+    }
+
+    /**
+     * Overridden to return <code>false</code>.
+     */
+
+    public final boolean isFocusable() {
+        return (false);
+    }
 
 }
-
-/* end of source file */

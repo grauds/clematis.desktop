@@ -19,73 +19,75 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
 
-/** A trivial extension of <code>JScrollPane</code> that renders its contents
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+
+/**
+ * A trivial extension of <code>JScrollPane</code> that renders its contents
  * with a transparent background.
  *
  * @author Mark Lindner
  */
 
-public class KScrollPane extends JScrollPane
-{
-  /** Construct a new <code>KScrollPane</code>. */
-  
-  public KScrollPane()
-  {
-    super();
+public class KScrollPane extends JScrollPane {
+    /**
+     * Construct a new <code>KScrollPane</code>.
+     */
 
-    _init();
-  }
+    public KScrollPane() {
+        super();
 
-  /** Construct a new <code>KScrollPane</code> for the given component.
-   *
-   * @param view The component to display in the scroll pane.
-   */
+        init();
+    }
 
-  public KScrollPane(Component view)
-  {
-    super(view);
-    
-    _init();
-  }
+    /**
+     * Construct a new <code>KScrollPane</code> for the given component.
+     *
+     * @param view The component to display in the scroll pane.
+     */
 
-  /** Construct a new <code>KScrollPane</code> for the given component and
-   * scrollbar policies.
-   *
-   * @param view THe component to display in the scroll pane.
-   * @param vsbPolicy The vertical scrollbar policy.
-   * @param hsbPolicy The horizontal scrollbar policy.
-   *
-   * @since Kiwi 2.0
-   */
+    public KScrollPane(Component view) {
+        super(view);
 
-  public KScrollPane(Component view, int vsbPolicy, int hsbPolicy)
-  {
-    super(view, vsbPolicy, hsbPolicy);
+        init();
+    }
 
-    _init();
-  }
-   
-  /* common initialization */
-  
-  private void _init()
-  {
-    setBackground(Color.white);
-    getViewport().setBackground(Color.white);
-    
-    setOpaque(false);
+    /**
+     * Construct a new <code>KScrollPane</code> for the given component and
+     * scrollbar policies.
+     *
+     * @param view      THe component to display in the scroll pane.
+     * @param vsbPolicy The vertical scrollbar policy.
+     * @param hsbPolicy The horizontal scrollbar policy.
+     * @since Kiwi 2.0
+     */
 
-    JScrollBar sb = getHorizontalScrollBar();
-    if(sb != null)
-      sb.setOpaque(false);
+    public KScrollPane(Component view, int vsbPolicy, int hsbPolicy) {
+        super(view, vsbPolicy, hsbPolicy);
 
-    sb = getVerticalScrollBar();
-    if(sb != null)
-      sb.setOpaque(false);
-  }
-  
+        init();
+    }
+
+    /* common initialization */
+
+    private void init() {
+        setBackground(Color.white);
+        getViewport().setBackground(Color.white);
+
+        setOpaque(false);
+
+        JScrollBar sb = getHorizontalScrollBar();
+        if (sb != null) {
+            sb.setOpaque(false);
+        }
+
+        sb = getVerticalScrollBar();
+        if (sb != null) {
+            sb.setOpaque(false);
+        }
+    }
+
 }
-
-/* end of source file */

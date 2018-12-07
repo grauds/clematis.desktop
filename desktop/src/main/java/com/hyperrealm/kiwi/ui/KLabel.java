@@ -19,147 +19,143 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
-import com.hyperrealm.kiwi.util.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
 
-/** A trivial extension to <code>JLabel</code> that performs some simple
+/**
+ * A trivial extension to <code>JLabel</code> that performs some simple
  * customizations and supports optional anti-aliased rendering.
  *
- * @since Kiwi 1.3
- *
  * @author Mark Lindner
+ * @since Kiwi 1.3
  */
 
-public class KLabel extends JLabel
-{
-  private boolean antialiased = false;
-  
-  /** Construct a new <code>KLabel</code>.
-   */
-  
-  public KLabel()
-  {
-    super();
+public class KLabel extends JLabel {
 
-    _init();
-  }
+    private boolean antialiased = false;
 
-  /** Construct a new <code>KLabel</code> with the specified image.
-   *
-   * @param image The image.
-   */
-  
-  public KLabel(Icon image)
-  {
-    super(image);
+    /**
+     * Construct a new <code>KLabel</code>.
+     */
 
-    _init();
-  }
+    public KLabel() {
+        super();
 
-  /** Construct a new <code>KLabel</code> with the specified image and
-   * horizontal alignment.
-   *
-   * @param image The image.
-   * @param horizontalAlignment The horizontal alignment.
-   */
-  
-  public KLabel(Icon image, int horizontalAlignment)
-  {
-    super(image, horizontalAlignment);
-    
-    _init();
-  }
-
-  /** Construct a new <code>KLabel</code> with the specified text.
-   *
-   * @param text The text.
-   */
-  
-  public KLabel(String text)
-  {
-    super(text);
-
-    _init();
-  }
-
-  /** Construct a new <code>KLabel</code> with the specified text, icon and
-   * horizontal alignment.
-   *
-   * @param text The text.
-   * @param icon The icon.
-   * @param horizontalAlignment The horizontal alignment.
-   */
-  
-  public KLabel(String text, Icon icon, int horizontalAlignment)
-  {
-    super(text, icon, horizontalAlignment);
-
-    _init();
-  }
-
-  /** Construct a new <code>KLabel</code> with the specified text and
-   * horizontal alignment.
-   *
-   * @param text The text.
-   * @param horizontalAlignment The horizontal alignment.
-   */
-  
-  public KLabel(String text, int horizontalAlignment)
-  {
-    super(text, horizontalAlignment);
-
-    _init();
-  }
-
-  /*
-   */
-
-  private void _init()
-  {
-    setOpaque(false);
-    setForeground(Color.black);
-  }
-
-  /** Enable or disable antialiased rendering for this label.
-   *
-   * @since Kiwi 2.2
-   */
-  
-  public void setAntiAliased(boolean antialiased)
-  {
-    this.antialiased = antialiased;
-  }
-
-  /** Determine if antialiased rendering is enabled for this label.
-   *
-   * @since Kiwi 2.2
-   */
-
-  public boolean isAntiAliased()
-  {
-    return(antialiased);
-  }
-
-  /*
-   */
-
-  public void paintComponent(Graphics g)
-  {
-    if(antialiased)
-    {
-      Graphics2D g2d = (Graphics2D)g;
-      
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                           RenderingHints.VALUE_ANTIALIAS_ON);
+        init();
     }
 
-    super.paintComponent(g);
-  }
-  
-}
+    /**
+     * Construct a new <code>KLabel</code> with the specified image.
+     *
+     * @param image The image.
+     */
 
-/* end of source file */
+    public KLabel(Icon image) {
+        super(image);
+
+        init();
+    }
+
+    /**
+     * Construct a new <code>KLabel</code> with the specified image and
+     * horizontal alignment.
+     *
+     * @param image               The image.
+     * @param horizontalAlignment The horizontal alignment.
+     */
+
+    public KLabel(Icon image, int horizontalAlignment) {
+        super(image, horizontalAlignment);
+
+        init();
+    }
+
+    /**
+     * Construct a new <code>KLabel</code> with the specified text.
+     *
+     * @param text The text.
+     */
+
+    public KLabel(String text) {
+        super(text);
+
+        init();
+    }
+
+    /**
+     * Construct a new <code>KLabel</code> with the specified text, icon and
+     * horizontal alignment.
+     *
+     * @param text                The text.
+     * @param icon                The icon.
+     * @param horizontalAlignment The horizontal alignment.
+     */
+
+    public KLabel(String text, Icon icon, int horizontalAlignment) {
+        super(text, icon, horizontalAlignment);
+
+        init();
+    }
+
+    /**
+     * Construct a new <code>KLabel</code> with the specified text and
+     * horizontal alignment.
+     *
+     * @param text                The text.
+     * @param horizontalAlignment The horizontal alignment.
+     */
+
+    public KLabel(String text, int horizontalAlignment) {
+        super(text, horizontalAlignment);
+
+        init();
+    }
+
+    /*
+     */
+
+    private void init() {
+        setOpaque(false);
+        setForeground(Color.black);
+    }
+
+    /**
+     * Determine if antialiased rendering is enabled for this label.
+     *
+     * @since Kiwi 2.2
+     */
+
+    public boolean isAntiAliased() {
+        return (antialiased);
+    }
+
+    /**
+     * Enable or disable antialiased rendering for this label.
+     *
+     * @since Kiwi 2.2
+     */
+
+    public void setAntiAliased(boolean antialiased) {
+        this.antialiased = antialiased;
+    }
+
+    /*
+     */
+
+    public void paintComponent(Graphics g) {
+        if (antialiased) {
+            Graphics2D g2d = (Graphics2D) g;
+
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        }
+
+        super.paintComponent(g);
+    }
+
+}

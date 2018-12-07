@@ -19,49 +19,47 @@
 
 package com.hyperrealm.kiwi.ui;
 
-/** A subclass of <code>DataField</code> for the input and display of text.
+/**
+ * A subclass of <code>DataField</code> for the input and display of text.
  *
  * @author Mark Lindner
  * @since Kiwi 2.1
  */
 
-public class KTextField extends DataField<String>
-{
+public class KTextField extends DataField<String> {
 
-  /** Construct a new <code>KTextField</code>.
-   */
-  
-  public KTextField()
-  {
-    super();
-  }
+    /**
+     * Construct a new <code>KTextField</code>.
+     */
 
-  /** Construct a new <code>KTextField</code> of the specified width.
-   *
-   * @param width The width of the field.
-   */
-  
-  public KTextField(int width)
-  {
-    super(width);
-  }
+    public KTextField() {
+        super();
+    }
 
-  /** Set the object being edited. Equivalent to <code>setText()</code>.
-   */
+    /**
+     * Construct a new <code>KTextField</code> of the specified width.
+     *
+     * @param width The width of the field.
+     */
 
-  public void setObject(String text)
-  {
-    setText(text);
-  }
+    public KTextField(int width) {
+        super(width);
+    }
 
-  /** Get the object being edited. Equivalent to <code>getText()</code>.
-   */
-  
-  public String getObject()
-  {
-    return(getText());
-  }
+    /**
+     * Get the object being edited. Equivalent to <code>getText()</code>.
+     */
+
+    public String getObject() {
+        return (getText());
+    }
+
+    /**
+     * Set the object being edited. Equivalent to <code>setText()</code>.
+     */
+
+    public void setObject(String text) {
+        setText(text);
+    }
 
 }
-
-/* end of source file */

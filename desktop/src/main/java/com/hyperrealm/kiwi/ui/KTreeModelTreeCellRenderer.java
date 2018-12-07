@@ -19,131 +19,131 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.JLabel;
+import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.TreeCellRenderer;
 
-import com.hyperrealm.kiwi.ui.model.*;
+import com.hyperrealm.kiwi.ui.model.KTreeModel;
 
-/** An implementation of <code>TreeCellRenderer</code> for use with
+/**
+ * An implementation of <code>TreeCellRenderer</code> for use with
  * <code>JTree</code>s that are connected to a <code>KTreeModel</code> via a
  * <code>KTreeModelTreeAdapter</code>. This cell renderer consults the tree
  * model for a cell's rendering information, such as its label and icon.
  *
+ * @author Mark Lindner
  * @see javax.swing.JTree
  * @see com.hyperrealm.kiwi.ui.model.KTreeModel
  * @see com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter
- *
- * @author Mark Lindner
  */
 
 public class KTreeModelTreeCellRenderer extends JLabel
-  implements TreeCellRenderer
-{
-  private KTreeModel model = null;
-  private Color highlightBackground
-    = UIManager.getColor("Tree.selectionBackground");
-  private Color highlightForeground
-    = UIManager.getColor("Tree.selectionForeground");
+    implements TreeCellRenderer {
 
-  /** Construct a new <code>ModelTreeCellRenderer</code>.
-   */
+    private KTreeModel model = null;
 
-  public KTreeModelTreeCellRenderer()
-  {
-  }
+    private Color highlightBackground
+        = UIManager.getColor("Tree.selectionBackground");
 
-  /** Construct a new <code>ModelTreeCellRenderer</code>.
-   *
-   * @param model The tree model that will be used with this renderer.
-   */
+    private Color highlightForeground
+        = UIManager.getColor("Tree.selectionForeground");
 
-  public KTreeModelTreeCellRenderer(KTreeModel model)
-  {
-    this();
-    setModel(model);
-  }
-  
-  /** Set the data model for this renderer.
-   *
-   * @param model The model.
-   */
-  
-  public void setModel(KTreeModel model)
-  {
-    this.model = model;
-  }
+    /**
+     * Construct a new <code>ModelTreeCellRenderer</code>.
+     */
 
-  /** Return the component (in this case a <code>JLabel</code> that is used as
-   * a "rubber stamp" for drawing items in the <code>JTree</code>. The
-   * renderer will consult the tree model for each node's rendering
-   * information.
-   *
-   * @param tree The associated <code>JTree</code> instance.
-   * @param value The object to draw (assumed to be an
-   * <code>ITreeNode</code>).
-   * @param isSelected <code>true</code> if this item is currently selected
-   * in the tree.
-   * @param hasFocus <code>true</code> if this item currently has focus in
-   * the tree.
-   * @param expanded <code>true</code> if this item is currently expanded in
-   * the tree.
-   * @param row The row number for this item in the tree.
-   * @param leaf <code>true</code> if this item is a leaf.
-   */
-
-  public Component getTreeCellRendererComponent(JTree tree, Object value,
-                                                boolean isSelected,
-                                                boolean expanded, boolean leaf,
-                                                int row, boolean hasFocus)
-  {
-    if(model != null)
-    {
-      setIcon(model.getIcon(value, expanded));
-      setText(model.getLabel(value));
+    public KTreeModelTreeCellRenderer() {
     }
 
-    setFont(tree.getFont());
-    setOpaque(isSelected);
-    
-    if(isSelected)
-    {
-      this.setBackground(highlightBackground);
-      this.setForeground(highlightForeground);
-    }
-    else
-    {
-      this.setBackground(tree.getBackground());
-      this.setForeground(tree.getForeground());
+    /**
+     * Construct a new <code>ModelTreeCellRenderer</code>.
+     *
+     * @param model The tree model that will be used with this renderer.
+     */
+
+    public KTreeModelTreeCellRenderer(KTreeModel model) {
+        this();
+        setModel(model);
     }
 
-    return(this);
-  }
+    /**
+     * Set the data model for this renderer.
+     *
+     * @param model The model.
+     */
 
-  /** Set the background color for a highlighted item. This method will be
-   * deprecated once <code>JTree.getSelectionBackground()</code> is
-   * implemented.
-   *
-   * @param bg The new background color.
-   */
+    public void setModel(KTreeModel model) {
+        this.model = model;
+    }
 
-  public void setHighlightBackground(Color bg)
-  {
-    highlightBackground = bg;
-  }
+    /**
+     * Return the component (in this case a <code>JLabel</code> that is used as
+     * a "rubber stamp" for drawing items in the <code>JTree</code>. The
+     * renderer will consult the tree model for each node's rendering
+     * information.
+     *
+     * @param tree       The associated <code>JTree</code> instance.
+     * @param value      The object to draw (assumed to be an
+     *                   <code>ITreeNode</code>).
+     * @param isSelected <code>true</code> if this item is currently selected
+     *                   in the tree.
+     * @param hasFocus   <code>true</code> if this item currently has focus in
+     *                   the tree.
+     * @param expanded   <code>true</code> if this item is currently expanded in
+     *                   the tree.
+     * @param row        The row number for this item in the tree.
+     * @param leaf       <code>true</code> if this item is a leaf.
+     */
 
-  /** Set the foreground color for a highlighted item.  This method will be
-   * deprecated once <code>JTree.getSelectionForeground()</code> is
-   * implemented.
-   *
-   * @param fg The new foreground color.
-   */
+    public Component getTreeCellRendererComponent(JTree tree, Object value,
+                                                  boolean isSelected,
+                                                  boolean expanded, boolean leaf,
+                                                  int row, boolean hasFocus) {
+        if (model != null) {
+            setIcon(model.getIcon(value, expanded));
+            setText(model.getLabel(value));
+        }
 
-  public void setHighlightForeground(Color fg)
-  {
-    highlightForeground = fg;
-  }
+        setFont(tree.getFont());
+        setOpaque(isSelected);
+
+        if (isSelected) {
+            this.setBackground(highlightBackground);
+            this.setForeground(highlightForeground);
+        } else {
+            this.setBackground(tree.getBackground());
+            this.setForeground(tree.getForeground());
+        }
+
+        return (this);
+    }
+
+    /**
+     * Set the background color for a highlighted item. This method will be
+     * deprecated once <code>JTree.getSelectionBackground()</code> is
+     * implemented.
+     *
+     * @param bg The new background color.
+     */
+
+    public void setHighlightBackground(Color bg) {
+        highlightBackground = bg;
+    }
+
+    /**
+     * Set the foreground color for a highlighted item.  This method will be
+     * deprecated once <code>JTree.getSelectionForeground()</code> is
+     * implemented.
+     *
+     * @param fg The new foreground color.
+     */
+
+    public void setHighlightForeground(Color fg) {
+        highlightForeground = fg;
+    }
 
 }
-
-/* end of source file */

@@ -19,10 +19,10 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.JTabbedPane;
 
-/** A specialization of <code>JTabbedPane</code> that provides a hook for data
+/**
+ * A specialization of <code>JTabbedPane</code> that provides a hook for data
  * validation. The method <code>canLeaveTab()</code> can be overriden to
  * provide data validation for the currently selected tab, thereby allowing or
  * disallowing the user from selecting a different tab.
@@ -31,72 +31,65 @@ import javax.swing.event.*;
  * @since Kiwi 2.0
  */
 
-public class KTabbedPane extends JTabbedPane
-{
-  private int curTab = 0;
-  private boolean firstTime = true, isAdjusting = false;
+public class KTabbedPane extends JTabbedPane {
+    private int curTab = 0;
+    private boolean firstTime = true, isAdjusting = false;
 
-  /** Construct a new <code>KTabbedPane</code>. */
-  
-  public KTabbedPane()
-  {
-    setOpaque(false);
+    /**
+     * Construct a new <code>KTabbedPane</code>.
+     */
 
-    addChangeListener(new ChangeListener()
-      {
-        public void stateChanged(ChangeEvent evt)
-        {
-          if(firstTime)
-          {
-            firstTime = false;
-            return;
-          }
+    public KTabbedPane() {
+        setOpaque(false);
 
-          if(isAdjusting)
-            return;
+        addChangeListener(evt -> {
+            if (firstTime) {
+                firstTime = false;
+                return;
+            }
 
-          int index = getSelectedIndex();
+            if (!isAdjusting) {
 
-          isAdjusting = true;
-          setSelectedIndex(curTab);
-          isAdjusting = false;
-          
-          if(canLeaveTab(curTab, index))
-          {
-            curTab = index;
-            isAdjusting = true;
-            setSelectedIndex(curTab);
-            isAdjusting = false;
-          }
-        }
-      });
-  }
+                int index = getSelectedIndex();
 
-  /** Reset the <code>KTabbedPane</code>. The first tab is made active. */
+                isAdjusting = true;
+                setSelectedIndex(curTab);
+                isAdjusting = false;
 
-  public void reset()
-  {
-    isAdjusting = true;
-    setSelectedIndex(0);
-    curTab = 0;
-    isAdjusting = false;
-  }
+                if (canLeaveTab(curTab, index)) {
+                    curTab = index;
+                    isAdjusting = true;
+                    setSelectedIndex(curTab);
+                    isAdjusting = false;
+                }
+            }
+        });
+    }
 
-  /** Determine if the user is allowed to select a different tab. The default
-   * implementation simply returns <b>true</b>, but subclassers can provide
-   * input validation logic for the currently displayed tab.
-   *
-   * @param currentTab The index of the tab that is currently selected.
-   * @param newTab The tab that the user wishes to switch to.
-   * @return <b>true</b> if the new tab may be displayed, or <b>false</b>
-   * if the current tab should remain selected.
-   */
-    
-  protected boolean canLeaveTab(int currentTab, int newTab)
-  {
-    return(true);
-  }
-  
+    /**
+     * Reset the <code>KTabbedPane</code>. The first tab is made active.
+     */
+
+    public void reset() {
+        isAdjusting = true;
+        setSelectedIndex(0);
+        curTab = 0;
+        isAdjusting = false;
+    }
+
+    /**
+     * Determine if the user is allowed to select a different tab. The default
+     * implementation simply returns <b>true</b>, but subclassers can provide
+     * input validation logic for the currently displayed tab.
+     *
+     * @param currentTab The index of the tab that is currently selected.
+     * @param newTab     The tab that the user wishes to switch to.
+     * @return <b>true</b> if the new tab may be displayed, or <b>false</b>
+     * if the current tab should remain selected.
+     */
+
+    protected boolean canLeaveTab(int currentTab, int newTab) {
+        return (true);
+    }
+
 }
-
-/* end of source file */

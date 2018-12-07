@@ -19,79 +19,71 @@
 
 package com.hyperrealm.kiwi.ui;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 
-import com.hyperrealm.kiwi.ui.model.*;
+import com.hyperrealm.kiwi.ui.model.KListModel;
 
-/** An implementation of <code>ListCellRenderer</code> for use with
+/**
+ * An implementation of <code>ListCellRenderer</code> for use with
  * <code>JList</code>s that are connected to a <code>KListModel</code> via
  * a <code>KListModelListAdapter</code>. This cell renderer consults the list
  * model for a cell's rendering information, such as its label and icon.
  *
+ * @param <T>
+ * @author Mark Lindner
  * @see javax.swing.JList
  * @see com.hyperrealm.kiwi.ui.model.KListModel
  * @see com.hyperrealm.kiwi.ui.model.KListModelAdapter
- *
- * @author Mark Lindner
  */
 
-public class KListModelListCellRenderer extends AbstractCellRenderer
-{
-  private EmptyBorder emptyBorder = new EmptyBorder(0, 0, 0, 0);
-  private KListModel model = null;
-  private JLabel label;
+public class KListModelListCellRenderer<T> extends AbstractCellRenderer<T> {
 
-  /** Construct a new <code>ModelListCellRenderer</code>.
-   */
+    private KListModel<T> model = null;
 
-  public KListModelListCellRenderer()
-  {
-    label = new JLabel();
-  }
+    private JLabel label;
 
-  /** Construct a new <code>ModelListCellRenderer</code>.
-   *
-   * @param model The list model that will be used with this renderer.
-   */
-  
-  public KListModelListCellRenderer(KListModel model)
-  {
-    this();
-    setModel(model);
-  }
+    /**
+     * Construct a new <code>ModelListCellRenderer</code>.
+     */
 
-  /** Set the data model for this renderer.
-   *
-   * @param model The model.
-   */
-
-  public void setModel(KListModel model)
-  {
-    this.model = model;
-  }
-
-  /*
-   */
-
-  public JComponent getCellRenderer(JComponent component, Object value,
-                                    int row, int column)
-  {
-    if((model == null) || (value == null))
-    {
-      label.setIcon(null);
-      label.setText((value == null) ? null : value.toString());
-    }
-    else
-    {
-      label.setIcon(model.getIcon(value));
-      label.setText(model.getLabel(value));
+    public KListModelListCellRenderer() {
+        label = new JLabel();
     }
 
-    return(label);
-  }
 
+    /**
+     * Construct a new <code>ModelListCellRenderer</code>.
+     *
+     * @param model The list model that will be used with this renderer.
+     */
+
+    public KListModelListCellRenderer(KListModel<T> model) {
+        this();
+        setModel(model);
+    }
+
+    @Override
+    protected JComponent getCellRenderer(JComponent component, T value, int row, int column) {
+
+        if ((model == null) || (value == null)) {
+            label.setIcon(null);
+            label.setText((value == null) ? null : value.toString());
+        } else {
+            label.setIcon(model.getIcon(value));
+            label.setText(model.getLabel(value));
+        }
+
+        return (label);
+    }
+
+    /**
+     * Set the data model for this renderer.
+     *
+     * @param model The model.
+     */
+
+    public void setModel(KListModel<T> model) {
+        this.model = model;
+    }
 }
-
-/* end of source file */
