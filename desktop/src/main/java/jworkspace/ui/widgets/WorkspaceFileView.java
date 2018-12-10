@@ -26,44 +26,42 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.kernel.Workspace;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileView;
 import java.io.File;
 import java.util.Hashtable;
 
-public class WorkspaceFileView extends FileView
-{
+import javax.swing.Icon;
+import javax.swing.filechooser.FileView;
+
+import jworkspace.kernel.Workspace;
+
+public class WorkspaceFileView extends FileView {
     private Hashtable icons = new Hashtable(5);
     private Hashtable fileDescriptions = new Hashtable(5);
     private Hashtable typeDescriptions = new Hashtable(5);
 
-    public WorkspaceFileView()
-    {
+    public WorkspaceFileView() {
         super();
         putIcon("jpg", Workspace.getResourceManager().
-                       getIcon("filedlg/jpg.gif"));
+            getIcon("filedlg/jpg.gif"));
         putIcon("gif", Workspace.getResourceManager().
-                       getIcon("filedlg/gif.gif"));
+            getIcon("filedlg/gif.gif"));
         putIcon("jar", Workspace.getResourceManager().
-                       getIcon("filedlg/jar.gif"));
+            getIcon("filedlg/jar.gif"));
         putIcon("java", Workspace.getResourceManager().
-                        getIcon("filedlg/java.gif"));
+            getIcon("filedlg/java.gif"));
         putIcon("class", Workspace.getResourceManager().
-                         getIcon("filedlg/class.gif"));
+            getIcon("filedlg/class.gif"));
         putIcon("jsp", Workspace.getResourceManager().
-                       getIcon("filedlg/jsp.gif"));
+            getIcon("filedlg/jsp.gif"));
         putIcon("html", Workspace.getResourceManager().
-                        getIcon("filedlg/html.gif"));
+            getIcon("filedlg/html.gif"));
         putIcon("htm", Workspace.getResourceManager().
-                       getIcon("filedlg/html.gif"));
+            getIcon("filedlg/html.gif"));
         putIcon("shtml", Workspace.getResourceManager().
-                         getIcon("filedlg/html.gif"));
+            getIcon("filedlg/html.gif"));
     }
 
-    public String getDescription(File f)
-    {
+    public String getDescription(File f) {
         return (String) fileDescriptions.get(f);
     }
 
@@ -71,14 +69,11 @@ public class WorkspaceFileView extends FileView
      * Conveinience method that returnsa the "dot" extension for the
      * given file.
      */
-    public String getExtension(File f)
-    {
+    public String getExtension(File f) {
         String name = f.getName();
-        if (name != null)
-        {
+        if (name != null) {
             int extensionIndex = name.lastIndexOf('.');
-            if (extensionIndex < 0)
-            {
+            if (extensionIndex < 0) {
                 return null;
             }
             return name.substring(extensionIndex + 1).toLowerCase();
@@ -86,24 +81,20 @@ public class WorkspaceFileView extends FileView
         return null;
     }
 
-    public Icon getIcon(File f)
-    {
+    public Icon getIcon(File f) {
         Icon icon = null;
         String extension = getExtension(f);
-        if (extension != null)
-        {
+        if (extension != null) {
             icon = (Icon) icons.get(extension);
         }
         return icon;
     }
 
-    public String getName(File f)
-    {
+    public String getName(File f) {
         return null;
     }
 
-    public String getTypeDescription(File f)
-    {
+    public String getTypeDescription(File f) {
         return (String) typeDescriptions.get(getExtension(f));
     }
 
@@ -111,27 +102,19 @@ public class WorkspaceFileView extends FileView
      * Whether the file is hidden or not. This implementation returns
      * true if the filename starts with a "."
      */
-    public Boolean isHidden(File f)
-    {
+    public Boolean isHidden(File f) {
         String name = f.getName();
-        if (name != null && !name.equals("") && name.charAt(0) == '.')
-        {
+        if (name != null && !name.equals("") && name.charAt(0) == '.') {
             return Boolean.TRUE;
-        }
-        else
-        {
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Boolean isTraversable(File f)
-    {
-        if (f.isDirectory())
-        {
+    public Boolean isTraversable(File f) {
+        if (f.isDirectory()) {
             return Boolean.TRUE;
-        }
-        else
-        {
+        } else {
             return Boolean.FALSE;
         }
     }
@@ -139,17 +122,15 @@ public class WorkspaceFileView extends FileView
     /**
      * Adds a human readable description of the file.
      */
-    public void putDescription(File f, String fileDescription)
-    {
+    public void putDescription(File f, String fileDescription) {
         fileDescriptions.put(fileDescription, f);
     }
 
     /**
-     * Adds an icon based on the file type "dot" extension
+     * Adds an ICON based on the file type "dot" extension
      * string, e.g: ".gif". Case is ignored.
      */
-    public void putIcon(String extension, Icon icon)
-    {
+    public void putIcon(String extension, Icon icon) {
         icons.put(extension, icon);
     }
 
@@ -158,8 +139,7 @@ public class WorkspaceFileView extends FileView
      * the passed in file. Based on "dot" extension strings, e.g: ".gif".
      * Case is ignored.
      */
-    public void putTypeDescription(File f, String typeDescription)
-    {
+    public void putTypeDescription(File f, String typeDescription) {
         putTypeDescription(getExtension(f), typeDescription);
     }
 
@@ -167,8 +147,7 @@ public class WorkspaceFileView extends FileView
      * Adds a human readable type description for files. Based on "dot"
      * extension strings, e.g: ".gif". Case is ignored.
      */
-    public void putTypeDescription(String extension, String typeDescription)
-    {
+    public void putTypeDescription(String extension, String typeDescription) {
         typeDescriptions.put(typeDescription, extension);
     }
 }

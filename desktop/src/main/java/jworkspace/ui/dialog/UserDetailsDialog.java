@@ -26,6 +26,30 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Enumeration;
+
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceManager;
@@ -37,43 +61,27 @@ import kiwi.ui.dialog.ComponentDialog;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.Enumeration;
-
 /**
  * Carrier class for <code>jworkspace.ui.UserDetailsPanel</code>
  */
-public class UserDetailsDialog extends ComponentDialog implements ActionListener
-{
+public class UserDetailsDialog extends ComponentDialog implements ActionListener {
+    private static int maxPortraitWidth = 250;
+    private static int maxPortraitHeight = 250;
     private UserDetailsPanel first_panel;
     private JTabbedPane tabbed_pane = null;
     private KButton b_new, b_delete;
     private JTable table;
     private DefaultTableModel tmodel;
-    private static int maxPortraitWidth = 250;
-    private static int maxPortraitHeight = 250;
 
-    public UserDetailsDialog(Frame parent)
-    {
+    public UserDetailsDialog(Frame parent) {
         super(parent, LangResource.getString("UserDetailsDlg.title"), true);
     }
 
-    protected boolean accept()
-    {
+    protected boolean accept() {
         String name, value;
         int rows = table.getRowCount();
 
-        for (int i = 0; i < rows; i++)
-        {
+        for (int i = 0; i < rows; i++) {
             name = (String) table.getValueAt(i, 0);
             value = (String) table.getValueAt(i, 1);
             Workspace.getProfilesEngine().getParameters().put(name, value);
@@ -81,58 +89,50 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         return (first_panel.syncData());
     }
 
-    public void actionPerformed(ActionEvent ev)
-    {
+    public void actionPerformed(ActionEvent ev) {
         Object o = ev.getSource();
 
-        if (o == b_new)
-        {
+        if (o == b_new) {
             ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
-                                           getImage("user_var.png"));
+                getImage("user_var.png"));
 
             String name = (String) JOptionPane.showInputDialog
-                    (this,
-                     LangResource.getString("UserDetailsDlg.addParam.question"),
-                     LangResource.getString("UserDetailsDlg.addParam.title"),
-                     JOptionPane.INFORMATION_MESSAGE,
-                     icon,
-                     null, null);
+                (this,
+                    LangResource.getString("UserDetailsDlg.addParam.question"),
+                    LangResource.getString("UserDetailsDlg.addParam.title"),
+                    JOptionPane.INFORMATION_MESSAGE,
+                    icon,
+                    null, null);
 
-            if (name != null)
-            {
-                if (Workspace.getProfilesEngine().getParameters().get(name) != null)
-                {
+            if (name != null) {
+                if (Workspace.getProfilesEngine().getParameters().get(name) != null) {
                     JOptionPane.showMessageDialog(this,
-                                                  LangResource.getString("UserDetailsDlg.addParam.alreadyExists"));
-                }
-                else
-                {
-                    Object row[] = new Object[2];
+                        LangResource.getString("UserDetailsDlg.addParam.alreadyExists"));
+                } else {
+                    Object[] row = new Object[2];
                     row[0] = name;
                     row[1] = "";
                     tmodel.addRow(row);
                 }
             }
-        }
-        else if (o == b_delete)
-        {
-            int rows[] = table.getSelectedRows();
-            if (rows.length == 0) return;
+        } else if (o == b_delete) {
+            int[] rows = table.getSelectedRows();
+            if (rows.length == 0) {
+                return;
+            }
             String name = (String) table.getValueAt(rows[0], 0);
 
             if (JOptionPane.showConfirmDialog(this,
-                                              LangResource.getString("UserDetailsDlg.deleteParam.message") + "?",
-                                              LangResource.getString("UserDetailsDlg.deleteParam.title"),
-                                              JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-            {
+                LangResource.getString("UserDetailsDlg.deleteParam.message") + "?",
+                LangResource.getString("UserDetailsDlg.deleteParam.title"),
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 tmodel.removeRow(rows[0]);
                 Workspace.getProfilesEngine().getParameters().remove(name);
             }
         }
     }
 
-    protected JComponent buildDialogUI()
-    {
+    protected JComponent buildDialogUI() {
         setComment(null);
 
         String fileName = Workspace.getUserHome() + "portrait.jpg";
@@ -146,13 +146,10 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         if (p != null) {
             ImageIcon photo = new ImageIcon(p);
 
-            if (photo.getIconHeight() > 0 && photo.getIconWidth() > 0)
-            {
+            if (photo.getIconHeight() > 0 && photo.getIconWidth() > 0) {
                 scaleImage(p, photo);
             }
-        }
-        else
-        {
+        } else {
             setIcon(null);
         }
 
@@ -160,33 +157,27 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         tabbed_pane.setOpaque(false);
         first_panel = new UserDetailsPanel();
         tabbed_pane.addTab(LangResource.getString("UserDetailsDlg.generalTab"),
-                           first_panel);
+            first_panel);
         tabbed_pane.addTab(LangResource.getString("UserDetailsDlg.variablesTab"),
-                           buildPropertyEditor());
+            buildPropertyEditor());
 
         return (tabbed_pane);
     }
 
     private void scaleImage(Image p, ImageIcon photo) {
 
-        if (photo.getIconHeight() > maxPortraitHeight)
-        {
+        if (photo.getIconHeight() > maxPortraitHeight) {
             setIcon(new ImageIcon
-                    (p.getScaledInstance(-1, maxPortraitHeight, Image.SCALE_SMOOTH)));
-        }
-        else if (photo.getIconWidth() > maxPortraitWidth)
-        {
+                (p.getScaledInstance(-1, maxPortraitHeight, Image.SCALE_SMOOTH)));
+        } else if (photo.getIconWidth() > maxPortraitWidth) {
             setIcon(new ImageIcon
-                    (p.getScaledInstance(maxPortraitWidth, -1, Image.SCALE_SMOOTH)));
-        }
-        else
-        {
+                (p.getScaledInstance(maxPortraitWidth, -1, Image.SCALE_SMOOTH)));
+        } else {
             setIcon(new ImageIcon(p));
         }
     }
 
-    private KPanel buildPropertyEditor()
-    {
+    private KPanel buildPropertyEditor() {
         KPanel property_editor = new KPanel();
         property_editor.setLayout(new BorderLayout());
         /**
@@ -200,14 +191,14 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
 
         b_new = new KButton(kresmgr.getIcon("plus.png"));
         b_new.setToolTipText
-                (LangResource.getString("UserDetailsDlg.addParam.tooltip"));
+            (LangResource.getString("UserDetailsDlg.addParam.tooltip"));
         b_new.addActionListener(this);
         b_new.setDefaultCapable(false);
         p_buttons.add(b_new);
 
         b_delete = new KButton(kresmgr.getIcon("minus.png"));
         b_delete.setToolTipText
-                (LangResource.getString("UserDetailsDlg.deleteParam.tooltip"));
+            (LangResource.getString("UserDetailsDlg.deleteParam.tooltip"));
         b_delete.addActionListener(this);
         b_delete.setDefaultCapable(false);
         p_buttons.add(b_delete);
@@ -242,26 +233,22 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         table.setSelectionModel(sel);
         sel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sel.addListSelectionListener(
-                new ListSelectionListener()
-                {
-                    public void valueChanged(ListSelectionEvent ev)
-                    {
-                        b_delete.setEnabled(!(table.getSelectionModel().isSelectionEmpty()));
-                    }
+            new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent ev) {
+                    b_delete.setEnabled(!(table.getSelectionModel().isSelectionEmpty()));
                 }
+            }
         );
         property_editor.setPreferredSize(new Dimension(200, 200));
         return property_editor;
     }
 
-    private void refresh()
-    {
+    private void refresh() {
         tmodel.setNumRows(0);
-        Object row[] = new Object[2];
+        Object[] row = new Object[2];
         Enumeration e = Workspace.getProfilesEngine().getParameters().keys();
 
-        while (e.hasMoreElements())
-        {
+        while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             String value = Workspace.getProfilesEngine().getParameters().getString(name);
 
@@ -271,23 +258,23 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         }
     }
 
-    /** Show or hide the dialog. */
-    public void setVisible(boolean flag)
-    {
-        if (flag)
+    /**
+     * Show or hide the dialog.
+     */
+    public void setVisible(boolean flag) {
+        if (flag) {
             refresh();
+        }
 
         super.setVisible(flag);
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         destroy();
         super.dispose();
     }
 
-    public void setData()
-    {
+    public void setData() {
         first_panel.setData();
     }
 }

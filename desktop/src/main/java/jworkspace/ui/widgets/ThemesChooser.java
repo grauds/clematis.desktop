@@ -24,52 +24,50 @@ package jworkspace.ui.widgets;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import javax.swing.*;
+
+import java.awt.Component;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.plaf.metal.MetalTheme;
 
-import java.awt.*;
 /**
  * Chooser for metal themes in look and feel
  */
-public class ThemesChooser extends JComboBox
-{
-  /**
-   * Construct a new <code>ThemesChooser</code>.
-   */
-  public ThemesChooser()
-  {
-      super();
-      setRenderer(new DefaultListCellRenderer()
-      {
-         public Component getListCellRendererComponent(JList list,Object value,
-                    int index,boolean isSelected,boolean cellHasFocus)
-         {
-            Component comp = super.getListCellRendererComponent(list, value,
-                  index, isSelected,	cellHasFocus);
-            if (value instanceof MetalTheme)
-            {
-               MetalTheme theme = (MetalTheme) value;
-               setText( theme.getName() );
+public class ThemesChooser extends JComboBox {
+    /**
+     * Construct a new <code>ThemesChooser</code>.
+     */
+    public ThemesChooser() {
+        super();
+        setRenderer(new DefaultListCellRenderer() {
+            public Component getListCellRendererComponent(JList list, Object value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                Component comp = super.getListCellRendererComponent(list, value,
+                    index, isSelected, cellHasFocus);
+                if (value instanceof MetalTheme) {
+                    MetalTheme theme = (MetalTheme) value;
+                    setText(theme.getName());
+                }
+                return comp;
             }
-            return comp;
-         }
-      });
-  }
-  /** Get the currently selected theme.
-   *
-   * @return The <code>MetalTheme</code> object corresponding to the
-   * currently-selected theme.
-   */
-  public String getTheme()
-  {
-      if ( getSelectedItem() != null )
-      {
-          Class clazz = getSelectedItem().getClass();
-          if ( clazz != null )
-          {
-            return getSelectedItem().getClass().getName();
-          }
-      }
-      return null;
-  }
+        });
+    }
+
+    /**
+     * Get the currently selected theme.
+     *
+     * @return The <code>MetalTheme</code> object corresponding to the
+     * currently-selected theme.
+     */
+    public String getTheme() {
+        if (getSelectedItem() != null) {
+            Class clazz = getSelectedItem().getClass();
+            if (clazz != null) {
+                return getSelectedItem().getClass().getName();
+            }
+        }
+        return null;
+    }
 }

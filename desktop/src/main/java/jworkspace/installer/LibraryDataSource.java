@@ -63,7 +63,7 @@ class LibraryDataSource extends DefinitionDataSource {
      * itself is a library.
      */
     protected DefinitionNode makeNode(DefinitionNode parent, File file)
-            throws IOException {
+        throws IOException {
         return (new Library(parent, file));
     }
 }

@@ -38,10 +38,8 @@ import java.util.Vector;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
-
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.util.WorkspaceError;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +126,7 @@ public final class RuntimeManager {
              */
             if (!NativeLib.setCurrentDir(working_dir)) {
                 throw new IOException("Cannot set working directory"
-                        + " " + working_dir);
+                    + " " + working_dir);
             }
             /*
              * Create java process

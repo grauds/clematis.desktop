@@ -27,19 +27,23 @@ package jworkspace.installer;
    anton.troshin@gmail.com
    ----------------------------------------------------------------------------
 */
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.ui.model.TreeDataSource;
-import jworkspace.util.sort.QuickSort;
 
 /**
  * This is a "smart" DefinitionDataSource, since it can traverse itself
  * looking for a node that matches a given link path.
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 public abstract class DefinitionDataSource implements TreeDataSource<DefinitionNode> {
 
@@ -49,11 +53,9 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
 
     private static final String ICON_PROPERTY = "ICON";
 
-    private static final DefinitionNode[] emptyArray = new DefinitionNode[0];
+    private static final DefinitionNode[] EMPTY_ARRAY = new DefinitionNode[0];
 
     private DefinitionNode root;
-
-    protected boolean hierarchy = true;
 
     /**
      * Public constuctor. Definition data source is based on file
@@ -72,31 +74,29 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      * This helper routin iterates through the children until find first branch
      * with given link path.
      */
-    private DefinitionNode _findNode(StringTokenizer st,
-                                     DefinitionNode currentNode) {
-        if (!st.hasMoreTokens()) {
-            return null;
-        }
+    private DefinitionNode doFindNode(StringTokenizer st,
+                                      DefinitionNode currentNode) {
+        DefinitionNode ret = null;
 
-        String link = st.nextToken();
+        if (st.hasMoreTokens()) {
 
-        // ok, let's look through the children...
+            String link = st.nextToken();
 
-        Object[] children = getChildNodes(currentNode);
-        for (Object child : children) {
+            // ok, let's look through the children...
 
-            DefinitionNode node = (DefinitionNode) child;
+            Object[] children = getChildNodes(currentNode);
+            for (Object child : children) {
 
-            if (node.getNodeName().equals(link)) {
-                if (!st.hasMoreTokens()) {
-                    return node;
-                } else {
-                    return _findNode(st, node);
+                DefinitionNode node = (DefinitionNode) child;
+
+                if (node.getNodeName().equals(link)) {
+                    ret = !st.hasMoreTokens() ? node : doFindNode(st, node);
+                    break;
                 }
             }
         }
 
-        return null;
+        return ret;
     }
 
     /**
@@ -117,7 +117,7 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
         if (!root.getNodeName().equals(st.nextToken())) {
             return null;
         }
-        return _findNode(st, root);
+        return doFindNode(st, root);
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
     private DefinitionNode[] getChildNodes(DefinitionNode defn) {
 
         if (!defn.isExpandable()) {
-            return emptyArray;
+            return EMPTY_ARRAY;
         }
 
         File f = defn.getFile();
@@ -149,11 +149,9 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
                     sfiles.addElement(file1);
                 }
             }
-            /*
-             * Sorting
-             */
-            new QuickSort(true).sort(dirs);
-            new QuickSort(true).sort(sfiles);
+
+            Collections.sort(dirs);
+            Collections.sort(sfiles);
 
             dirs.addAll(sfiles);
         }
@@ -163,7 +161,7 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
         for (int i = 0; i < dirs.size(); i++) {
 
             File file = dirs.elementAt(i);
-            if (file.isDirectory() && hierarchy) {
+            if (file.isDirectory()) {
 
                 v.addElement(new DefinitionNode(defn, file));
             } else {
@@ -230,7 +228,7 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      * <ol>
      * <li>EXPANDABLE_PROPERTY - is this node expandable or not
      * <li>LABEL_PROPERTY - returns label for the node
-     * <li>ICON_PROPERTY - returns icon for the node
+     * <li>ICON_PROPERTY - returns ICON for the node
      * </ol>
      * Otherwise returns null
      */
@@ -252,5 +250,5 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
     }
 
     protected abstract DefinitionNode makeNode(DefinitionNode parent, File file)
-            throws IOException;
+        throws IOException;
 }

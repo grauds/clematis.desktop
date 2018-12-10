@@ -26,60 +26,49 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
+import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * Icon node is nessesary for nodes in Java Workspace trees,
  * each node allows placement of images.
  */
-public class IconNode extends DefaultMutableTreeNode
-{
+public class IconNode extends DefaultMutableTreeNode {
     protected Icon icon;
     protected String iconName;
 
-    public IconNode()
-    {
+    public IconNode() {
         this(null);
     }
 
-    public IconNode(Object userObject)
-    {
+    public IconNode(Object userObject) {
         this(userObject, true, null);
     }
 
-    public IconNode(Object userObject, boolean allowsChildren, Icon icon)
-    {
+    public IconNode(Object userObject, boolean allowsChildren, Icon icon) {
         super(userObject, allowsChildren);
         this.icon = icon;
     }
 
-    public Icon getIcon()
-    {
+    public Icon getIcon() {
         return icon;
     }
 
-    public String getIconName()
-    {
+    public void setIcon(Icon icon) {
+        this.icon = icon;
+    }
+
+    public String getIconName() {
         String str = userObject.toString();
         int index = str.lastIndexOf(".");
-        if (index != -1)
-        {
+        if (index != -1) {
             return str.substring(++index);
-        }
-        else
-        {
+        } else {
             return iconName;
         }
     }
 
-    public void setIcon(Icon icon)
-    {
-        this.icon = icon;
-    }
-
-    public void setIconName(String name)
-    {
+    public void setIconName(String name) {
         iconName = name;
     }
 }

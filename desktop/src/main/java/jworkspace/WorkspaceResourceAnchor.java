@@ -2,7 +2,7 @@ package jworkspace;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -27,18 +27,13 @@ package jworkspace;
 */
 
 /**
- * Workspace Resource Anchor is needed
- * for proper managing of Java Workspace
- * resources. Each path to image is
- * relative to jworkspace/ directory.
+ * @author Anton Troshin
  */
-public class WorkspaceResourceAnchor
-{
+public class WorkspaceResourceAnchor {
     /**
      * This class is never supposed to be instantiated.
      * Therefore, it has a private constructor.
      */
-    private WorkspaceResourceAnchor()
-    {
+    private WorkspaceResourceAnchor() {
     }
 }

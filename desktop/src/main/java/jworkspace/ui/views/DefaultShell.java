@@ -26,19 +26,19 @@ package jworkspace.ui.views;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.ui.cpanel.CButton;
-import jworkspace.ui.IShell;
-import jworkspace.ui.IView;
-import jworkspace.kernel.Workspace;
-
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Hashtable;
-import java.awt.event.ActionListener;
+
+import jworkspace.kernel.Workspace;
+import jworkspace.ui.IShell;
+import jworkspace.ui.IView;
+import jworkspace.ui.cpanel.CButton;
+
 /**
  * Default user gui shell.
  */
-public abstract class DefaultShell implements IShell, ActionListener
-{
+public abstract class DefaultShell implements IShell, ActionListener {
     /**
      * Show this window
      */
@@ -51,11 +51,9 @@ public abstract class DefaultShell implements IShell, ActionListener
     /**
      * Invoked when an action occurs.
      */
-    public void actionPerformed(java.awt.event.ActionEvent e)
-    {
+    public void actionPerformed(java.awt.event.ActionEvent e) {
         String command = e.getActionCommand();
-        if (command.equals(DefaultShell.NEW_VIEW))
-        {
+        if (command.equals(DefaultShell.NEW_VIEW)) {
             /**
              * Send message to workspace gui with request
              * to add to layout?
@@ -63,7 +61,7 @@ public abstract class DefaultShell implements IShell, ActionListener
             Hashtable lparam = new Hashtable();
             lparam.put("view", getView());
             lparam.put("display", new Boolean(true));
-            lparam.put("register", new Boolean( false ));
+            lparam.put("register", new Boolean(false));
             Workspace.fireEvent(new Integer(1000), lparam, null);
         }
     }
@@ -72,6 +70,7 @@ public abstract class DefaultShell implements IShell, ActionListener
      * This method returns new view object to install in multidesktop
      * system. This view will not be unique. The shell interface serves
      * as a view factory.
+     *
      * @return instance of view
      */
     protected abstract IView getView();
@@ -79,39 +78,39 @@ public abstract class DefaultShell implements IShell, ActionListener
     /**
      * Get all Control Panel buttons for this shell
      */
-    public CButton[] getButtons()
-    {
+    public CButton[] getButtons() {
         return new CButton[0];
     }
 
     /**
      * Load shell from disk
      */
-    public void load() throws IOException { }
+    public void load() throws IOException {
+    }
 
     /**
      * Reset the state of shell
      */
-    public void reset() { }
+    public void reset() {
+    }
 
     /**
      * Save all settings to default path
      */
-    public void save() throws IOException { }
+    public void save() throws IOException {
+    }
 
     /**
      * Returns path for saving component data.
      */
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 
     /**
      * Sets path for saving component data.
      */
-    public void setPath(String path)
-    {
-        this.path = new String(path);
+    public void setPath(String path) {
+        this.path = path;
     }
 }

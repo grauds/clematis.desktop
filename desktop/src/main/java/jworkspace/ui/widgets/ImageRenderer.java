@@ -26,18 +26,22 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.ImageObserver;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+
 import com.hyperrealm.kiwi.ui.UIElement;
 import com.hyperrealm.kiwi.ui.UIElementViewer;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.ImageObserver;
 
 /**
  * Simple image renderer.
  */
 public class ImageRenderer extends JComponent
-        implements ImageObserver, UIElementViewer {
+    implements ImageObserver, UIElementViewer {
     protected ImageIcon image = null;
 
     public ImageRenderer() {
@@ -53,23 +57,25 @@ public class ImageRenderer extends JComponent
         return null;
     }
 
+    public synchronized void setImage(Image image) {
+        if (image == null) {
+            return;
+        }
+        this.image = new ImageIcon(image);
+        setPreferredSize(new Dimension(this.image.getIconWidth(),
+            this.image.getIconHeight()));
+        revalidate();
+        repaint();
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
         if (image != null) {
             g.drawImage(image.getImage(), (getWidth() - image.getIconWidth()) / 2,
-                    (getHeight() - image.getIconHeight()) / 2, this);
+                (getHeight() - image.getIconHeight()) / 2, this);
         }
-    }
-
-    public synchronized void setImage(Image image) {
-        if (image == null) return;
-        this.image = new ImageIcon(image);
-        setPreferredSize(new Dimension(this.image.getIconWidth(),
-                this.image.getIconHeight()));
-        revalidate();
-        repaint();
     }
 
     /**
@@ -92,7 +98,8 @@ public class ImageRenderer extends JComponent
     public void showElement(UIElement element) {
         Object obj = element.getObject();
 
-        if (obj instanceof Image)
+        if (obj instanceof Image) {
             setImage((Image) obj);
+        }
     }
 }

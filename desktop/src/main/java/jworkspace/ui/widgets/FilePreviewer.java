@@ -26,47 +26,45 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.Imaging;
 
 /**
  * File previewer works with graphic files,
  * allowing thumbnails in JFileDialog.
  */
 public class FilePreviewer extends JComponent
-        implements PropertyChangeListener
-{
+    implements PropertyChangeListener {
     ImageIcon thumbnail = null;
     File f = null;
 
-    public FilePreviewer(JFileChooser fc)
-    {
+    public FilePreviewer(JFileChooser fc) {
         setPreferredSize(new Dimension(200, 50));
         fc.addPropertyChangeListener(this);
     }
 
-    public void loadImage()
-    {
-        if (f != null)
-        {
+    public void loadImage() {
+        if (f != null) {
             Image image;
             try {
                 image = Imaging.getBufferedImage(f);
                 ImageIcon tmpIcon = new ImageIcon(image);
-                if (tmpIcon.getIconWidth() > 90)
-                {
+                if (tmpIcon.getIconWidth() > 90) {
                     thumbnail = new ImageIcon(tmpIcon.getImage().getScaledInstance(180, -1,
-                            Image.SCALE_DEFAULT));
-                }
-                else
-                {
+                        Image.SCALE_DEFAULT));
+                } else {
                     thumbnail = tmpIcon;
                 }
             } catch (ImageReadException | IOException e) {
@@ -75,44 +73,35 @@ public class FilePreviewer extends JComponent
         }
     }
 
-    public void paint(Graphics g)
-    {
-        if (thumbnail == null)
-        {
+    public void paint(Graphics g) {
+        if (thumbnail == null) {
             loadImage();
         }
-        if (thumbnail != null)
-        {
+        if (thumbnail != null) {
             int x = getWidth() / 2 - thumbnail.getIconWidth() / 2;
             int y = getHeight() / 2 - thumbnail.getIconHeight() / 2;
-            if (y < 0)
-            {
+            if (y < 0) {
                 y = 0;
             }
-            if (x < 5)
-            {
+            if (x < 5) {
                 x = 5;
             }
             thumbnail.paintIcon(this, g, x, y);
         }
     }
 
-    public void propertyChange(PropertyChangeEvent e)
-    {
+    public void propertyChange(PropertyChangeEvent e) {
         String prop = e.getPropertyName();
-        if (prop == JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)
-        {
+        if (prop == JFileChooser.SELECTED_FILE_CHANGED_PROPERTY) {
             f = (File) e.getNewValue();
-            if (isShowing())
-            {
+            if (isShowing()) {
                 loadImage();
                 repaint();
             }
         }
     }
 
-    public void reset()
-    {
+    public void reset() {
         f = null;
         thumbnail = null;
         repaint();

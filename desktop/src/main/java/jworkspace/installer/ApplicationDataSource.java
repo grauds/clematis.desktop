@@ -33,19 +33,22 @@ import java.io.IOException;
 
 /**
  * Data source for application.
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
-public class ApplicationDataSource extends DefinitionDataSource
-{
+public class ApplicationDataSource extends DefinitionDataSource {
+
     public static final String ROOT = "programs";
 
     private static String rootName = ApplicationDataSource.ROOT;
 
     /**
      * Construct new application data source with given file as a root.
+     *
      * @param root java.io.File
      */
-    ApplicationDataSource(File root)
-    {
+    ApplicationDataSource(File root) {
         super(root);
         rootName = root.getName();
     }
@@ -53,8 +56,7 @@ public class ApplicationDataSource extends DefinitionDataSource
     /**
      * Returns root name for applications hierarchy.
      */
-    public String getRootName()
-    {
+    public String getRootName() {
         return (rootName);
     }
 
@@ -63,8 +65,7 @@ public class ApplicationDataSource extends DefinitionDataSource
      * itself is an application.
      */
     protected DefinitionNode makeNode(DefinitionNode parent, File file)
-            throws IOException
-    {
+        throws IOException {
         return new Application(parent, file);
     }
 }

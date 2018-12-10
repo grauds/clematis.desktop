@@ -24,115 +24,120 @@ package jworkspace.ui.logging;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import kiwi.ui.KFrame;
-import javax.swing.*;
-import java.awt.*;
-import java.io.OutputStream;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.swing.JTextArea;
+
+import kiwi.ui.KFrame;
+
 /**
  * Stream window
  * This is taken from book of Gregory M. Travis "JDK 1.4 tutorial"
- * @version 1.0
+ *
  * @author <a href='mailto:anton.troshin@gmail.com'>Anton Troshin</a>
+ * @version 1.0
  */
-public class StreamWindow extends KFrame
-{
+public class StreamWindow extends KFrame {
     // The text area in which we display incoming text
     private JTextArea textArea;
     // Data written to this stream is appended to the
     // text area
     private StreamWindowStream out;
+
     /**
-    * Create a new StreamWindow -- set up the interface
-    * and install listeners. Make the window visible
-    * after everything else is done
-    */
-    public StreamWindow( String name )
-    {
-        super( name );
+     * Create a new StreamWindow -- set up the interface
+     * and install listeners. Make the window visible
+     * after everything else is done
+     */
+    public StreamWindow(String name) {
+        super(name);
         out = new StreamWindowStream();
         setupGUI();
     }
+
     /**
-    * Add the text area to the window, and set the window size
-    */
-    private void setupGUI()
-    {
+     * Add the text area to the window, and set the window size
+     */
+    private void setupGUI() {
         Container cp = getContentPane();
         textArea = new JTextArea();
         textArea.setEditable(false);
-        cp.setLayout( new BorderLayout() );
-        cp.add( textArea, BorderLayout.CENTER );
-        setLocation( 100, 100 );
-        setSize( 100, 100 );
+        cp.setLayout(new BorderLayout());
+        cp.add(textArea, BorderLayout.CENTER);
+        setLocation(100, 100);
+        setSize(100, 100);
     }
+
     /**
-    * Return the output stream that is connected
-    * to this window
-    */
-    public OutputStream getOutputStream()
-    {
+     * Return the output stream that is connected
+     * to this window
+     */
+    public OutputStream getOutputStream() {
         return out;
     }
+
     /**
-    * Close the window, and dispose of it
-    */
-    public void dispose()
-    {
-        setVisible( false );
+     * Close the window, and dispose of it
+     */
+    public void dispose() {
+        setVisible(false);
         super.dispose();
     }
+
     /**
-    * Add text to the end of the text showing in the
-    * text area
-    */
-    private void appendText( String string )
-    {
-        textArea.append( string );
+     * Add text to the end of the text showing in the
+     * text area
+     */
+    private void appendText(String string) {
+        textArea.append(string);
     }
+
     /**
-    * Inner class: an output stream. Writing to
-    * this stream sends the data to the window
-    */
-    class StreamWindowStream extends OutputStream
-    {
+     * Inner class: an output stream. Writing to
+     * this stream sends the data to the window
+     */
+    class StreamWindowStream extends OutputStream {
         // This is used to write a single byte. We
         // pre-allocate it to save time
-        private byte tinyBuffer[] = new byte[1];
+        private byte[] tinyBuffer = new byte[1];
+
         /**
-        * Closing the stream closes the window
-        */
-        public void close() throws IOException
-        {
+         * Closing the stream closes the window
+         */
+        public void close() throws IOException {
             dispose();
         }
+
         /**
-        * Write a single byte
-        */
-        public void write( int b ) throws IOException
-        {
+         * Write a single byte
+         */
+        public void write(int b) throws IOException {
             // Store the single byte in the array and
             // write the array
-            tinyBuffer[0] = (byte)b;
-            write( tinyBuffer );
+            tinyBuffer[0] = (byte) b;
+            write(tinyBuffer);
         }
+
         /**
-        * Write an array of bytes
-        */
-        public void write( byte b[] ) throws IOException
-        {
+         * Write an array of bytes
+         */
+        public void write(byte[] b) throws IOException {
             // Convert the bytes to a string and append
-            String s = new String( b );
-            appendText( s );
+            String s = new String(b);
+            appendText(s);
         }
+
         /**
-        * Write a sub-array of bytes
-        */
-        public void write( byte b[], int off, int len ) throws IOException
-        {
+         * Write a sub-array of bytes
+         */
+        public void write(byte[] b, int off, int len) throws IOException {
             // Convert the bytes to a string and append
-            String s = new String( b, off, len );
-            appendText( s );
+            String s = new String(b, off, len);
+            appendText(s);
         }
     }
 }

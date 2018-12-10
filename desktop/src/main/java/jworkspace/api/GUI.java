@@ -26,7 +26,8 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 
-import java.awt.*;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.util.Hashtable;
 
@@ -34,9 +35,10 @@ import java.util.Hashtable;
  * Graphic User Interface systems of Java Workspace
  * should implement this interface as it provides minimum
  * services for Java Workspace Kernel and other engines.
+ *
+ * @author Anton Troshin
  */
-public interface GUI extends IEngine, IWorkspaceListener
-{
+public interface GUI extends IEngine, IWorkspaceListener {
     /**
      * Returns special clipboard for graphic interface..
      */
@@ -65,6 +67,7 @@ public interface GUI extends IEngine, IWorkspaceListener
 
     /**
      * Check whether gui shell is registered
+     *
      * @return registered component.
      */
     Object isRegistered(String clazz);

@@ -26,22 +26,29 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.LangResource;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.util.Vector;
 
-public class JPopupMenuEx extends JPopupMenu
-{
+import javax.swing.Action;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.MenuElement;
+import javax.swing.SwingUtilities;
+
+import jworkspace.LangResource;
+
+public class JPopupMenuEx extends JPopupMenu {
     /**
-     *  Take into account most window managers have a task or system
-     *  bar always on top on the bottom of the screen.  Empirically
-     *  determined value.
+     * Take into account most window managers have a task or system
+     * bar always on top on the bottom of the screen.  Empirically
+     * determined value.
      */
     public static final int TASKBAR_HEIGHT = 55;
     /**
-     *  More Menu Text - makes changing text easier later
+     * More Menu Text - makes changing text easier later
      */
     public static final String MORE = LangResource.getString("JMoreMenu.more");
     /**
@@ -55,34 +62,31 @@ public class JPopupMenuEx extends JPopupMenu
      */
     protected double maximumHeight;
     /**
-     *  "more->" menu - recursive object allows for arbitrarily deep
-     *  more menus.
+     * "more->" menu - recursive object allows for arbitrarily deep
+     * more menus.
      */
     JMoreMenu moreMenu;
 
-    public JPopupMenuEx()
-    {
+    public JPopupMenuEx() {
         super();
         // Arbitrary Default
         maximumHeight = Toolkit.getDefaultToolkit().
-                getScreenSize().getHeight() - TASKBAR_HEIGHT;
+            getScreenSize().getHeight() - TASKBAR_HEIGHT;
         moreMenu = null;
     }
 
-    public JPopupMenuEx(String label)
-    {
+    public JPopupMenuEx(String label) {
         super(label);
         maximumHeight = Toolkit.getDefaultToolkit().
-                getScreenSize().getHeight() - TASKBAR_HEIGHT;
+            getScreenSize().getHeight() - TASKBAR_HEIGHT;
         moreMenu = null;
     }
 
     /**
-     *  Override the JPopupMenu functionality ....
-     *  same disclaimer as above
+     * Override the JPopupMenu functionality ....
+     * same disclaimer as above
      */
-    public JMenuItem add(String string)
-    {
+    public JMenuItem add(String string) {
         // Strings do not have a getPreferredSize call
         // Therefore, the only way to determine the height
         // needed is to forcibly insert the item, then remove it.
@@ -93,19 +97,15 @@ public class JPopupMenuEx extends JPopupMenu
         double preferredHeight = getPreferredSize().getHeight();
         double menuItemHeight = 0;
         JMenuItem tempMenuItem = super.add(string);
-        if (tempMenuItem != null)
-        {
+        if (tempMenuItem != null) {
             menuItemHeight = tempMenuItem.getPreferredSize().getHeight();
         }
 
         super.remove(tempMenuItem);
 
-        if ((preferredHeight + menuItemHeight) < maximumHeight)
-        {
+        if ((preferredHeight + menuItemHeight) < maximumHeight) {
             retVal = super.add(string);
-        }
-        else
-        {
+        } else {
             createMoreMenu();
             retVal = moreMenu.add(string);
         }
@@ -113,13 +113,12 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  TEMPORARY - Move to State model once you get height algorithm working
-     *  Differences between JMenu and JPopup menu make the algorithm somewhat
-     *  tempermental and a bit unpredictable.  Move into a STATE pattern with
-     *  message forwarding once you get the algorithm working.
+     * TEMPORARY - Move to State model once you get height algorithm working
+     * Differences between JMenu and JPopup menu make the algorithm somewhat
+     * tempermental and a bit unpredictable.  Move into a STATE pattern with
+     * message forwarding once you get the algorithm working.
      */
-    public JMenuItem add(Action a)
-    {
+    public JMenuItem add(Action a) {
         // Actions do not have a getPreferredSize call
         // Therefore, the only way to determine the desired height
         // of an action to be inserted is to forcibly insert
@@ -140,12 +139,9 @@ public class JPopupMenuEx extends JPopupMenu
         double preferredHeight = getPreferredSize().getHeight();
         double menuItemHeight = tempMenuItem.getPreferredSize().getHeight();
 
-        if ((preferredHeight + menuItemHeight) < maximumHeight)
-        {
+        if ((preferredHeight + menuItemHeight) < maximumHeight) {
             retVal = super.add(a);
-        }
-        else
-        {
+        } else {
             // Create the more menu if necessary
             createMoreMenu();
             // Add item to the More Menu.
@@ -155,13 +151,12 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Override the JPopupMenu functionality, try to provide illusion of a
-     *  single menu.
-     *  TEMPORARY - Two methods are temporary, move to a STATE pattern
-     *  once you get the height algorithm working.
+     * Override the JPopupMenu functionality, try to provide illusion of a
+     * single menu.
+     * TEMPORARY - Two methods are temporary, move to a STATE pattern
+     * once you get the height algorithm working.
      */
-    public JMenuItem add(JMenuItem menuItem)
-    {
+    public JMenuItem add(JMenuItem menuItem) {
 
         JMenuItem retVal = null;
 
@@ -169,13 +164,10 @@ public class JPopupMenuEx extends JPopupMenu
         // to check when debugging.
         double menuItemSize = menuItem.getPreferredSize().getHeight();
 
-        if ((myHeight + menuItemSize) < maximumHeight)
-        {
+        if ((myHeight + menuItemSize) < maximumHeight) {
             retVal = super.add(menuItem);
             myHeight += menuItemSize;
-        }
-        else
-        {
+        } else {
             // Create the more menu if necessary
             createMoreMenu();
             retVal = moreMenu.add(menuItem);
@@ -184,22 +176,19 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Override the JPopup Menu
+     * Override the JPopup Menu
      */
-    public void addSeparator()
-    {
+    public void addSeparator() {
         // Ignore height of separator
         // Not ideal - but typical
         super.addSeparator();
     }
 
     /**
-     *  Convenience helper function
+     * Convenience helper function
      */
-    private void createMoreMenu()
-    {
-        if (moreMenu == null)
-        {
+    private void createMoreMenu() {
+        if (moreMenu == null) {
             moreMenu = new JMoreMenu(MORE);
             moreMenu.setMaximumHeight(maximumHeight);
             super.add(moreMenu);
@@ -207,10 +196,9 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Additional work needed to finalize and free up memory.
+     * Additional work needed to finalize and free up memory.
      */
-    public void finalize()
-    {
+    public void finalize() {
         // Placeholder
     }
     /**
@@ -222,36 +210,28 @@ public class JPopupMenuEx extends JPopupMenu
      */
 
     /**
-     *  Get all Components **MINUS THE MORE BUTTONS**
-     *  Use vectors, they are easier to work with when working with
-     *  heavily dynamic stuff.
+     * Get all Components **MINUS THE MORE BUTTONS**
+     * Use vectors, they are easier to work with when working with
+     * heavily dynamic stuff.
      */
-    public Vector getAllSubComponents()
-    {
+    public Vector getAllSubComponents() {
         Vector componentVector = new Vector();
         Component[] componentArray = getComponents();
 
-        for (int i = 0; i < componentArray.length; i++)
-        {
+        for (int i = 0; i < componentArray.length; i++) {
             // Skip over the more menu item
-            if (componentArray[i] instanceof JMenuItem)
-            { // sanity check
-                if ((JMenuItem) componentArray[i] == moreMenu)
-                {
+            if (componentArray[i] instanceof JMenuItem) { // sanity check
+                if (componentArray[i] == moreMenu) {
                     componentVector.add(componentArray[i]);
                 }
-            }
-            else
-            {
+            } else {
                 componentVector.add(componentArray[i]);
             }
         }
-        if (moreMenu != null)
-        {
+        if (moreMenu != null) {
             Vector moreComponents = moreMenu.getAllSubComponents();
 
-            for (int j = 0; j < moreComponents.size(); j++)
-            {
+            for (int j = 0; j < moreComponents.size(); j++) {
                 componentVector.add(moreComponents.elementAt(j));
             }
         }
@@ -259,20 +239,16 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Override the JPopupMenu functionality
+     * Override the JPopupMenu functionality
      */
-    public Component getComponentAtIndex(int i)
-    {
+    public Component getComponentAtIndex(int i) {
         Component retVal = null;
         Component[] components = getComponents();
 
         // I'm not certain what getComponentIndex does here, test.
-        if (i < components.length)
-        {
+        if (i < components.length) {
             retVal = super.getComponent(i);
-        }
-        else
-        {
+        } else {
             // The extra steps are to make debugging easier.
             retVal = moreMenu.getComponentAtIndex(i - components.length);
         }
@@ -280,25 +256,20 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Override the JPopupMenu functionality
+     * Override the JPopupMenu functionality
      */
-    public int getComponentIndex(Component c)
-    {
+    public int getComponentIndex(Component c) {
         int retVal = -1;
 
         Component[] components = getComponents();
         retVal = super.getComponentIndex(c);
 
-        if (retVal >= 0)
-        {
-            ; // Nothing to do - already found the item
-        }
-        else
-        {
+        if (retVal >= 0) {
+            // Nothing to do - already found the item
+        } else {
             // Account for more Menu;
             int moreLocation = moreMenu.getComponentIndex(c);
-            if (moreLocation != -1)
-            {
+            if (moreLocation != -1) {
                 // Account for the more menu item - hence the '-1'
                 retVal = (components.length - 1) + moreMenu.getComponentIndex(c);
             }
@@ -307,20 +278,18 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Convenience helper - get one of the sub-menus if you
-     *  want to manipulate it directly (For Example - insert a static
-     *  item.)
+     * Convenience helper - get one of the sub-menus if you
+     * want to manipulate it directly (For Example - insert a static
+     * item.)
      */
-    public JMoreMenu getMoreMenu()
-    {
+    public JMoreMenu getMoreMenu() {
         return moreMenu;
     }
 
     /**
-     *  Override the JPopupMenu functionality
+     * Override the JPopupMenu functionality
      */
-    public MenuElement[] getSubElements()
-    {
+    public MenuElement[] getSubElements() {
 
         // Test - Use getComponentCount - had problems with it before
         // not working correctly if menu had not been shown at least
@@ -329,33 +298,26 @@ public class JPopupMenuEx extends JPopupMenu
         int itemCount = getComponentCount();
         MenuElement[] retVal = null;
 
-        if (itemCount < itemCount)
-        {
+        if (itemCount < itemCount) {
             retVal = super.getSubElements();
-        }
-        else
-        {
+        } else {
             // Concatenate moreMenu and my elements, but don't
             // include the "more" button item, hence "length-1"
             Vector elements = new Vector();
             MenuElement[] subElements = super.getSubElements();
-            for (int i = 0; i < subElements.length - 1; i++)
-            {
+            for (int i = 0; i < subElements.length - 1; i++) {
                 elements.add(subElements[i]);
             }
             MenuElement[] moreElements = {};
-            if (moreMenu != null)
-            {
+            if (moreMenu != null) {
                 moreElements = moreMenu.getSubElements();
             }
-            for (int j = 0; j < moreElements.length; j++)
-            {
+            for (int j = 0; j < moreElements.length; j++) {
                 elements.add(moreElements[j]);
             }
             // Casting caused wierd problems, so we do it the hard way.
             MenuElement[] elementsToReturn = new MenuElement[elements.size()];
-            for (int k = 0; k < elements.size(); k++)
-            {
+            for (int k = 0; k < elements.size(); k++) {
                 elementsToReturn[k] = (MenuElement) elements.elementAt(k);
             }
             retVal = elementsToReturn;
@@ -366,26 +328,20 @@ public class JPopupMenuEx extends JPopupMenu
     /**
      * Override the JPopupMenu functionality
      */
-    public void insert(Component c, int index)
-    {
+    public void insert(Component c, int index) {
         int itemCount = getComponentCount();
 
-        if (index < itemCount)
-        {
+        if (index < itemCount) {
             super.insert(c, index);
             double componentHeight = c.getPreferredSize().getHeight();
             itemCount += 1; // New Component
             myHeight += componentHeight;
-            if (myHeight < maximumHeight)
-            {
+            if (myHeight < maximumHeight) {
                 // Nothing left to do - Leave this code in this is a
                 // good placeholder for debugging code if necessary
-            }
-            else
-            {
+            } else {
                 Component componentToMove = null;
-                do
-                {
+                do {
                     // Get the component closest to the moreMenu item
                     // menu is 0 based, and component is 1 back
                     // hence -2
@@ -396,20 +352,17 @@ public class JPopupMenuEx extends JPopupMenu
                 }
                 while (myHeight > maximumHeight);
             }
-        }
-        else
-        {
+        } else {
             createMoreMenu();
             moreMenu.insert(c, index - itemCount);
         }
     }
 
     /**
-     *  Convenience method.  JPopupMenu does not have a insert(String)
-     *  however, it makes things very convenient
+     * Convenience method.  JPopupMenu does not have a insert(String)
+     * however, it makes things very convenient
      */
-    public void insert(String string, int index)
-    {
+    public void insert(String string, int index) {
         // Strings do not have a getPreferredSize call, hence the onlye
         // way to get their preferred size is to forcibly insert them
         // then ask the resulting JMenuItem what it's size is
@@ -418,7 +371,7 @@ public class JPopupMenuEx extends JPopupMenu
         JMenuItem tempItem = super.add(string);
         double itemHeight = tempItem.getPreferredSize().getHeight();
         super.remove(tempItem);
-        insert((Component) tempItem, index);
+        insert(tempItem, index);
     }
 
     /**
@@ -429,8 +382,7 @@ public class JPopupMenuEx extends JPopupMenu
      * nightmare to code up and debug!!!!
      */
 
-    public void insert(Action a, int index)
-    {
+    public void insert(Action a, int index) {
         int itemCount = getComponentCount();
 
         // Actions do not have a getPreferred size call, so we have
@@ -438,16 +390,15 @@ public class JPopupMenuEx extends JPopupMenu
         // what size it wanted.
         JMenuItem tempItem = super.add(a);
         super.remove(tempItem);
-        insert((Component) tempItem, index);
+        insert(tempItem, index);
     }
 
     /**
-     *  Used to forcibly insert items at the end of the primary
-     *  menu.  Useful if you have items that you don't want
-     *  who knows how many levels deep in the more structure.
+     * Used to forcibly insert items at the end of the primary
+     * menu.  Useful if you have items that you don't want
+     * who knows how many levels deep in the more structure.
      */
-    public void insertStatic(Component c)
-    {
+    public void insertStatic(Component c) {
         // Determine if the Component can fit already
         // If yes
         //   Just do a regular insert, we're done.
@@ -460,17 +411,13 @@ public class JPopupMenuEx extends JPopupMenu
 
         double componentHeight = c.getPreferredSize().getHeight();
 
-        if ((myHeight + componentHeight) < maximumHeight)
-        {
+        if ((myHeight + componentHeight) < maximumHeight) {
             // Force the component to go below the moreMenu
             super.add(c);
-        }
-        else
-        {
+        } else {
             int itemCount = getComponentCount();
             Component componentToMove = null;
-            do
-            {
+            do {
                 // indexes are 0 based, the standard item is 1 before
                 // the more menu hence -2
                 int index = getComponentIndex(moreMenu);
@@ -488,23 +435,18 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Override the JPopupMenu functionality
-     *  For simplicities sake, do not reshuffle menu for now.
-     *  Remove is not used as often as add/insert algorithms
+     * Override the JPopupMenu functionality
+     * For simplicities sake, do not reshuffle menu for now.
+     * Remove is not used as often as add/insert algorithms
      */
-    public void remove(int pos)
-    {
+    public void remove(int pos) {
         int itemCount = getComponentCount();
-        if (pos < itemCount)
-        {
+        if (pos < itemCount) {
             super.remove(pos);
-        }
-        else
-        {
+        } else {
             moreMenu.remove(pos - itemCount);
             // If the more menu is now empty - remove it.
-            if (moreMenu.getItemCount() == 0)
-            {
+            if (moreMenu.getItemCount() == 0) {
                 super.remove(moreMenu);
                 moreMenu = null;
             }
@@ -512,25 +454,20 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Override the JPopupMenu functionality.  For simplicity, do not
-     *  reshuffle the menu item for now.  Remove is not used as often as
-     *  add/insert.
+     * Override the JPopupMenu functionality.  For simplicity, do not
+     * reshuffle the menu item for now.  Remove is not used as often as
+     * add/insert.
      */
-    public void remove(Component c)
-    {
-        if (getComponentIndex(c) != -1)
-        {
+    public void remove(Component c) {
+        if (getComponentIndex(c) != -1) {
             // We have the component in the main
             // menu
             super.remove(c);
-        }
-        else
-        {
+        } else {
             // one of the more menus has it.
             moreMenu.remove(c);
             // If the more menu is now empty - remove it.
-            if (moreMenu.getItemCount() == 0)
-            {
+            if (moreMenu.getItemCount() == 0) {
                 super.remove(moreMenu);
                 moreMenu = null;
             }
@@ -538,12 +475,10 @@ public class JPopupMenuEx extends JPopupMenu
     }
 
     /**
-     *  Override JPopupMenu functionality.  Take into account aut
+     * Override JPopupMenu functionality.  Take into account aut
      */
-    public void removeAll()
-    {
-        if (moreMenu != null)
-        {
+    public void removeAll() {
+        if (moreMenu != null) {
             moreMenu.removeAll();
             moreMenu = null;
         }
@@ -554,23 +489,19 @@ public class JPopupMenuEx extends JPopupMenu
     /**
      * Override the JPopupMenu functionality
      */
-    public void setBorderPainted(boolean b)
-    {
+    public void setBorderPainted(boolean b) {
         super.setBorderPainted(b);
-        if (moreMenu != null)
-        {
+        if (moreMenu != null) {
             moreMenu.setBorderPainted(b);
         }
     }
 
     /**
-     *  Set the maximum height of this menu
+     * Set the maximum height of this menu
      */
-    public void setMaximumHeight(double aHeight)
-    {
+    public void setMaximumHeight(double aHeight) {
         maximumHeight = aHeight;
-        if (moreMenu != null)
-        {
+        if (moreMenu != null) {
             moreMenu.setMaximumHeight(aHeight);
         }
     }
@@ -578,43 +509,38 @@ public class JPopupMenuEx extends JPopupMenu
     /**
      * Override the JPopupMenu functionality
      */
-    public void setSelected(Component c)
-    {
-        if (getComponentIndex(c) != -1)
-        {
+    public void setSelected(Component c) {
+        if (getComponentIndex(c) != -1) {
             // We have the component in the main menu
             super.setSelected(c);
-        }
-        else
-        {
+        } else {
             // one of the more menus has it.
             moreMenu.setSelected(c);
         }
     }
 
     /**
-     *  Show - Over the JPopupMenu functionality - try to guard against
-     *  menu going off the screen.  If the max Height is larger than
-     *  screen area however, we're fried, set the menu size smaller.
-     *
-     *  WARNING - The code here is not very complex, but a bit deceiving
-     *            Getting this code **CORRECT** is a lot tricker than
-     *            it looks, primarily due to the fact you don't have
-     *            easy access to the internal co-ordinate system and
-     *            associated manipulation routines.  In addition, the
-     *            getPreferredSize call doesn't seem to work properly
-     *            until the menu has been displayed at least once.
-     *            If you don't believe, uncomment out the System.out.println
-     *            calls and watch what happens (left in for debugging later).
-     *
-     *            Most of this code is work-around of known problems in Swing
-     *            with a couple of sequence dependent items. (must be called
-     *            at the appropriate time).
-     *
-     *            When making mods, proceed with MUCH CAUTION!.
+     * Show - Over the JPopupMenu functionality - try to guard against
+     * menu going off the screen.  If the max Height is larger than
+     * screen area however, we're fried, set the menu size smaller.
+     * <p>
+     * WARNING - The code here is not very complex, but a bit deceiving
+     * Getting this code **CORRECT** is a lot tricker than
+     * it looks, primarily due to the fact you don't have
+     * easy access to the internal co-ordinate system and
+     * associated manipulation routines.  In addition, the
+     * getPreferredSize call doesn't seem to work properly
+     * until the menu has been displayed at least once.
+     * If you don't believe, uncomment out the System.out.println
+     * calls and watch what happens (left in for debugging later).
+     * <p>
+     * Most of this code is work-around of known problems in Swing
+     * with a couple of sequence dependent items. (must be called
+     * at the appropriate time).
+     * <p>
+     * When making mods, proceed with MUCH CAUTION!.
      */
-    public void show(Component invoker, int x, int y)
-    {
+    public void show(Component invoker, int x, int y) {
         pack(); // Desparation to find out why
         // getPreferredSize() is not  returning correct values
 
@@ -624,27 +550,25 @@ public class JPopupMenuEx extends JPopupMenu
         // converts one component of the point, not both.
         Point screenWorkAround = invoker.getLocationOnScreen();
         Point screenLocation = new Point((int) screenWorkAround.getX() + x,
-                                         (int) screenWorkAround.getY() + y);
+            (int) screenWorkAround.getY() + y);
         // END WORKAROUND
         Dimension preferredSize = getPreferredSize();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         // KNOWN PROBLEM IN getPreferredSize()
-        MenuElement elements[] = getSubElements();
+        MenuElement[] elements = getSubElements();
 
         Component c;
         Dimension componentPreferredSize;
         Dimension componentActualSize;
         double computedHeight = 0;
         double computedWidth = 0;
-        for (int i = 0; i < elements.length; i++)
-        {
+        for (int i = 0; i < elements.length; i++) {
             c = elements[i].getComponent();
             componentPreferredSize = c.getPreferredSize();
             componentActualSize = c.getSize();
 
             computedHeight += componentPreferredSize.getHeight();
-            if (componentPreferredSize.getWidth() > computedWidth)
-            {
+            if (componentPreferredSize.getWidth() > computedWidth) {
                 computedWidth = componentPreferredSize.getWidth();
             }
         }
@@ -652,13 +576,10 @@ public class JPopupMenuEx extends JPopupMenu
         // if off the screen
         //    reposition the menu
         int maxLocationX = (int) screenLocation.getX() + (int) computedWidth;
-        if (maxLocationX > (int) screenSize.getWidth())
-        {
+        if (maxLocationX > (int) screenSize.getWidth()) {
             // Reposition menu - 25 pixels from the edge just to be safe
             x = (int) screenSize.getWidth() - (int) computedWidth - 25;
-        }
-        else
-        {
+        } else {
             // Nothing to do - save raw screen location for later
             x = (int) screenLocation.getX();
         }
@@ -668,14 +589,11 @@ public class JPopupMenuEx extends JPopupMenu
         //    reposition the menu
         int maxLocationY = (int) screenLocation.getY() + (int) computedHeight;
 
-        if (maxLocationY > (int) screenSize.getHeight() - TASKBAR_HEIGHT)
-        {
+        if (maxLocationY > (int) screenSize.getHeight() - TASKBAR_HEIGHT) {
             // Reposition - 55 pixels from edge just to be safe
             // Use 55 to accomodate really big Windows Task Bars
             y = (int) (screenSize.getHeight() - (computedHeight + TASKBAR_HEIGHT));
-        }
-        else
-        {
+        } else {
             // Nothing to do - save raw screen location for later
             y = (int) screenLocation.getY();
         }
@@ -690,24 +608,20 @@ public class JPopupMenuEx extends JPopupMenu
         screenLocation.setLocation(x, y);
         SwingUtilities.convertPointFromScreen(screenLocation, invoker);
         super.show(invoker, (int) screenLocation.getX(),
-                   (int) screenLocation.getY());
+            (int) screenLocation.getY());
     }
 
     /**
-     *  I ran out of ideas on how to get it to be invisible, so I added
-     *  some little helpers.  Get Item count but do not include the
-     *  automatically created more menus.  I could not get the
-     *  getComponentCount to work transparently.
+     * I ran out of ideas on how to get it to be invisible, so I added
+     * some little helpers.  Get Item count but do not include the
+     * automatically created more menus.  I could not get the
+     * getComponentCount to work transparently.
      */
-    public int SizeableGetItemCount()
-    {
+    public int SizeableGetItemCount() {
         int retVal = 0;
-        if (moreMenu != null)
-        {
+        if (moreMenu != null) {
             retVal = getComponentCount();
-        }
-        else
-        {
+        } else {
             int itemCount = getComponentCount();
             retVal = itemCount + moreMenu.SizeableGetItemCount();
         }

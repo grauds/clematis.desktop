@@ -26,11 +26,16 @@ package jworkspace.ui.cpanel;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.ButtonModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
 
 /**
  * A special kind of buttons that are to be inserted into
@@ -40,54 +45,21 @@ import java.awt.event.MouseEvent;
  * method with specified parameters to insert buttons
  * and separators into control panel.
  */
-public class CButton extends JButton
-{
-  /**
-   * The highlighted color.
-   */
-   private Color highlightColor;
-  /**
-   * The default color.
-   */
-   private Color defaultColor;
- /**
-   *  The mouse handler which makes the highlighting.
-   *
-   * @author     julien
-   */
-   private class MouseHandler extends MouseAdapter
-   {
+public class CButton extends JButton {
     /**
-     *  When the mouse passes over the button.
-     *
-     * @param  e  The event.
+     * The highlighted color.
      */
-     public void mouseEntered(MouseEvent e)
-     {
-      if (isEnabled())
-      {
-         setBackground(highlightColor);
-      }
-     }
+    private Color highlightColor;
     /**
-     *  When the mouse passes out of the button.
-     *
-     * @param  e  The event.
+     * The default color.
      */
-     public void mouseExited(MouseEvent e)
-     {
-       if (isEnabled())
-       {
-         setBackground(defaultColor);
-       }
-     }
-    }
+    private Color defaultColor;
+
     /**
      * ControlPanelButton is rollover button, so
      * we should provide two images.
      */
-    public CButton(Icon image, Icon rolloverImage)
-    {
+    public CButton(Icon image, Icon rolloverImage) {
         super(image);
         setRolloverIcon(rolloverImage);
         setPressedIcon(rolloverImage);
@@ -98,26 +70,26 @@ public class CButton extends JButton
          */
         setOpaque(false);
 
-        setMargin( new Insets(2, 2, 2, 2) );
+        setMargin(new Insets(2, 2, 2, 2));
 
-        initButton( Color.white );
+        initButton(Color.white);
     }
+
     /**
      * ControlPanelButton is rollover button, so
      * we should provide two images and highlight color.
      */
-    public CButton(Icon image, Icon rolloverImage, Color highlight)
-    {
+    public CButton(Icon image, Icon rolloverImage, Color highlight) {
         this(image, rolloverImage);
-        initButton( highlight );
+        initButton(highlight);
     }
+
     /**
      * Create button
      */
     public static CButton create(ActionListener listener,
                                  Icon image, Icon hoverImage,
-                                 String command, String toolTipText)
-    {
+                                 String command, String toolTipText) {
         CButton button = new CButton(image, hoverImage);
         button.setActionCommand(command);
         button.setToolTipText(toolTipText);
@@ -131,70 +103,94 @@ public class CButton extends JButton
     public static CButton create(ActionListener listener,
                                  Icon image, Icon hoverImage,
                                  Color highlight,
-                                 String command, String toolTipText)
-    {
+                                 String command, String toolTipText) {
         CButton button = CButton.create(listener, image, hoverImage,
-                                        command, toolTipText);
-        button.initButton( highlight );
+            command, toolTipText);
+        button.initButton(highlight);
         return button;
     }
 
-    public void paintBorder(Graphics g)
-    {
+    public void paintBorder(Graphics g) {
         ButtonModel model = getModel();
-        if (model.isRollover() && !(model.isPressed() && !model.isArmed()))
-        {
+        if (model.isRollover() && !(model.isPressed() && !model.isArmed())) {
             super.paintBorder(g);
         }
     }
-   /**
-    *  Does the extra initialisations.
-    *
-    * @param  highlightColor  The highlight color.
-    */
-    protected void initButton(Color highlightColor)
-    {
-      this.highlightColor = highlightColor;
-      defaultColor = getBackground();
 
-      addMouseListener(new MouseHandler());
-    }
+    /**
+     * Does the extra initialisations.
+     *
+     * @param highlightColor The highlight color.
+     */
+    protected void initButton(Color highlightColor) {
+        this.highlightColor = highlightColor;
+        defaultColor = getBackground();
 
-    public float getAlignmentX()
-    {
-      return CENTER_ALIGNMENT;
+        addMouseListener(new MouseHandler());
     }
 
-    public float getAlignmentY()
-    {
-      return CENTER_ALIGNMENT;
+    public float getAlignmentX() {
+        return CENTER_ALIGNMENT;
     }
-   /**
-    *  Overriden to ensure that the button won't stay highlighted if it had the
-    *  mouse over it.
-    *
-    * @param  b  Button state.
-    */
-    public void setEnabled(boolean b)
-    {
-      reset();
-      super.setEnabled(b);
+
+    public float getAlignmentY() {
+        return CENTER_ALIGNMENT;
     }
+
+    /**
+     * Overriden to ensure that the button won't stay highlighted if it had the
+     * mouse over it.
+     *
+     * @param b Button state.
+     */
+    public void setEnabled(boolean b) {
+        reset();
+        super.setEnabled(b);
+    }
+
     /**
      * Forces the button to unhighlight.
      */
-    protected void reset()
-    {
-       setBackground(defaultColor);
+    protected void reset() {
+        setBackground(defaultColor);
     }
+
     /**
      * Update UI method is overriden to keep button
      * transparent.
      */
-    public void updateUI()
-    {
+    public void updateUI() {
         super.updateUI();
         defaultColor = getBackground();
         setOpaque(false);
+    }
+
+    /**
+     * The mouse handler which makes the highlighting.
+     *
+     * @author julien
+     */
+    private class MouseHandler extends MouseAdapter {
+        /**
+         * When the mouse passes over the button.
+         *
+         * @param e The event.
+         */
+        public void mouseEntered(MouseEvent e) {
+            if (isEnabled()) {
+                setBackground(highlightColor);
+            }
+        }
+
+        /**
+         * When the mouse passes out of the button.
+         *
+         * @param e The event.
+         */
+        public void mouseExited(MouseEvent e) {
+            if (isEnabled()) {
+                setBackground(defaultColor);
+            }
+        }
     }
 }

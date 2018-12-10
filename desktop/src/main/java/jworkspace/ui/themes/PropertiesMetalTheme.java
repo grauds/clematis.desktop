@@ -1,22 +1,22 @@
 package jworkspace.ui.themes;
 /*
  * Copyright (c) 2002 Sun Microsystems, Inc. All  Rights Reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * -Redistributions of source code must retain the above copyright
  *  notice, this list of conditions and the following disclaimer.
- * 
+ *
  * -Redistribution in binary form must reproduct the above copyright
  *  notice, this list of conditions and the following disclaimer in
  *  the documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of Sun Microsystems, Inc. or the names of contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
+ *
  * This software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING
  * ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
@@ -28,7 +28,7 @@ package jworkspace.ui.themes;
  * INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY
  * OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE SOFTWARE, EVEN
  * IF SUN HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- * 
+ *
  * You acknowledge that Software is not designed, licensed or intended for
  * use in the design, construction, operation or maintenance of any nuclear
  * facility.
@@ -39,10 +39,13 @@ package jworkspace.ui.themes;
  */
 
 
-import javax.swing.plaf.*;
-import javax.swing.plaf.metal.*;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.metal.DefaultMetalTheme;
 
 /**
  * This class allows you to load a theme from a file.
@@ -50,17 +53,17 @@ import java.util.*;
  * To create a theme you provide a text file which contains
  * tags corresponding to colors of the theme along with a value
  * for that color.  For example:
- *
+ * <p>
  * name=My Ugly Theme
  * primary1=255,0,0
  * primary2=0,255,0
  * primary3=0,0,255
- *
+ * <p>
  * This class only loads colors from the properties file,
  * but it could easily be extended to load fonts -  or even icons.
  *
- * @version 1.8 06/13/02
  * @author Steve Wilson
+ * @version 1.8 06/13/02
  */
 public class PropertiesMetalTheme extends DefaultMetalTheme {
 
@@ -79,18 +82,18 @@ public class PropertiesMetalTheme extends DefaultMetalTheme {
 
 
     /**
-      * pass an inputstream pointing to a properties file.
-      * Colors will be initialized to be the same as the DefaultMetalTheme,
-      * and then any colors provided in the properties file will override that.
-      */
-    public PropertiesMetalTheme( InputStream stream ) {
+     * pass an inputstream pointing to a properties file.
+     * Colors will be initialized to be the same as the DefaultMetalTheme,
+     * and then any colors provided in the properties file will override that.
+     */
+    public PropertiesMetalTheme(InputStream stream) {
         initColors();
         loadProperties(stream);
     }
 
     /**
-      * Initialize all colors to be the same as the DefaultMetalTheme.
-      */
+     * Initialize all colors to be the same as the DefaultMetalTheme.
+     */
     private void initColors() {
         primary1 = super.getPrimary1();
         primary2 = super.getPrimary2();
@@ -100,103 +103,126 @@ public class PropertiesMetalTheme extends DefaultMetalTheme {
         secondary2 = super.getSecondary2();
         secondary3 = super.getSecondary3();
 
-	black = super.getBlack();
-	white = super.getWhite();
+        black = super.getBlack();
+        white = super.getWhite();
     }
 
     /**
-      * Load the theme name and colors from the properties file
-      * Items not defined in the properties file are ignored
-      */
+     * Load the theme name and colors from the properties file
+     * Items not defined in the properties file are ignored
+     */
     private void loadProperties(InputStream stream) {
-	Properties prop = new Properties();
-	try {
-	    prop.load(stream);
-	} catch (IOException e) {
-	    System.out.println(e);
-	}
+        Properties prop = new Properties();
+        try {
+            prop.load(stream);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
 
-	Object tempName = prop.get("name");
-	if (tempName != null) {
-	    name = tempName.toString();
-	}
+        Object tempName = prop.get("name");
+        if (tempName != null) {
+            name = tempName.toString();
+        }
 
-	Object colorString = null;
+        Object colorString = null;
 
-	colorString = prop.get("primary1");
-	if (colorString != null){
-	    primary1 = parseColor(colorString.toString());
-	}
+        colorString = prop.get("primary1");
+        if (colorString != null) {
+            primary1 = parseColor(colorString.toString());
+        }
 
-	colorString = prop.get("primary2");
-	if (colorString != null) {
-	    primary2 = parseColor(colorString.toString());
-	}
+        colorString = prop.get("primary2");
+        if (colorString != null) {
+            primary2 = parseColor(colorString.toString());
+        }
 
-	colorString = prop.get("primary3");
-	if (colorString != null) {
-	    primary3 = parseColor(colorString.toString());
-	}
+        colorString = prop.get("primary3");
+        if (colorString != null) {
+            primary3 = parseColor(colorString.toString());
+        }
 
-	colorString = prop.get("secondary1");
-	if (colorString != null) {
-	    secondary1 = parseColor(colorString.toString());
-	}
+        colorString = prop.get("secondary1");
+        if (colorString != null) {
+            secondary1 = parseColor(colorString.toString());
+        }
 
-	colorString = prop.get("secondary2");
-	if (colorString != null) {
-	    secondary2 = parseColor(colorString.toString());
-	}
+        colorString = prop.get("secondary2");
+        if (colorString != null) {
+            secondary2 = parseColor(colorString.toString());
+        }
 
-	colorString = prop.get("secondary3");
-	if (colorString != null) {
-	    secondary3 = parseColor(colorString.toString());
-	}
+        colorString = prop.get("secondary3");
+        if (colorString != null) {
+            secondary3 = parseColor(colorString.toString());
+        }
 
-	colorString = prop.get("black");
-	if (colorString != null) {
-	    black = parseColor(colorString.toString());
-	}
+        colorString = prop.get("black");
+        if (colorString != null) {
+            black = parseColor(colorString.toString());
+        }
 
-	colorString = prop.get("white");
-	if (colorString != null) {
-	    white = parseColor(colorString.toString());
-	}
+        colorString = prop.get("white");
+        if (colorString != null) {
+            white = parseColor(colorString.toString());
+        }
 
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    protected ColorUIResource getPrimary1() { return primary1; }
-    protected ColorUIResource getPrimary2() { return primary2; }
-    protected ColorUIResource getPrimary3() { return primary3; }
+    protected ColorUIResource getPrimary1() {
+        return primary1;
+    }
 
-    protected ColorUIResource getSecondary1() { return secondary1; }
-    protected ColorUIResource getSecondary2() { return secondary2; }
-    protected ColorUIResource getSecondary3() { return secondary3; }
+    protected ColorUIResource getPrimary2() {
+        return primary2;
+    }
 
-    protected ColorUIResource getBlack() { return black; }
-    protected ColorUIResource getWhite() { return white; }
+    protected ColorUIResource getPrimary3() {
+        return primary3;
+    }
+
+    protected ColorUIResource getSecondary1() {
+        return secondary1;
+    }
+
+    protected ColorUIResource getSecondary2() {
+        return secondary2;
+    }
+
+    protected ColorUIResource getSecondary3() {
+        return secondary3;
+    }
+
+    protected ColorUIResource getBlack() {
+        return black;
+    }
+
+    protected ColorUIResource getWhite() {
+        return white;
+    }
 
     /**
-      * parse a comma delimited list of 3 strings into a Color
-      */
+     * parse a comma delimited list of 3 strings into a Color
+     */
     private ColorUIResource parseColor(String s) {
         int red = 0;
-	int green = 0;
-	int blue = 0;
-	try {
-	    StringTokenizer st = new StringTokenizer(s, ",");
+        int green = 0;
+        int blue = 0;
+        try {
+            StringTokenizer st = new StringTokenizer(s, ",");
 
-	    red = Integer.parseInt(st.nextToken());
-	    green = Integer.parseInt(st.nextToken());
-	    blue = Integer.parseInt(st.nextToken());
+            red = Integer.parseInt(st.nextToken());
+            green = Integer.parseInt(st.nextToken());
+            blue = Integer.parseInt(st.nextToken());
 
-	} catch (Exception e) {
-	    System.out.println(e);
-	    System.out.println("Couldn't parse color :" + s);
-	}
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Couldn't parse color :" + s);
+        }
 
-	return new ColorUIResource(red, green, blue);
+        return new ColorUIResource(red, green, blue);
     }
 }

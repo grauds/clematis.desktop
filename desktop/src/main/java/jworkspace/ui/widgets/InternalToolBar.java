@@ -26,179 +26,58 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.ui.KPanel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
+import com.hyperrealm.kiwi.ui.KPanel;
 
 public class InternalToolBar extends KPanel
-    implements MouseListener, MouseMotionListener
-{
-    class Thumb extends JComponent
-    {
-
-        InternalToolBar jit = null;
-        Color paint = null;
-        Color bg = null;
-        Color highlight = null;
-
-        public void paint(Graphics g)
-        {
-            g.setColor(paint);
-            g.fillRect(0, 0, getSize().width, getSize().height);
-            int x = 0;
-            int y = 0;
-            boolean even = true;
-            for(; y < getSize().height; y += 2)
-            {
-                for(; x < getSize().width; x += 4)
-                {
-                    g.setColor(paint.brighter());
-                    g.fillRect(x, y, 1, 1);
-                    g.setColor(paint.darker());
-                    g.fillRect(x + 1, y + 1, 1, 1);
-                }
-
-                if(!even)
-                    x = 0;
-                else
-                    x = 2;
-                even = !even;
-            }
-
-        }
-
-        public void showPressed()
-        {
-            paint = highlight;
-            repaint();
-        }
-
-        public void showReleased()
-        {
-            paint = bg;
-            repaint();
-        }
-
-        public Dimension getMinimumSize()
-        {
-            if(jit.orientation == 0)
-                return new Dimension(jit.getSize().width - 2, 20);
-            else
-                return new Dimension(20, jit.getSize().height - 2);
-        }
-
-        public Dimension getPreferredSize()
-        {
-            return getMinimumSize();
-        }
-
-        public void updateUI()
-        {
-            UIDefaults ui = UIManager.getLookAndFeel().getDefaults();
-            bg = ui.getColor("control");
-            highlight = ui.getColor("controlShadow");
-            paint = bg;
-            repaint();
-        }
-
-        Thumb(InternalToolBar jit)
-        {
-            this.jit = jit;
-            UIDefaults ui = UIManager.getLookAndFeel().getDefaults();
-            bg = ui.getColor("control");
-            highlight = ui.getColor("controlShadow");
-            paint = bg;
-        }
-    }
-
-    class InternalFrame extends JInternalFrame
-    {
-
-        private InternalToolBar tb = null;
-
-
-        InternalFrame(String title, JPanel c, JDesktopPane d, InternalToolBar toolbar)
-        {
-            super(title, false, true, false, true);
-            tb = toolbar;
-            getContentPane().add("Center", c);
-            pack();
-            d.add(this, JLayeredPane.MODAL_LAYER);
-            d.moveToFront(this);
-            setVisible(true);
-            addInternalFrameListener(new InternalFrameAdapter()
-            {
-                public void internalFrameClosing(InternalFrameEvent e)
-                {
-                    setVisible(false);
-                    tb.dock();
-                    dispose();
-                }
-            });
-        }
-    }
-
-    class Separator extends JComponent
-    {
-
-        private int size = 0;
-        private InternalToolBar parent = null;
-
-        public Dimension getPreferredSize()
-        {
-            if(parent.orientation == 1)
-                return new Dimension(size, 1);
-            if(parent.orientation == 0)
-                return new Dimension(1, size);
-            else
-                return new Dimension(size, size);
-        }
-
-        public Dimension getMinimumSize()
-        {
-            return getPreferredSize();
-        }
-
-        Separator(int size, InternalToolBar p)
-        {
-            this.size = size;
-            parent = p;
-            addMouseMotionListener(new MouseMotionAdapter() {
-
-                public void mouseDragged(MouseEvent e)
-                {
-                    e.consume();
-                }
-
-            });
-        }
-    }
-
-
+    implements MouseListener, MouseMotionListener {
     public static final int VERTICAL = 0;
     public static final int HORIZONTAL = 1;
     protected int orientation = 0;
+    protected boolean floatable = false;
+    protected boolean docked = false;
+    protected JDesktopPane desktop = null;
     private String title = null;
     private GridBagLayout g = null;
     private GridBagConstraints c = null;
-    protected boolean floatable = false;
-    protected boolean docked = false;
     private ImageIcon icon = null;
     private Thumb thumb = null;
     private InternalFrame frame = null;
     private JPanel panel = null;
-    protected JDesktopPane desktop = null;
     private Border border = null;
     private Rectangle dockSpace = null;
-
-    public InternalToolBar(String title, int orientation, JDesktopPane desktop)
-    {
+    public InternalToolBar(String title, int orientation, JDesktopPane desktop) {
         super(new BorderLayout());
         floatable = false;
         docked = true;
@@ -211,14 +90,10 @@ public class InternalToolBar extends KPanel
         panel = new JPanel(g);
         border = LineBorder.createBlackLineBorder();
         setBorder(border);
-        if(orientation == 1)
-        {
+        if (orientation == 1) {
             c.fill = 3;
             super.add("West", panel);
-        }
-        else
-        if(orientation == 0)
-        {
+        } else if (orientation == 0) {
             c.fill = 2;
             super.add("North", panel);
         }
@@ -228,50 +103,43 @@ public class InternalToolBar extends KPanel
         setOpaque(false);
     }
 
-    public void mouseDragged(MouseEvent e)
-    {
-        if((e.getSource() instanceof Thumb) && !floatable)
+    public void mouseDragged(MouseEvent e) {
+        if ((e.getSource() instanceof Thumb) && !floatable) {
             floatable = true;
+        }
     }
 
-    public void mouseMoved(MouseEvent mouseevent)
-    {
+    public void mouseMoved(MouseEvent mouseevent) {
     }
 
-    public void mouseClicked(MouseEvent mouseevent)
-    {
+    public void mouseClicked(MouseEvent mouseevent) {
     }
 
-    public void mouseEntered(MouseEvent e)
-    {
-        if(e.getSource() instanceof Thumb)
+    public void mouseEntered(MouseEvent e) {
+        if (e.getSource() instanceof Thumb) {
             thumb.showPressed();
+        }
     }
 
-    public void mouseExited(MouseEvent e)
-    {
-        if(e.getSource() instanceof Thumb)
+    public void mouseExited(MouseEvent e) {
+        if (e.getSource() instanceof Thumb) {
             thumb.showReleased();
+        }
     }
 
-    public void mousePressed(MouseEvent mouseevent)
-    {
+    public void mousePressed(MouseEvent mouseevent) {
     }
 
-    public void mouseReleased(MouseEvent e)
-    {
-        if((e.getSource() instanceof Thumb) && floatable && docked)
-        {
+    public void mouseReleased(MouseEvent e) {
+        if ((e.getSource() instanceof Thumb) && floatable && docked) {
             Point p = e.getPoint();
             int xHeight = panel.getSize().height;
             unDock();
-            if(p.x < 0)
-            {
+            if (p.x < 0) {
                 p.x += getToolkit().getScreenSize().width;
                 p.x -= frame.getSize().width;
             }
-            if(p.y < 0)
-            {
+            if (p.y < 0) {
                 p.y += getToolkit().getScreenSize().height;
                 p.y -= frame.getSize().height + xHeight;
             }
@@ -279,27 +147,23 @@ public class InternalToolBar extends KPanel
         }
     }
 
-    public void setToolBarIcon(ImageIcon icon)
-    {
+    public void setToolBarIcon(ImageIcon icon) {
         this.icon = icon;
     }
 
-    public void addSeparator(int size)
-    {
+    public void addSeparator(int size) {
         Separator separator = new Separator(size, this);
         panel.add(separator);
-        if(orientation == 1)
+        if (orientation == 1) {
             c.gridx++;
-        else
-        if(orientation == 0)
+        } else if (orientation == 0) {
             c.gridy++;
+        }
         g.setConstraints(separator, c);
     }
 
-    public JButton add(JButton button)
-    {
-        if(c.gridx == 0 && c.gridy == 0)
-        {
+    public JButton add(JButton button) {
+        if (c.gridx == 0 && c.gridy == 0) {
             thumb = new Thumb(this);
             thumb.addMouseListener(this);
             thumb.addMouseMotionListener(this);
@@ -307,39 +171,36 @@ public class InternalToolBar extends KPanel
             g.setConstraints(thumb, c);
         }
         panel.add(button);
-        if(orientation == 1)
+        if (orientation == 1) {
             c.gridx++;
-        else
-        if(orientation == 0)
+        } else if (orientation == 0) {
             c.gridy++;
+        }
         g.setConstraints(button, c);
         return button;
     }
 
-    public void setToolBarBorder(Border b)
-    {
+    public void setToolBarBorder(Border b) {
         border = b;
         setBorder(b);
     }
 
-    protected void unDock()
-    {
+    protected void unDock() {
         dockSpace = new Rectangle(getLocationOnScreen().x, getLocationOnScreen().y, getSize().width, getSize().height);
         remove(panel);
         setBorder(null);
         Component p;
-        for(p = getParent(); !(p instanceof Frame); p = p.getParent());
+        for (p = getParent(); !(p instanceof Frame); p = p.getParent()) {
+        }
         p.validate();
         panel.remove(thumb);
         panel.validate();
         frame = new InternalFrame(title, panel, desktop, this);
         frame.addComponentListener(new ComponentAdapter() {
 
-            public void componentMoved(ComponentEvent e)
-            {
+            public void componentMoved(ComponentEvent e) {
                 Rectangle r = new Rectangle(frame.getLocationOnScreen().x, frame.getLocationOnScreen().y, frame.getSize().width, frame.getSize().height);
-                if(dockSpace.intersects(r))
-                {
+                if (dockSpace.intersects(r)) {
                     frame.setVisible(false);
                     dock();
                     frame.dispose();
@@ -348,13 +209,13 @@ public class InternalToolBar extends KPanel
 
         });
         frame.addMouseListener(this);
-        if(icon != null)
+        if (icon != null) {
             frame.setFrameIcon(icon);
+        }
         docked = false;
     }
 
-    protected void dock()
-    {
+    protected void dock() {
         frame.getContentPane().remove(panel);
         panel.add(thumb);
         thumb.showReleased();
@@ -362,21 +223,147 @@ public class InternalToolBar extends KPanel
         c.gridy = 0;
         g.setConstraints(thumb, c);
         panel.validate();
-        if(orientation == 1)
+        if (orientation == 1) {
             super.add("West", panel);
-        else
-        if(orientation == 0)
+        } else if (orientation == 0) {
             super.add("North", panel);
+        }
         setBorder(border);
         Component p;
-        for(p = getParent(); !(p instanceof Frame); p = p.getParent());
+        for (p = getParent(); !(p instanceof Frame); p = p.getParent()) {
+        }
         p.validate();
         floatable = false;
         docked = true;
     }
 
-    public void setFrameIcon(ImageIcon icon)
-    {
+    public void setFrameIcon(ImageIcon icon) {
         this.icon = icon;
+    }
+
+    class Thumb extends JComponent {
+
+        InternalToolBar jit = null;
+        Color paint = null;
+        Color bg = null;
+        Color highlight = null;
+
+        Thumb(InternalToolBar jit) {
+            this.jit = jit;
+            UIDefaults ui = UIManager.getLookAndFeel().getDefaults();
+            bg = ui.getColor("control");
+            highlight = ui.getColor("controlShadow");
+            paint = bg;
+        }
+
+        public void paint(Graphics g) {
+            g.setColor(paint);
+            g.fillRect(0, 0, getSize().width, getSize().height);
+            int x = 0;
+            int y = 0;
+            boolean even = true;
+            for (; y < getSize().height; y += 2) {
+                for (; x < getSize().width; x += 4) {
+                    g.setColor(paint.brighter());
+                    g.fillRect(x, y, 1, 1);
+                    g.setColor(paint.darker());
+                    g.fillRect(x + 1, y + 1, 1, 1);
+                }
+
+                if (!even) {
+                    x = 0;
+                } else {
+                    x = 2;
+                }
+                even = !even;
+            }
+
+        }
+
+        public void showPressed() {
+            paint = highlight;
+            repaint();
+        }
+
+        public void showReleased() {
+            paint = bg;
+            repaint();
+        }
+
+        public Dimension getMinimumSize() {
+            if (jit.orientation == 0) {
+                return new Dimension(jit.getSize().width - 2, 20);
+            } else {
+                return new Dimension(20, jit.getSize().height - 2);
+            }
+        }
+
+        public Dimension getPreferredSize() {
+            return getMinimumSize();
+        }
+
+        public void updateUI() {
+            UIDefaults ui = UIManager.getLookAndFeel().getDefaults();
+            bg = ui.getColor("control");
+            highlight = ui.getColor("controlShadow");
+            paint = bg;
+            repaint();
+        }
+    }
+
+    class InternalFrame extends JInternalFrame {
+
+        private InternalToolBar tb = null;
+
+
+        InternalFrame(String title, JPanel c, JDesktopPane d, InternalToolBar toolbar) {
+            super(title, false, true, false, true);
+            tb = toolbar;
+            getContentPane().add("Center", c);
+            pack();
+            d.add(this, JLayeredPane.MODAL_LAYER);
+            d.moveToFront(this);
+            setVisible(true);
+            addInternalFrameListener(new InternalFrameAdapter() {
+                public void internalFrameClosing(InternalFrameEvent e) {
+                    setVisible(false);
+                    tb.dock();
+                    dispose();
+                }
+            });
+        }
+    }
+
+    class Separator extends JComponent {
+
+        private int size = 0;
+        private InternalToolBar parent = null;
+
+        Separator(int size, InternalToolBar p) {
+            this.size = size;
+            parent = p;
+            addMouseMotionListener(new MouseMotionAdapter() {
+
+                public void mouseDragged(MouseEvent e) {
+                    e.consume();
+                }
+
+            });
+        }
+
+        public Dimension getPreferredSize() {
+            if (parent.orientation == 1) {
+                return new Dimension(size, 1);
+            }
+            if (parent.orientation == 0) {
+                return new Dimension(1, size);
+            } else {
+                return new Dimension(size, size);
+            }
+        }
+
+        public Dimension getMinimumSize() {
+            return getPreferredSize();
+        }
     }
 }

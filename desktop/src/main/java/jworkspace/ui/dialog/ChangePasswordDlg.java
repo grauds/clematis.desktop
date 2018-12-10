@@ -28,6 +28,18 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.border.EmptyBorder;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import jworkspace.LangResource;
@@ -35,49 +47,37 @@ import jworkspace.kernel.Workspace;
 import jworkspace.util.WorkspaceError;
 import kiwi.ui.dialog.ComponentDialog;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-
 /**
  * Change password of a user profile dialog.
  */
-public class ChangePasswordDlg extends ComponentDialog
-{
+public class ChangePasswordDlg extends ComponentDialog {
     private JPasswordField old_pass, new_pass, confirm_pass;
     private JPanel carrier;
 
-    public ChangePasswordDlg(Frame parent)
-    {
+    public ChangePasswordDlg(Frame parent) {
         super(parent, LangResource.getString("ChangePasswordDlg.title"), true);
         setResizable(false);
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         destroy();
         super.dispose();
     }
 
-    protected boolean accept()
-    {
-        try
-        {
+    protected boolean accept() {
+        try {
             Workspace.getProfilesEngine().setPassword(
-                    new String(old_pass.getPassword()),
-                    new String(new_pass.getPassword()),
-                    new String(confirm_pass.getPassword()));
-        }
-        catch (Exception ex)
-        {
+                new String(old_pass.getPassword()),
+                new String(new_pass.getPassword()),
+                new String(confirm_pass.getPassword()));
+        } catch (Exception ex) {
             WorkspaceError.exception(LangResource.
-                                     getString("ChangePasswordDlg.pwdChange.failed"), ex);
+                getString("ChangePasswordDlg.pwdChange.failed"), ex);
         }
         return true;
     }
 
-    protected JComponent buildDialogUI()
-    {
+    protected JComponent buildDialogUI() {
         setComment(null);
         carrier = new JPanel();
         carrier.setOpaque(false);
@@ -86,45 +86,45 @@ public class ChangePasswordDlg extends ComponentDialog
         GridBagConstraints gbc = new GridBagConstraints();
         carrier.setLayout(gb);
 
-        gbc.anchor = gbc.NORTHWEST;
-        gbc.fill = gbc.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 0;
         JLabel l;
 
         l = new JLabel(LangResource.getString("ChangePasswordDlg.oldPwd"));
         gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         carrier.add(l, gbc);
 
         old_pass = new JPasswordField(20);
         old_pass.setPreferredSize(new Dimension(150, 20));
-        gbc.gridwidth = gbc.REMAINDER;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         carrier.add(old_pass, gbc);
 
         l = new JLabel(LangResource.getString("ChangePasswordDlg.newPwd"));
         gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         carrier.add(l, gbc);
 
         new_pass = new JPasswordField(20);
         new_pass.setPreferredSize(new Dimension(150, 20));
-        gbc.gridwidth = gbc.REMAINDER;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         carrier.add(new_pass, gbc);
 
         l = new JLabel(LangResource.getString("ChangePasswordDlg.confirmPwd"));
         gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         carrier.add(l, gbc);
 
         confirm_pass = new JPasswordField(20);
         confirm_pass.setPreferredSize(new Dimension(150, 20));
-        gbc.gridwidth = gbc.REMAINDER;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         carrier.add(confirm_pass, gbc);
 
         carrier.setBorder(new EmptyBorder(5, 0, 0, 0));

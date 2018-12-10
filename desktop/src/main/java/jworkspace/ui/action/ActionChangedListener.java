@@ -24,88 +24,98 @@ package jworkspace.ui.action;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import javax.swing.*;
-import java.beans.PropertyChangeListener;
+
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JMenuItem;
+
 /**
  * Action changed listener updates all menus and button,
  * associated with some action that changes.
  */
-public class ActionChangedListener implements PropertyChangeListener
-{
+public class ActionChangedListener implements PropertyChangeListener {
     JMenuItem menuItem = null;
     AbstractButton b = null;
 
-    public ActionChangedListener(JMenuItem mi)
-    {
+    public ActionChangedListener(JMenuItem mi) {
         super();
         this.menuItem = mi;
     }
 
-    public ActionChangedListener(AbstractButton b)
-    {
+    public ActionChangedListener(AbstractButton b) {
         super();
         this.b = b;
     }
 
-    public ActionChangedListener(JMenuItem mi, AbstractButton b)
-    {
+    public ActionChangedListener(JMenuItem mi, AbstractButton b) {
         super();
         this.menuItem = mi;
         this.b = b;
     }
 
-    public void propertyChange(PropertyChangeEvent e)
-    {
+    public void propertyChange(PropertyChangeEvent e) {
         String propertyName = e.getPropertyName();
         /**
          * Name
          */
-        if (e.getPropertyName().equals(Action.NAME))
-        {
+        if (e.getPropertyName().equals(Action.NAME)) {
             String text = (String) e.getNewValue();
-            if (menuItem != null)
+            if (menuItem != null) {
                 menuItem.setText(text);
-            if (b != null)
+            }
+            if (b != null) {
                 b.setText(text);
+            }
         }
         /**
          * Enabled / disabled
          */
-        else if (propertyName.equals("enabled"))
-        {
+        else if (propertyName.equals("enabled")) {
             Boolean enabledState = (Boolean) e.getNewValue();
-            if (enabledState == null)
+            if (enabledState == null) {
                 enabledState = true;
-            if (menuItem != null)
+            }
+            if (menuItem != null) {
                 menuItem.setEnabled(enabledState.booleanValue());
-            if (b != null)
+            }
+            if (b != null) {
                 b.setEnabled(enabledState.booleanValue());
+            }
         }
         /**
          * Selected / unselected
          */
-        else if (propertyName.equals(AbstractStateAction.SELECTED))
-        {
+        else if (propertyName.equals(AbstractStateAction.SELECTED)) {
             Boolean selectedState = (Boolean) e.getNewValue();
-            if (menuItem != null)
+            if (menuItem != null) {
                 menuItem.setSelected(selectedState);
-            if (b != null)
+            }
+            if (b != null) {
                 b.setSelected(selectedState);
+            }
         }
         /**
-         * Small icon
+         * Small ICON
          */
-        else if (e.getPropertyName().equals(Action.SMALL_ICON))
-        {
+        else if (e.getPropertyName().equals(Action.SMALL_ICON)) {
             Icon icon = (Icon) e.getNewValue();
-            if (menuItem != null)
+            if (menuItem != null) {
                 menuItem.setIcon(icon);
-            if (b != null)
+            }
+            if (b != null) {
                 b.setIcon(icon);
+            }
         }
-        if (menuItem != null) menuItem.repaint();
-        if (b != null) b.repaint();
+        if (menuItem != null) {
+            menuItem.repaint();
+        }
+        if (b != null) {
+            b.repaint();
+        }
     }
 }
 

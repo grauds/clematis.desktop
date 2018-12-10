@@ -26,28 +26,43 @@ package jworkspace.ui.cpanel;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JViewport;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 /**
- *  System control panel
+ * System control panel
  */
 public class ControlPanel extends KPanel
-                          implements LayoutManager,
-                                     MouseListener,
-                                     MouseMotionListener,
-                                     ActionListener
-{
-   /**
-    * Specifies that components should be laid out left to right.
-    */
+    implements LayoutManager,
+    MouseListener,
+    MouseMotionListener,
+    ActionListener {
+    /**
+     * Specifies that components should be laid out left to right.
+     */
     public static final int X_AXIS = 0;
 
-   /**
-    * Specifies that components should be laid out top to bottom.
-    */
+    /**
+     * Specifies that components should be laid out top to bottom.
+     */
     public static final int Y_AXIS = 1;
 
     /**
@@ -62,7 +77,7 @@ public class ControlPanel extends KPanel
     private CScrollButton downButton = null;
     private JViewport viewport = new JViewport();
     private CButtonsPane buttonsPane = null;
-   /**
+    /**
      * Mouse pointer coordinate.
      */
     private Point pointer = new Point();
@@ -79,8 +94,7 @@ public class ControlPanel extends KPanel
      * methos to add new buttons, or set internal listener
      * if you prefer direct events to a single listener.
      */
-    public ControlPanel()
-    {
+    public ControlPanel() {
         this(ControlPanel.Y_AXIS);
     }
 
@@ -89,8 +103,7 @@ public class ControlPanel extends KPanel
      * specified action listener, that allows
      * listening for action events.
      */
-    public ControlPanel(int orientation)
-    {
+    public ControlPanel(int orientation) {
         super();
         this.orientation = orientation;
         buttonsPane = new CButtonsPane(orientation);
@@ -107,21 +120,18 @@ public class ControlPanel extends KPanel
      * button will result in one unit scroll of
      * buttons pane.
      */
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         int direction = 1;
         /**
          * Increment scrolls down and right.
          */
-        if (e.getActionCommand().equals("INCREMENT"))
-        {
+        if (e.getActionCommand().equals("INCREMENT")) {
             direction = -1;
         }
         /**
          * Decrement scrolls up and left.
          */
-        else if (e.getActionCommand().equals("DECREMENT"))
-        {
+        else if (e.getActionCommand().equals("DECREMENT")) {
             direction = 1;
         }
         /**
@@ -136,47 +146,40 @@ public class ControlPanel extends KPanel
 
         int amount = 0;
 
-        if ( orientation == ControlPanel.X_AXIS )
-        {
+        if (orientation == ControlPanel.X_AXIS) {
             amount = buttonsPane.getScrollableBlockIncrement
-                    (visRect, SwingConstants.HORIZONTAL, direction);
+                (visRect, SwingConstants.HORIZONTAL, direction);
             visRect.x += direction * amount;
             /**
              * The top most position. |.. visRect.x ..|..... visRect.width .......|
              *                        |................vSize.width................|
              */
-            if ((vSize.width - visRect.x) < visRect.width)
-            {
+            if ((vSize.width - visRect.x) < visRect.width) {
                 visRect.x = Math.max(0, vSize.width - visRect.width);
             }
             /**
              * The bottom most position. |..... visRect.width .......|.. visRect.x ..|
              *                             	 |................vSize.width................|
              */
-            else if (visRect.x < 0)
-            {
+            else if (visRect.x < 0) {
                 visRect.x = 0;
             }
-        }
-        else if ( orientation == ControlPanel.Y_AXIS )
-        {
+        } else if (orientation == ControlPanel.Y_AXIS) {
             amount = buttonsPane.getScrollableBlockIncrement
-                    (visRect, SwingConstants.VERTICAL, direction);
+                (visRect, SwingConstants.VERTICAL, direction);
             visRect.y += direction * amount;
             /**
              * The top most position. |.. visRect.y ..|..... visRect.height .......|
              *                        |................vSize.height................|
              */
-            if ((vSize.height - visRect.y) < visRect.height)
-            {
+            if ((vSize.height - visRect.y) < visRect.height) {
                 visRect.y = Math.max(0, vSize.height - visRect.height);
             }
             /**
              * The bottom most position. |..... visRect.height .......|.. visRect.y ..|
              *                             	 |................vSize.height................|
              */
-            else if (visRect.y < 0)
-            {
+            else if (visRect.y < 0) {
                 visRect.y = 0;
             }
         }
@@ -191,26 +194,23 @@ public class ControlPanel extends KPanel
      */
     public CButton addButton(ActionListener listener,
                              ImageIcon image, ImageIcon hoverImage,
-                             String command, String toolTipText)
-    {
+                             String command, String toolTipText) {
         return buttonsPane.addButton(listener, image, hoverImage,
-                                     command, toolTipText);
+            command, toolTipText);
     }
 
     /**
      * Adds control button to the button's pane layout and internal buttons
      * vector.
      */
-    public void addButton(CButton button)
-    {
+    public void addButton(CButton button) {
         buttonsPane.addButton(button);
     }
 
     /**
      * Add action
      */
-    public void addButton(Action a)
-    {
+    public void addButton(Action a) {
         buttonsPane.addButton(a);
     }
 
@@ -218,8 +218,7 @@ public class ControlPanel extends KPanel
      * Delegates adding of buttons and separators to
      * sub-component of control panel.
      */
-    public void addLayoutComponent(String name, Component comp)
-    {
+    public void addLayoutComponent(String name, Component comp) {
         buttonsPane.add(comp);
     }
 
@@ -228,8 +227,7 @@ public class ControlPanel extends KPanel
      * add it to the button's pane layout and internal buttons
      * vector.
      */
-    public void addSeparator()
-    {
+    public void addSeparator() {
         buttonsPane.addSeparator();
     }
 
@@ -238,16 +236,14 @@ public class ControlPanel extends KPanel
      * Also assembles buttons pane if the pane is being
      * created.
      */
-    protected void createScrollButtons(ActionListener listener)
-    {
-        if (downButton == null || upButton == null)
-        {
+    protected void createScrollButtons(ActionListener listener) {
+        if (downButton == null || upButton == null) {
             setLayout(this);
 
             downButton =
-                    new CScrollButton(listener, false);
+                new CScrollButton(listener, false);
             upButton =
-                    new CScrollButton(listener, true);
+                new CScrollButton(listener, true);
 
             downButton.addActionListener(this);
             upButton.addActionListener(this);
@@ -265,166 +261,26 @@ public class ControlPanel extends KPanel
 
     /**
      * Returns the holder for the buttons.
+     *
      * @return jworkspace.ui.cpanel.CButtonsPane
      */
-    public CButtonsPane getButtonsPane()
-    {
+    public CButtonsPane getButtonsPane() {
         return buttonsPane;
     }
 
     /**
      * Returns orientation of this component.
      */
-    public int getOrientation()
-    {
+    public int getOrientation() {
         return orientation;
-    }
-
-    /**
-     * Layouts control panel with scroll buttons and
-     * button's pane.
-     */
-    public void layoutContainer(Container parent)
-    {
-        if (orientation == ControlPanel.Y_AXIS )
-        {
-            upButton.setBounds(0, 0, getWidth(),
-                               upButton.getPreferredSize().height);
-            downButton.setBounds(0, getHeight() - downButton.getPreferredSize().height,
-                                 getWidth(),
-                                 downButton.getPreferredSize().height);
-            viewport.reshape(0, upButton.getPreferredSize().height + 3,
-                             getWidth(), getHeight() - downButton.getPreferredSize().height
-                                         - upButton.getPreferredSize().height - 6);
-        }
-        else if (orientation == ControlPanel.X_AXIS)
-        {
-            upButton.setBounds(0, 0, upButton.getPreferredSize().width, getHeight());
-            downButton.setBounds(getWidth() - downButton.getPreferredSize().width,
-                                 0, downButton.getPreferredSize().width,
-                                 getHeight());
-            viewport.reshape(upButton.getPreferredSize().width + 3,
-                             0, getWidth() - downButton.getPreferredSize().width
-                                - upButton.getPreferredSize().width - 6,
-                             getHeight());
-        }
-    }
-
-    /**
-     * Calculates the minimum size dimensions for the specified
-     * panel given the components in the specified parent container.
-     * @param parent the component to be laid out
-     * @see #preferredLayoutSize
-     */
-    public Dimension minimumLayoutSize(Container parent)
-    {
-        return new Dimension(40, 40);
-    }
-
-    public void mouseClicked(MouseEvent e) { }
-
-    /**
-     * Note: this method sends property change event
-     * with new point, there mouse pointer was dragged
-     * relative to Control panel. Property event handler
-     * should always account for it with top left coordinates
-     * of control panel.
-     */
-    public void mouseDragged(MouseEvent e)
-    {
-        if (SwingUtilities.isRightMouseButton(e))
-            return;
-
-        Point old = new Point(pointer);
-        pointer = new Point(e.getPoint());
-
-        firePropertyChange("DRAGGED", old, pointer);
-    }
-
-    public void mouseEntered(MouseEvent e)
-    {
-
-    }
-
-    public void mouseExited(MouseEvent e)
-    {
-
-    }
-
-    public boolean isFocusCycleRoot()
-    {
-        return false;
-    }
-
-    public void mouseMoved(MouseEvent e)
-    {
-    }
-
-    /**
-     * Mouse pressed event causes generic property
-     * of control bar to change. Control bar sends only NEW
-     * value, as we dont use old mouse pointer
-     * coordinate while dragging.
-     */
-    public void mousePressed(MouseEvent e)
-    {
-        if (SwingUtilities.isRightMouseButton(e))
-            return;
-
-        dragged = true;
-
-        firePropertyChange("BEGIN_DRAGGING", !dragged,  dragged);
-        e.consume();
-    }
-
-    /**
-     * Mouse released message handler.
-     * By this event control panel sends
-     * property change event to
-     * all its subcomponents.
-     */
-    public void mouseReleased(MouseEvent e)
-    {
-        if (SwingUtilities.isRightMouseButton(e))
-        {
-            return;
-        }
-        dragged = false;
-
-        firePropertyChange("END_DRAGGING", !dragged,  dragged);
-
-        viewport.setViewPosition(new Point(0, 0));
-    }
-
-    /**
-     * Calculates the preferred size dimensions for the specified
-     * panel given the components in the specified parent container.
-     * @param parent the component to be laid out
-     *
-     * @see #minimumLayoutSize
-     */
-    public Dimension preferredLayoutSize(Container parent)
-    {
-        return minimumLayoutSize(parent);
-    }
-
-    /**
-     * Delegates removing of buttons and separators
-     * to sub-component of control panel.
-     */
-    public void removeLayoutComponent(Component comp)
-    {
-        buttonsPane.remove(comp);
     }
 
     /**
      * Sets orientation of this component.
      */
-    public void setOrientation(int orientation)
-    {
-        if ( orientation != ControlPanel.X_AXIS
-              && orientation != ControlPanel.Y_AXIS )
-        {
+    public void setOrientation(int orientation) {
+        if (orientation != ControlPanel.X_AXIS
+            && orientation != ControlPanel.Y_AXIS) {
             return;
         }
         firePropertyChange("ORIENTATION", this.orientation, orientation);
@@ -434,18 +290,140 @@ public class ControlPanel extends KPanel
     /**
      * Sets orientation of this component.
      */
-    public void setOrientation(String orientation)
-    {
-        if ( orientation.equals( BorderLayout.NORTH ) ||
-             orientation.equals( BorderLayout.SOUTH ) )
-        {
-           setOrientation( ControlPanel.X_AXIS );
-        }
-        else if ( orientation.equals( BorderLayout.EAST ) ||
-             orientation.equals( BorderLayout.WEST ) )
-        {
-           setOrientation( ControlPanel.Y_AXIS );
+    public void setOrientation(String orientation) {
+        if (orientation.equals(BorderLayout.NORTH) ||
+            orientation.equals(BorderLayout.SOUTH)) {
+            setOrientation(ControlPanel.X_AXIS);
+        } else if (orientation.equals(BorderLayout.EAST) ||
+            orientation.equals(BorderLayout.WEST)) {
+            setOrientation(ControlPanel.Y_AXIS);
         }
 
+    }
+
+    /**
+     * Layouts control panel with scroll buttons and
+     * button's pane.
+     */
+    public void layoutContainer(Container parent) {
+        if (orientation == ControlPanel.Y_AXIS) {
+            upButton.setBounds(0, 0, getWidth(),
+                upButton.getPreferredSize().height);
+            downButton.setBounds(0, getHeight() - downButton.getPreferredSize().height,
+                getWidth(),
+                downButton.getPreferredSize().height);
+            viewport.reshape(0, upButton.getPreferredSize().height + 3,
+                getWidth(), getHeight() - downButton.getPreferredSize().height
+                    - upButton.getPreferredSize().height - 6);
+        } else if (orientation == ControlPanel.X_AXIS) {
+            upButton.setBounds(0, 0, upButton.getPreferredSize().width, getHeight());
+            downButton.setBounds(getWidth() - downButton.getPreferredSize().width,
+                0, downButton.getPreferredSize().width,
+                getHeight());
+            viewport.reshape(upButton.getPreferredSize().width + 3,
+                0, getWidth() - downButton.getPreferredSize().width
+                    - upButton.getPreferredSize().width - 6,
+                getHeight());
+        }
+    }
+
+    /**
+     * Calculates the minimum size dimensions for the specified
+     * panel given the components in the specified parent container.
+     *
+     * @param parent the component to be laid out
+     * @see #preferredLayoutSize
+     */
+    public Dimension minimumLayoutSize(Container parent) {
+        return new Dimension(40, 40);
+    }
+
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    /**
+     * Note: this method sends property change event
+     * with new point, there mouse pointer was dragged
+     * relative to Control panel. Property event handler
+     * should always account for it with top left coordinates
+     * of control panel.
+     */
+    public void mouseDragged(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e)) {
+            return;
+        }
+
+        Point old = new Point(pointer);
+        pointer = new Point(e.getPoint());
+
+        firePropertyChange("DRAGGED", old, pointer);
+    }
+
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    public boolean isFocusCycleRoot() {
+        return false;
+    }
+
+    public void mouseMoved(MouseEvent e) {
+    }
+
+    /**
+     * Mouse pressed event causes generic property
+     * of control bar to change. Control bar sends only NEW
+     * value, as we dont use old mouse pointer
+     * coordinate while dragging.
+     */
+    public void mousePressed(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e)) {
+            return;
+        }
+
+        dragged = true;
+
+        firePropertyChange("BEGIN_DRAGGING", !dragged, dragged);
+        e.consume();
+    }
+
+    /**
+     * Mouse released message handler.
+     * By this event control panel sends
+     * property change event to
+     * all its subcomponents.
+     */
+    public void mouseReleased(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e)) {
+            return;
+        }
+        dragged = false;
+
+        firePropertyChange("END_DRAGGING", !dragged, dragged);
+
+        viewport.setViewPosition(new Point(0, 0));
+    }
+
+    /**
+     * Calculates the preferred size dimensions for the specified
+     * panel given the components in the specified parent container.
+     *
+     * @param parent the component to be laid out
+     * @see #minimumLayoutSize
+     */
+    public Dimension preferredLayoutSize(Container parent) {
+        return minimumLayoutSize(parent);
+    }
+
+    /**
+     * Delegates removing of buttons and separators
+     * to sub-component of control panel.
+     */
+    public void removeLayoutComponent(Component comp) {
+        buttonsPane.remove(comp);
     }
 }

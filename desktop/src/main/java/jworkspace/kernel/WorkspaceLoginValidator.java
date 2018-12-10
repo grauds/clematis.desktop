@@ -27,10 +27,10 @@ package jworkspace.kernel;
 */
 
 
-import kiwi.ui.dialog.LoginValidator;
-
 import java.io.File;
 import java.io.IOException;
+
+import kiwi.ui.dialog.LoginValidator;
 
 /**
  * Login Validator is a specific component that executes validation of input parameters via profile engine methods.

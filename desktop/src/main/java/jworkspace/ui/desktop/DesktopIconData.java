@@ -26,11 +26,12 @@ package jworkspace.ui.desktop;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
 import java.io.Serializable;
 
+import javax.swing.ImageIcon;
+
 /**
- * Desktop icon data is needed for copy/paste
+ * Desktop ICON data is needed for copy/paste
  * operations and dragndrop.
  */
 
@@ -40,9 +41,8 @@ import java.io.Serializable;
  * 29.05.02
  */
 class DesktopIconData
-        implements Serializable
-{
-// Icon data
+    implements Serializable {
+    // Icon data
     private String name = null;
     private String commandLine = null;
     private String working_dir = null;
@@ -56,8 +56,7 @@ class DesktopIconData
 
     public DesktopIconData(String name,
                            String commandLine, int xPos, int yPos,
-                           int width, int height, int mode, ImageIcon icon)
-    {
+                           int width, int height, int mode, ImageIcon icon) {
         this.name = name;
         this.commandLine = commandLine;
         this.xPos = new Integer(xPos);
@@ -72,8 +71,7 @@ class DesktopIconData
                            String commandLine, String working_dir,
                            int xPos, int yPos,
                            int width, int height, int mode, ImageIcon icon,
-                           String comments)
-    {
+                           String comments) {
         this.name = name;
         this.commandLine = commandLine;
         this.working_dir = working_dir;
@@ -86,103 +84,83 @@ class DesktopIconData
         this.comments = comments;
     }
 
-    public String getCommandLine()
-    {
+    public String getCommandLine() {
         return commandLine;
     }
 
-    public String getComments()
-    {
-        return this.comments;
-    }
-
-    public Integer getHeight()
-    {
-        return height;
-    }
-
-    public ImageIcon getIcon()
-    {
-        return icon;
-    }
-
-    public int getMode()
-    {
-        return mode;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public Integer getWidth()
-    {
-        return width;
-    }
-
-    public String getWorkingDir()
-    {
-        return working_dir;
-    }
-
-    public Integer getXPos()
-    {
-        return xPos;
-    }
-
-    public Integer getYPos()
-    {
-        return yPos;
-    }
-
-    public void setCommandLine(String commandLine)
-    {
+    public void setCommandLine(String commandLine) {
         this.commandLine = commandLine;
     }
 
-    public void setComments(String comments)
-    {
+    public String getComments() {
+        return this.comments;
+    }
+
+    public void setComments(String comments) {
         this.comments = comments;
     }
 
-    public void setHeight(Integer height)
-    {
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
         this.height = height;
     }
 
-    public void setIcon(ImageIcon icon)
-    {
+    public ImageIcon getIcon() {
+        return icon;
+    }
+
+    public void setIcon(ImageIcon icon) {
         this.icon = icon;
     }
 
-    public void setMode(int mode)
-    {
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
         this.mode = mode;
     }
 
-    public void setName(String name)
-    {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setWidth(java.lang.Integer width)
-    {
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(java.lang.Integer width) {
         this.width = width;
     }
 
-    public void setWorkingDir(String working_dir)
-    {
+    public String getWorkingDir() {
+        return working_dir;
+    }
+
+    public void setWorkingDir(String working_dir) {
         this.working_dir = working_dir;
     }
 
-    public void setXPos(Integer xPos)
-    {
+    public Integer getXPos() {
+        return xPos;
+    }
+
+    public void setXPos(Integer xPos) {
         this.xPos = xPos;
     }
 
-    public void setYPos(Integer yPos)
-    {
+    public Integer getYPos() {
+        return yPos;
+    }
+
+    public void setYPos(Integer yPos) {
         this.yPos = yPos;
     }
 }

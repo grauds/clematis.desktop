@@ -26,34 +26,42 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.ui.KPanel;
-import com.hyperrealm.kiwi.util.KiwiUtils;
-import jworkspace.LangResource;
-import jworkspace.kernel.Workspace;
-import jworkspace.ui.WorkspaceClassCache;
-import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.widgets.ImageRenderer;
-import jworkspace.ui.widgets.ResourceExplorerDialog;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import jworkspace.LangResource;
+import jworkspace.kernel.Workspace;
+import jworkspace.ui.ClassCache;
+import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.widgets.ImageRenderer;
+import jworkspace.ui.widgets.ResourceExplorerDialog;
+
 /**
  * General settings panel for settings dialog.
  */
-class TexturePanel extends KPanel implements ActionListener
-{
+class TexturePanel extends KPanel implements ActionListener {
     private JButton b_icon_browse, b_lib_browser;
     private ImageRenderer l_image;
     private JCheckBox ch_show_texture, ch_show_w_textures;
 
-    public TexturePanel()
-    {
+    public TexturePanel() {
         super();
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -67,7 +75,7 @@ class TexturePanel extends KPanel implements ActionListener
         p1.setLayout(new BorderLayout(5, 5));
         p1.setBorder(new EmptyBorder(0, 0, 5, 0));
         p1.setBorder(new TitledBorder
-                (LangResource.getString("TexturePanel.textureBorder.title")));
+            (LangResource.getString("TexturePanel.textureBorder.title")));
 
         l_image = new jworkspace.ui.widgets.ImageRenderer();
         JScrollPane sp = new JScrollPane(l_image);
@@ -80,20 +88,20 @@ class TexturePanel extends KPanel implements ActionListener
         bp.setLayout(new GridLayout(0, 1, 5, 5));
 
         ImageIcon icon = new ImageIcon(Workspace.
-                                       getResourceManager().getImage("folder.png"));
+            getResourceManager().getImage("folder.png"));
         b_icon_browse = new JButton(icon);
         b_icon_browse.setToolTipText
-                (LangResource.getString("TexturePanel.texture.browse"));
+            (LangResource.getString("TexturePanel.texture.browse"));
         b_icon_browse.addActionListener(this);
         b_icon_browse.setDefaultCapable(false);
         b_icon_browse.setOpaque(false);
         bp.add(b_icon_browse);
 
         icon = new ImageIcon(Workspace.
-                             getResourceManager().getImage("repository.png"));
+            getResourceManager().getImage("repository.png"));
         b_lib_browser = new JButton(icon);
         b_lib_browser.setToolTipText
-                (LangResource.getString("TexturePanel.textureRepos.browse"));
+            (LangResource.getString("TexturePanel.textureRepos.browse"));
         b_lib_browser.addActionListener(this);
         b_lib_browser.setDefaultCapable(false);
         b_lib_browser.setOpaque(false);
@@ -113,42 +121,39 @@ class TexturePanel extends KPanel implements ActionListener
         gbc.weightx = 0;
 
         ch_show_texture = new JCheckBox
-                (LangResource.getString("TexturePanel.texture.show"));
+            (LangResource.getString("TexturePanel.texture.show"));
         ch_show_texture.setOpaque(false);
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         p6.add(ch_show_texture, gbc);
 
         ch_show_w_textures = new JCheckBox
-                (LangResource.getString("TexturePanel.texturesKiwi.show"));
+            (LangResource.getString("TexturePanel.texturesKiwi.show"));
         ch_show_w_textures.setOpaque(false);
         ch_show_w_textures.addActionListener(this);
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         p6.add(ch_show_w_textures, gbc);
 
         p1.add("South", p6);
 
-        // end of icon chooser panel
+        // end of ICON chooser panel
 
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         add(p1, gbc);
     }
 
-    public void actionPerformed(ActionEvent evt)
-    {
+    public void actionPerformed(ActionEvent evt) {
         Object o = evt.getSource();
-        if (o == b_icon_browse)
-        {
-            Image im = WorkspaceClassCache.chooseImage(this);
-            if (im != null)
+        if (o == b_icon_browse) {
+            Image im = ClassCache.chooseImage(this);
+            if (im != null) {
                 l_image.setImage(im);
-        }
-        else if (o == b_lib_browser)
-        {
+            }
+        } else if (o == b_lib_browser) {
             ResourceExplorerDialog res_browser = new ResourceExplorerDialog
-                    (Workspace.getUI().getFrame());
+                (Workspace.getUI().getFrame());
             callResourceBrowser(res_browser);
             /**
              * Delete all trash after disposal of large number of
@@ -157,50 +162,42 @@ class TexturePanel extends KPanel implements ActionListener
             Runtime rt = Runtime.getRuntime();
             rt.gc();
             rt.runFinalization();
-        }
-        else if (o == ch_show_w_textures)
-        {
+        } else if (o == ch_show_w_textures) {
             ((WorkspaceGUI) Workspace.getUI()).setKiwiTextureVisible
-                    (ch_show_w_textures.isSelected());
+                (ch_show_w_textures.isSelected());
         }
     }
 
-    protected void callResourceBrowser(ResourceExplorerDialog res_browser)
-    {
+    protected void callResourceBrowser(ResourceExplorerDialog res_browser) {
         res_browser.setHint(true);
         String path = Workspace.getProfilesEngine().getParameters().
-                getString("TEXTURES_REPOSITORY");
-        if (path == null && Workspace.getUI() instanceof WorkspaceGUI)
-        {
+            getString("TEXTURES_REPOSITORY");
+        if (path == null && Workspace.getUI() instanceof WorkspaceGUI) {
             path = ((WorkspaceGUI) Workspace.getUI()).getTexturesPath();
             Workspace.getProfilesEngine().
-                    getParameters().putString("TEXTURES_REPOSITORY", path);
+                getParameters().putString("TEXTURES_REPOSITORY", path);
         }
         res_browser.setData(path);
         res_browser.setVisible(true);
 
-        if (!res_browser.isCancelled())
-        {
+        if (!res_browser.isCancelled()) {
             ImageIcon[] icons = res_browser.getSelectedImages();
             if (icons != null && icons.length != 0
-                    && icons[0] != null)
-            {
+                && icons[0] != null) {
                 l_image.setImage(icons[0].getImage());
             }
         }
     }
 
-    public void setData()
-    {
+    public void setData() {
         l_image.setImage(((WorkspaceGUI) Workspace.getUI()).getTexture());
         ch_show_texture.setSelected
-                (((WorkspaceGUI) Workspace.getUI()).isTextureVisible());
+            (((WorkspaceGUI) Workspace.getUI()).isTextureVisible());
         ch_show_w_textures.setSelected
-                (((WorkspaceGUI) Workspace.getUI()).isKiwiTextureVisible());
+            (((WorkspaceGUI) Workspace.getUI()).isKiwiTextureVisible());
     }
 
-    public boolean syncData()
-    {
+    public boolean syncData() {
         /**
          * Set texture
          */
@@ -210,30 +207,24 @@ class TexturePanel extends KPanel implements ActionListener
 
             ImageIcon textureIcon = new ImageIcon(imtexture);
             BufferedImage bi = new BufferedImage(
-                    textureIcon.getIconWidth(),
-                    textureIcon.getIconHeight(),
-                    BufferedImage.TYPE_INT_RGB);
+                textureIcon.getIconWidth(),
+                textureIcon.getIconHeight(),
+                BufferedImage.TYPE_INT_RGB);
             Graphics g = bi.createGraphics();
             // paint the Icon to the BufferedImage.
-            textureIcon.paintIcon(null, g, 0,0);
+            textureIcon.paintIcon(null, g, 0, 0);
             g.dispose();
 
             ((WorkspaceGUI) Workspace.getUI()).setTexture(bi);
         }
 
-        if (Workspace.getUI() instanceof WorkspaceGUI)
-        {
-            if (ch_show_texture.isSelected())
-            {
+        if (Workspace.getUI() instanceof WorkspaceGUI) {
+            if (ch_show_texture.isSelected()) {
                 ((WorkspaceGUI) Workspace.getUI()).setTextureVisible(true);
-            }
-            else
-            {
+            } else {
                 ((WorkspaceGUI) Workspace.getUI()).setTextureVisible(false);
             }
-        }
-        else
-        {
+        } else {
             // ERROR possibly not Workspace GUI
         }
         /**

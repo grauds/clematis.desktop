@@ -26,10 +26,12 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 
-public interface IConstants
-{
+/**
+ * @author Anton Troshin
+ */
+public interface IConstants {
     /**
-     * Small menu icon
+     * Small menu ICON
      */
     String MENU_ICON = "MENU_ICON";
 }

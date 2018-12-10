@@ -31,9 +31,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
-
 import jworkspace.WorkspaceResourceAnchor;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.slf4j.Logger;

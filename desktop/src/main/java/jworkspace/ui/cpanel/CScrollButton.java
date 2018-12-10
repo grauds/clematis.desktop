@@ -26,12 +26,14 @@ package jworkspace.ui.cpanel;
   ----------------------------------------------------------------------------
 */
 
-import kiwi.ui.KButton;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.UIManager;
+
+import kiwi.ui.KButton;
 
 /**
  * This class is a replacement for scrollbar
@@ -39,8 +41,7 @@ import java.beans.PropertyChangeListener;
  * the scroll button, the buttons on the
  * viewport will scroll.
  */
-class CScrollButton extends KButton implements PropertyChangeListener
-{
+class CScrollButton extends KButton implements PropertyChangeListener {
     /**
      * Orientation of control bar relative to
      * parent component.
@@ -60,8 +61,7 @@ class CScrollButton extends KButton implements PropertyChangeListener
      * Empty constructor for compatibility
      * with beans standard.
      */
-    public CScrollButton()
-    {
+    public CScrollButton() {
         super();
         setOpaque(false);
         setDefaultCapable(false);
@@ -74,8 +74,7 @@ class CScrollButton extends KButton implements PropertyChangeListener
      * scrolling action listener must
      * be a viewport.
      */
-    public CScrollButton(ActionListener listener)
-    {
+    public CScrollButton(ActionListener listener) {
         super();
         this.addActionListener(listener);
         setOpaque(false);
@@ -89,17 +88,13 @@ class CScrollButton extends KButton implements PropertyChangeListener
      * scrolling action listener must
      * be a viewport.
      */
-    public CScrollButton(ActionListener listener, boolean incremental)
-    {
+    public CScrollButton(ActionListener listener, boolean incremental) {
         super();
         this.addActionListener(listener);
         this.incremental = incremental;
-        if (incremental)
-        {
+        if (incremental) {
             this.setActionCommand("INCREMENT");
-        }
-        else
-        {
+        } else {
             this.setActionCommand("DECREMENT");
         }
         setOpaque(false);
@@ -110,8 +105,7 @@ class CScrollButton extends KButton implements PropertyChangeListener
      * Paints button background and two scrolling
      * arrows depending on the control's panel orientation.
      */
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g) {
         super.paint(g);
         boolean isPressed, isEnabled;
         int w, h, size;
@@ -123,10 +117,11 @@ class CScrollButton extends KButton implements PropertyChangeListener
         size = Math.min((h - 4) / 3, (w - 4) / 3);
         size = Math.max(size, 2);
 
-        if (!isPressed)
+        if (!isPressed) {
             paintArrow(g, (w - size) / 2, (h - size) / 2, size, isEnabled);
-        else if (isPressed)
+        } else if (isPressed) {
             paintArrow(g, (w - size) / 2 + 1, (h - size) / 2 + 1, size, isEnabled);
+        }
     }
 
     /**
@@ -137,32 +132,28 @@ class CScrollButton extends KButton implements PropertyChangeListener
      * methods.
      */
     protected void paintArrow(Graphics g, int x, int y, int size,
-                              boolean isEnabled)
-    {
+                              boolean isEnabled) {
         int mid, i, j;
         j = 0;
         size = Math.max(size, 2);
         mid = size / 2;
         g.translate(x, y);
 
-        if (isEnabled)
+        if (isEnabled) {
             g.setColor(UIManager.getColor("controlText"));
-        else
+        } else {
             g.setColor(UIManager.getColor("controlLightShadow"));
+        }
 
-        if ( orientation == ControlPanel.Y_AXIS )
-        {
+        if (orientation == ControlPanel.Y_AXIS) {
             /**
              * Up vertical button.
              */
-            if (incremental)
-            {
-                for (i = 0; i < size; i++)
-                {
+            if (incremental) {
+                for (i = 0; i < size; i++) {
                     g.drawLine(mid - i, i, mid + i, i);
                 }
-                if (!isEnabled)
-                {
+                if (!isEnabled) {
                     g.setColor(UIManager.getColor("controlHighlight"));
                     g.drawLine(mid - i + 2, i, mid + i, i);
                 }
@@ -170,14 +161,11 @@ class CScrollButton extends KButton implements PropertyChangeListener
             /**
              * down vertical button.
              */
-            else
-            {
-                if (!isEnabled)
-                {
+            else {
+                if (!isEnabled) {
                     g.translate(1, 1);
                     g.setColor(UIManager.getColor("controlHighlight"));
-                    for (i = size - 1; i >= 0; i--)
-                    {
+                    for (i = size - 1; i >= 0; i--) {
                         g.drawLine(mid - i, j, mid + i, j);
                         j++;
                     }
@@ -185,26 +173,20 @@ class CScrollButton extends KButton implements PropertyChangeListener
                     g.setColor(UIManager.getColor("controlShadow"));
                 }
                 j = 0;
-                for (i = size - 1; i >= 0; i--)
-                {
+                for (i = size - 1; i >= 0; i--) {
                     g.drawLine(mid - i, j, mid + i, j);
                     j++;
                 }
             }
-        }
-        else
-        {
+        } else {
             /**
              * Up horizontal button.
              */
-            if (incremental)
-            {
-                for (i = 0; i < size; i++)
-                {
+            if (incremental) {
+                for (i = 0; i < size; i++) {
                     g.drawLine(i, mid - i, i, mid + i);
                 }
-                if (!isEnabled)
-                {
+                if (!isEnabled) {
                     g.setColor(UIManager.getColor("controlHighlight"));
                     g.drawLine(i, mid - i + 2, i, mid + i);
                 }
@@ -212,14 +194,11 @@ class CScrollButton extends KButton implements PropertyChangeListener
             /**
              * Down horizontal button.
              */
-            else
-            {
-                if (!isEnabled)
-                {
+            else {
+                if (!isEnabled) {
                     g.translate(1, 1);
                     g.setColor(UIManager.getColor("controlHighlight"));
-                    for (i = size - 1; i >= 0; i--)
-                    {
+                    for (i = size - 1; i >= 0; i--) {
                         g.drawLine(j, mid - i, j, mid + i);
                         j++;
                     }
@@ -227,8 +206,7 @@ class CScrollButton extends KButton implements PropertyChangeListener
                     g.setColor(UIManager.getColor("controlShadow"));
                 }
                 j = 0;
-                for (i = size - 1; i >= 0; i--)
-                {
+                for (i = size - 1; i >= 0; i--) {
                     g.drawLine(j, mid - i, j, mid + i);
                     j++;
                 }
@@ -242,26 +220,20 @@ class CScrollButton extends KButton implements PropertyChangeListener
      * its orientation property, this will
      * handle incoming event.
      */
-    public void propertyChange(java.beans.PropertyChangeEvent evt)
-    {
+    public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if (evt.getNewValue() instanceof Integer &&
-                evt.getPropertyName().equals("ORIENTATION"))
-        {
+            evt.getPropertyName().equals("ORIENTATION")) {
             orientation = ((Integer) evt.getNewValue()).intValue();
         }
     }
 
-    public Dimension getPreferredSize()
-    {
-        if ( orientation == ControlPanel.Y_AXIS )
-        {
+    public Dimension getPreferredSize() {
+        if (orientation == ControlPanel.Y_AXIS) {
             return new Dimension((int) super.getPreferredSize().getWidth() + 5,
-                                 (int) super.getPreferredSize().getHeight() + 5);
-        }
-        else
-        {
+                (int) super.getPreferredSize().getHeight() + 5);
+        } else {
             return new Dimension((int) super.getPreferredSize().getHeight() + 5,
-                                 (int) super.getPreferredSize().getWidth() + 5);
+                (int) super.getPreferredSize().getWidth() + 5);
         }
     }
 }

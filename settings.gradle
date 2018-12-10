@@ -1,8 +1,12 @@
 rootProject.name = 'clematis'
 
 include 'desktop'
-//include 'service'
-//include 'dao'
-//include 'model'
-//include 'store'
+
+include 'libs/kiwi'
+
+include 'plugins/instui'
+include 'plugins/launcher'
+include 'plugins/net'
+include 'plugins/rtui'
+include 'plugins/sed'
 

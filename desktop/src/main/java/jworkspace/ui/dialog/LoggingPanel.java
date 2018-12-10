@@ -26,89 +26,90 @@ package jworkspace.ui.dialog;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
+
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
-import jworkspace.ui.logging.WindowHandler;
 import jworkspace.LangResource;
+import jworkspace.ui.logging.WindowHandler;
+
 /**
  * Panel with a list of loggers, available in system
  * This is taken from book of Gregory M. Travis "JDK 1.4 tutorial"
  *
- * @version 1.0
  * @author <a href='mailto:anton.troshin@gmail.com'>Anton Troshin</a>
+ * @version 1.0
  */
-class LoggingPanel extends KPanel
-{
+class LoggingPanel extends KPanel {
     /**
      * List displaying the currently-instantiated loggers
      */
     private JList loggerList;
+
     /**
      * Set up the interface and make visible
      */
-    public LoggingPanel()
-    {
+    public LoggingPanel() {
         super();
         setupGUI();
         populateList();
-        setVisible( true );
+        setVisible(true);
     }
+
     /**
      * Set up the interface
      */
-    private void setupGUI()
-    {
+    private void setupGUI() {
         loggerList = new JList();
-        loggerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION );
-        setLayout( new BorderLayout() );
-        add( new JScrollPane(loggerList), BorderLayout.CENTER );
-        JButton showButton = new JButton( LangResource.getString("LoggingPanel.show") );
-        add( showButton, BorderLayout.SOUTH );
-        showButton.addActionListener( new ActionListener()
-        {
-            public void actionPerformed( ActionEvent ae )
-            {
-                String name = (String)loggerList.getSelectedValue();
-                if (name != null && !name.equals( "" ))
-                {
-                    openWindow( name );
+        loggerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        setLayout(new BorderLayout());
+        add(new JScrollPane(loggerList), BorderLayout.CENTER);
+        JButton showButton = new JButton(LangResource.getString("LoggingPanel.show"));
+        add(showButton, BorderLayout.SOUTH);
+        showButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String name = (String) loggerList.getSelectedValue();
+                if (name != null && !name.equals("")) {
+                    openWindow(name);
                 }
             }
-        } );
+        });
     }
+
     /**
      * List the currently-instantiated Loggers
      */
-    private void populateList()
-    {
+    private void populateList() {
         // Get the names of the currently-instantiated loggers
         LogManager logManager = LogManager.getLogManager();
         Enumeration e = logManager.getLoggerNames();
         // Build a Vector of the names
         Vector names = new Vector();
-        while (e.hasMoreElements())
-        {
-            String name = (String)e.nextElement();
-            names.addElement( name );
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            names.addElement(name);
         }
         // Display the names in the JList
-        loggerList.setListData( names );
+        loggerList.setListData(names);
     }
-    private void openWindow( String loggerName )
-    {
-        Logger logger = Logger.getLogger( loggerName );
+
+    private void openWindow(String loggerName) {
+        Logger logger = Logger.getLogger(loggerName);
         // Create a WindowHandler
-        WindowHandler windowHandler = new WindowHandler( loggerName );
+        WindowHandler windowHandler = new WindowHandler(loggerName);
         // Install it as a handler for the logger
-        logger.addHandler( windowHandler );
+        logger.addHandler(windowHandler);
     }
 }
 

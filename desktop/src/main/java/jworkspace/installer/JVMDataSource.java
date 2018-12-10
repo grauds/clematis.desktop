@@ -34,8 +34,7 @@ import java.io.IOException;
 /**
  * Data source for jvm.
  */
-class JVMDataSource extends DefinitionDataSource
-{
+class JVMDataSource extends DefinitionDataSource {
     static final String ROOT = "jmachines";
 
     private static String rootName = JVMDataSource.ROOT;
@@ -43,10 +42,10 @@ class JVMDataSource extends DefinitionDataSource
     /**
      * Construct new jvm data source
      * with given file as a root.
+     *
      * @param root java.io.File
      */
-    JVMDataSource(File root)
-    {
+    JVMDataSource(File root) {
         super(root);
         rootName = root.getName();
     }
@@ -54,8 +53,7 @@ class JVMDataSource extends DefinitionDataSource
     /**
      * Returns root name for jvms hierarchy.
      */
-    public String getRootName()
-    {
+    public String getRootName() {
         return rootName;
     }
 
@@ -64,8 +62,7 @@ class JVMDataSource extends DefinitionDataSource
      * itself is a jvm.
      */
     protected DefinitionNode makeNode(DefinitionNode parent, File file)
-            throws IOException
-    {
+        throws IOException {
         return (new JVM(parent, file));
     }
 }

@@ -97,51 +97,6 @@ public final class JavaProcess {
     };
 
     /**
-     * Reader thread to get all process log information back to workspace.
-     */
-    private class ReaderThread extends Thread {
-
-        private InputStream stream;
-        private byte[] buf = new byte[360];
-
-        ReaderThread(InputStream stream) {
-            this.stream = stream;
-            setDaemon(true);
-        }
-
-        public void run() {
-            for (; ; ) {
-                try {
-                    int b = stream.read(buf);
-                    if (b > 0) {
-                        String str = new String(buf, 0, b);
-                        log.append(" [ ")
-                                .append(getElapsedTime())
-                                .append(" ")
-                                .append("sec")
-                                .append(" ")
-                                .append(str);
-
-                        StringTokenizer st = new StringTokenizer(str, "\n\r\f\t");
-
-                        while (st.hasMoreTokens()) {
-                            String little = st.nextToken();
-                            vlog.append(" [ " + getElapsedTime() + " " + "sec" + " " + little);
-                        }
-                    } else {
-                        if (b < 0) {
-                            break;
-                        }
-                    }
-                } catch (IOException ex) {
-                    WorkspaceError.exception("Cannot read process log", ex);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
      * Constructor
      */
     JavaProcess(String[] args, String processName) throws IOException {
@@ -176,17 +131,17 @@ public final class JavaProcess {
         waitThread.start();
 
         log.append(LangResource.getString("JavaProcess.Process"))
-                .append(" ")
-                .append(processName)
-                .append(" ")
-                .append(LangResource.getString("JavaProcess.StartedAt"))
-                .append(" ")
-                .append(java.text.DateFormat.getInstance().format(startTime));
+            .append(" ")
+            .append(processName)
+            .append(" ")
+            .append(LangResource.getString("JavaProcess.StartedAt"))
+            .append(" ")
+            .append(java.text.DateFormat.getInstance().format(startTime));
 
         vlog.append(LangResource.getString("JavaProcess.Process") +
-                " " + processName +
-                " " + LangResource.getString("JavaProcess.StartedAt") +
-                " " + java.text.DateFormat.getInstance().format(startTime));
+            " " + processName +
+            " " + LangResource.getString("JavaProcess.StartedAt") +
+            " " + java.text.DateFormat.getInstance().format(startTime));
         alive = true;
     }
 
@@ -195,20 +150,20 @@ public final class JavaProcess {
             try {
                 int x = process.waitFor();
                 log.append(" [ ").append(java.text.DateFormat.getInstance()
-                        .format(startTime))
-                        .append(" ")
-                        .append(LangResource.getString("JavaProcess.ExitValue"))
-                        .append(" ")
-                        .append(x);
+                    .format(startTime))
+                    .append(" ")
+                    .append(LangResource.getString("JavaProcess.ExitValue"))
+                    .append(" ")
+                    .append(x);
                 vlog.append(" [ " +
-                        java.text.DateFormat.getInstance().format(startTime)
-                        + " " + LangResource.getString("JavaProcess.ExitValue") +
-                        " " + x);
+                    java.text.DateFormat.getInstance().format(startTime)
+                    + " " + LangResource.getString("JavaProcess.ExitValue") +
+                    " " + x);
                 alive = false;
                 break;
             } catch (InterruptedException ex) {
                 WorkspaceError.exception
-                        (LangResource.getString("JavaProcess.CannotWait"), ex);
+                    (LangResource.getString("JavaProcess.CannotWait"), ex);
             }
         }
     }
@@ -227,6 +182,24 @@ public final class JavaProcess {
      */
     public String getName() {
         return processName;
+    }
+
+    /**
+     * Sets process name.
+     *
+     * @param process_name java.lang.String
+     */
+    public void setName(java.lang.String process_name) {
+        if (process_name.startsWith(ApplicationDataSource.ROOT)) {
+            this.processName = process_name.substring(ApplicationDataSource.ROOT.
+                length());
+        } else {
+            this.processName = process_name;
+        }
+        /*
+         * Set name for log.
+         */
+        vlog.setName(this.processName);
     }
 
     public Date getStartTime() {
@@ -262,29 +235,56 @@ public final class JavaProcess {
     }
 
     /**
-     * Sets process name.
-     *
-     * @param process_name java.lang.String
-     */
-    public void setName(java.lang.String process_name) {
-        if (process_name.startsWith(ApplicationDataSource.ROOT)) {
-            this.processName = process_name.substring(ApplicationDataSource.ROOT.
-                    length());
-        } else {
-            this.processName = process_name;
-        }
-        /*
-         * Set name for log.
-         */
-        vlog.setName(this.processName);
-    }
-
-    /**
      * If current process alive.
      *
      * @return boolean
      */
     public boolean isAlive() {
         return alive;
+    }
+
+    /**
+     * Reader thread to get all process log information back to workspace.
+     */
+    private class ReaderThread extends Thread {
+
+        private InputStream stream;
+        private byte[] buf = new byte[360];
+
+        ReaderThread(InputStream stream) {
+            this.stream = stream;
+            setDaemon(true);
+        }
+
+        public void run() {
+            for (; ; ) {
+                try {
+                    int b = stream.read(buf);
+                    if (b > 0) {
+                        String str = new String(buf, 0, b);
+                        log.append(" [ ")
+                            .append(getElapsedTime())
+                            .append(" ")
+                            .append("sec")
+                            .append(" ")
+                            .append(str);
+
+                        StringTokenizer st = new StringTokenizer(str, "\n\r\f\t");
+
+                        while (st.hasMoreTokens()) {
+                            String little = st.nextToken();
+                            vlog.append(" [ " + getElapsedTime() + " " + "sec" + " " + little);
+                        }
+                    } else {
+                        if (b < 0) {
+                            break;
+                        }
+                    }
+                } catch (IOException ex) {
+                    WorkspaceError.exception("Cannot read process log", ex);
+                    break;
+                }
+            }
+        }
     }
 }

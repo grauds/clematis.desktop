@@ -26,69 +26,34 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.ui.action.UISwitchListener;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
+
+import javax.swing.JCheckBox;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+
+import jworkspace.ui.action.UISwitchListener;
 
 /**
  * Check list control is combining JCheckBox
  * boxes with JList via column and row headers
  * in scroll viewport.
  */
-public class CheckList extends JPanel
-{
+public class CheckList extends JPanel {
     private JList listCheckBox = null;
     private JList listDescription = null;
 
-/* Inner class to hold data for JList with checkboxes */
-    class CheckBoxItem
-    {
-        private boolean isChecked;
-
-        public CheckBoxItem()
-        {
-            isChecked = false;
-        }
-
-        public boolean isChecked()
-        {
-            return isChecked;
-        }
-
-        public void setChecked(boolean value)
-        {
-            isChecked = value;
-        }
-    }
-
-    /**
-     *  Inner class that renders JCheckBox to JList
-     */
-    class CheckBoxRenderer extends JCheckBox implements ListCellRenderer
-    {
-
-        public CheckBoxRenderer()
-        {
-            setBackground(UIManager.getColor("List.textBackground"));
-            setForeground(UIManager.getColor("List.textForeground"));
-        }
-
-        public Component getListCellRendererComponent(JList listBox, Object obj, int currentindex,
-                                                      boolean isChecked, boolean hasFocus)
-        {
-            setSelected(((CheckBoxItem) obj).isChecked());
-            return this;
-        }
-
-    }
-
-    public CheckList()
-    {
+    public CheckList() {
         super();
         setLayout(new BorderLayout());
 
@@ -101,15 +66,15 @@ public class CheckList extends JPanel
         listDescription = new JList(listData);
 
         listDescription.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listDescription.addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent me)
-            {
-                if (me.getClickCount() != 2)
+        listDescription.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                if (me.getClickCount() != 2) {
                     return;
+                }
                 int selectedIndex = listDescription.locationToIndex(me.getPoint());
-                if (selectedIndex < 0)
+                if (selectedIndex < 0) {
                     return;
+                }
                 CheckBoxItem item = (CheckBoxItem) listCheckBox.getModel().getElementAt(selectedIndex);
                 item.setChecked(!item.isChecked());
                 listCheckBox.repaint();
@@ -117,13 +82,12 @@ public class CheckList extends JPanel
         });
         listCheckBox.setCellRenderer(new CheckBoxRenderer());
         listCheckBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listCheckBox.addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent me)
-            {
+        listCheckBox.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
                 int selectedIndex = listCheckBox.locationToIndex(me.getPoint());
-                if (selectedIndex < 0)
+                if (selectedIndex < 0) {
                     return;
+                }
                 CheckBoxItem item = (CheckBoxItem) listCheckBox.getModel().getElementAt(selectedIndex);
                 item.setChecked(!item.isChecked());
                 listDescription.setSelectedIndex(selectedIndex);
@@ -153,27 +117,21 @@ public class CheckList extends JPanel
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
-    private CheckBoxItem[] buildCheckBoxItems(int totalItems)
-    {
+    private CheckBoxItem[] buildCheckBoxItems(int totalItems) {
         CheckBoxItem[] checkboxItems = new CheckBoxItem[totalItems];
-        for (int counter = 0; counter < totalItems; counter++)
-        {
+        for (int counter = 0; counter < totalItems; counter++) {
             checkboxItems[counter] = new CheckBoxItem();
         }
         return checkboxItems;
     }
 
     private CheckBoxItem[] buildCheckBoxItems(int totalItems,
-                                              int[] selected)
-    {
+                                              int[] selected) {
         CheckBoxItem[] checkboxItems = new CheckBoxItem[totalItems];
-        for (int counter = 0; counter < totalItems; counter++)
-        {
+        for (int counter = 0; counter < totalItems; counter++) {
             checkboxItems[counter] = new CheckBoxItem();
-            for (int i = 0; i < selected.length; i++)
-            {
-                if (counter == selected[i])
-                {
+            for (int i1 : selected) {
+                if (counter == i1) {
                     checkboxItems[counter].setChecked(true);
                     break;
                 }
@@ -182,17 +140,14 @@ public class CheckList extends JPanel
         return checkboxItems;
     }
 
-    public String[] getSelectedListData()
-    {
+    public String[] getSelectedListData() {
         ListModel model = listCheckBox.getModel();
         ListModel sm = listDescription.getModel();
         Vector names = new Vector();
 
-        for (int i = 0; i < model.getSize(); i++)
-        {
+        for (int i = 0; i < model.getSize(); i++) {
             CheckBoxItem item = (CheckBoxItem) model.getElementAt(i);
-            if (item.isChecked())
-            {
+            if (item.isChecked()) {
                 names.addElement(sm.getElementAt(i));
             }
         }
@@ -202,37 +157,66 @@ public class CheckList extends JPanel
         return str;
     }
 
-    public void selectAll()
-    {
+    public void selectAll() {
         ListModel model = listCheckBox.getModel();
-        for (int i = 0; i < model.getSize(); i++)
-        {
+        for (int i = 0; i < model.getSize(); i++) {
             CheckBoxItem item = (CheckBoxItem) model.getElementAt(i);
             item.setChecked(true);
         }
         listCheckBox.repaint();
     }
 
-    public void clearAll()
-    {
+    public void clearAll() {
         ListModel model = listCheckBox.getModel();
-        for (int i = 0; i < model.getSize(); i++)
-        {
+        for (int i = 0; i < model.getSize(); i++) {
             CheckBoxItem item = (CheckBoxItem) model.getElementAt(i);
             item.setChecked(false);
         }
         listCheckBox.repaint();
     }
 
-    protected void setBorders()
-    {
+    protected void setBorders() {
         listDescription.setBorder(new EmptyBorder(3, 0, 3, 3));
         listCheckBox.setBorder(new EmptyBorder(3, 6, 3, 3));
     }
 
-    public void setListData(String[] data, int[] selected)
-    {
+    public void setListData(String[] data, int[] selected) {
         listCheckBox.setListData(buildCheckBoxItems(data.length, selected));
         listDescription.setListData(data);
+    }
+
+    /* Inner class to hold data for JList with checkboxes */
+    class CheckBoxItem {
+        private boolean isChecked;
+
+        public CheckBoxItem() {
+            isChecked = false;
+        }
+
+        public boolean isChecked() {
+            return isChecked;
+        }
+
+        public void setChecked(boolean value) {
+            isChecked = value;
+        }
+    }
+
+    /**
+     * Inner class that renders JCheckBox to JList
+     */
+    class CheckBoxRenderer extends JCheckBox implements ListCellRenderer {
+
+        public CheckBoxRenderer() {
+            setBackground(UIManager.getColor("List.textBackground"));
+            setForeground(UIManager.getColor("List.textForeground"));
+        }
+
+        public Component getListCellRendererComponent(JList listBox, Object obj, int currentindex,
+                                                      boolean isChecked, boolean hasFocus) {
+            setSelected(((CheckBoxItem) obj).isChecked());
+            return this;
+        }
+
     }
 }

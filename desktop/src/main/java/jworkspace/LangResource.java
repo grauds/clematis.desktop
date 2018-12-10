@@ -2,7 +2,7 @@ package jworkspace;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -26,49 +26,50 @@ package jworkspace;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.kernel.Workspace;
-
 import java.text.DateFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-public class LangResource
-{
-    static ResourceBundle resources = null;
-    static Locale locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    public LangResource()
-    {
+public class LangResource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
+
+    private static ResourceBundle resources = null;
+
+    public LangResource() {
     }
 
-    public static void printAvailableLocales()
-    {
-        Workspace.getLogger().info("Available locales:");
+    public static void printAvailableLocales() {
 
-        Locale list[] = DateFormat.getAvailableLocales();
-        for (int i = 0; i < list.length; i++)
-        {
-          Workspace.getLogger().info(list[i].getLanguage() + "   " + list[i].getCountry());
+        LangResource.LOG.info("Available locales:");
+        Locale[] list = DateFormat.getAvailableLocales();
+        for (Locale locale : list) {
+            LangResource.LOG.info(locale.getLanguage() + "   " + locale.getCountry());
         }
     }
 
-    static public String getString(String id)
-    {
-        if (resources == null) resources = ResourceBundle.getBundle("i18n/strings");
+    static public String getString(String id) {
+
+        if (resources == null) {
+            resources = ResourceBundle.getBundle("i18n/strings");
+        }
+
         String message = null;
-        try
-        {
+        try {
+
             message = resources.getString(id);
+        } catch (MissingResourceException ex) {
+
+            LangResource.LOG.warn(ex.toString());
+            LangResource.LOG.warn("Cannot find resource" + " " + id);
         }
-        catch (MissingResourceException ex)
-        {
-            Workspace.getLogger().warning(ex.toString());
-            Workspace.getLogger().warning("Cannot find resource" + " " + id);
-        }
-        if (message == null)
-        {
-            System.out.println("Cannot find string > " + id + " <");
+
+        if (message == null) {
+            LangResource.LOG.warn("Cannot find string > " + id + " <");
             return id;
         }
         return message;

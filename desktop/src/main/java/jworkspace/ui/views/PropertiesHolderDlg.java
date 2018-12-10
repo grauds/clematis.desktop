@@ -26,14 +26,20 @@ package jworkspace.ui.views;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import jworkspace.LangResource;
 import kiwi.ui.dialog.ComponentDialog;
-
-import javax.swing.*;
-import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * This dialog holds a properties panel for a view.
@@ -44,21 +50,18 @@ import java.lang.reflect.Method;
  * If no such method is discovered, this class silently
  * ignores the situation.
  */
-public class PropertiesHolderDlg extends ComponentDialog
-{
+public class PropertiesHolderDlg extends ComponentDialog {
     private JTabbedPane tabbed_pane;
 
     /**
      * Constructor for property viewer panel.
      *
-     * @param parent frame
+     * @param parent        frame
      * @param option_panels array of JPanels as an option panels for current view.
      */
-    public PropertiesHolderDlg(Frame parent, JPanel[] option_panels)
-    {
+    public PropertiesHolderDlg(Frame parent, JPanel[] option_panels) {
         super(parent, LangResource.getString("PropertiesHolder.title"), true);
-        if (option_panels == null || option_panels.length == 0)
-        {
+        if (option_panels == null || option_panels.length == 0) {
             KPanel empty_panel = new KPanel();
             empty_panel.setPreferredSize(new Dimension(250, 300));
             empty_panel.setLayout(new BorderLayout());
@@ -67,80 +70,62 @@ public class PropertiesHolderDlg extends ComponentDialog
             l.setOpaque(false);
             empty_panel.add(l, BorderLayout.CENTER);
             tabbed_pane.addTab(LangResource.getString("PropertiesHolder.empty.tab"), empty_panel);
-        }
-        else
-        {
-            for (int i = 0; i < option_panels.length; i++)
-            {
-                if (option_panels[i].getName() != null)
+        } else {
+            for (int i = 0; i < option_panels.length; i++) {
+                if (option_panels[i].getName() != null) {
                     tabbed_pane.addTab(option_panels[i].getName(), option_panels[i]);
-                else
+                } else {
                     tabbed_pane.addTab(LangResource.getString("PropertiesHolder.empty.tab.header"), option_panels[i]);
+                }
             }
         }
         pack();
         setResizable(false);
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         destroy();
         super.dispose();
     }
 
-    protected boolean accept()
-    {
-        if (tabbed_pane == null) return true;
-        for (int i = 0; i < tabbed_pane.getTabCount(); i++)
-        {
-            try
-            {
+    protected boolean accept() {
+        if (tabbed_pane == null) {
+            return true;
+        }
+        for (int i = 0; i < tabbed_pane.getTabCount(); i++) {
+            try {
                 Method sync_data = tabbed_pane.getComponentAt(i).getClass().
-                        getMethod("syncData", new Class[]{});
-                sync_data.invoke(tabbed_pane.getComponentAt(i), new Object[]{});
-            }
-            catch (NoSuchMethodException ex)
-            {
+                    getMethod("syncData");
+                sync_data.invoke(tabbed_pane.getComponentAt(i));
+            } catch (NoSuchMethodException ex) {
                 ex.printStackTrace();
-            }
-            catch (InvocationTargetException ex)
-            {
+            } catch (InvocationTargetException ex) {
                 ex.printStackTrace();
-            }
-            catch (IllegalAccessException ex)
-            {
+            } catch (IllegalAccessException ex) {
                 ex.printStackTrace();
             }
         }
         return true;
     }
 
-    protected boolean setData()
-    {
-        if (tabbed_pane == null) return true;
-        for (int i = 0; i < tabbed_pane.getTabCount(); i++)
-        {
-            try
-            {
+    protected boolean setData() {
+        if (tabbed_pane == null) {
+            return true;
+        }
+        for (int i = 0; i < tabbed_pane.getTabCount(); i++) {
+            try {
                 Method sync_data = tabbed_pane.getComponentAt(i).getClass().
-                        getMethod("setData", new Class[]{});
-                sync_data.invoke(tabbed_pane.getComponentAt(i), new Object[]{});
-            }
-            catch (NoSuchMethodException ex)
-            {
-            }
-            catch (InvocationTargetException ex)
-            {
-            }
-            catch (IllegalAccessException ex)
-            {
+                    getMethod("setData");
+                sync_data.invoke(tabbed_pane.getComponentAt(i));
+            } catch (NoSuchMethodException ex) {
+            } catch (InvocationTargetException ex) {
+            } catch (IllegalAccessException ex) {
             }
         }
         return true;
     }
 
-    protected JComponent buildDialogUI()
-    {
+    protected JComponent buildDialogUI() {
         setComment(null);
         tabbed_pane = new JTabbedPane();
         tabbed_pane.setOpaque(false);

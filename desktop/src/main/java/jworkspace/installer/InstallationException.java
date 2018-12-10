@@ -28,12 +28,11 @@ package jworkspace.installer;
    ----------------------------------------------------------------------------
 */
 
-class InstallationException extends Exception
-{
+class InstallationException extends Exception {
     /**
+     *
      */
-    InstallationException(String s)
-    {
+    InstallationException(String s) {
         super(s);
     }
 }

@@ -25,65 +25,67 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.ui.KPanel;
-
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
+
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+
+import com.hyperrealm.kiwi.ui.KPanel;
+
 /**
  * A simple panel that renders a font preview for {@link com.lamatek.swingextras.JFontChooser JFontChooser} component.
  */
-public class FontPreviewPanel extends KPanel
-{
-	private Font font;
-	/**
-	 * Constructs a font preview panel initialized to the specified font.
-	 *
-	 * @param f The font used to render the preview
-	 */
-	public FontPreviewPanel(Font f)
-    {
-		super();
-        setOpaque( false );
-		setFont(f);
-		setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED), "Preview"));
-	}
-	/**
-	 * Sets the font used to render the preview text.
-	 *
-	 * @param f The font used to render the preview
-	 */
-	public void setFont(Font f)
-    {
-		this.font = f;
-		repaint();
-	}
-	public void update(Graphics g)
-    {
-		paintComponent(g);
-		paintBorder(g);
-	}
-	public void paintComponent(Graphics g)
-    {
-        super.paintComponent( g );
-		Image osi = createImage(getSize().width, getSize().height);
-		Graphics osg = osi.getGraphics();
-		osg.setFont(this.font);
-		Rectangle2D bounds = font.getStringBounds(font.getFontName(), 0, font.getFontName().length(), new FontRenderContext(null, true, false));
-		int height = (new Double(bounds.getHeight())).intValue();
-		osg.drawString(font.getFontName(), 5, (((getSize().height - height) / 2) + height));
-		g.drawImage(osi, 0, 0, this);
-	}
+public class FontPreviewPanel extends KPanel {
+    private Font font;
 
-	public Dimension getPreferredSize()
-    {
-		return new Dimension(getSize().width, 75);
-	}
+    /**
+     * Constructs a font preview panel initialized to the specified font.
+     *
+     * @param f The font used to render the preview
+     */
+    public FontPreviewPanel(Font f) {
+        super();
+        setOpaque(false);
+        setFont(f);
+        setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED), "Preview"));
+    }
 
-	public Dimension getMinimumSize()
-    {
-		return getPreferredSize();
-	}
+    /**
+     * Sets the font used to render the preview text.
+     *
+     * @param f The font used to render the preview
+     */
+    public void setFont(Font f) {
+        this.font = f;
+        repaint();
+    }
+
+    public void update(Graphics g) {
+        paintComponent(g);
+        paintBorder(g);
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Image osi = createImage(getSize().width, getSize().height);
+        Graphics osg = osi.getGraphics();
+        osg.setFont(this.font);
+        Rectangle2D bounds = font.getStringBounds(font.getFontName(), 0, font.getFontName().length(), new FontRenderContext(null, true, false));
+        int height = (new Double(bounds.getHeight())).intValue();
+        osg.drawString(font.getFontName(), 5, (((getSize().height - height) / 2) + height));
+        g.drawImage(osi, 0, 0, this);
+    }
+
+    public Dimension getPreferredSize() {
+        return new Dimension(getSize().width, 75);
+    }
+
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
 }

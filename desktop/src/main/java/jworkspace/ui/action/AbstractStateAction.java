@@ -26,56 +26,49 @@ package jworkspace.ui.action;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
 
 /**
  * Abstract state implements action allows controlling of checkbox
  * menu items or buttons.
  */
 public abstract class AbstractStateAction extends AbstractAction
-        implements StateAction
-{
+    implements StateAction {
     public static final String SELECTED = "SELECTED";
     public static final String SELECTABLE = "SELECTABLE";
 
-    public AbstractStateAction()
-    {
+    public AbstractStateAction() {
         super();
         setSelectable(false);
         setSelected(true);
     }
 
-    public AbstractStateAction(String name)
-    {
+    public AbstractStateAction(String name) {
         super(name);
         setSelectable(false);
         setSelected(true);
     }
 
-    public AbstractStateAction(String name, Icon icon)
-    {
+    public AbstractStateAction(String name, Icon icon) {
         super(name, icon);
         setSelectable(false);
         setSelected(true);
     }
 
-    public boolean isSelected()
-    {
+    public boolean isSelected() {
         return (Boolean) getValue(SELECTED);
     }
 
-    public void setSelected(boolean selected)
-    {
-        putValue(SELECTED, Boolean.valueOf(selected));
+    public void setSelected(boolean selected) {
+        putValue(SELECTED, selected);
     }
 
-    public boolean isSelectable()
-    {
+    public boolean isSelectable() {
         return (Boolean) getValue(SELECTABLE);
     }
 
-    public void setSelectable(boolean selected)
-    {
-        putValue(SELECTABLE, Boolean.valueOf(selected));
+    public void setSelectable(boolean selectable) {
+        putValue(SELECTABLE, selectable);
     }
 }

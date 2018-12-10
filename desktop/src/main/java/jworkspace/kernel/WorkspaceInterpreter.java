@@ -34,9 +34,7 @@ import java.io.PipedOutputStream;
 
 import bsh.EvalError;
 import bsh.Interpreter;
-
 import jworkspace.util.WorkspaceError;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +48,10 @@ public final class WorkspaceInterpreter {
      */
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInterpreter.class);
     /**
+     * Single instance
+     */
+    private static WorkspaceInterpreter ourInstance;
+    /**
      * Bean Shell interpreter for scripted methods invoked from different command sources like desktop shortcuts.
      */
     private Interpreter interpreter = null;
@@ -57,10 +59,6 @@ public final class WorkspaceInterpreter {
      * Console is being executed in the separate thread
      */
     private Thread interpreterThread = null;
-    /**
-     * Single instance
-     */
-    private static WorkspaceInterpreter ourInstance;
     /**
      * Stream for interpreter
      */
@@ -92,7 +90,7 @@ public final class WorkspaceInterpreter {
             WorkspaceError.exception("Cannot start Bean Shell Interpreter", e);
         }
         interpreter = new Interpreter(new InputStreamReader(in),
-                System.out, System.out, false, null);
+            System.out, System.out, false, null);
 
         interpreterThread = new Thread(interpreter);
         interpreterThread.start();

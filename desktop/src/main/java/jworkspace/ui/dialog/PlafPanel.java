@@ -25,14 +25,20 @@ package jworkspace.ui.dialog;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.*;
-import javax.swing.plaf.metal.MetalTheme;
-
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.LookAndFeel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.plaf.metal.MetalTheme;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.LookAndFeelChooser;
@@ -40,11 +46,11 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 import jworkspace.LangResource;
 import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.widgets.ThemesChooser;
+
 /**
  * Panel for customizing look and feel of java workspace.
  */
-class PlafPanel extends KPanel implements ActionListener
-{
+class PlafPanel extends KPanel implements ActionListener {
     /**
      * Look and feel chooser
      */
@@ -61,11 +67,11 @@ class PlafPanel extends KPanel implements ActionListener
      * Currently selected laf
      */
     private LookAndFeel selectedLaf = null;
+
     /**
      * Public constructor
      */
-    public PlafPanel()
-    {
+    public PlafPanel() {
         super();
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -82,13 +88,13 @@ class PlafPanel extends KPanel implements ActionListener
         kp.setLayout(new BorderLayout());
 
         getLfChooser().setPreferredSize(new Dimension(150, 20));
-        getLfChooser().addActionListener( this );
-        kp.add( getLfChooser(), BorderLayout.NORTH);
-        kp.add( getTextAreaScroll(), BorderLayout.CENTER);
+        getLfChooser().addActionListener(this);
+        kp.add(getLfChooser(), BorderLayout.NORTH);
+        kp.add(getTextAreaScroll(), BorderLayout.CENTER);
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(kp, gbc);
 
         //*** themes chooser ********
@@ -98,12 +104,12 @@ class PlafPanel extends KPanel implements ActionListener
         kp.setLayout(new BorderLayout());
 
         getThemesChooser().setPreferredSize(new Dimension(150, 20));
-        getThemesChooser().addActionListener( this );
-        kp.add( getThemesChooser(), BorderLayout.CENTER);
+        getThemesChooser().addActionListener(this);
+        kp.add(getThemesChooser(), BorderLayout.CENTER);
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(kp, gbc);
         /**
          * Fetch info about currently selected laf.
@@ -111,10 +117,8 @@ class PlafPanel extends KPanel implements ActionListener
         fetchInfo();
     }
 
-    private LookAndFeelChooser getLfChooser()
-    {
-        if ( lfchooser == null )
-        {
+    private LookAndFeelChooser getLfChooser() {
+        if (lfchooser == null) {
             PlafFactory.getInstance();
             lfchooser = new LookAndFeelChooser();
         }
@@ -124,23 +128,17 @@ class PlafPanel extends KPanel implements ActionListener
     /**
      * Invoked when an action occurs.
      */
-    public void actionPerformed(ActionEvent e)
-    {
-        if ( e.getSource() == getLfChooser() )
-        {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == getLfChooser()) {
             fetchInfo();
-        }
-        else if ( e.getSource() == getThemesChooser() )
-        {
+        } else if (e.getSource() == getThemesChooser()) {
             PlafFactory.getInstance().setCurrentTheme(getLfChooser().getLookAndFeel(),
-                                      getThemesChooser().getTheme());
+                getThemesChooser().getTheme());
         }
     }
 
-    private ThemesChooser getThemesChooser()
-    {
-        if ( themesChooser == null )
-        {
+    private ThemesChooser getThemesChooser() {
+        if (themesChooser == null) {
             themesChooser = new ThemesChooser();
         }
         return themesChooser;
@@ -150,61 +148,60 @@ class PlafPanel extends KPanel implements ActionListener
      * Fetch information about currently selected LAF. This includes
      * its description, plus ability to install themes and so on.
      */
-    protected void fetchInfo()
-    {
+    protected void fetchInfo() {
         /**
          * Get laf name
          */
         String selectedLafName = getLfChooser().getLookAndFeel();
-        selectedLaf = PlafFactory.getInstance().getLookAndFeel( selectedLafName );
+        selectedLaf = PlafFactory.getInstance().getLookAndFeel(selectedLafName);
         /**
          * Get description of selected laf
          */
-        if ( selectedLaf != null )
-        {
-            getTextArea().setText( selectedLaf.getDescription() );
+        if (selectedLaf != null) {
+            getTextArea().setText(selectedLaf.getDescription());
             /**
              * Get a list of themes for a current LAF
              */
-            MetalTheme[] themes = PlafFactory.getInstance().listThemes( selectedLaf );
+            MetalTheme[] themes = PlafFactory.getInstance().listThemes(selectedLaf);
             getThemesChooser().setModel(new DefaultComboBoxModel(themes));
 
-            MetalTheme currentTheme = PlafFactory.getInstance().getCurrentTheme( selectedLaf );
-            getThemesChooser().setSelectedItem( currentTheme );
+            MetalTheme currentTheme = PlafFactory.getInstance().getCurrentTheme(selectedLaf);
+            getThemesChooser().setSelectedItem(currentTheme);
 
             getThemesChooser().setEnabled(themes.length > 0);
         }
     }
+
     /**
      * Returns component for displaying description about
      * currently selected laf.
+     *
      * @return text component for displaying description.
      */
-    public JTextArea getTextArea()
-    {
-        if ( comments == null )
-        {
+    public JTextArea getTextArea() {
+        if (comments == null) {
             comments = new JTextArea();
             comments.setEditable(false);
-            comments.setBackground( this.getBackground() );
+            comments.setBackground(this.getBackground());
             comments.setLineWrap(true);
             comments.setWrapStyleWord(true);
         }
         return comments;
     }
+
     /**
      * Scroll pane for text area
+     *
      * @return scroll pane
      */
-    protected JScrollPane getTextAreaScroll()
-    {
-        JScrollPane scrollPane = new JScrollPane( getTextArea() );
+    protected JScrollPane getTextAreaScroll() {
+        JScrollPane scrollPane = new JScrollPane(getTextArea());
         scrollPane.setPreferredSize(new Dimension(150, 60));
-        scrollPane.setBorder( new EmptyBorder(5,5,5,5) );
+        scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         return scrollPane;
     }
-    public boolean syncData()
-    {
-        return  PlafFactory.getInstance().setLookAndFeel( getLfChooser().getLookAndFeel() );
+
+    public boolean syncData() {
+        return PlafFactory.getInstance().setLookAndFeel(getLfChooser().getLookAndFeel());
     }
 }

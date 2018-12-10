@@ -25,8 +25,10 @@ package jworkspace.kernel;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+
 /**
  * Native library.
+ *
  * @deprecated should be replaced with some alternatives
  */
 public class NativeLib {

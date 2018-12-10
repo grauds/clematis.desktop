@@ -28,18 +28,21 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.ui.KListModelListCellRenderer;
+import java.awt.Frame;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
 import com.hyperrealm.kiwi.ui.KTreeTable;
 import jworkspace.LangResource;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.JVM;
 import jworkspace.kernel.Workspace;
 import kiwi.ui.dialog.ComponentDialog;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
 
 /**
  * This dialog shows a tree of installed jvms in workspace.
@@ -52,7 +55,7 @@ public class JvmChooserDialog extends ComponentDialog {
         super(parent, LangResource.getString("JvmChooserDlg.title"), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setTopIcon(new ImageIcon(Workspace.getResourceManager().
-                getImage("jvm_big.png")));
+            getImage("jvm_big.png")));
     }
 
     protected boolean accept() {

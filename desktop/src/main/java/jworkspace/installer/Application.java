@@ -27,6 +27,7 @@ package jworkspace.installer;
    anton.troshin@gmail.com
    ----------------------------------------------------------------------------
 */
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -37,16 +38,39 @@ import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
 import com.hyperrealm.kiwi.util.StringUtils;
-
+//
 import jworkspace.kernel.Workspace;
+
 /**
  * Application entry is a definition node, that stores
  * its data in file on disk, which is in file hierarchy
  * inside applications root directory. This class
  * also calculates proper classpath for java application
  * its presenting.
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 public class Application extends DefinitionNode {
+
+    public static final Icon ICON = Workspace.getResourceManager().getIcon("installer/application.gif");
+
+    private static final String JVM_ARGS_DELIMITER = " ";
+
+    private static final String CK_NAME = "application.name",
+        CK_VERSION = "application.version",
+        CK_ARCHIVE = "application.archive",
+        CK_SOURCE = "application.source",
+        CK_JVM = "application.jvm",
+        CK_MAINCLASS = "application.mainclass",
+        CK_ARGS = "application.arguments",
+        CK_LIBS = "application.libraries",
+        CK_DESCRIPTION = "application.description",
+        CK_WORKINGDIR = "application.working_dir",
+        CK_DOCDIR = "application.documentation_dir",
+        CK_LAUNCH_AT_STARTUP = "application.launchAtStartup",
+        CK_SEPARATE_PROCESS = "application.separateProcess",
+        CK_SYSTEM_USER_FOLDER = "application.systemUserFolder";
 
     private String name;
     private String version;
@@ -64,25 +88,7 @@ public class Application extends DefinitionNode {
     private boolean separateProcess = true;
     private boolean systemUserFolder = false;
 
-    public static final Icon icon = Workspace.getResourceManager()
-            .getIcon("installer/application.gif");
-
     private ConfigFile config;
-
-    private static final String CK_NAME = "application.name",
-            CK_VERSION = "application.version",
-            CK_ARCHIVE = "application.archive",
-            CK_SOURCE = "application.source",
-            CK_JVM = "application.jvm",
-            CK_MAINCLASS = "application.mainclass",
-            CK_ARGS = "application.arguments",
-            CK_LIBS = "application.libraries",
-            CK_DESCRIPTION = "application.description",
-            CK_WORKINGDIR = "application.working_dir",
-            CK_DOCDIR = "application.documentation_dir",
-            CK_LAUNCH_AT_STARTUP = "application.launchAtStartup",
-            CK_SEPARATE_PROCESS = "application.separateProcess",
-            CK_SYSTEM_USER_FOLDER = "application.systemUserFolder";
 
     /**
      * Public application constructor.
@@ -115,6 +121,16 @@ public class Application extends DefinitionNode {
     }
 
     /**
+     * Sets path to application jar file.
+     */
+    public void setArchive(String archive) throws InstallationException {
+        if (archive == null) {
+            throw new InstallationException("Archive name is null.");
+        }
+        this.archive = archive;
+    }
+
+    /**
      * Returns arguments of this application.
      */
     public String getArguments() {
@@ -122,11 +138,18 @@ public class Application extends DefinitionNode {
     }
 
     /**
-     * Returns closed icon to represent
+     * Sets command line arguments for application.
+     */
+    public void setArguments(String arguments) {
+        this.arguments = arguments;
+    }
+
+    /**
+     * Returns closed ICON to represent
      * application in tree control.
      */
     public Icon getClosedIcon() {
-        return icon;
+        return ICON;
     }
 
     /**
@@ -137,11 +160,29 @@ public class Application extends DefinitionNode {
     }
 
     /**
+     * Sets description of application. This is optional,
+     * as installer does not recognize this.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Returns directory or jar file, containing
      * application documentation.
      */
     public String getDocs() {
         return docs;
+    }
+
+    /**
+     * Sets directory or jar file, containing
+     * application documentation.
+     *
+     * @param docs java.lang.String
+     */
+    public void setDocs(java.lang.String docs) {
+        this.docs = docs;
     }
 
     /**
@@ -161,8 +202,8 @@ public class Application extends DefinitionNode {
         v.addElement(jvmProg.getPath());
 
         if (!systemUserFolder) {
-            v.addElement("-Duser.home=" + System.getProperty("user.dir") + File.separator +
-                    Workspace.getProfilesEngine().getPath());
+            v.addElement("-Duser.home=" + System.getProperty("user.dir") + File.separator
+                + Workspace.getProfilesEngine().getPath());
         }
         // next, construct the classpath
 
@@ -190,7 +231,7 @@ public class Application extends DefinitionNode {
 
         // finally, construct the full command line
 
-        StringTokenizer st = new StringTokenizer(jvmProg.getArguments(), " ");
+        StringTokenizer st = new StringTokenizer(jvmProg.getArguments(), JVM_ARGS_DELIMITER);
         while (st.hasMoreTokens()) {
             // expand special tokens
 
@@ -203,7 +244,7 @@ public class Application extends DefinitionNode {
                     v.addElement(mainClass);
                     break;
                 case "%a":
-                    String[] a = StringUtils.split(arguments, " ");
+                    String[] a = StringUtils.split(arguments, JVM_ARGS_DELIMITER);
                     for (String s : a) {
                         v.addElement(s);
                     }
@@ -226,10 +267,35 @@ public class Application extends DefinitionNode {
     }
 
     /**
+     * Sets the name of jvm, which will be used with
+     * this application.
+     *
+     * @param jvm java.lang.String
+     */
+    public void setJVM(String jvm) throws InstallationException {
+        if (jvm == null) {
+            throw new InstallationException("Jvm is null.");
+        }
+        this.jvm = jvm;
+    }
+
+    /**
      * Returns application main class name.
      */
     public String getMainClass() {
         return mainClass;
+    }
+
+    /**
+     * Sets main class for this application. This must
+     * be a fully qualified class name, for example
+     * <code>java.lang.Object</code>.
+     */
+    public void setMainClass(String mainClass) throws InstallationException {
+        if (mainClass == null) {
+            throw new InstallationException("Main Class is null");
+        }
+        this.mainClass = mainClass;
     }
 
     /**
@@ -240,11 +306,21 @@ public class Application extends DefinitionNode {
     }
 
     /**
-     * Returns open icon to represent
+     * Sets human readable name of application.
+     */
+    public void setName(String name) throws InstallationException {
+        if (name == null) {
+            throw new InstallationException("Name is null");
+        }
+        this.name = name;
+    }
+
+    /**
+     * Returns open ICON to represent
      * application in tree control.
      */
     public Icon getOpenIcon() {
-        return icon;
+        return ICON;
     }
 
     /**
@@ -256,11 +332,30 @@ public class Application extends DefinitionNode {
     }
 
     /**
+     * Set this flag to true to allow to spawn new process
+     * with virtual machine which has "user.home" property
+     * set to which Java Workspace uses, rather than OS.
+     * In this case all user data of spawned application
+     * will be stored in workspace user folder.
+     */
+    public void setSystemUserFolder(boolean systemUserFolder) {
+        this.systemUserFolder = systemUserFolder;
+    }
+
+    /**
      * Returns directory or jar file, containing
      * application source.
      */
     public java.lang.String getSource() {
         return source;
+    }
+
+    /**
+     * Sets directory or jar file, containing
+     * application source.
+     */
+    public void setSource(java.lang.String source) {
+        this.source = source;
     }
 
     /**
@@ -271,10 +366,34 @@ public class Application extends DefinitionNode {
     }
 
     /**
+     * Sets version of application. This can be useful for
+     * user, as version is not recognized by installer.
+     */
+    public void setVersion(String version) throws InstallationException {
+        if (version == null) {
+            throw new InstallationException("Version is null");
+        }
+        this.version = version;
+    }
+
+    /**
      * Returns application working directory.
      */
     public String getWorkingDirectory() {
         return workingDir;
+    }
+
+    /**
+     * Sets application working directory. This makes workspace to change working directory while launching
+     * application to this path, returning afterwards to its original working directory. It is necessary
+     * for spawned process, as it has to find resources, relative to working directory. This is
+     * the only case, then workspace uses its native library.
+     */
+    public void setWorkingDirectory(String dir) throws InstallationException {
+        if (dir == null) {
+            throw new InstallationException("Working Directory is null");
+        }
+        this.workingDir = dir;
     }
 
     /**
@@ -295,11 +414,31 @@ public class Application extends DefinitionNode {
     }
 
     /**
+     * Set this flag to true to allow workspace
+     * to launch this application everytime
+     * current user log into the system.
+     */
+    public void setLoadedAtStartup(boolean launchAtStartup) {
+        this.launchAtStartup = launchAtStartup;
+    }
+
+    /**
      * Returns whether if this application should be launched
      * in separate java virtual machine.
      */
     public boolean isSeparateProcess() {
         return separateProcess;
+    }
+
+    /**
+     * Set this flag to true to launch new java virtual machine
+     * with spawned application. Note, that option only works
+     * for classes which have both main method and workspace
+     * plugin API. In other words, it is impossible to launch
+     * main method of external application in workspace vm.
+     */
+    public void setSeparateProcess(boolean separateProcess) {
+        this.separateProcess = separateProcess;
     }
 
     /**
@@ -368,50 +507,6 @@ public class Application extends DefinitionNode {
     }
 
     /**
-     * Sets path to application jar file.
-     */
-    public void setArchive(String archive) throws InstallationException {
-        if (archive == null) throw new InstallationException("Archive name is null.");
-        this.archive = archive;
-    }
-
-    /**
-     * Sets command line arguments for application.
-     */
-    public void setArguments(String arguments) {
-        this.arguments = arguments;
-    }
-
-    /**
-     * Sets description of application. This is optional,
-     * as installer does not recognize this.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * application documentation.
-     *
-     * @param docs java.lang.String
-     */
-    public void setDocs(java.lang.String docs) {
-        this.docs = docs;
-    }
-
-    /**
-     * Sets the name of jvm, which will be used with
-     * this application.
-     *
-     * @param jvm java.lang.String
-     */
-    public void setJVM(String jvm) throws InstallationException {
-        if (jvm == null) throw new InstallationException("Jvm is null.");
-        this.jvm = jvm;
-    }
-
-    /**
      * Sets list of libraries that are nessesary for this application.
      *
      * @param libs to set to the resulting string
@@ -431,95 +526,10 @@ public class Application extends DefinitionNode {
     }
 
     /**
-     * Set this flag to true to allow workspace
-     * to launch this application everytime
-     * current user log into the system.
-     */
-    public void setLoadedAtStartup(boolean launch_at_startup) {
-        this.launchAtStartup = launch_at_startup;
-    }
-
-    /**
-     * Sets main class for this application. This must
-     * be a fully qualified class name, for example
-     * <code>java.lang.Object</code>.
-     */
-    public void setMainClass(String mainClass) throws InstallationException {
-        if (mainClass == null) {
-            throw new InstallationException("Main Class is null");
-        }
-        this.mainClass = mainClass;
-    }
-
-    /**
-     * Sets human readable name of application.
-     */
-    public void setName(String name) throws InstallationException {
-        if (name == null) {
-            throw new InstallationException("Name is null");
-        }
-        this.name = name;
-    }
-
-    /**
-     * Set this flag to true to launch new java virtual machine
-     * with spawned application. Note, that option only works
-     * for classes which have both main method and workspace
-     * plugin API. In other words, it is impossible to launch
-     * main method of external application in workspace vm.
-     */
-    public void setSeparateProcess(boolean separate_process) {
-        this.separateProcess = separate_process;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * application source.
-     */
-    public void setSource(java.lang.String source) {
-        this.source = source;
-    }
-
-    /**
-     * Set this flag to true to allow to spawn new process
-     * with virtual machine which has "user.home" property
-     * set to which Java Workspace uses, rather than OS.
-     * In this case all user data of spawned application
-     * will be stored in workspace user folder.
-     */
-    public void setSystemUserFolder(boolean system_user_folder) {
-        this.systemUserFolder = system_user_folder;
-    }
-
-    /**
-     * Sets version of application. This can be useful for
-     * user, as version is not recognized by installer.
-     */
-    public void setVersion(String version) throws InstallationException {
-        if (version == null) {
-            throw new InstallationException("Version is null");
-        }
-        this.version = version;
-    }
-
-    /**
-     * Sets application working directory. This makes workspace to change working directory while launching
-     * application to this path, returning afterwards to its original working directory. It is necessary
-     * for spawned process, as it has to find resources, relative to working directory. This is
-     * the only case, then workspace uses its native library.
-     */
-    public void setWorkingDirectory(String dir) throws InstallationException {
-        if (dir == null) {
-            throw new InstallationException("Working Directory is null");
-        }
-        this.workingDir = dir;
-    }
-
-    /**
      * Returns brief library info, that is used
      * in installer configuration dialogs.
      */
     public String toString() {
-        return (name + " " + version);
+        return (name + JVM_ARGS_DELIMITER + version);
     }
 }

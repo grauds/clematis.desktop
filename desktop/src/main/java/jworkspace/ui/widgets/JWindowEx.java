@@ -26,30 +26,27 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+
+import javax.swing.JWindow;
 
 /**
  * This window class is a workaround for a Swing bug in
  * JWindow. WIndow does not get focus on any component
  * on it, for example, a text field does not show cursor, etc.
  */
-public class JWindowEx extends JWindow implements FocusListener
-{
-    public JWindowEx(javax.swing.JFrame parent)
-    {
+public class JWindowEx extends JWindow implements FocusListener {
+    public JWindowEx(javax.swing.JFrame parent) {
         super(parent);
         addFocusListener(this);
     }
 
-    public void focusGained(FocusEvent e)
-    {
+    public void focusGained(FocusEvent e) {
         dispatchEvent(new java.awt.event.WindowEvent(this,
-                                                     java.awt.event.WindowEvent.WINDOW_ACTIVATED));
+            java.awt.event.WindowEvent.WINDOW_ACTIVATED));
     }
 
-    public void focusLost(FocusEvent e)
-    {
+    public void focusLost(FocusEvent e) {
     }
 }

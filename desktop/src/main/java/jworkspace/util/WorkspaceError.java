@@ -26,171 +26,78 @@ package jworkspace.util;
   ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.util.KiwiUtils;
-import jworkspace.kernel.Workspace;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import jworkspace.kernel.Workspace;
+import jworkspace.ui.Utils;
+
 /**
  * Gui error reporter for the end-user
  */
-public class WorkspaceError
-{
+public class WorkspaceError {
     public static ShowMessageLaterRunnable later = null;
     public static Thread laterThread = null;
     public static boolean showingLater = false;
 
     /**
-     * shows the stack trace of an error message
-     */
-    protected static class ShowErrorDetailsAction extends AbstractAction
-    {
-        Throwable error;
-        Component c;
-
-        public ShowErrorDetailsAction(Throwable t, Component c)
-        {
-            super(">>");
-            error = t;
-            this.c = c;
-        }
-
-        public void actionPerformed(ActionEvent evt)
-        {
-            // take the error and print the stack trace out to a string
-            StringWriter sw = new StringWriter();
-            PrintWriter w = new PrintWriter(sw);
-            error.printStackTrace(w);
-            w.close();
-            String s = StringUtils.wrapLines(sw.toString(), 150);
-            JTextArea ta = new JTextArea(s);
-            JScrollPane sp = new JScrollPane(ta);
-
-            // Try to force the exceptions to fit inside the desktop pane
-
-            Dimension desktopsize = Toolkit.getDefaultToolkit().getScreenSize();
-
-            int newwidth = (int) ( desktopsize.getWidth() * 0.75);
-            int newheight = (int) ( desktopsize.getHeight() * 0.75);
-
-            Dimension preferredSize = new Dimension(newwidth, newheight);
-
-            int maxwidth = (int) ( desktopsize.getWidth() * 0.9);
-            int maxheight = (int) ( desktopsize.getHeight() * 0.9);
-            Dimension maximumSize = new Dimension(maxwidth, maxheight);
-            sp.setPreferredSize(preferredSize);
-            sp.setMaximumSize(maximumSize);
-
-            JPanel p = new JPanel(new BorderLayout());
-            p.add(sp, BorderLayout.CENTER);
-
-            JOptionPane.showMessageDialog(c, p);
-        }
-    }
-
-    public class ShowMessageLaterRunnable implements Runnable
-    {
-        public String msg = null;
-        public String title = null;
-        public boolean die = false;
-
-        public void run()
-        {
-            while (!die)
-            {
-                try
-                {
-                    synchronized (later)
-                    {
-                        later.wait();
-
-                        if (msg != null && title != null)
-                        {
-                            Thread.sleep(500);
-                            // hope half a second is enough
-                            msg(title, msg);
-                            msg = null;
-                            title = null;
-                        }
-                    }
-                }
-                catch (InterruptedException ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public class msgRunnable implements Runnable
-    {
-        protected String msg = null;
-        protected String title = null;
-
-        public msgRunnable(String msg, String title)
-        {
-            this.msg = msg;
-            this.title = title;
-        }
-
-        public void run()
-        {
-            msg(title, msg);
-        }
-    }
-
-    /**
      * init some neccessary error stuff
      */
-    public WorkspaceError()
-    {
+    public WorkspaceError() {
         later = new ShowMessageLaterRunnable();
         laterThread = new Thread(later);
         laterThread.start();
     }
 
-    public static void exception(String usermsg, Throwable ex)
-    {
+    public static void exception(String usermsg, Throwable ex) {
         Component c = Workspace.getUI().getFrame();
         String excp = null;
         String title = null;
 
-        if (ex instanceof WorkspaceException)
-        {
+        if (ex instanceof WorkspaceException) {
             Throwable t = ((WorkspaceException) ex).getWrappedException();
-            if (t != null)
-            {
+            if (t != null) {
                 ex = t;
             }
             title = "Exception";
         }
         excp = ex.getClass().getName();
 
-        if (title == null)
-        {
+        if (title == null) {
             title = excp;
         }
 
         int i = excp.lastIndexOf(".");
 
-        if (i < 0)
+        if (i < 0) {
             i = 0;
+        }
         excp = excp.substring(i + 1);
 
         StringBuffer msg = new StringBuffer(usermsg);
         String s = ex.getMessage();
-        if (s != null)
-        {
+        if (s != null) {
             msg.append("\n" + s);
         }
 
         // create panel with advanced error message
-        JPanel l = WorkspaceUtils.createMultiLineLabel(msg.toString(), 80);
+        JPanel l = Utils.createMultiLineLabel(msg.toString(), 80);
         l.setBorder(new EmptyBorder(5, 5, 15, 5));
 
         GridBagLayout gb = new GridBagLayout();
@@ -198,8 +105,8 @@ public class WorkspaceError
 
         JPanel p = new JPanel(gb);
 
-        JButton b = WorkspaceUtils.
-                createButtonFromAction(new ShowErrorDetailsAction(ex, c), true);
+        JButton b = Utils.
+            createButtonFromAction(new ShowErrorDetailsAction(ex, c), true);
 
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -216,41 +123,33 @@ public class WorkspaceError
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
 
         p.add(p0, gbc);
 
         // Try to force the exceptions to fit inside the desktop pane
         Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int maxwidth = (int) ( screen_size.getWidth() * 0.9);
-        int maxheight = (int) ( screen_size.getHeight() * 0.9);
+        int maxwidth = (int) (screen_size.getWidth() * 0.9);
+        int maxheight = (int) (screen_size.getHeight() * 0.9);
         Dimension maximumSize = new Dimension(maxwidth, maxheight);
         p.setMaximumSize(maximumSize);
 
         JOptionPane.showMessageDialog(
-                c,
-                p,
-                title,
-                JOptionPane.ERROR_MESSAGE);
+            c,
+            p,
+            title,
+            JOptionPane.ERROR_MESSAGE);
 
     }
 
-    public static void msg(String usermsg)
-    {
+    public static void msg(String usermsg) {
         msg("Error", usermsg);
     }
 
-    public static void msg(String title, String usermsg)
-    {
+    public static void msg(String title, String usermsg) {
         JOptionPane.showMessageDialog
-                (Workspace.getUI().getFrame(), usermsg, title, JOptionPane.ERROR_MESSAGE);
-    }
-
-    public void quit()
-    {
-        later.die = true;
-        laterThread.interrupt();
+            (Workspace.getUI().getFrame(), usermsg, title, JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -258,17 +157,13 @@ public class WorkspaceError
      * calling thread (due to some nasty drag and drop event handling bugs that cause
      * deadlocks if certain gui operations are done at dnd drop event time)
      */
-    public static void showMessageLater(String title, String usermsg)
-    {
-        if (later != null)
-        {
-            if (showingLater)
-            {
+    public static void showMessageLater(String title, String usermsg) {
+        if (later != null) {
+            if (showingLater) {
                 return;
             }
             showingLater = true;
-            synchronized (later)
-            {
+            synchronized (later) {
                 showingLater = true;
 
                 later.msg = usermsg;
@@ -276,6 +171,96 @@ public class WorkspaceError
                 later.notifyAll();
             }
             showingLater = false;
+        }
+    }
+
+    public void quit() {
+        later.die = true;
+        laterThread.interrupt();
+    }
+
+    /**
+     * shows the stack trace of an error message
+     */
+    protected static class ShowErrorDetailsAction extends AbstractAction {
+        Throwable error;
+        Component c;
+
+        public ShowErrorDetailsAction(Throwable t, Component c) {
+            super(">>");
+            error = t;
+            this.c = c;
+        }
+
+        public void actionPerformed(ActionEvent evt) {
+            // take the error and print the stack trace out to a string
+            StringWriter sw = new StringWriter();
+            PrintWriter w = new PrintWriter(sw);
+            error.printStackTrace(w);
+            w.close();
+            String s = StringUtils.wrapLines(sw.toString(), 150);
+            JTextArea ta = new JTextArea(s);
+            JScrollPane sp = new JScrollPane(ta);
+
+            // Try to force the exceptions to fit inside the desktop pane
+
+            Dimension desktopsize = Toolkit.getDefaultToolkit().getScreenSize();
+
+            int newwidth = (int) (desktopsize.getWidth() * 0.75);
+            int newheight = (int) (desktopsize.getHeight() * 0.75);
+
+            Dimension preferredSize = new Dimension(newwidth, newheight);
+
+            int maxwidth = (int) (desktopsize.getWidth() * 0.9);
+            int maxheight = (int) (desktopsize.getHeight() * 0.9);
+            Dimension maximumSize = new Dimension(maxwidth, maxheight);
+            sp.setPreferredSize(preferredSize);
+            sp.setMaximumSize(maximumSize);
+
+            JPanel p = new JPanel(new BorderLayout());
+            p.add(sp, BorderLayout.CENTER);
+
+            JOptionPane.showMessageDialog(c, p);
+        }
+    }
+
+    public class ShowMessageLaterRunnable implements Runnable {
+        public String msg = null;
+        public String title = null;
+        public boolean die = false;
+
+        public void run() {
+            while (!die) {
+                try {
+                    synchronized (later) {
+                        later.wait();
+
+                        if (msg != null && title != null) {
+                            Thread.sleep(500);
+                            // hope half a second is enough
+                            msg(title, msg);
+                            msg = null;
+                            title = null;
+                        }
+                    }
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public class msgRunnable implements Runnable {
+        protected String msg = null;
+        protected String title = null;
+
+        public msgRunnable(String msg, String title) {
+            this.msg = msg;
+            this.title = title;
+        }
+
+        public void run() {
+            msg(title, msg);
         }
     }
 }

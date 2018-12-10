@@ -24,14 +24,15 @@ package jworkspace.ui;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import jworkspace.ui.cpanel.CButton;
 
 import java.io.IOException;
+
+import jworkspace.ui.cpanel.CButton;
+
 /**
  * User gui shell - a collection of user views.
  */
-public interface IShell
-{
+public interface IShell {
     /**
      * Get all Control Panel buttons for this shell
      */

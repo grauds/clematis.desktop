@@ -25,36 +25,35 @@ package jworkspace.ui.views;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import jworkspace.kernel.Workspace;
-import jworkspace.ui.cpanel.CButton;
-import jworkspace.ui.IShell;
 
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
+
+import jworkspace.kernel.Workspace;
+import jworkspace.ui.IShell;
+import jworkspace.ui.cpanel.CButton;
+
 /**
  * Simple user gui shell and view. This shell does nothing,
  * but appears as plain panel in multidesktop system of views.
  */
 public class DefaultCompoundView extends DefaultView
-                                 implements IShell, ActionListener
-{
+    implements IShell, ActionListener {
     /**
      * Are the buttons loaded?
      */
     protected boolean buttonsLoaded = false;
 
-    public DefaultCompoundView()
-    {
+    public DefaultCompoundView() {
         super();
     }
+
     /**
      * Invoked when an action occurs.
      */
-    public void actionPerformed(java.awt.event.ActionEvent e)
-    {
+    public void actionPerformed(java.awt.event.ActionEvent e) {
         String command = e.getActionCommand();
-        if (command.equals(DefaultCompoundView.SHOW))
-        {
+        if (command.equals(DefaultCompoundView.SHOW)) {
             /**
              * Send message to workspace gui with request
              * to add to layout?
@@ -66,16 +65,16 @@ public class DefaultCompoundView extends DefaultView
             Workspace.fireEvent(new Integer(1000), lparam, null);
         }
     }
-    public CButton[] getButtons()
-    {
+
+    public CButton[] getButtons() {
         return null;
     }
-    public void setButtonsLoaded(boolean buttonsLoaded)
-    {
+
+    public void setButtonsLoaded(boolean buttonsLoaded) {
         this.buttonsLoaded = buttonsLoaded;
     }
-    public boolean areButtonsLoaded()
-    {
+
+    public boolean areButtonsLoaded() {
         return buttonsLoaded;
     }
 }

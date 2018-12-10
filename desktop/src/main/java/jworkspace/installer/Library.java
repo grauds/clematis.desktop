@@ -28,43 +28,42 @@ package jworkspace.installer;
    ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.io.ConfigFile;
-import jworkspace.kernel.Workspace;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.Icon;
+
+import com.hyperrealm.kiwi.io.ConfigFile;
+import jworkspace.kernel.Workspace;
 
 /**
  * Library entry is a definition node, that stores
  * its data in file on disk, which is in file hierarchy
  * inside libraries root directory.
  */
-public class Library extends DefinitionNode
-{
+public class Library extends DefinitionNode {
+    public static final Icon icon = Workspace.getResourceManager()
+        .getIcon("installer/library.gif");
+    private static final String CK_NAME = "library.name",
+        CK_VERSION = "library.version", CK_PATH = "library.path",
+        CK_SOURCE = "library.source",
+        CK_DOCDIR = "library.documentation_dir",
+        CK_DESCRIPTION = "library.description";
     private String name;
     private String description;
     private String version;
     private String path;
     private String source;
     private String docs;
-
-    public static final Icon icon = Workspace.getResourceManager()
-            .getIcon("installer/library.gif");
     private ConfigFile config;
-    private static final String CK_NAME = "library.name",
-    CK_VERSION = "library.version", CK_PATH = "library.path",
-    CK_SOURCE = "library.source",
-    CK_DOCDIR = "library.documentation_dir",
-    CK_DESCRIPTION = "library.description";
 
     /**
      * Public library constructor.
+     *
      * @param parent node jworkspace.installer.DefinitionNode
-     * @param file to hold library data java.io.File
+     * @param file   to hold library data java.io.File
      */
-    public Library(DefinitionNode parent, File file) throws IOException
-    {
+    public Library(DefinitionNode parent, File file) throws IOException {
         super(parent, file);
         load();
         this.name = getNodeName();
@@ -72,81 +71,130 @@ public class Library extends DefinitionNode
 
     /**
      * Public library constructor.
+     *
      * @param parent node jworkspace.installer.DefinitionNode
-     * @param name of file to hold library data java.lang.String
+     * @param name   of file to hold library data java.lang.String
      */
-    public Library(DefinitionNode parent, String name)
-    {
+    public Library(DefinitionNode parent, String name) {
         super(parent, name + WorkspaceInstaller.FILE_EXTENSION);
         this.name = name;
     }
 
     /**
-     * Returns open icon to represent
+     * Returns open ICON to represent
      * library in tree control.
      */
-    public Icon getClosedIcon()
-    {
+    public Icon getClosedIcon() {
         return (icon);
     }
 
     /**
      * Returns library description
      */
-    public String getDescription()
-    {
+    public String getDescription() {
         return (description);
+    }
+
+    /**
+     * Sets description of library. This is optional,
+     * as installer does not recognize this.
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
      * Returns directory or jar file, containing
      * library documentation.
      */
-    public java.lang.String getDocs()
-    {
+    public java.lang.String getDocs() {
         return docs;
+    }
+
+    /**
+     * Sets directory or jar file, containing
+     * library documentation.
+     */
+    public void setDocs(java.lang.String docs) {
+        this.docs = docs;
     }
 
     /**
      * Returns library name
      */
-    public String getName()
-    {
+    public String getName() {
         return (name);
     }
 
     /**
-     * Returns open icon to represent
+     * Sets human readable name of library.
+     */
+    public void setName(String name) throws InstallationException {
+        if (name == null) {
+            throw new InstallationException("Name is null");
+        }
+        this.name = name;
+    }
+
+    /**
+     * Returns open ICON to represent
      * library in tree control.
      */
-    public Icon getOpenIcon()
-    {
+    public Icon getOpenIcon() {
         return (icon);
     }
 
     /**
      * Returns path to library jar or directory.
      */
-    public String getPath()
-    {
+    public String getPath() {
         return (path);
+    }
+
+    /**
+     * Sets path to library jar file or directory.
+     * This will be a part of classpath for application
+     * that will choose to use this library.
+     */
+    public void setPath(String path) throws InstallationException {
+        if (path == null) {
+            throw new InstallationException("Path is null");
+        }
+        this.path = path;
     }
 
     /**
      * Returns directory or jar file, containing
      * library source.
      */
-    public java.lang.String getSource()
-    {
+    public java.lang.String getSource() {
         return source;
+    }
+
+    /**
+     * Sets directory or jar file, containing
+     * library source code.
+     */
+    public void setSource(java.lang.String source) {
+        this.source = source;
     }
 
     /**
      * Returns version of this library.
      */
-    public String getVersion()
-    {
+    public String getVersion() {
         return (version);
+    }
+
+    /**
+     * Sets version of library. This can be useful for
+     * user, as version is not recognized by installer.
+     */
+    public void setVersion(String version) throws InstallationException {
+        if (version == null) {
+            throw new InstallationException("Version is null");
+        }
+        this.version = version;
     }
 
     /**
@@ -154,16 +202,14 @@ public class Library extends DefinitionNode
      * not a branch, as it is cannot
      * be expanded.
      */
-    public boolean isExpandable()
-    {
+    public boolean isExpandable() {
         return (false);
     }
 
     /**
      * Loads class data from disk file
      */
-    public void load() throws IOException
-    {
+    public void load() throws IOException {
         config = new ConfigFile(file, "Library Definition");
         config.load();
         name = config.getString(CK_NAME, "");
@@ -177,10 +223,8 @@ public class Library extends DefinitionNode
     /**
      * Stores class data to disk file
      */
-    public void save() throws IOException
-    {
-        if (config == null)
-        {
+    public void save() throws IOException {
+        if (config == null) {
             config = new ConfigFile(file, "Library Definition");
         }
         config.putString(CK_NAME, name);
@@ -193,74 +237,10 @@ public class Library extends DefinitionNode
     }
 
     /**
-     * Sets description of library. This is optional,
-     * as installer does not recognize this.
-     */
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * library documentation.
-     */
-    public void setDocs(java.lang.String docs)
-    {
-        this.docs = docs;
-    }
-
-    /**
-     * Sets human readable name of library.
-     */
-    public void setName(String name) throws InstallationException
-    {
-        if (name == null)
-        {
-            throw new InstallationException("Name is null");
-        }
-        this.name = name;
-    }
-
-    /**
-     * Sets path to library jar file or directory.
-     * This will be a part of classpath for application
-     * that will choose to use this library.
-     */
-    public void setPath(String path) throws InstallationException
-    {
-        if (path == null) throw new InstallationException("Path is null");
-        this.path = path;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * library source code.
-     */
-    public void setSource(java.lang.String source)
-    {
-        this.source = source;
-    }
-
-    /**
-     * Sets version of library. This can be useful for
-     * user, as version is not recognized by installer.
-     */
-    public void setVersion(String version) throws InstallationException
-    {
-        if (version == null)
-        {
-            throw new InstallationException("Version is null");
-        }
-        this.version = version;
-    }
-
-    /**
      * Returns brief library info, that is used
      * in installer configuration dialogs.
      */
-    public String toString()
-    {
+    public String toString() {
         return (name + " " + version);
     }
 }

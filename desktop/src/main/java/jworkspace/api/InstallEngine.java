@@ -27,16 +27,17 @@ package jworkspace.api;
 */
 
 import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
-
+//
 import jworkspace.installer.DefinitionDataSource;
 
 /**
  * Installation systems of Java Workspace
  * should implement this interface as it provides minimum
  * services for Java Workspace Kernel and other engines.
+ *
+ * @author Anton Troshin
  */
-public interface InstallEngine extends IEngine
-{
+public interface InstallEngine extends IEngine {
     /**
      * File extension for configuration file.
      */
@@ -44,12 +45,14 @@ public interface InstallEngine extends IEngine
 
     /**
      * Returns application data.
+     *
      * @return jworkspace.installer.DefinitionDataSource
      */
     DefinitionDataSource getApplicationData();
 
     /**
      * Returns tree model for application data.
+     *
      * @return kiwi.ui.model.DynamicTreeModel
      */
     DefaultKTreeModel getApplicationModel();
@@ -57,53 +60,61 @@ public interface InstallEngine extends IEngine
     /**
      * Returns command line for application,
      * found by its path.
-     * @return String
+     *
      * @param path String
+     * @return String
      */
     String[] getInvocationArgs(String path);
 
     /**
      * Returns jar file for installation.
-     * @return String
+     *
      * @param path String
+     * @return String
      */
     String getJarFile(String path);
 
     /**
      * Returns jvm data.
+     *
      * @return jworkspace.installer.DefinitionDataSource
      */
     DefinitionDataSource getJvmData();
 
     /**
      * Returns tree model for jvm data.
+     *
      * @return kiwi.ui.model.DynamicTreeModel
      */
     DefaultKTreeModel getJvmModel();
 
     /**
      * Returns library data.
+     *
      * @return jworkspace.installer.DefinitionDataSource
      */
     DefinitionDataSource getLibraryData();
 
     /**
      * Returns tree model for library data.
+     *
      * @return kiwi.ui.model.DynamicTreeModel
      */
     DefaultKTreeModel getLibraryModel();
 
     /**
      * Returns main class for installation.
-     * @return String
+     *
      * @param path String
+     * @return String
      */
     String getMainClass(String path);
 
     /**
      * Returns working directory for new process.
-     * @return String
+     *
      * @param path String
+     * @return String
      */
     String getWorkingDir(String path);
 
@@ -111,8 +122,8 @@ public interface InstallEngine extends IEngine
      * Returns flag, that tells Workspace to launch this application on startup. Usually, this flag should
      * set to "true" for services like network connection or system clocks.
      *
-     * @return String
      * @param path String
+     * @return String
      */
     boolean isLoadedAtStartup(String path);
 
@@ -120,8 +131,8 @@ public interface InstallEngine extends IEngine
      * Returns flag, that tells Workspace to launch this application in separate process. Usually,
      * this flag should set to "true" for external java applications.
      *
-     * @return String
      * @param path String
+     * @return String
      */
     boolean isSeparateProcess(String path);
 }

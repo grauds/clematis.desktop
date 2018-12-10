@@ -87,7 +87,8 @@ subprojects {
 
         compile "commons-io:commons-io:2.5"
         compile "org.apache.commons:commons-imaging:1.0"
-        
+        compile "commons-codec:commons-codec:1.11"
+
         compile "org.apache-extras.beanshell:bsh:2.0b6"
 
         compileOnly "org.projectlombok:lombok:1.16.10"

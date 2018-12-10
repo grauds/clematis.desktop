@@ -28,16 +28,19 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.Frame;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
 import com.hyperrealm.kiwi.ui.KTreeTable;
 import jworkspace.LangResource;
 import jworkspace.installer.Library;
 import jworkspace.kernel.Workspace;
 import kiwi.ui.dialog.ComponentDialog;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
 
 /**
  * This dialog shows a tree of installed libraries in workspace.
@@ -49,7 +52,7 @@ public class LibraryChooserDialog extends ComponentDialog {
     public LibraryChooserDialog(Frame parent) {
         super(parent, LangResource.getString("LibraryChooserDlg.title"), true);
         setTopIcon(new ImageIcon(Workspace.getResourceManager().
-                getImage("library_big.png")));
+            getImage("library_big.png")));
     }
 
     protected boolean accept() {

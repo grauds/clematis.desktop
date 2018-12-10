@@ -32,13 +32,10 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import com.hyperrealm.kiwi.io.ConfigFile;
 import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
 import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
-
 import jworkspace.api.InstallEngine;
 import jworkspace.kernel.Workspace;
-import jworkspace.util.SysUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +45,26 @@ import org.slf4j.LoggerFactory;
 public class WorkspaceInstaller implements InstallEngine {
 
     /**
+     * File extension for configuration file.
+     */
+    static final String FILE_EXTENSION = ".cfg";
+    /**
      * Default logger
      */
     private static final Logger LOG = LoggerFactory.getLogger(Workspace.class);
+    /**
+     * Datasources for all types of entries.
+     */
+    static DefinitionDataSource jvmData, libraryData, applicationData;
 
+    //static final String CK_DATADIR = "jwinstaller.datadir", CK_PROLOG = "jwinstaller.script_prolog";
+
+    //static ConfigFile config;
+    /**
+     * Dynamic tree models are used by UI components
+     * to build visual tree against virtual models.
+     */
+    static DefaultKTreeModel jvmModel, libraryModel, applicationModel;
     /**
      * Current data root - this is defined by user path.
      * <p>
@@ -63,26 +76,6 @@ public class WorkspaceInstaller implements InstallEngine {
      * HINT: relogin user.
      */
     private static File dataRoot = null;
-
-    /**
-     * File extension for configuration file.
-     */
-    static final String FILE_EXTENSION = ".cfg";
-
-    //static final String CK_DATADIR = "jwinstaller.datadir", CK_PROLOG = "jwinstaller.script_prolog";
-
-    //static ConfigFile config;
-
-    /**
-     * Datasources for all types of entries.
-     */
-    static DefinitionDataSource jvmData, libraryData, applicationData;
-
-    /**
-     * Dynamic tree models are used by UI components
-     * to build visual tree against virtual models.
-     */
-    static DefaultKTreeModel jvmModel, libraryModel, applicationModel;
 
     /**
      * Default public constructor
@@ -121,7 +114,9 @@ public class WorkspaceInstaller implements InstallEngine {
     public String[] getInvocationArgs(String path) {
 
         DefinitionNode node = findApplicationNode(path);
-        if (node == null) return null;
+        if (node == null) {
+            return null;
+        }
 
         return ((Application) node).getInvocationArgs();
     }
@@ -200,9 +195,9 @@ public class WorkspaceInstaller implements InstallEngine {
 
         if (!(node instanceof Application)) {
             JOptionPane.showMessageDialog(Workspace.getUI().getFrame(),
-                    path + " is not an application",
-                    "Java Workspace Installer",
-                    JOptionPane.INFORMATION_MESSAGE);
+                path + " is not an application",
+                "Java Workspace Installer",
+                JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
 
@@ -254,8 +249,8 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Returns flag, that tells Workspace to launch this application
      * in separate process. Usually, this flag should set to "true" for external java applications.
-     *
-     *  // TODO: provide security manager if set to false and the sandbox is enabled for a third party application
+     * <p>
+     * // TODO: provide security manager if set to false and the sandbox is enabled for a third party application
      *
      * @param path java.lang.String
      * @return java.lang.String
@@ -264,7 +259,9 @@ public class WorkspaceInstaller implements InstallEngine {
     public boolean isSeparateProcess(java.lang.String path) {
         DefinitionNode node = applicationData.findNode(path);
 
-        if (!(node instanceof Application)) return true;
+        if (!(node instanceof Application)) {
+            return true;
+        }
 
         return ((Application) node).isSeparateProcess();
     }
@@ -301,10 +298,10 @@ public class WorkspaceInstaller implements InstallEngine {
             jvm.setDescription("the jvm this instance of workspace is currently running");
             if (SysUtil.isWindows()) {
                 jvm.setPath(System.getProperty("java.home") + File.separator
-                        + "bin" + File.separator + "java.exe");
+                    + "bin" + File.separator + "java.exe");
             } else if (SysUtil.isSunOS()) {
                 jvm.setPath(System.getProperty("java.home") + File.separator
-                        + "bin" + File.separator + "java");
+                    + "bin" + File.separator + "java");
             }
             jvm.setVersion(System.getProperty("java.version"));
             jvm.setArguments("-cp %c %m %a");
@@ -335,9 +332,9 @@ public class WorkspaceInstaller implements InstallEngine {
                 if (((Application) node).isLoadedAtStartup()) {
                     if (((Application) node).isSeparateProcess()) {
                         Workspace.getRuntimeManager().
-                                executeExternalProcess(((Application) node).getInvocationArgs(),
-                                        ((Application) node).getWorkingDirectory(),
-                                        ((Application) node).getName());
+                            executeExternalProcess(((Application) node).getInvocationArgs(),
+                                ((Application) node).getWorkingDirectory(),
+                                ((Application) node).getName());
                     }
                     /*
                      * TODO implement the sandbox for a third party application

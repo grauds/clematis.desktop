@@ -28,6 +28,7 @@ package jworkspace.api;
 */
 
 import java.util.Vector;
+
 import javax.swing.JDialog;
 
 import com.hyperrealm.kiwi.util.Config;
@@ -35,9 +36,10 @@ import com.hyperrealm.kiwi.util.Config;
 /**
  * User profile systems of Java Workspace should implement this interface as it provides minimum
  * services for Java Workspace Kernel and other engines.
+ *
+ * @author Anton Troshin
  */
-public interface IUserProfileEngine extends IEngine
-{
+public interface IUserProfileEngine extends IEngine {
     /**
      * Get user-defined property from user profile.
      */
@@ -45,12 +47,14 @@ public interface IUserProfileEngine extends IEngine
 
     /**
      * Get current user name.
+     *
      * @return java.lang.String
      */
     String getUserName();
 
     /**
      * Get path to current user folder.
+     *
      * @return java.lang.String
      */
     String getPath();
@@ -61,14 +65,29 @@ public interface IUserProfileEngine extends IEngine
     String getUserFirstName();
 
     /**
+     * Set user first name
+     */
+    void setUserFirstName(String name);
+
+    /**
      * Get user last name
      */
     String getUserLastName();
 
     /**
+     * Set user last name
+     */
+    void setUserLastName(String name);
+
+    /**
      * Get user mail
      */
     String getEmail();
+
+    /**
+     * Set user mail
+     */
+    void setEmail(String mail);
 
     /**
      * Add new Profile
@@ -82,6 +101,7 @@ public interface IUserProfileEngine extends IEngine
 
     /**
      * Get path to specified user folder.
+     *
      * @return java.lang.String
      */
     String getPath(String name);
@@ -95,6 +115,11 @@ public interface IUserProfileEngine extends IEngine
      * Get description
      */
     String getDescription();
+
+    /**
+     * Set description
+     */
+    void setDescription(String description);
 
     /**
      * Login procedure.
@@ -118,6 +143,7 @@ public interface IUserProfileEngine extends IEngine
      * Returns login dialog for the system.
      * Login dialog should perform login security
      * functions.
+     *
      * @return login dialog for the system.
      */
     JDialog getLoginDlg();
@@ -126,26 +152,6 @@ public interface IUserProfileEngine extends IEngine
      * Set user name
      */
     boolean setUserName(String name);
-
-    /**
-     * Set user first name
-     */
-    void setUserFirstName(String name);
-
-    /**
-     * Set user last name
-     */
-    void setUserLastName(String name);
-
-    /**
-     * Set user mail
-     */
-    void setEmail(String mail);
-
-    /**
-     * Set description
-     */
-    void setDescription(String description);
 
     /**
      * Set password

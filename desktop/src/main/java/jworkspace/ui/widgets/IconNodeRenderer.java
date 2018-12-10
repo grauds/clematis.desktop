@@ -26,52 +26,45 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.Hashtable;
+
+import javax.swing.Icon;
+import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
  * The renderer for class IconNode.
  */
-public class IconNodeRenderer extends DefaultTreeCellRenderer
-{
-    public IconNodeRenderer()
-    {
+public class IconNodeRenderer extends DefaultTreeCellRenderer {
+    public IconNodeRenderer() {
         super();
     }
 
-    public Color getBackgroundSelectionColor()
-    {
+    public Color getBackgroundSelectionColor() {
         return UIManager.getColor("selectedControl");
     }
 
-    public Color getBorderSelectionColor()
-    {
+    public Color getBorderSelectionColor() {
         return UIManager.getColor("controlDraftBorder");
     }
 
-    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus)
-    {
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-        if (value instanceof IconNode)
-        {
+        if (value instanceof IconNode) {
             Icon icon = ((IconNode) value).getIcon();
-            if (icon == null)
-            {
+            if (icon == null) {
                 Hashtable icons = (Hashtable) tree.getClientProperty("JTree.icons");
                 String name = ((IconNode) value).getIconName();
-                if ((icons != null) && (name != null))
-                {
+                if ((icons != null) && (name != null)) {
                     icon = (Icon) icons.get(name);
-                    if (icon != null)
-                    {
+                    if (icon != null) {
                         setIcon(icon);
                     }
                 }
-            }
-            else
-            {
+            } else {
                 setIcon(icon);
             }
         }

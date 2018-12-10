@@ -26,31 +26,30 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.Frame;
+
+import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
+
 import jworkspace.LangResource;
 import kiwi.ui.dialog.ComponentDialog;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Settings dialog shows a list of general workspace options.
  * This configures laf, texture and other features.
  */
-public class SettingsDialog extends ComponentDialog
-{
+public class SettingsDialog extends ComponentDialog {
     private TexturePanel first_panel;
     private PlafPanel second_panel;
     private LoggingPanel logging_panel;
     private JTabbedPane tabbed_pane;
 
-    public SettingsDialog(Frame parent)
-    {
+    public SettingsDialog(Frame parent) {
         super(parent, LangResource.getString("SettingsDialog.title"), true);
         setResizable(false);
     }
 
-    protected JComponent buildDialogUI()
-    {
+    protected JComponent buildDialogUI() {
         setComment(null);
 
         tabbed_pane = new JTabbedPane();
@@ -58,27 +57,24 @@ public class SettingsDialog extends ComponentDialog
         second_panel = new PlafPanel();
         logging_panel = new LoggingPanel();
         tabbed_pane.addTab(LangResource.getString("SettingsDialog.textureTab"),
-                           first_panel);
+            first_panel);
         tabbed_pane.addTab(LangResource.getString("SettingsDialog.lafTab"),
-                           second_panel);
+            second_panel);
         tabbed_pane.addTab(LangResource.getString("SettingsDialog.loggingTab"),
-                           logging_panel);
+            logging_panel);
         return (tabbed_pane);
     }
 
-    protected boolean accept()
-    {
+    protected boolean accept() {
         return (true && first_panel.syncData() && second_panel.syncData());
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         destroy();
         super.dispose();
     }
 
-    public void setData()
-    {
+    public void setData() {
         first_panel.setData();
     }
 }

@@ -26,20 +26,30 @@ package jworkspace.ui.desktop;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JCheckBox;
+import javax.swing.JDesktopPane;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import jworkspace.LangResource;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /**
  * Class to set desktop options.
  */
-public class DesktopOptionsPanel extends KPanel implements ActionListener
-{
+public class DesktopOptionsPanel extends KPanel implements ActionListener {
+    /**
+     * Toggle drag mode
+     */
+    public static final String TOGGLE_DRAG_MODE = "TOGGLE_DRAG_MODE";
+    /**
+     * Toggle transparency
+     */
+    public static final String TOGGLE_TRANSPARENCY = "TOGGLE_TRANSPARENCY";
     /**
      * Desktop that has to be edited
      */
@@ -56,34 +66,22 @@ public class DesktopOptionsPanel extends KPanel implements ActionListener
      * Outline flag
      */
     private boolean outline = false;
-    /**
-     * Toggle drag mode
-     */
-    public static final String TOGGLE_DRAG_MODE = "TOGGLE_DRAG_MODE";
-    /**
-     * Toggle transparency
-     */
-    public static final String TOGGLE_TRANSPARENCY = "TOGGLE_TRANSPARENCY";
 
-    public DesktopOptionsPanel(Desktop desktop)
-    {
+    public DesktopOptionsPanel(Desktop desktop) {
         super();
         this.desktop = desktop;
         setName(LangResource.getString("DesktopOptionsPanel.title"));
 
-        if (desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE)
-            outline = true;
-        else
-            outline = false;
+        outline = desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE;
 
         drag_mode.setText
-                (LangResource.getString("DesktopOptionsPanel.outlineDrag"));
+            (LangResource.getString("DesktopOptionsPanel.outlineDrag"));
         drag_mode.addActionListener(this);
         drag_mode.setActionCommand(DesktopOptionsPanel.TOGGLE_DRAG_MODE);
         drag_mode.setOpaque(false);
 
         transparent.setText
-                (LangResource.getString("DesktopOptionsPanel.transparency"));
+            (LangResource.getString("DesktopOptionsPanel.transparency"));
         transparent.addActionListener(this);
         transparent.setActionCommand(DesktopOptionsPanel.TOGGLE_TRANSPARENCY);
         transparent.setOpaque(false);
@@ -97,41 +95,37 @@ public class DesktopOptionsPanel extends KPanel implements ActionListener
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.weightx = 0;
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         add(drag_mode, gbc);
 
-        gbc.insets = KiwiUtils.lastBottomInsets;
+        gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         add(transparent, gbc);
     }
 
-    public boolean setData()
-    {
-        if (desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE)
+    public boolean setData() {
+        if (desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE) {
             drag_mode.setSelected(true);
+        }
         transparent.setSelected(!desktop.isOpaque());
         return true;
     }
 
-    public boolean syncData()
-    {
+    public boolean syncData() {
         return true;
     }
 
-    public void actionPerformed(ActionEvent evt)
-    {
+    public void actionPerformed(ActionEvent evt) {
         String command = evt.getActionCommand();
-        if (command.equals(DesktopOptionsPanel.TOGGLE_DRAG_MODE))
-        {
+        if (command.equals(DesktopOptionsPanel.TOGGLE_DRAG_MODE)) {
             outline = !outline;
-            if (outline)
+            if (outline) {
                 desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-            else
+            } else {
                 desktop.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
-        }
-        else if (command.equals(DesktopOptionsPanel.TOGGLE_TRANSPARENCY))
-        {
+            }
+        } else if (command.equals(DesktopOptionsPanel.TOGGLE_TRANSPARENCY)) {
             desktop.setOpaque(!transparent.isSelected());
             desktop.revalidate();
             desktop.repaint();

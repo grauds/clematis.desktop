@@ -26,61 +26,67 @@ package jworkspace.ui.widgets;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.EmptyBorder;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import jworkspace.LangResource;
-import jworkspace.ui.WorkspaceClassCache;
+import jworkspace.ui.ClassCache;
 import kiwi.ui.dialog.ComponentDialog;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
 
 /**
  * Resource explorer dialog is a holder for ResourceExplorerPanel.
  */
 public class ResourceExplorerDialog extends ComponentDialog
-        implements ActionListener
-{
-    ResourceExplorerPanel rexplorer;
-    JButton b_icon_browse;
-    JTextField tf;
-    String path;
+    implements ActionListener {
     /**
      * String for caching it in Workspace Cache
      */
     public static final String RESOURCE_EXPLORER = "RESOURCE_EXPLORER";
+    ResourceExplorerPanel rexplorer;
+    JButton b_icon_browse;
+    JTextField tf;
+    String path;
 
-    public ResourceExplorerDialog(Frame parent)
-    {
+    public ResourceExplorerDialog(Frame parent) {
         super(parent, LangResource.getString("ResourceExplorerDlg.title"), true);
         setResizable(true);
-        addWindowListener(new WindowAdapter()
-        {
-            public void windowOpened(WindowEvent e)
-            {
+        addWindowListener(new WindowAdapter() {
+            public void windowOpened(WindowEvent e) {
                 setData();
             }
         });
     }
 
-    public void actionPerformed(ActionEvent evt)
-    {
+    public void actionPerformed(ActionEvent evt) {
         Object o = evt.getSource();
-        if (o == b_icon_browse)
-        {
-            File f = WorkspaceClassCache.chooseArchiveOrDir(this);
-            if (f != null)
-            {
+        if (o == b_icon_browse) {
+            File f = ClassCache.chooseArchiveOrDir(this);
+            if (f != null) {
                 tf.setText(f.getAbsolutePath());
                 rexplorer.setPath(f.getAbsolutePath());
             }
         }
     }
 
-    protected JComponent buildDialogUI()
-    {
+    protected JComponent buildDialogUI() {
         setComment(null);
         KPanel holder = new KPanel();
         holder.setLayout(new BorderLayout(5, 5));
@@ -97,7 +103,7 @@ public class ResourceExplorerDialog extends ComponentDialog
 
         b_icon_browse = new JButton("...");
         b_icon_browse.setToolTipText
-                (LangResource.getString("ResourceExplorerDlg.browse.tooltip"));
+            (LangResource.getString("ResourceExplorerDlg.browse.tooltip"));
         b_icon_browse.addActionListener(this);
         b_icon_browse.setDefaultCapable(false);
         b_icon_browse.setOpaque(false);
@@ -105,12 +111,9 @@ public class ResourceExplorerDialog extends ComponentDialog
 
         tf = new JTextField(15);
         tf.setPreferredSize(new Dimension(30, 20));
-        tf.addKeyListener(new KeyAdapter()
-        {
-            public void keyPressed(KeyEvent evt)
-            {
-                if (evt.getKeyCode() == KeyEvent.VK_ENTER)
-                {
+        tf.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
                     rexplorer.setPath(tf.getText());
                     evt.consume();
                 }
@@ -122,55 +125,48 @@ public class ResourceExplorerDialog extends ComponentDialog
 
         holder.add(browse_panel, BorderLayout.NORTH);
         JScrollPane scroll = new JScrollPane(rexplorer,
-                                             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         holder.add(scroll, BorderLayout.CENTER);
         return holder;
     }
 
-    protected void cancel()
-    {
+    protected void cancel() {
         destroy();
     }
 
-    public ImageIcon[] getSelectedImages()
-    {
+    public ImageIcon[] getSelectedImages() {
         return rexplorer.getSelectedImages();
     }
 
-    protected boolean accept()
-    {
+    protected boolean accept() {
         return true;
     }
 
-    public void setHint(boolean isTextureChooser)
-    {
+    public void setHint(boolean isTextureChooser) {
         rexplorer.isTextureChooser = isTextureChooser;
     }
 
-    public void setData(String path)
-    {
+    public void setData(String path) {
         this.path = path;
 
-        if (isVisible())
-        {
+        if (isVisible()) {
             setData();
         }
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         destroy();
         super.dispose();
     }
 
-    private void setData()
-    {
+    private void setData() {
         rexplorer.setPath(path);
-        if (path != null)
+        if (path != null) {
             tf.setText(path);
-        else
+        } else {
             tf.setText("");
+        }
     }
 }

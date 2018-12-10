@@ -26,18 +26,55 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.SplashScreen;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.logging.Level;
+
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalTheme;
+
 import com.hyperrealm.kiwi.io.ConfigFile;
 import com.hyperrealm.kiwi.ui.UIChangeManager;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.Task;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
-
 import jworkspace.LangResource;
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.GUI;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.kernel.ResourceManager;
 import jworkspace.kernel.Workspace;
-import jworkspace.api.GUI;
 import jworkspace.ui.action.ActionChangedListener;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
@@ -45,54 +82,35 @@ import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.views.DefaultCompoundView;
 import jworkspace.util.WorkspaceError;
-
-import kiwi.ui.SplashScreen;
-import kiwi.ui.dialog.ProgressDialog;
-
-import org.apache.commons.imaging.*;
-
-import javax.swing.*;
-import javax.swing.plaf.metal.MetalTheme;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
-import java.io.*;
-import java.util.*;
-import java.util.logging.Level;
+import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.Imaging;
 
 /**
  * GUI engine is one of required by kernel.
- * This class implements interface
- * <code>jworkspace.api.GUI</code>.
  */
 public class WorkspaceGUI implements GUI {
+
     /**
-     * GUI actions
+     * GUI texture and laf.
      */
-    private UIActions actions = null;
+    public static final String CK_TEXTURE = "gui.texture", CK_LAF = "gui.laf",
+        CK_THEME = "gui.theme",
+        CK_KIWI = "gui.kiwi.texture.visible",
+        CK_UNDECORATED = "gui.frame.undecorated";
     /**
      * Workspace main frame
      */
-    private static WorkspaceFrame frame = null;
-    /**
-     * A list of displayed frames
-     */
-    private ArrayList displayedFrames = new ArrayList();
-    /**
-     * Workspace background texture
-     */
-    protected BufferedImage texture = null;
+    private static MainFrame frame = null;
     /**
      * Workspace UI logo.
      */
     private static SplashScreen logo = null;
     /**
-     * Workspace plugin icon
+     * Workspace background texture
      */
-    private ImageIcon shell_icon = null;
+    protected BufferedImage texture = null;
     /**
      * Components in content panel are cached
      * along with they names as keys. Use RegisterComponent
@@ -104,13 +122,6 @@ public class WorkspaceGUI implements GUI {
      * Plugin shells
      */
     protected HashSet shells = new HashSet();
-    /**
-     * GUI texture and laf.
-     */
-    public static final String CK_TEXTURE = "gui.texture", CK_LAF = "gui.laf",
-            CK_THEME = "gui.theme",
-            CK_KIWI = "gui.kiwi.texture.visible",
-            CK_UNDECORATED = "gui.frame.undecorated";
     /**
      * Laf
      */
@@ -124,6 +135,18 @@ public class WorkspaceGUI implements GUI {
      */
     protected boolean isKiwiTextureVisible = false;
     /**
+     * GUI actions
+     */
+    private UIActions actions = null;
+    /**
+     * A list of displayed frames
+     */
+    private ArrayList displayedFrames = new ArrayList();
+    /**
+     * Workspace plugin ICON
+     */
+    private ImageIcon shell_icon = null;
+    /**
      * Config file
      */
     private ConfigFile config = null;
@@ -131,70 +154,6 @@ public class WorkspaceGUI implements GUI {
      * Progress dialog for observing shells load.
      */
     private ProgressDialog pr = null;
-
-    /**
-     * Shells loader. Each shell is actually a
-     * Kiwi library plugin. This class uses work
-     * thread to load plugins
-     */
-    class ShellsLoader extends Task {
-        public ShellsLoader() {
-            super();
-            addProgressObserver(pr);
-        }
-
-        public void run() {
-            String fileName = Workspace.getUserHome() + "shells";
-            Plugin[] shells = Workspace.getRuntimeManager().loadPlugins(fileName);
-            if (shells == null || shells.length == 0) {
-                pr.setMessage(LangResource.getString("WorkspaceGUI.shells.notFound"));
-                pr.setProgress(100);
-                return;
-            } else {
-                for (int i = 0; i < shells.length; i++) {
-                    pr.setMessage(LangResource.getString("WorkspaceGUI.shell.loading")
-                            + " " + shells[i].getName());
-                    Workspace.getLogger().info(">" + "Loading " + shells[i].getName() + "...");
-                    if (shells[i].getBigIcon() != null) {
-                        pr.setIcon(shells[i].getBigIcon());
-                    } else {
-                        pr.setIcon(shell_icon);
-                    }
-                    try {
-                        shells[i].load();
-                        installShell(shells[i]);
-                        Workspace.getLogger().info(">" + "Installed " + shells[i].getName() + "...");
-                    } catch (Exception | Error ex) {
-                        Workspace.getLogger().warning(">" + "GUI Shell " + shells[i].getName()
-                                + " failed to load " + ex.toString());
-                    }
-                    pr.setProgress(i * 100 / shells.length);
-                }
-                pr.setProgress(100);
-            }
-            update();
-        }
-    }
-
-    /**
-     * Frame close listener
-     */
-    class FrameCloseListener extends WindowAdapter {
-        Frame _frame = null;
-
-        FrameCloseListener(Frame frame) {
-            super();
-            this._frame = frame;
-        }
-
-        public void windowClosing(WindowEvent we) {
-            if (_frame != null && we.getWindow().equals(_frame)) {
-                Workspace.getLogger().fine("Removed frame " + _frame.getTitle());
-                displayedFrames.remove(_frame);
-                _frame.dispose();
-            }
-        }
-    }
 
     /**
      * Default constructor.
@@ -228,7 +187,7 @@ public class WorkspaceGUI implements GUI {
      * @return java.awt.datatransfer.Clipboard
      */
     public Clipboard getClipboard() {
-        return ((WorkspaceFrame) getFrame()).getClipboard();
+        return ((MainFrame) getFrame()).getClipboard();
     }
 
     /**
@@ -237,7 +196,7 @@ public class WorkspaceGUI implements GUI {
      */
     public java.awt.Frame getFrame() {
         if (frame == null) {
-            frame = new WorkspaceFrame(Workspace.getVersion(), this);
+            frame = new MainFrame(Workspace.getVersion(), this);
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     if (e.getSource() == frame) {
@@ -256,13 +215,13 @@ public class WorkspaceGUI implements GUI {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         if (logo == null) {
             Image im = new ResourceLoader(WorkspaceResourceAnchor.class)
-                    .getResourceAsImage("logo/Logo.gif");
+                .getResourceAsImage("logo/Logo.gif");
             logo = new SplashScreen(new Frame(), im, null);
             ImageIcon imc = new ImageIcon(im);
             Rectangle logoBounds = new Rectangle((screenSize.width -
-                    imc.getIconWidth()) / 2,
-                    (screenSize.height - imc.getIconHeight()) / 2, imc.getIconWidth(),
-                    imc.getIconHeight());
+                imc.getIconWidth()) / 2,
+                (screenSize.height - imc.getIconHeight()) / 2, imc.getIconWidth(),
+                imc.getIconHeight());
             logo.setBounds(logoBounds);
             logo.getParent().setBounds(logoBounds);
             logo.setDelay(0);
@@ -278,12 +237,19 @@ public class WorkspaceGUI implements GUI {
     }
 
     /**
+     * Set texture for java workspace gui
+     */
+    public void setTexture(BufferedImage texture) {
+        this.texture = texture;
+    }
+
+    /**
      * Get default path to workspace textures
      */
     public String getTexturesPath() {
         return System.getProperty("user.dir") + File.separator
-                + "lib" + File.separator +
-                "res" + File.separator + "textures.jar";
+            + "lib" + File.separator +
+            "res" + File.separator + "textures.jar";
     }
 
     /**
@@ -291,8 +257,8 @@ public class WorkspaceGUI implements GUI {
      */
     public String getDesktopIconsPath() {
         return System.getProperty("user.dir") + File.separator
-                + "lib" + File.separator +
-                "res" + File.separator + "desktop.jar";
+            + "lib" + File.separator +
+            "res" + File.separator + "desktop.jar";
     }
 
     /**
@@ -300,7 +266,7 @@ public class WorkspaceGUI implements GUI {
      * As this gui is a frame, ask it.
      */
     public boolean isModified() {
-        return getFrame() != null && ((WorkspaceFrame) getFrame()).isModified();
+        return getFrame() != null && ((MainFrame) getFrame()).isModified();
     }
 
     /**
@@ -320,10 +286,32 @@ public class WorkspaceGUI implements GUI {
     }
 
     /**
+     * Set texture visibility and revalidates main frame
+     * for java workspace.
+     */
+    public void setTextureVisible(boolean isTextureVisible) {
+        this.isTextureVisible = isTextureVisible;
+        if (isTextureVisible && texture != null) {
+            UIChangeManager.setDefaultTexture(texture);
+            ((MainFrame) getFrame()).setTexture(texture);
+        } else {
+            UIChangeManager.setDefaultTexture(null);
+            ((MainFrame) getFrame()).setTexture(null);
+        }
+    }
+
+    /**
      * Is Kiwi texture visible?
      */
     public boolean isKiwiTextureVisible() {
         return isKiwiTextureVisible;
+    }
+
+    /**
+     * Set KIWI texture visible and selectable from repository
+     */
+    public void setKiwiTextureVisible(boolean isKiwiTextureVisible) {
+        this.isKiwiTextureVisible = isKiwiTextureVisible;
     }
 
     /**
@@ -337,7 +325,7 @@ public class WorkspaceGUI implements GUI {
                 shell.load();
             } catch (IOException ex) {
                 Workspace.getLogger().warning(">"
-                        + "System error: Shell cannot be loaded:" + ex.toString());
+                    + "System error: Shell cannot be loaded:" + ex.toString());
             }
             /**
              * Add view to the list of shells
@@ -349,16 +337,16 @@ public class WorkspaceGUI implements GUI {
             CButton[] buttons = shell.getButtons();
             if (buttons != null) {
                 for (int i = 0; i < buttons.length; i++) {
-                    ((WorkspaceFrame) getFrame()).getControlPanel().addButton(buttons[i]);
+                    ((MainFrame) getFrame()).getControlPanel().addButton(buttons[i]);
                 }
                 if (buttons.length > 0) {
-                    ((WorkspaceFrame) getFrame()).getControlPanel().addSeparator();
+                    ((MainFrame) getFrame()).getControlPanel().addSeparator();
                 }
             }
             if (shell instanceof DefaultCompoundView) {
                 ((DefaultCompoundView) shell).setButtonsLoaded(true);
                 UIManager.addPropertyChangeListener
-                        (new UISwitchListener((DefaultCompoundView) shell));
+                    (new UISwitchListener((DefaultCompoundView) shell));
             }
         }
     }
@@ -367,9 +355,9 @@ public class WorkspaceGUI implements GUI {
      * Loads workspace gui profile data.
      */
     public void load() {
-        WorkspaceClassCache.createFileChoosers();
+        ClassCache.createFileChoosers();
         shell_icon = new ImageIcon(Workspace.getResourceManager().
-                getImage("shell_big.png"));
+            getImage("shell_big.png"));
         /**
          * Create new registry.
          */
@@ -412,7 +400,7 @@ public class WorkspaceGUI implements GUI {
             /**
              * Finally set texture on frame
              */
-            ((WorkspaceFrame) getFrame()).setTexture(texture);
+            ((MainFrame) getFrame()).setTexture(texture);
 
         } catch (ImageReadException | IOException e) {
             Workspace.getLogger().log(Level.WARNING, "Cannot set texture", e);
@@ -445,9 +433,9 @@ public class WorkspaceGUI implements GUI {
             /**
              * Delegates loading of UI components to workspace frame
              */
-            ((WorkspaceFrame) getFrame()).load(inputStream);
+            ((MainFrame) getFrame()).load(inputStream);
         } catch (IOException e) {
-            ((WorkspaceFrame) getFrame()).create();
+            ((MainFrame) getFrame()).create();
         }
 
         update();
@@ -459,7 +447,7 @@ public class WorkspaceGUI implements GUI {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 pr = new ProgressDialog(Workspace.getUI().getFrame(),
-                        LangResource.getString("WorkspaceGUI.shells.loading"), true);
+                    LangResource.getString("WorkspaceGUI.shells.loading"), true);
 
                 ShellsLoader shloader = new ShellsLoader();
                 pr.track(shloader);
@@ -494,12 +482,12 @@ public class WorkspaceGUI implements GUI {
      * Reset workspace gui to its initial state
      */
     public void reset() {
-        ((WorkspaceFrame) getFrame()).reset();
+        ((MainFrame) getFrame()).reset();
         frame = null;
         components = new Hashtable();
         shells = new HashSet();
         getFrame().setTitle(Workspace.getVersion());
-        WorkspaceClassCache.resetFileChoosers();
+        ClassCache.resetFileChoosers();
         System.gc();
     }
 
@@ -508,35 +496,6 @@ public class WorkspaceGUI implements GUI {
      */
     public String getName() {
         return "Clematis GUI Engine (R) v1.02";
-    }
-
-    /**
-     * Set texture for java workspace gui
-     */
-    public void setTexture(BufferedImage texture) {
-        this.texture = texture;
-    }
-
-    /**
-     * Set texture visibility and revalidates main frame
-     * for java workspace.
-     */
-    public void setTextureVisible(boolean isTextureVisible) {
-        this.isTextureVisible = isTextureVisible;
-        if (isTextureVisible && texture != null) {
-            UIChangeManager.setDefaultTexture(texture);
-            ((WorkspaceFrame) getFrame()).setTexture(texture);
-        } else {
-            UIChangeManager.setDefaultTexture(null);
-            ((WorkspaceFrame) getFrame()).setTexture(null);
-        }
-    }
-
-    /**
-     * Set KIWI texture visible and selectable from repository
-     */
-    public void setKiwiTextureVisible(boolean isKiwiTextureVisible) {
-        this.isKiwiTextureVisible = isKiwiTextureVisible;
     }
 
     /**
@@ -569,36 +528,34 @@ public class WorkspaceGUI implements GUI {
             config.store();
         } catch (IOException ex) {
             WorkspaceError.exception
-                    (LangResource.getString("WorkspaceGUI.save.failed"), ex);
+                (LangResource.getString("WorkspaceGUI.save.failed"), ex);
         }
         /**
          * Write texture on disk
          */
         if (texture != null) {
 
-            try
-            {
+            try {
                 fileName = Workspace.getUserHome() + "texture.jpg";
                 OutputStream os = new FileOutputStream(fileName);
                 ImageIcon textureIcon = new ImageIcon(texture);
 
                 BufferedImage bi = new BufferedImage(
-                        textureIcon.getIconWidth(),
-                        textureIcon.getIconHeight(),
-                        BufferedImage.TYPE_INT_RGB);
+                    textureIcon.getIconWidth(),
+                    textureIcon.getIconHeight(),
+                    BufferedImage.TYPE_INT_RGB);
                 Graphics g = bi.createGraphics();
                 // paint the Icon to the BufferedImage.
-                textureIcon.paintIcon(null, g, 0,0);
+                textureIcon.paintIcon(null, g, 0, 0);
                 g.dispose();
 
-                if (textureIcon.getIconHeight() > 0 && textureIcon.getIconWidth() > 0)
-                {
+                if (textureIcon.getIconHeight() > 0 && textureIcon.getIconWidth() > 0) {
                     Imaging.writeImage(bi, os, ImageFormats.JPEG, null);
                 }
 
             } catch (ImageWriteException | IOException e) {
                 WorkspaceError.exception
-                        (LangResource.getString("WorkspaceGUI.saveTexture.failed"), e);
+                    (LangResource.getString("WorkspaceGUI.saveTexture.failed"), e);
             }
         }
         /**
@@ -626,10 +583,10 @@ public class WorkspaceGUI implements GUI {
         try {
             FileOutputStream outputFile = new FileOutputStream(fileName);
             DataOutputStream outputStream = new DataOutputStream(outputFile);
-            ((WorkspaceFrame) getFrame()).save(outputStream);
+            ((MainFrame) getFrame()).save(outputStream);
         } catch (IOException e) {
             WorkspaceError.exception
-                    (LangResource.getString("WorkspaceGUI.saveFrame.failed"), e);
+                (LangResource.getString("WorkspaceGUI.saveFrame.failed"), e);
         }
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -650,7 +607,7 @@ public class WorkspaceGUI implements GUI {
                 shell.dispose();
             } catch (PluginException ex) {
                 WorkspaceError.exception
-                        (LangResource.getString("WorkspaceGUI.plugin.saveFailed"), ex);
+                    (LangResource.getString("WorkspaceGUI.plugin.saveFailed"), ex);
             }
         }
     }
@@ -666,7 +623,7 @@ public class WorkspaceGUI implements GUI {
      * Update GUI
      */
     public void update() {
-        ((WorkspaceFrame) getFrame()).update();
+        ((MainFrame) getFrame()).update();
     }
 
     /**
@@ -680,16 +637,16 @@ public class WorkspaceGUI implements GUI {
         if (event instanceof Integer && ((Integer) event).intValue() == 1000) {
             if (lparam instanceof Hashtable) {
                 if (((Hashtable) lparam).get("view") instanceof IView
-                        && ((Hashtable) lparam).get("display") instanceof Boolean
-                        && ((Hashtable) lparam).get("register") instanceof Boolean) {
+                    && ((Hashtable) lparam).get("display") instanceof Boolean
+                    && ((Hashtable) lparam).get("register") instanceof Boolean) {
 
                     Hashtable lhparam = (Hashtable) lparam;
                     IView view = (IView) lhparam.get("view");
                     Boolean display = (Boolean) lhparam.get("display");
                     Boolean register = (Boolean) lhparam.get("register");
 
-                    ((WorkspaceFrame) getFrame()).getContentManager().addView(view, display.booleanValue(),
-                            register.booleanValue());
+                    ((MainFrame) getFrame()).getContentManager().addView(view, display.booleanValue(),
+                        register.booleanValue());
                 }
             }
         }
@@ -713,28 +670,92 @@ public class WorkspaceGUI implements GUI {
         }
     }
 
+    /**
+     * Shells loader. Each shell is actually a
+     * Kiwi library plugin. This class uses work
+     * thread to load plugins
+     */
+    class ShellsLoader extends Task {
+        public ShellsLoader() {
+            super();
+            addProgressObserver(pr);
+        }
+
+        public void run() {
+            String fileName = Workspace.getUserHome() + "shells";
+            Plugin[] shells = Workspace.getRuntimeManager().loadPlugins(fileName);
+            if (shells == null || shells.length == 0) {
+                pr.setMessage(LangResource.getString("WorkspaceGUI.shells.notFound"));
+                pr.setProgress(100);
+                return;
+            } else {
+                for (int i = 0; i < shells.length; i++) {
+                    pr.setMessage(LangResource.getString("WorkspaceGUI.shell.loading")
+                        + " " + shells[i].getName());
+                    Workspace.getLogger().info(">" + "Loading " + shells[i].getName() + "...");
+                    if (shells[i].getBigIcon() != null) {
+                        pr.setIcon(shells[i].getBigIcon());
+                    } else {
+                        pr.setIcon(shell_icon);
+                    }
+                    try {
+                        shells[i].load();
+                        installShell(shells[i]);
+                        Workspace.getLogger().info(">" + "Installed " + shells[i].getName() + "...");
+                    } catch (Exception | Error ex) {
+                        Workspace.getLogger().warning(">" + "GUI Shell " + shells[i].getName()
+                            + " failed to load " + ex.toString());
+                    }
+                    pr.setProgress(i * 100 / shells.length);
+                }
+                pr.setProgress(100);
+            }
+            update();
+        }
+    }
+
+    /**
+     * Frame close listener
+     */
+    class FrameCloseListener extends WindowAdapter {
+        Frame _frame = null;
+
+        FrameCloseListener(Frame frame) {
+            super();
+            this._frame = frame;
+        }
+
+        public void windowClosing(WindowEvent we) {
+            if (_frame != null && we.getWindow().equals(_frame)) {
+                Workspace.getLogger().fine("Removed frame " + _frame.getTitle());
+                displayedFrames.remove(_frame);
+                _frame.dispose();
+            }
+        }
+    }
+
     class Listener1001 implements IWorkspaceListener {
         public void processEvent(Object event, Object lparam, Object rparam) {
             if (lparam instanceof Hashtable) {
                 if (((Hashtable) lparam).get("view") instanceof JComponent
-                        && ((Hashtable) lparam).get("display") instanceof Boolean
-                        && ((Hashtable) lparam).get("register") instanceof Boolean) {
+                    && ((Hashtable) lparam).get("display") instanceof Boolean
+                    && ((Hashtable) lparam).get("register") instanceof Boolean) {
                     Hashtable lhparam = (Hashtable) lparam;
                     JComponent view = (JComponent) lhparam.get("view");
                     Boolean display = (Boolean) lhparam.get("display");
                     Boolean register = (Boolean) lhparam.get("register");
 
-                    IView cur_view = ((WorkspaceFrame) getFrame()).getContentManager().getCurrentView();
+                    IView cur_view = ((MainFrame) getFrame()).getContentManager().getCurrentView();
                     if (cur_view instanceof Desktop) {
                         ((Desktop) cur_view).addView(view, display.booleanValue(),
-                                register.booleanValue());
+                            register.booleanValue());
                     } else {
                         ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
-                                getImage("desktop/desktop_big.png"));
-                        JOptionPane.showMessageDialog(((WorkspaceFrame) getFrame()),
-                                LangResource.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
-                                LangResource.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
-                                JOptionPane.INFORMATION_MESSAGE, icon);
+                            getImage("desktop/desktop_big.png"));
+                        JOptionPane.showMessageDialog(getFrame(),
+                            LangResource.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
+                            LangResource.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
+                            JOptionPane.INFORMATION_MESSAGE, icon);
                     }
                 }
             }
@@ -745,7 +766,7 @@ public class WorkspaceGUI implements GUI {
         public void processEvent(Object event, Object lparam, Object rparam) {
             if (lparam instanceof Hashtable) {
                 if (((Hashtable) lparam).get("menus") instanceof Vector
-                        && ((Hashtable) lparam).get("flag") instanceof Boolean) {
+                    && ((Hashtable) lparam).get("flag") instanceof Boolean) {
                     Hashtable lhparam = (Hashtable) lparam;
                     Vector menus = (Vector) lhparam.get("menus");
                     /**
@@ -756,18 +777,18 @@ public class WorkspaceGUI implements GUI {
                     if (flag.booleanValue()) {
                         for (int i = 0; i < menus.size(); i++) {
                             if (menus.elementAt(i) instanceof JMenu) {
-                                ((WorkspaceFrame) getFrame()).getJMenuBar().add((JMenu) menus.elementAt(i));
+                                ((MainFrame) getFrame()).getJMenuBar().add((JMenu) menus.elementAt(i));
                             }
                         }
                     } else {
                         for (int i = 0; i < menus.size(); i++) {
                             if (menus.elementAt(i) instanceof JMenu) {
-                                ((WorkspaceFrame) getFrame()).getJMenuBar().remove((JMenu) menus.elementAt(i));
+                                ((MainFrame) getFrame()).getJMenuBar().remove((JMenu) menus.elementAt(i));
                             }
                         }
                     }
-                    ((WorkspaceFrame) getFrame()).getJMenuBar().revalidate();
-                    ((WorkspaceFrame) getFrame()).getJMenuBar().repaint();
+                    ((MainFrame) getFrame()).getJMenuBar().revalidate();
+                    ((MainFrame) getFrame()).getJMenuBar().repaint();
                 }
             }
         }

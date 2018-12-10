@@ -26,9 +26,12 @@ package jworkspace.ui.cpanel;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.JComponent;
+import javax.swing.UIManager;
 
 /**
  * Separator is generally a thin component, that divides
@@ -38,8 +41,7 @@ import java.beans.PropertyChangeListener;
  * method with specified parameters to insert buttons
  * and separators into control panel.
  */
-class CSeparator extends JComponent implements PropertyChangeListener
-{
+class CSeparator extends JComponent implements PropertyChangeListener {
     /**
      * Orientation of control bar relative to
      * parent component.
@@ -50,8 +52,7 @@ class CSeparator extends JComponent implements PropertyChangeListener
      * Empty constructor for compatibility
      * with beans standard.
      */
-    public CSeparator()
-    {
+    public CSeparator() {
         super();
     }
 
@@ -59,8 +60,7 @@ class CSeparator extends JComponent implements PropertyChangeListener
      * Empty constructor for compatibility
      * with beans standard.
      */
-    public CSeparator(int orientation)
-    {
+    public CSeparator(int orientation) {
         super();
         this.orientation = orientation;
     }
@@ -68,12 +68,18 @@ class CSeparator extends JComponent implements PropertyChangeListener
     /**
      * Returns orientation.
      */
-    public int getOrientation()
-    {
+    public int getOrientation() {
         return orientation;
     }
 
-   /**
+    /**
+     * Sets orientation.
+     */
+    public void setOrientation(int orientation) {
+        this.orientation = orientation;
+    }
+
+    /**
      * Paints separator. In this case it is just
      * two one pixel width lines of colors,
      * compatible with Java Workspace Look And Feel (Glass Onion).
@@ -82,74 +88,53 @@ class CSeparator extends JComponent implements PropertyChangeListener
      * <code>Color.darker()</code> and <code>Color.lighter</code>
      * methods.
      */
-    public void paintComponent(Graphics g)
-    {
-        if ( orientation == ControlPanel.X_AXIS )
-        {
+    public void paintComponent(Graphics g) {
+        if (orientation == ControlPanel.X_AXIS) {
             g.setColor(UIManager.getColor("controlShadow"));
             g.drawLine(0, 0, 0, getSize().height);
             g.setColor(UIManager.getColor("controlHighlight"));
             g.drawLine(1, 0, 1, getSize().height);
-        }
-        else if ( orientation == ControlPanel.Y_AXIS )
-
-        {
+        } else if (orientation == ControlPanel.Y_AXIS) {
             g.setColor(UIManager.getColor("controlShadow"));
             g.drawLine(0, 0, getSize().width, 0);
             g.setColor(UIManager.getColor("controlHighlight"));
             g.drawLine(0, 1, getSize().width, 1);
         }
     }
+
     /**
      * Each time control panel will change
      * its orientation property, this will
      * handle incoming event.
      */
-    public void propertyChange(java.beans.PropertyChangeEvent evt)
-    {
+    public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if (evt.getNewValue() instanceof Integer &&
-                evt.getPropertyName().equals("ORIENTATION"))
-        {
-          orientation = ((Integer) evt.getNewValue()).intValue();
+            evt.getPropertyName().equals("ORIENTATION")) {
+            orientation = ((Integer) evt.getNewValue()).intValue();
         }
     }
 
-    /**
-     * Sets orientation.
-     */
-    public void setOrientation(int orientation)
-    {
-        this.orientation = orientation;
+    public float getAlignmentX() {
+        return CENTER_ALIGNMENT;
     }
 
-    public float getAlignmentX()
-    {
-      return CENTER_ALIGNMENT;
-    }
-
-    public float getAlignmentY()
-    {
-      return CENTER_ALIGNMENT;
+    public float getAlignmentY() {
+        return CENTER_ALIGNMENT;
     }
 
     /**
      * Calculates the preferred size dimensions for the specified
      * panel given the components in the specified parent container.
      */
-    public Dimension getPreferredSize()
-    {
-        if ( orientation == ControlPanel.X_AXIS)
-        {
+    public Dimension getPreferredSize() {
+        if (orientation == ControlPanel.X_AXIS) {
             return new Dimension(2, 20);
-        }
-        else
-        {
+        } else {
             return new Dimension(20, 2);
         }
     }
 
-    public Dimension getMaximumSize()
-    {
-       return getPreferredSize();
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 }

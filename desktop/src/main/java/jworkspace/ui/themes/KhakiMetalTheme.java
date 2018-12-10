@@ -1,22 +1,22 @@
 package jworkspace.ui.themes;
 /*
  * Copyright (c) 2002 Sun Microsystems, Inc. All  Rights Reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * -Redistributions of source code must retain the above copyright
  *  notice, this list of conditions and the following disclaimer.
- * 
+ *
  * -Redistribution in binary form must reproduct the above copyright
  *  notice, this list of conditions and the following disclaimer in
  *  the documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of Sun Microsystems, Inc. or the names of contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
+ *
  * This software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING
  * ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
@@ -28,7 +28,7 @@ package jworkspace.ui.themes;
  * INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY
  * OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE SOFTWARE, EVEN
  * IF SUN HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- * 
+ *
  * You acknowledge that Software is not designed, licensed or intended for
  * use in the design, construction, operation or maintenance of any nuclear
  * facility.
@@ -39,32 +39,50 @@ package jworkspace.ui.themes;
  */
 
 
-import javax.swing.plaf.*;
-import javax.swing.plaf.metal.*;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+
 /**
  * This class describes a theme using "khaki" colors.
  *
- * @version 1.7 06/13/02
  * @author Steve Wilson
+ * @version 1.7 06/13/02
  */
 public class KhakiMetalTheme extends DefaultMetalTheme {
 
-    public String getName() { return "Sandstone"; }
-
-    private final ColorUIResource primary1 = new ColorUIResource( 87,  87,  47);
+    private final ColorUIResource primary1 = new ColorUIResource(87, 87, 47);
     private final ColorUIResource primary2 = new ColorUIResource(159, 151, 111);
     private final ColorUIResource primary3 = new ColorUIResource(199, 183, 143);
-
-    private final ColorUIResource secondary1 = new ColorUIResource( 111,  111,  111);
+    private final ColorUIResource secondary1 = new ColorUIResource(111, 111, 111);
     private final ColorUIResource secondary2 = new ColorUIResource(159, 159, 159);
     private final ColorUIResource secondary3 = new ColorUIResource(231, 215, 183);
 
-    protected ColorUIResource getPrimary1() { return primary1; }
-    protected ColorUIResource getPrimary2() { return primary2; }
-    protected ColorUIResource getPrimary3() { return primary3; }
+    public String getName() {
+        return "Sandstone";
+    }
 
-    protected ColorUIResource getSecondary1() { return secondary1; }
-    protected ColorUIResource getSecondary2() { return secondary2; }
-    protected ColorUIResource getSecondary3() { return secondary3; }
+    protected ColorUIResource getPrimary1() {
+        return primary1;
+    }
+
+    protected ColorUIResource getPrimary2() {
+        return primary2;
+    }
+
+    protected ColorUIResource getPrimary3() {
+        return primary3;
+    }
+
+    protected ColorUIResource getSecondary1() {
+        return secondary1;
+    }
+
+    protected ColorUIResource getSecondary2() {
+        return secondary2;
+    }
+
+    protected ColorUIResource getSecondary3() {
+        return secondary3;
+    }
 
 }

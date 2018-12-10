@@ -31,9 +31,10 @@ import java.io.IOException;
 
 /**
  * Abstract workspace engine
+
+ * @author Anton Troshin
  */
-public interface IEngine
-{
+public interface IEngine {
     /**
      * Save engine
      */

@@ -26,16 +26,17 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
 import java.io.IOException;
+
+import javax.swing.JMenu;
+import javax.swing.JPanel;
 
 /**
  * User gui view. Such shell have to load itself, restore state
  * or save itself on disk. It also have to provide option panels,
  * menus and buttons to manage state of view.
  */
-public interface IView
-{
+public interface IView {
     /**
      * View activated or deactivated
      */

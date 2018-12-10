@@ -27,38 +27,31 @@ package jworkspace.util;
 */
 
 
-
 /**
- *  An exception within workspace
+ * An exception within workspace
  */
-public class WorkspaceException extends Exception
-{
+public class WorkspaceException extends Exception {
     public Throwable _wrappedException = null;
 
-    public WorkspaceException()
-    {
+    public WorkspaceException() {
         super();
     }
 
-    public WorkspaceException(String s)
-    {
+    public WorkspaceException(String s) {
         super(s);
     }
 
-    public WorkspaceException(String s, Throwable t)
-    {
+    public WorkspaceException(String s, Throwable t) {
         super(s);
         _wrappedException = t;
     }
 
-    public WorkspaceException(Throwable t)
-    {
+    public WorkspaceException(Throwable t) {
         super();
         _wrappedException = t;
     }
 
-    public Throwable getWrappedException()
-    {
+    public Throwable getWrappedException() {
         return _wrappedException;
     }
 }

@@ -26,34 +26,32 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.util.WorkspaceUtils;
+import java.awt.Color;
+import java.awt.Graphics;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+
+import jworkspace.ui.Utils;
 
 /**
  * Drag pane is created each time a component
  * is moved in Java Workspace. For example,
  * desktop icons or control panel use this component.
  */
-public class GlassDragPane extends JComponent
-{
+public class GlassDragPane extends JComponent {
     private Color bg = Color.darkGray;
 
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g) {
         g.setColor(bg);
-        WorkspaceUtils.drawDashedRect(g, 0, 0, getWidth(), getHeight());
-        WorkspaceUtils.drawDashedRect(g, 1, 1, getWidth() - 2, getHeight() - 2);
+        Utils.drawDashedRect(g, 0, 0, getWidth(), getHeight());
+        Utils.drawDashedRect(g, 1, 1, getWidth() - 2, getHeight() - 2);
     }
 
-    public void setColor(Color bg)
-    {
-        this.bg = bg;
-    }
-
-    public Color getColor()
-    {
+    public Color getColor() {
         return bg;
+    }
+
+    public void setColor(Color bg) {
+        this.bg = bg;
     }
 }

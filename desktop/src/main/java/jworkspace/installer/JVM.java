@@ -27,13 +27,13 @@ package jworkspace.installer;
    anton.troshin@gmail.com
    ----------------------------------------------------------------------------
 */
+
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
-
 import jworkspace.kernel.Workspace;
 
 /**
@@ -44,15 +44,15 @@ import jworkspace.kernel.Workspace;
 public class JVM extends DefinitionNode {
 
     public static final Icon icon = Workspace.getResourceManager()
-            .getIcon("installer/jvm.gif");
+        .getIcon("installer/jvm.gif");
 
     private static final String CK_NAME = "jvm.name",
-            CK_VERSION = "jvm.version",
-            CK_PATH = "jvm.path",
-            CK_SOURCE = "jvm.source",
-            CK_ARGS = "jvm.arguments",
-            CK_DOCDIR = "jvm.documentation_dir",
-            CK_DESCRIPTION = "jvm.description";
+        CK_VERSION = "jvm.version",
+        CK_PATH = "jvm.path",
+        CK_SOURCE = "jvm.source",
+        CK_ARGS = "jvm.arguments",
+        CK_DOCDIR = "jvm.documentation_dir",
+        CK_DESCRIPTION = "jvm.description";
 
     private String name = "";
     private String version = "";
@@ -95,7 +95,27 @@ public class JVM extends DefinitionNode {
     }
 
     /**
-     * Returns closed icon to represent
+     * Sets java virtual mechine arguments. This can
+     * be everything supported by VM.
+     * Note, that next parameters are required by
+     * Java Workspace Installer to launch application
+     * with all options:
+     * <b>-cp %c %m %a</b>.
+     * <ol>
+     * <li>%c - include classpath
+     * <li>%m - include mainclass
+     * <li>%a - include application command line parameters
+     * </li>
+     * If any of these three parameters are missing,
+     * corresponding part of full command line, nessesary
+     * to launch application, will be omitted.
+     */
+    public void setArguments(String arguments) {
+        this.arguments = arguments;
+    }
+
+    /**
+     * Returns closed ICON to represent
      * jvm in tree control.
      */
     public Icon getClosedIcon() {
@@ -110,11 +130,27 @@ public class JVM extends DefinitionNode {
     }
 
     /**
+     * Sets description of jvm. This is optional,
+     * as installer does not recognize this.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Returns directory or jar file, containing
      * jvm documentation.
      */
     public java.lang.String getDocs() {
         return docs;
+    }
+
+    /**
+     * Sets directory or jar file, containing
+     * jvm documentation.
+     */
+    public void setDocs(java.lang.String docs) {
+        this.docs = docs;
     }
 
     /**
@@ -125,7 +161,17 @@ public class JVM extends DefinitionNode {
     }
 
     /**
-     * Returns open icon to represent
+     * Sets human readable name of jvm.
+     */
+    public void setName(String name) throws InstallationException {
+        if (name == null) {
+            throw new InstallationException("Name is null");
+        }
+        this.name = name;
+    }
+
+    /**
+     * Returns open ICON to represent
      * jvm in tree control.
      */
     public Icon getOpenIcon() {
@@ -140,10 +186,33 @@ public class JVM extends DefinitionNode {
     }
 
     /**
+     * Sets path to jvm executable file.
+     * This will be a part of command line for application
+     * that will choose to use this jvm.
+     */
+    public void setPath(String path) throws InstallationException {
+        if (path == null) {
+            throw new InstallationException("Path is null");
+        }
+        this.path = path;
+    }
+
+    /**
      * Returns version of this JVM.
      */
     public String getVersion() {
         return version;
+    }
+
+    /**
+     * Sets version of jvm. This can be useful for
+     * user, as version is not recognized by installer.
+     */
+    public void setVersion(String version) throws InstallationException {
+        if (version == null) {
+            throw new InstallationException("Version is null");
+        }
+        this.version = version;
     }
 
     /**
@@ -188,75 +257,6 @@ public class JVM extends DefinitionNode {
         config.putString(CK_DOCDIR, docs);
         config.putString(CK_DESCRIPTION, description);
         config.store();
-    }
-
-    /**
-     * Sets java virtual mechine arguments. This can
-     * be everything supported by VM.
-     * Note, that next parameters are required by
-     * Java Workspace Installer to launch application
-     * with all options:
-     * <b>-cp %c %m %a</b>.
-     * <ol>
-     * <li>%c - include classpath
-     * <li>%m - include mainclass
-     * <li>%a - include application command line parameters
-     * </li>
-     * If any of these three parameters are missing,
-     * corresponding part of full command line, nessesary
-     * to launch application, will be omitted.
-     */
-    public void setArguments(String arguments) {
-        this.arguments = arguments;
-    }
-
-    /**
-     * Sets description of jvm. This is optional,
-     * as installer does not recognize this.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * jvm documentation.
-     */
-    public void setDocs(java.lang.String docs) {
-        this.docs = docs;
-    }
-
-    /**
-     * Sets human readable name of jvm.
-     */
-    public void setName(String name) throws InstallationException {
-        if (name == null) {
-            throw new InstallationException("Name is null");
-        }
-        this.name = name;
-    }
-
-    /**
-     * Sets path to jvm executable file.
-     * This will be a part of command line for application
-     * that will choose to use this jvm.
-     */
-    public void setPath(String path) throws InstallationException {
-        if (path == null) {
-            throw new InstallationException("Path is null");
-        }
-        this.path = path;
-    }
-
-    /**
-     * Sets version of jvm. This can be useful for
-     * user, as version is not recognized by installer.
-     */
-    public void setVersion(String version) throws InstallationException {
-        if (version == null) {
-            throw new InstallationException("Version is null");
-        }
-        this.version = version;
     }
 
     /**

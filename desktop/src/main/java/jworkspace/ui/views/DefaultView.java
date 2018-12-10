@@ -24,16 +24,19 @@ package jworkspace.ui.views;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import javax.swing.*;
+
 import java.io.IOException;
+
+import javax.swing.JMenu;
+import javax.swing.JPanel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import jworkspace.ui.IView;
+
 /**
  * Default user gui view.
  */
-public class DefaultView extends KPanel implements IView
-{
+public class DefaultView extends KPanel implements IView {
     /**
      * Show this window
      */
@@ -51,47 +54,47 @@ public class DefaultView extends KPanel implements IView
      * Save path. Relative to user.home
      */
     private String path = "";
-    /**
-     * View activated or deactivated
-     */
-    public void activated(boolean flag) { active = flag; }
 
     /**
      * Default public constructor
      */
-    public DefaultView()
-    {
+    public DefaultView() {
         super();
         setOpaque(false);
+    }
+
+    /**
+     * View activated or deactivated
+     */
+    public void activated(boolean flag) {
+        active = flag;
     }
 
     /**
      * Create component from the scratch. Used for
      * default assemble of ui components.
      */
-    public void create()  { }
+    public void create() {
+    }
 
     /**
      * Returns path for saving component data.
      */
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 
     /**
      * Sets path for saving component data.
      */
-    public void setPath(String path)
-    {
-        this.path = new String(path);
+    public void setPath(String path) {
+        this.path = path;
     }
 
     /**
      * Get all option panels for this shell
      */
-    public JPanel[] getOptionPanels()
-    {
+    public JPanel[] getOptionPanels() {
         return null;
     }
 
@@ -100,16 +103,14 @@ public class DefaultView extends KPanel implements IView
      * This menu set will be swithed off
      * every time view becomes inactive.
      */
-    public JMenu[] getMenu()
-    {
+    public JMenu[] getMenu() {
         return null;
     }
 
     /**
      * Returns modified flag for the view
      */
-    public boolean isModified()
-    {
+    public boolean isModified() {
         return modified_flag;
     }
 
@@ -117,28 +118,31 @@ public class DefaultView extends KPanel implements IView
      * Set this flag to true, if you want component
      * to be unique among all workspace views.
      */
-    public boolean isUnique()
-    {
+    public boolean isUnique() {
         return true;
     }
 
     /**
      * Load view from disk
      */
-    public void load() throws IOException { }
+    public void load() throws IOException {
+    }
 
     /**
      * Reset the state of view
      */
-    public void reset() { }
+    public void reset() {
+    }
 
     /**
      * Save all settings to default path
      */
-    public void save() throws IOException { }
+    public void save() throws IOException {
+    }
 
     /**
      * Update view
      */
-    public void update() { }
+    public void update() {
+    }
 }

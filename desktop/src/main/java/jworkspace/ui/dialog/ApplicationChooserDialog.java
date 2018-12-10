@@ -28,17 +28,21 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.Frame;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
 import com.hyperrealm.kiwi.ui.KTreeTable;
 import jworkspace.LangResource;
 import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.kernel.Workspace;
 import kiwi.ui.dialog.ComponentDialog;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
 
 /**
  * Application chooser.
@@ -55,7 +59,7 @@ public class ApplicationChooserDialog extends ComponentDialog {
         super(parent, LangResource.getString("ApplicationChooser.title"), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setTopIcon(new ImageIcon(Workspace.getResourceManager().
-                getImage("application_big.png")));
+            getImage("application_big.png")));
     }
 
     protected boolean accept() {

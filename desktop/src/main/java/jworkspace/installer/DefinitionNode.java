@@ -48,15 +48,7 @@ import com.hyperrealm.kiwi.util.ResourceManager;
  */
 public class DefinitionNode extends DomainObject {
 
-    protected File file;
-
-    protected DefinitionNode parent;
-
-    protected int index = 0;
-
     private static final Icon openIcon, closedIcon, lockedIcon, rootIcon;
-
-    private KTreeModelSupport hsupport;
 
     static {
         ResourceManager rm = KiwiUtils.getResourceManager();
@@ -65,6 +57,11 @@ public class DefinitionNode extends DomainObject {
         lockedIcon = rm.getIcon("folder-locked.gif");
         rootIcon = rm.getIcon("folder-closed.gif");
     }
+
+    protected File file;
+    protected DefinitionNode parent;
+    protected int index = 0;
+    private KTreeModelSupport hsupport;
 
     /**
      * Public constructor of definition node.
@@ -138,7 +135,7 @@ public class DefinitionNode extends DomainObject {
     }
 
     /**
-     * Returns closed icon to represent
+     * Returns closed ICON to represent
      * node in tree control.
      */
     public Icon getClosedIcon() {
@@ -221,7 +218,7 @@ public class DefinitionNode extends DomainObject {
     }
 
     /**
-     * Returns open icon to represent
+     * Returns open ICON to represent
      * application in tree control.
      */
     public Icon getOpenIcon() {

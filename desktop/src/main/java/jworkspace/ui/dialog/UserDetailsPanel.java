@@ -26,17 +26,25 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import kiwi.ui.KButton;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * User details panel gathers user data for
@@ -49,13 +57,11 @@ import java.awt.event.ActionListener;
  * user description, setting new password option and
  * editing of user properties.
  */
-class UserDetailsPanel extends KPanel
-{
+class UserDetailsPanel extends KPanel {
     private JTextField t_nick, t_name, t_surname, t_mail;
     private JTextArea t_description;
 
-    UserDetailsPanel()
-    {
+    UserDetailsPanel() {
         super();
 
         GridBagLayout gb = new GridBagLayout();
@@ -69,59 +75,59 @@ class UserDetailsPanel extends KPanel
 
         l = new JLabel(LangResource.getString("UserDetailsPanel.nick"));
         gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         add(l, gbc);
 
         t_nick = new JTextField(20);
         t_nick.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(t_nick, gbc);
 
         l = new JLabel(LangResource.getString("UserDetailsPanel.name"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         add(l, gbc);
 
         t_name = new JTextField(20);
         t_name.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(t_name, gbc);
 
         l = new JLabel(LangResource.getString("UserDetailsPanel.surname"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         add(l, gbc);
 
         t_surname = new JTextField(20);
         t_surname.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(t_surname, gbc);
 
         l = new JLabel(LangResource.getString("UserDetailsPanel.mail"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         add(l, gbc);
 
         t_mail = new JTextField(20);
         t_mail.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(t_mail, gbc);
 
         l = new JLabel(LangResource.getString("UserDetailsPanel.desc"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         add(l, gbc);
 
         t_description = new JTextArea(5, 1);
@@ -129,37 +135,36 @@ class UserDetailsPanel extends KPanel
         t_description.setWrapStyleWord(true);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(new JScrollPane(t_description), gbc);
 
         l = new JLabel(LangResource.getString("UserDetailsPanel.security"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
-        gbc.insets = KiwiUtils.firstInsets;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         add(l, gbc);
 
         KPanel button_holder = new KPanel();
         button_holder.setLayout(new BorderLayout());
         KButton t_change_password = new KButton
-                (LangResource.getString("UserDetailsPanel.chpasswd"));
+            (LangResource.getString("UserDetailsPanel.chpasswd"));
         t_change_password.setDefaultCapable(false);
         t_change_password.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 ChangePasswordDlg dlg =
-                        new ChangePasswordDlg(Workspace.getUI().getFrame());
+                    new ChangePasswordDlg(Workspace.getUI().getFrame());
                 dlg.setVisible(true);
             }
         });
         button_holder.add(t_change_password, BorderLayout.EAST);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.insets = KiwiUtils.lastInsets;
+        gbc.insets = KiwiUtils.LAST_INSETS;
         add(button_holder, gbc);
         setBorder(new EmptyBorder(5, 5, 5, 5));
     }
 
-    public void setData()
-    {
+    public void setData() {
         t_nick.setText(Workspace.getProfilesEngine().getUserName());
         t_name.setText(Workspace.getProfilesEngine().getUserFirstName());
         t_surname.setText(Workspace.getProfilesEngine().getUserLastName());
@@ -167,18 +172,16 @@ class UserDetailsPanel extends KPanel
         t_description.setText(Workspace.getProfilesEngine().getDescription());
     }
 
-    public boolean syncData()
-    {
+    public boolean syncData() {
         Workspace.getProfilesEngine().setUserFirstName(t_name.getText());
         Workspace.getProfilesEngine().setUserLastName(t_surname.getText());
         Workspace.getProfilesEngine().setEmail(t_mail.getText());
         Workspace.getProfilesEngine().setDescription(t_description.getText());
-        if (!Workspace.getProfilesEngine().setUserName(t_nick.getText()))
-        {
+        if (!Workspace.getProfilesEngine().setUserName(t_nick.getText())) {
             JOptionPane.showMessageDialog(Workspace.getUI().getFrame(),
-                                          LangResource.getString("UserDetailsPanel.cannotApply.message"),
-                                          LangResource.getString("UserDetailsPanel.cannotApply.title"),
-                                          JOptionPane.WARNING_MESSAGE);
+                LangResource.getString("UserDetailsPanel.cannotApply.message"),
+                LangResource.getString("UserDetailsPanel.cannotApply.title"),
+                JOptionPane.WARNING_MESSAGE);
         }
         return true;
     }

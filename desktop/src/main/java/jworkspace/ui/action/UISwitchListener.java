@@ -26,10 +26,11 @@ package jworkspace.ui.action;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.SwingUtilities;
 
 /**
  * Listener for changes of UI. This class
@@ -39,8 +40,7 @@ import java.beans.PropertyChangeListener;
  * Java Workspace UI.
  */
 public class UISwitchListener
-        implements PropertyChangeListener
-{
+    implements PropertyChangeListener {
     Component componentToSwitch;
 
     /**
@@ -49,19 +49,16 @@ public class UISwitchListener
      * For example, this is quite useful for components outside
      * components trees.
      */
-    public UISwitchListener(Component c)
-    {
+    public UISwitchListener(Component c) {
         componentToSwitch = c;
     }
 
     /**
      * Property change event is a change of laf at runtime.
      */
-    public void propertyChange(PropertyChangeEvent e)
-    {
+    public void propertyChange(PropertyChangeEvent e) {
         String name = e.getPropertyName();
-        if (name.equals("lookAndFeel"))
-        {
+        if (name.equals("lookAndFeel")) {
             SwingUtilities.updateComponentTreeUI(componentToSwitch);
             componentToSwitch.invalidate();
             componentToSwitch.validate();

@@ -28,45 +28,40 @@ package jworkspace.ui.desktop;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.Frame;
+
+import javax.swing.JComponent;
+
 import jworkspace.LangResource;
 import kiwi.ui.dialog.ComponentDialog;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Carrier class for <code>jworkspace.ui.desktop.DesktopIconPanel</code>
  */
-class DesktopIconDialog extends ComponentDialog
-{
+class DesktopIconDialog extends ComponentDialog {
     private DesktopIconPanel panel;
 
-    DesktopIconDialog(Frame parent)
-    {
+    DesktopIconDialog(Frame parent) {
         super(parent, LangResource.getString("DesktopIconDlg.title"), true);
         setResizable(false);
     }
 
-    protected boolean accept()
-    {
+    protected boolean accept() {
         return (panel.syncData());
     }
 
-    protected JComponent buildDialogUI()
-    {
+    protected JComponent buildDialogUI() {
         setComment(null);
         panel = new DesktopIconPanel();
         return (panel);
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         destroy();
         super.dispose();
     }
 
-    public void setData(DesktopIcon data)
-    {
+    public void setData(DesktopIcon data) {
         panel.setData(data);
     }
 }

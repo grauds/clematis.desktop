@@ -26,22 +26,21 @@ package jworkspace.ui.action;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.*;
+import javax.swing.Action;
 
 /**
  * State action has two states - SELECTED and UNSELECTED,
  * and a property SELECTABLE.
  */
-public interface StateAction extends Action
-{
-    public static final String SELECTED = "SELECTED";
-    public static final String SELECTABLE = "SELECTABLE";
+public interface StateAction extends Action {
+    String SELECTED = "SELECTED";
+    String SELECTABLE = "SELECTABLE";
 
-    public boolean isSelected();
+    boolean isSelected();
 
-    public void setSelected(boolean selected);
+    void setSelected(boolean selected);
 
-    public boolean isSelectable();
+    boolean isSelectable();
 
-    public void setSelectable(boolean selected);
+    void setSelectable(boolean selected);
 }

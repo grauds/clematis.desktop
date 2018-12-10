@@ -29,9 +29,10 @@ package jworkspace.api;
 
 /**
  * Workspace listener dispatches events send to subscribers through workspace event mechanism.
+ *
+ * @author Anton Troshin
  */
-public interface IWorkspaceListener
-{
+public interface IWorkspaceListener {
     /**
      * Processes event. Such event is send to every subscribed event listener in synchronous manner.
      */

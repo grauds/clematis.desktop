@@ -26,55 +26,50 @@ package jworkspace.ui.desktop;
   ----------------------------------------------------------------------------
 */
 
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 /**
- * Desktop icon selection is nessesary for
+ * Desktop ICON selection is nessesary for
  * group operations with icons.
  */
-class DesktopIconSelection implements ClipboardOwner, Transferable
-{
+class DesktopIconSelection implements ClipboardOwner, Transferable {
     public static DataFlavor DesktopIconFlavor
-            = new DataFlavor(DesktopIconSelectionData.class, "Desktop Icon Collection");
+        = new DataFlavor(DesktopIconSelectionData.class, "Desktop Icon Collection");
     private DesktopIconSelectionData data;
-    private DataFlavor flavors[] = {DesktopIconFlavor};
+    private DataFlavor[] flavors = {DesktopIconFlavor};
 
     /**
      * Public constructor.
      */
-    public DesktopIconSelection(DesktopIconSelectionData data)
-    {
+    public DesktopIconSelection(DesktopIconSelectionData data) {
         super();
         this.data = data;
     }
 
     /**
-     * Returns transfer data, that is actually a desktop icon data.
+     * Returns transfer data, that is actually a desktop ICON data.
      */
     public Object getTransferData(DataFlavor flavor)
-            throws java.io.IOException, UnsupportedFlavorException
-    {
-        if (flavor.equals(DesktopIconFlavor))
-        {
+        throws java.io.IOException, UnsupportedFlavorException {
+        if (flavor.equals(DesktopIconFlavor)) {
             return data;
-        }
-        else
-        {
+        } else {
             throw new UnsupportedFlavorException(flavor);
         }
     }
 
-    public DataFlavor[] getTransferDataFlavors()
-    {
+    public DataFlavor[] getTransferDataFlavors() {
         return flavors;
     }
 
-    public boolean isDataFlavorSupported(DataFlavor flavor)
-    {
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
         return (flavor.equals(DesktopIconFlavor));
     }
 
-    public void lostOwnership(Clipboard clipboard, Transferable contents)
-    {
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {
     }
 }

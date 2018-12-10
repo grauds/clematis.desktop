@@ -26,11 +26,13 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 
+import java.io.IOException;
+
+import javax.swing.JMenu;
+import javax.swing.JPanel;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 import jworkspace.ui.cpanel.CButton;
-
-import javax.swing.*;
-import java.io.IOException;
 
 /**
  * Content manager system should provide
@@ -42,8 +44,7 @@ import java.io.IOException;
  * 15.11.2001 - Public interface IContentManager
  * is considered deprecated and removed.
  */
-public abstract class AbstractViewsManager extends KPanel
-{
+public abstract class AbstractViewsManager extends KPanel {
     /**
      * Save path. Relative to user.home
      */
@@ -51,7 +52,8 @@ public abstract class AbstractViewsManager extends KPanel
 
     /**
      * Adds view to collection of views.
-     * @param panel javax.swing.JComponent
+     *
+     * @param panel              javax.swing.JComponent
      * @param displayImmediately boolean
      * @param register
      */
@@ -65,8 +67,7 @@ public abstract class AbstractViewsManager extends KPanel
     /**
      * Returns buttons for content manager
      */
-    public CButton[] getButtons()
-    {
+    public CButton[] getButtons() {
         return null;
     }
 
@@ -104,9 +105,16 @@ public abstract class AbstractViewsManager extends KPanel
     /**
      * Returns relative path for saving component data.
      */
-    public java.lang.String getPath()
-    {
+    public java.lang.String getPath() {
         return path;
+    }
+
+    /**
+     * Sets path for saving component data.
+     * This path is relative to user.home path.
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
 
     /**
@@ -123,15 +131,6 @@ public abstract class AbstractViewsManager extends KPanel
      * Writes down configuration on disk.
      */
     public abstract void save() throws IOException;
-
-    /**
-     * Sets path for saving component data.
-     * This path is relative to user.home path.
-     */
-    public void setPath(String path)
-    {
-        this.path = new String(path);
-    }
 
     /**
      * Update controls for content manager

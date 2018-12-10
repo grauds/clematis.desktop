@@ -62,7 +62,7 @@ public class WorkspacePluginContext implements PluginContext {
      */
     public boolean showQuestion(String question) {
         int result = JOptionPane.showConfirmDialog(Workspace.getUI().getFrame(),
-                question);
+            question);
 
         return result == JOptionPane.YES_OPTION;
     }

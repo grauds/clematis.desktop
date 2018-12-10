@@ -26,63 +26,63 @@ package jworkspace.ui.views;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
 import jworkspace.LangResource;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.AbstractStateAction;
 import jworkspace.util.WorkspaceError;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 /**
  * Actions of multidesktop manager
  */
-public class ViewsActions implements IConstants
-{
-    /**
-     * All actions
-     */
-    protected Hashtable actions = new Hashtable();
+public class ViewsActions implements IConstants {
     /**
      * Browse back action name
      */
     public static final String browseBackActionName =
-            LangResource.getString("ViewsManager.back.name");
+        LangResource.getString("ViewsManager.back.name");
     /**
      * Browse forward action name
      */
     public static final String browseForwardActionName =
-            LangResource.getString("ViewsManager.forward.name");
+        LangResource.getString("ViewsManager.forward.name");
     /**
      * Add desktop action name
      */
     public static final String addDesktopActionName =
-            LangResource.getString("ViewsManager.adesktop.name");
+        LangResource.getString("ViewsManager.adesktop.name");
     /**
      * Remove view action name
      */
     public static final String removeViewActionName =
-            LangResource.getString("ViewsManager.ddesktop.name");
+        LangResource.getString("ViewsManager.ddesktop.name");
     /**
      * Reload current view action name
      */
     public static final String reloadViewActionName =
-            LangResource.getString("ViewsManager.reload.name");
+        LangResource.getString("ViewsManager.reload.name");
     /**
      * Save current view action name
      */
     public static final String saveViewActionName =
-            LangResource.getString("ViewsManager.saveview.name");
+        LangResource.getString("ViewsManager.saveview.name");
     /**
      * Properties action name
      */
     public static final String propertiesActionName =
-            LangResource.getString("ViewsManager.vprefs.name") + "...";
+        LangResource.getString("ViewsManager.vprefs.name") + "...";
     /**
      * Switch view
      */
@@ -91,286 +91,75 @@ public class ViewsActions implements IConstants
      * Switch view header
      */
     public static final String switchHeaderActionName =
-            LangResource.getString("ViewsManager.swheader.name");
+        LangResource.getString("ViewsManager.swheader.name");
+    /**
+     * All actions
+     */
+    protected Hashtable actions = new Hashtable();
     /**
      * ViewsManager manager instance
      */
     protected ViewsManager manager = null;
     /**
-     * Browse back action
-     */
-    Action browseBackAction;
-
-    public class BrowseBackAction extends AbstractAction
-    {
-        Image normal = Workspace.getResourceManager().
-                getImage("cpanel/normal/back.png");
-        Image hover = Workspace.getResourceManager().
-                getImage("cpanel/hover/back.png");
-        String description = LangResource.getString("ViewsManager.back.tooltip");
-
-        BrowseBackAction()
-        {
-            super(browseBackActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            manager.browseBack();
-        }
-    }
-
-    /**
      * Browse forward action
      */
     protected Action browseForwardAction;
-
-    public class BrowseForwardAction extends AbstractAction
-    {
-        Image normal = Workspace.getResourceManager().
-                getImage("cpanel/normal/forward.png");
-        Image hover = Workspace.getResourceManager().
-                getImage("cpanel/hover/forward.png");
-        String description = LangResource.
-                getString("ViewsManager.forward.tooltip");
-
-        BrowseForwardAction()
-        {
-            super(browseForwardActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            manager.browseForward();
-        }
-    }
-
+    /**
+     * Browse back action
+     */
+    Action browseBackAction;
     /**
      * Add desktop action
      */
     Action addDesktopAction;
-
-    public class AddDesktopAction extends AbstractAction
-    {
-        Image normal = Workspace.getResourceManager().
-                getImage("cpanel/normal/adesktop.png");
-        Image hover = Workspace.getResourceManager().
-                getImage("cpanel/hover/adesktop.png");
-        String description = LangResource.
-                getString("ViewsManager.adesktop.tooltip");
-
-        AddDesktopAction()
-        {
-            super(addDesktopActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            manager.addDesktop();
-        }
-    }
-
     /**
      * Remove view action
      */
     Action removeViewAction;
-
-    public class RemoveViewAction extends AbstractAction
-    {
-        Image normal = Workspace.getResourceManager().
-                getImage("cpanel/normal/ddesktop.png");
-        Image hover = Workspace.getResourceManager().
-                getImage("cpanel/hover/ddesktop.png");
-        String description = LangResource.
-                getString("ViewsManager.ddesktop.tooltip");
-
-        RemoveViewAction()
-        {
-            super(removeViewActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            Frame parent = Workspace.getUI().getFrame();
-            if (parent != null)
-            {
-                int result;
-                ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
-                                               getImage("desktop/remove.png"));
-                result = JOptionPane.showConfirmDialog(parent,
-                                                       LangResource.getString("ViewsManager.deleteView.question") + "?",
-                                                       LangResource.getString("ViewsManager.deleteView.title"),
-                                                       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
-
-                if (result == JOptionPane.YES_OPTION)
-                {
-                    manager.deleteCurrentView();
-                }
-            }
-        }
-    }
-
     /**
      * Reload view action
      */
     Action reloadViewAction;
-
-    public class ReloadViewAction extends AbstractAction
-    {
-        String description = LangResource.
-                getString("ViewsManager.reload.tooltip");
-
-        ReloadViewAction()
-        {
-            super(reloadViewActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            manager.reloadCurrentView();
-        }
-    }
-
     /**
      * Properties action
      */
     Action propertiesAction;
-
-    public class PropertiesAction extends AbstractAction
-    {
-        Image normal = Workspace.getResourceManager().
-                getImage("cpanel/normal/vprefs.png");
-        Image hover = Workspace.getResourceManager().
-                getImage("cpanel/hover/vprefs.png");
-        String description = LangResource.
-                getString("ViewsManager.vprefs.tooltip");
-
-        PropertiesAction()
-        {
-            super(propertiesActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            manager.viewProperties();
-        }
-    }
-
     /**
      * Save view action
      */
     Action saveViewAction;
-
-    public class SaveViewAction extends AbstractAction
-    {
-        String description = LangResource.
-                getString("ViewsManager.vsave.tooltip");
-
-        SaveViewAction()
-        {
-            super(saveViewActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            try
-            {
-                manager.save();
-            }
-            catch (IOException ex)
-            {
-                WorkspaceError.exception
-                        (LangResource.getString("ViewsManager.viewSave.failed"), ex);
-            }
-        }
-    }
-
-    /**
-     * Switch view action
-     */
-    public class SwitchViewAction extends AbstractAction
-    {
-        int viewNo = 0;
-
-        public SwitchViewAction(int viewNo)
-        {
-            super(switchViewActionName);
-            this.viewNo = viewNo;
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            manager.switchView(viewNo);
-        }
-    }
-
     /**
      * Switch header action
      */
     Action switchHeaderAction;
 
-    public class SwitchHeaderAction extends AbstractStateAction
-    {
-        String description = LangResource.getString("ViewsManager.swheader.tooltip");
-
-        SwitchHeaderAction()
-        {
-            super(switchHeaderActionName);
-            this.putValue(Action.SHORT_DESCRIPTION, description);
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            manager.switchHeaderPanel();
-            setSelected(manager.getHeaderPanel().isVisible());
-        }
-    }
-
     /**
      * Constructor actions.
      */
-    public ViewsActions(ViewsManager manager)
-    {
+    public ViewsActions(ViewsManager manager) {
         super();
         this.manager = manager;
         createActions();
     }
 
-    public Action getAction(String name)
-    {
+    public Action getAction(String name) {
         return (Action) actions.get(name);
     }
 
-    public SwitchViewAction createSwitchViewAction(int i)
-    {
+    public SwitchViewAction createSwitchViewAction(int i) {
         return new SwitchViewAction(i);
     }
 
-    public Action[] getActions()
-    {
+    public Action[] getActions() {
         Enumeration e = actions.elements();
         Action[] temp = new Action[actions.size()];
-        for (int i = 0; i < temp.length; i++)
-        {
+        for (int i = 0; i < temp.length; i++) {
             temp[i] = (Action) e.nextElement();
         }
         return temp;
     }
 
-    protected Hashtable createActions()
-    {
+    protected Hashtable createActions() {
         addDesktopAction = new AddDesktopAction();
         removeViewAction = new RemoveViewAction();
         reloadViewAction = new ReloadViewAction();
@@ -394,5 +183,175 @@ public class ViewsActions implements IConstants
         actions.put(switchHeaderActionName, switchHeaderAction);
 
         return actions;
+    }
+
+    public class BrowseBackAction extends AbstractAction {
+        Image normal = Workspace.getResourceManager().
+            getImage("cpanel/normal/back.png");
+        Image hover = Workspace.getResourceManager().
+            getImage("cpanel/hover/back.png");
+        String description = LangResource.getString("ViewsManager.back.tooltip");
+
+        BrowseBackAction() {
+            super(browseBackActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            manager.browseBack();
+        }
+    }
+
+    public class BrowseForwardAction extends AbstractAction {
+        Image normal = Workspace.getResourceManager().
+            getImage("cpanel/normal/forward.png");
+        Image hover = Workspace.getResourceManager().
+            getImage("cpanel/hover/forward.png");
+        String description = LangResource.
+            getString("ViewsManager.forward.tooltip");
+
+        BrowseForwardAction() {
+            super(browseForwardActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            manager.browseForward();
+        }
+    }
+
+    public class AddDesktopAction extends AbstractAction {
+        Image normal = Workspace.getResourceManager().
+            getImage("cpanel/normal/adesktop.png");
+        Image hover = Workspace.getResourceManager().
+            getImage("cpanel/hover/adesktop.png");
+        String description = LangResource.
+            getString("ViewsManager.adesktop.tooltip");
+
+        AddDesktopAction() {
+            super(addDesktopActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            manager.addDesktop();
+        }
+    }
+
+    public class RemoveViewAction extends AbstractAction {
+        Image normal = Workspace.getResourceManager().
+            getImage("cpanel/normal/ddesktop.png");
+        Image hover = Workspace.getResourceManager().
+            getImage("cpanel/hover/ddesktop.png");
+        String description = LangResource.
+            getString("ViewsManager.ddesktop.tooltip");
+
+        RemoveViewAction() {
+            super(removeViewActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            Frame parent = Workspace.getUI().getFrame();
+            if (parent != null) {
+                int result;
+                ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
+                    getImage("desktop/remove.png"));
+                result = JOptionPane.showConfirmDialog(parent,
+                    LangResource.getString("ViewsManager.deleteView.question") + "?",
+                    LangResource.getString("ViewsManager.deleteView.title"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
+
+                if (result == JOptionPane.YES_OPTION) {
+                    manager.deleteCurrentView();
+                }
+            }
+        }
+    }
+
+    public class ReloadViewAction extends AbstractAction {
+        String description = LangResource.
+            getString("ViewsManager.reload.tooltip");
+
+        ReloadViewAction() {
+            super(reloadViewActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            manager.reloadCurrentView();
+        }
+    }
+
+    public class PropertiesAction extends AbstractAction {
+        Image normal = Workspace.getResourceManager().
+            getImage("cpanel/normal/vprefs.png");
+        Image hover = Workspace.getResourceManager().
+            getImage("cpanel/hover/vprefs.png");
+        String description = LangResource.
+            getString("ViewsManager.vprefs.tooltip");
+
+        PropertiesAction() {
+            super(propertiesActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+            this.putValue(Action.SMALL_ICON, new ImageIcon(normal));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            manager.viewProperties();
+        }
+    }
+
+    public class SaveViewAction extends AbstractAction {
+        String description = LangResource.
+            getString("ViewsManager.vsave.tooltip");
+
+        SaveViewAction() {
+            super(saveViewActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            try {
+                manager.save();
+            } catch (IOException ex) {
+                WorkspaceError.exception
+                    (LangResource.getString("ViewsManager.viewSave.failed"), ex);
+            }
+        }
+    }
+
+    /**
+     * Switch view action
+     */
+    public class SwitchViewAction extends AbstractAction {
+        int viewNo = 0;
+
+        public SwitchViewAction(int viewNo) {
+            super(switchViewActionName);
+            this.viewNo = viewNo;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            manager.switchView(viewNo);
+        }
+    }
+
+    public class SwitchHeaderAction extends AbstractStateAction {
+        String description = LangResource.getString("ViewsManager.swheader.tooltip");
+
+        SwitchHeaderAction() {
+            super(switchHeaderActionName);
+            this.putValue(Action.SHORT_DESCRIPTION, description);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            manager.switchHeaderPanel();
+            setSelected(manager.getHeaderPanel().isVisible());
+        }
     }
 }
