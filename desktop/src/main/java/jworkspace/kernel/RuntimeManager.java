@@ -43,7 +43,6 @@ import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
 import jworkspace.installer.ApplicationDataSource;
-import jworkspace.util.WorkspaceError;
 
 /**
  * Runtime manager is a core component for Java Workspace to start/stop processes registered in installer
@@ -153,7 +152,7 @@ public final class RuntimeManager {
             processes.addElement(process);
 
         } catch (IOException | Error e) {
-            WorkspaceError.exception(CANNOT_START_APPLICATION, e);
+            Workspace.ui.showError(CANNOT_START_APPLICATION, e);
         }
 
         try {
@@ -161,11 +160,11 @@ public final class RuntimeManager {
              * Try to set old working directory
              */
             if (!NativeLib.setCurrentDir(oldWorkingDir)) {
-                WorkspaceError.msg(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                Workspace.ui.showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
             }
 
         } catch (Error err) {
-            WorkspaceError.exception(CANNOT_START_APPLICATION, err);
+            Workspace.ui.showError(CANNOT_START_APPLICATION, err);
         }
     }
 
@@ -182,19 +181,19 @@ public final class RuntimeManager {
              */
             if (workingDir != null) {
                 if (!NativeLib.setCurrentDir(workingDir)) {
-                    WorkspaceError.msg(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                    Workspace.ui.showMessage(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
                 }
             }
             Runtime.getRuntime().exec(command);
         } catch (IOException ex) {
-            WorkspaceError.exception("Cannot execute native command", ex);
+            Workspace.ui.showError("Cannot execute native command", ex);
         }
         if (workingDir != null) {
             /*
              * Try to set old working directory
              */
             if (!NativeLib.setCurrentDir(oldWorkingDir)) {
-                WorkspaceError.msg(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                Workspace.ui.showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
             }
         }
     }

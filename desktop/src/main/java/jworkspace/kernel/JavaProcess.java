@@ -43,7 +43,6 @@ import static com.hyperrealm.kiwi.ui.SplashScreen.MILLISEC_IN_SECOND;
 
 import jworkspace.LangResource;
 import jworkspace.installer.ApplicationDataSource;
-import jworkspace.util.WorkspaceError;
 
 /**
  * This class represent a single java runtime process,
@@ -183,7 +182,7 @@ public final class JavaProcess {
                 alive = false;
                 break;
             } catch (InterruptedException ex) {
-                WorkspaceError.exception(LangResource.getString("JavaProcess.CannotWait"), ex);
+                Workspace.ui.showError(LangResource.getString("JavaProcess.CannotWait"), ex);
             }
         }
     }
@@ -308,7 +307,7 @@ public final class JavaProcess {
                         }
                     }
                 } catch (IOException ex) {
-                    WorkspaceError.exception("Cannot read process log", ex);
+                    Workspace.ui.showError("Cannot read process log", ex);
                     break;
                 }
             }

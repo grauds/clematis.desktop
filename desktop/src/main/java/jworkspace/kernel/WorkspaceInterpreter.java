@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import bsh.EvalError;
 import bsh.Interpreter;
-import jworkspace.util.WorkspaceError;
 //CHECKSTYLE:ON
 /**
  * @author Anton Troshin
@@ -97,7 +96,7 @@ public final class WorkspaceInterpreter {
         try {
             in = new PipedInputStream(outPipe);
         } catch (IOException e) {
-            WorkspaceError.exception("Cannot start Bean Shell Interpreter", e);
+            Workspace.ui.showError("Cannot start Bean Shell Interpreter", e);
         }
         interpreter = new Interpreter(new InputStreamReader(in, StandardCharsets.UTF_8),
             System.out, System.out, false, null);
@@ -117,7 +116,7 @@ public final class WorkspaceInterpreter {
             }
             interpreter.source(fileName);
         } catch (EvalError | IOException ex) {
-            WorkspaceError.exception(CANNOT_INTERPRET + fileName, ex);
+            Workspace.ui.showError(CANNOT_INTERPRET + fileName, ex);
         }
     }
 
@@ -136,7 +135,7 @@ public final class WorkspaceInterpreter {
             outPipe.write(commandLineInt.getBytes(StandardCharsets.UTF_8));
             outPipe.flush();
         } catch (IOException e) {
-            WorkspaceError.exception(CANNOT_INTERPRET + commandLineInt, e);
+            Workspace.ui.showError(CANNOT_INTERPRET + commandLineInt, e);
         }
     }
 

@@ -284,7 +284,7 @@ public class WorkspaceInstaller implements InstallEngine {
         DefinitionNode node = applicationData.findNode(path);
 
         if (!(node instanceof Application)) {
-            JOptionPane.showMessageDialog(Workspace.getUI().getFrame(),
+            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
                 path + " is not an application",
                 "Java Workspace Installer",
                 JOptionPane.INFORMATION_MESSAGE);

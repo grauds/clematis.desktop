@@ -52,7 +52,7 @@ public class WorkspacePluginContext implements PluginContext {
      * @param message to workspace user
      */
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(Workspace.getUI().getFrame(), message);
+        JOptionPane.showMessageDialog(Workspace.getUi().getFrame(), message);
     }
 
     /**
@@ -62,7 +62,7 @@ public class WorkspacePluginContext implements PluginContext {
      * @return boolean answer
      */
     public boolean showQuestion(String question) {
-        int result = JOptionPane.showConfirmDialog(Workspace.getUI().getFrame(),
+        int result = JOptionPane.showConfirmDialog(Workspace.getUi().getFrame(),
             question);
 
         return result == JOptionPane.YES_OPTION;

@@ -38,7 +38,7 @@ import java.util.Hashtable;
  *
  * @author Anton Troshin
  */
-public interface GUI extends IEngine, IWorkspaceListener {
+public interface UI extends IEngine, IWorkspaceListener {
     /**
      * Returns special clipboard for graphic interface..
      */
@@ -56,7 +56,7 @@ public interface GUI extends IEngine, IWorkspaceListener {
     Window getLogoScreen();
 
     /**
-     * Check whether this GUI is modified.
+     * Check whether this UI is modified.
      */
     boolean isModified();
 
@@ -83,7 +83,22 @@ public interface GUI extends IEngine, IWorkspaceListener {
     void unregister(String clazz);
 
     /**
-     * Updates all GUI.
+     * Updates all UI.
      */
     void update();
+
+    /**
+     * Show error to user either way it capable of
+     *
+     * @param usermsg message
+     * @param ex exception
+     */
+    void showError(String usermsg, Throwable ex);
+
+    /**
+     * Show message to user either way it capable of
+     *
+     * @param usermsg message
+     */
+    void showMessage(String usermsg);
 }

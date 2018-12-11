@@ -27,7 +27,6 @@ package jworkspace.users;
 */
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 
@@ -42,6 +41,7 @@ import com.hyperrealm.kiwi.util.Config;
 import jworkspace.LangResource;
 import jworkspace.api.IUserProfileEngine;
 import jworkspace.kernel.Workspace;
+import jworkspace.kernel.WorkspaceLoginValidator;
 
 /**
  * Profile engine is one of required by kernel.
@@ -284,7 +284,7 @@ public class UserProfileEngine implements IUserProfileEngine {
      */
     public boolean setUserName(String name) {
         if (profilesManager.getCurrentProfile().setUserName(name)) {
-            Workspace.getUI().update();
+            Workspace.getUi().update();
             return true;
         } else {
             return false;
@@ -292,11 +292,11 @@ public class UserProfileEngine implements IUserProfileEngine {
     }
 
     /**
-     * Returns login dialog for this GUI system.
+     * Returns login dialog for this UI system.
      */
     public JDialog getLoginDlg() {
         if (loginDlg == null) {
-            loginDlg = new LoginDialog((Frame) Workspace.getUI().getLogoScreen().getParent(),
+            loginDlg = new WorkspaceLoginValidator(Workspace.getUi().getFrame(),
                 LangResource.getString("LoginDlg.title"), ""
             );
             loginDlg.setAcceptButtonText(LangResource.getString("LoginDlg.login.accept"));

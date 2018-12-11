@@ -1,4 +1,4 @@
-package jworkspace.util;
+package jworkspace.ui;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -33,6 +33,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.swing.AbstractAction;
@@ -47,16 +48,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
-//
+
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
+import jworkspace.util.Utils;
+import jworkspace.util.WorkspaceException;
 
 /**
  * Gui error reporter for the end-user
  *
  * @author Anton Troshin
  */
-public class WorkspaceError {
+class WorkspaceError {
 
     private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
 
@@ -79,7 +82,7 @@ public class WorkspaceError {
     /**
      * init some neccessary error stuff
      */
-    public WorkspaceError() {
+    WorkspaceError() {
         laterThread = new Thread(LATER);
         laterThread.start();
     }
@@ -87,7 +90,7 @@ public class WorkspaceError {
     public static void exception(String usermsg, Throwable ex) {
 
         Throwable throwable = ex;
-        Component c = Workspace.getUI().getFrame();
+        Component c = Workspace.getUi().getFrame();
         String excp;
         String title = null;
 
@@ -162,7 +165,7 @@ public class WorkspaceError {
     }
 
     public static void msg(String title, String usermsg) {
-        JOptionPane.showMessageDialog(Workspace.getUI().getFrame(), usermsg, title, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(Workspace.getUi().getFrame(), usermsg, title, JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -208,9 +211,13 @@ public class WorkspaceError {
             this.c = c;
         }
 
+        @SuppressWarnings("Regexp")
         public void actionPerformed(ActionEvent evt) {
             // take the error and print the stack trace out to a string
             StringWriter sw = new StringWriter();
+            try (PrintWriter w = new PrintWriter(sw)) {
+                error.printStackTrace(w);
+            }
             String s = sw.toString(); //StringUtils.wrapLines(sw.toString(), 150);
 
             JTextArea ta = new JTextArea(s);
@@ -281,7 +288,7 @@ public class WorkspaceError {
 
         String title;
 
-        public MessageRunnable(String msg, String title) {
+        MessageRunnable(String msg, String title) {
             this.msg = msg;
             this.title = title;
         }
