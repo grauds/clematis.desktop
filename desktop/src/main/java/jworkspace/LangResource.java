@@ -34,14 +34,16 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Anton Troshin
+ */
 public class LangResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
 
     private static ResourceBundle resources = null;
 
-    public LangResource() {
-    }
+    private LangResource() {}
 
     public static void printAvailableLocales() {
 
@@ -52,7 +54,7 @@ public class LangResource {
         }
     }
 
-    static public String getString(String id) {
+    public static String getString(String id) {
 
         if (resources == null) {
             resources = ResourceBundle.getBundle("i18n/strings");

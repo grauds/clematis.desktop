@@ -29,9 +29,12 @@ package jworkspace.util;
 
 /**
  * An exception within workspace
+ *
+ * @author Anton Troshin
  */
 public class WorkspaceException extends Exception {
-    public Throwable _wrappedException = null;
+
+    public Throwable wrappedException = null;
 
     public WorkspaceException() {
         super();
@@ -43,15 +46,15 @@ public class WorkspaceException extends Exception {
 
     public WorkspaceException(String s, Throwable t) {
         super(s);
-        _wrappedException = t;
+        wrappedException = t;
     }
 
     public WorkspaceException(Throwable t) {
         super();
-        _wrappedException = t;
+        wrappedException = t;
     }
 
     public Throwable getWrappedException() {
-        return _wrappedException;
+        return wrappedException;
     }
 }
