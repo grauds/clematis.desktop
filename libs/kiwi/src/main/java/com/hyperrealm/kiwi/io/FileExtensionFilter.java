@@ -214,7 +214,7 @@ public class FileExtensionFilter extends FileFilter {
      * @return The description.
      */
 
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("NestedIfDepth")
     public String getDescription() {
         if (fullDescription == null) {
 

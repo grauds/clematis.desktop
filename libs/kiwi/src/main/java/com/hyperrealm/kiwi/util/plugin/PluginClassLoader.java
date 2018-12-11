@@ -98,7 +98,7 @@ class PluginClassLoader extends ClassLoader {
     /**
      *
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings({"NestedIfDepth", "ReturnCount"})
     public synchronized Class loadClass(String className, boolean resolve)
         throws ClassNotFoundException {
 
@@ -166,8 +166,7 @@ class PluginClassLoader extends ClassLoader {
                             } catch (IOException ex) { /* ignore */ }
                         }
 
-                        if (r != size) // got less or more bytes than we expected?
-                        {
+                        if (r != size) {
                             throw (new ClassFormatError(className));
                         }
 

@@ -66,7 +66,7 @@ import java.util.Calendar;
  * @see com.hyperrealm.kiwi.util.Scheduler
  * @since Kiwi 2.2
  */
-@SuppressWarnings("all")
+@SuppressWarnings("MagicNumber")
 public class TimeSpec {
     private BitSet hourMask;
     private BitSet minuteMask;
@@ -95,12 +95,6 @@ public class TimeSpec {
 
     public TimeSpec(Calendar time) {
         this();
-
-    /*System.out.println("creating timespec: hr= "
-      + time.get(Calendar.HOUR_OF_DAY)
-      + ", min= " + time.get(Calendar.MINUTE)
-      + ", day= " + (time.get(Calendar.DAY_OF_MONTH) - 1)
-      + ", mon= " + (time.get(Calendar.MONTH)));*/
 
         hourMask.set(time.get(Calendar.HOUR_OF_DAY));
         minuteMask.set(time.get(Calendar.MINUTE));
@@ -164,8 +158,8 @@ public class TimeSpec {
 
         hourMask.set(hour);
         minuteMask.set(minute);
-        dayMask.set(--day);
-        monthMask.set(--month);
+        dayMask.set(day - 1);
+        monthMask.set(month - 1);
         dowMask.set(0, dowMask.size() - 1);
     }
 
@@ -342,7 +336,7 @@ public class TimeSpec {
      */
 
     public void setDay(int day) throws IllegalArgumentException {
-        dayMask.set(--day);
+        dayMask.set(day - 1);
     }
 
     /**
@@ -354,7 +348,7 @@ public class TimeSpec {
      */
 
     public void clearDay(int day) throws IllegalArgumentException {
-        dayMask.clear(--day);
+        dayMask.clear(day - 1);
     }
 
     /**
@@ -382,7 +376,7 @@ public class TimeSpec {
      */
 
     public void setMonth(int month) throws IllegalArgumentException {
-        monthMask.set(--month);
+        monthMask.set(month - 1);
     }
 
     /**
@@ -394,7 +388,7 @@ public class TimeSpec {
      */
 
     public void clearMonth(int month) throws IllegalArgumentException {
-        monthMask.clear(--month);
+        monthMask.clear(month - 1);
     }
 
     /**
@@ -422,11 +416,7 @@ public class TimeSpec {
      */
 
     public void setDayOfWeek(int dow) throws IllegalArgumentException {
-        if (dow == 7) {
-            dow = 0;
-        }
-
-        dowMask.set(dow);
+        dowMask.set(dow == 7 ? 0 : dow);
     }
 
     /**
@@ -439,11 +429,7 @@ public class TimeSpec {
      */
 
     public void clearDayOfWeek(int dow) throws IllegalArgumentException {
-        if (dow == 7) {
-            dow = 0;
-        }
-
-        dowMask.clear(dow);
+        dowMask.clear(dow == 7 ? 0 : dow);
     }
 
 
@@ -476,20 +462,11 @@ public class TimeSpec {
      */
 
     public boolean match(int hour, int minute, int month, int day, int dow) {
-        if (dow == 7) {
-            dow = 0;
-        }
-
-    /*System.out.println("matching timespec: hr= "
-      + hour
-      + ", min= " + minute
-      + ", day= " + (day - 1)
-      + ", mon= " + month
-      + ", dow= " + dow); */
-
-        return (hourMask.get(hour) && minuteMask.get(minute)
-            && monthMask.get(month) && dayMask.get(--day)
-            && dowMask.get(dow));
+        return hourMask.get(hour)
+            && minuteMask.get(minute)
+            && monthMask.get(month)
+            && dayMask.get(day - 1)
+            && dowMask.get(dow == 7 ? 0 : dow);
     }
 
     /**
@@ -500,21 +477,10 @@ public class TimeSpec {
      * @return <b>true</b> for a successful match, <b>false</b> otherwise.
      */
     public boolean match(Calendar time) {
-        return (match(time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE),
-            time.get(Calendar.MONTH), time.get(Calendar.DAY_OF_MONTH),
-            time.get(Calendar.DAY_OF_WEEK) - 1));
+        return match(time.get(Calendar.HOUR_OF_DAY),
+            time.get(Calendar.MINUTE),
+            time.get(Calendar.MONTH),
+            time.get(Calendar.DAY_OF_MONTH),
+            time.get(Calendar.DAY_OF_WEEK) - 1);
     }
-
-    /**
-     * For debugging purposes. Dump the internal masks to standard output.
-     */
-
-    public void dump() {
-        System.out.println("hr mask: " + hourMask.toString());
-        System.out.println("mn mask: " + minuteMask.toString());
-        System.out.println("dy mask: " + dayMask.toString());
-        System.out.println("mo mask: " + monthMask.toString());
-        System.out.println("wk mask: " + dowMask.toString());
-    }
-
 }

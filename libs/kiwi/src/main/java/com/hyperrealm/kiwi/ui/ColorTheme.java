@@ -316,7 +316,6 @@ public class ColorTheme extends DefaultMetalTheme {
     }
 
     /* Read the properties from the Config object. */
-    @SuppressWarnings("")
     private void init(Config config) {
 
         name = config.getString("name", "Unnamed Color Theme");

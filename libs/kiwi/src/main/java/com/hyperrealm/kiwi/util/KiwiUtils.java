@@ -641,7 +641,7 @@ public final class KiwiUtils {
      * @return The stack trace, as a string.
      * @since Kiwi 2.0
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("Regexp")
     public static String stackTraceToString(Throwable t) {
         StringWriter sw = new StringWriter(STACK_INITIAL_SIZE);
         PrintWriter pw = new PrintWriter(sw);

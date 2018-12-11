@@ -163,10 +163,11 @@ public class ColorFormatter {
             }
         } else {
             r = colorForName(name);
-            if (r == null)
+            if (r == null) {
                 throw (new ParsingException("Unknown color name: " + name));
-            else
+            } else {
                 return (r);
+            }
         }
     }
 

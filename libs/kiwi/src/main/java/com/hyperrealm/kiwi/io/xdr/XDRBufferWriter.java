@@ -30,8 +30,8 @@ import java.io.IOException;
  * buffer to satisfy a write request.
  *
  * @author Mark Lindner
- * @since Kiwi 2.0
  * @link https://en.wikipedia.org/wiki/External_Data_Representation
+ * @since Kiwi 2.0
  */
 @SuppressWarnings({"unused", "checkstyle:magicnumber", "CheckStyle"})
 public class XDRBufferWriter implements XDRDataOutput {
@@ -116,7 +116,7 @@ public class XDRBufferWriter implements XDRDataOutput {
         if (pos > buffer.length) {
             this.pos = buffer.length;
         } else {
-            this.pos = pos;            
+            this.pos = pos;
         }
     }
 
@@ -201,8 +201,9 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeUnsignedInt(long value) throws IOException {
-        if (left < XDRConstants.UNIT_SIZE)
+        if (left < XDRConstants.UNIT_SIZE) {
             throw (new EOFException());
+        }
 
         left -= XDRConstants.UNIT_SIZE;
 
@@ -217,8 +218,9 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeLong(long value) throws IOException {
-        if (left < (XDRConstants.UNIT_SIZE * 2))
+        if (left < (XDRConstants.UNIT_SIZE * 2)) {
             throw (new EOFException());
+        }
 
         left -= (XDRConstants.UNIT_SIZE * 2);
 
@@ -253,13 +255,16 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeString(String string) throws IOException {
-        if (string == null)
-            string = "";
+        String stringInt = string;
+
+        if (stringInt == null) {
+            stringInt = "";
+        }
 
         // There isn't a more efficient way to get to the bytes in the string;
         // we have to duplicate them.
 
-        byte[] ascii = string.getBytes();
+        byte[] ascii = stringInt.getBytes();
         writeByteArray(ascii);
     }
 
@@ -276,7 +281,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeBooleanArray(boolean[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeBooleanVector(array, offset, length);
     }
@@ -294,9 +299,11 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeBooleanVector(boolean[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeBoolean(array[offset++]);
+        throws IOException {
+        int offsetInt = offset;
+        for (int i = 0; i < length; i++) {
+            writeBoolean(array[offsetInt++]);
+        }
     }
 
     /**
@@ -312,7 +319,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeByteArray(byte[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeByteVector(array, offset, length);
     }
@@ -330,19 +337,21 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeByteVector(byte[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         int pad = getPad(length);
         int len = length + pad;
 
-        if (left < len)
+        if (left < len) {
             throw (new EOFException());
+        }
 
         System.arraycopy(array, offset, buffer, pos, length);
 
         pos += length;
 
-        for (int i = 0; i < pad; i++)
+        for (int i = 0; i < pad; i++) {
             buffer[pos++] = 0;
+        }
 
         left -= len;
     }
@@ -360,7 +369,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeShortArray(short[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeShortVector(array, offset, length);
     }
@@ -378,9 +387,13 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeShortVector(short[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeShort(array[offset++]);
+        throws IOException {
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeShort(array[offsetInt++]);
+        }
     }
 
     /**
@@ -396,7 +409,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeUnsignedShortArray(int[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeUnsignedShortVector(array, offset, length);
     }
@@ -414,9 +427,13 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeUnsignedShortVector(int[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeUnsignedShort(array[offset++]);
+        throws IOException {
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeUnsignedShort(array[offsetInt++]);
+        }
     }
 
     /**
@@ -432,7 +449,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeIntArray(int[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeIntVector(array, offset, length);
     }
@@ -450,9 +467,13 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeIntVector(int[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeInt(array[offset++]);
+        throws IOException {
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeInt(array[offsetInt++]);
+        }
     }
 
     /**
@@ -468,7 +489,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeUnsignedIntArray(long[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeUnsignedIntVector(array, offset, length);
     }
@@ -486,9 +507,13 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeUnsignedIntVector(long[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeUnsignedInt(array[offset++]);
+        throws IOException {
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeUnsignedInt(array[offsetInt++]);
+        }
     }
 
     /**
@@ -504,7 +529,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeLongArray(long[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeLongVector(array, offset, length);
     }
@@ -522,9 +547,13 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeLongVector(long[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeLong(array[offset++]);
+        throws IOException {
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeLong(array[offsetInt++]);
+        }
     }
 
     /**
@@ -540,7 +569,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeFloatArray(float[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeFloatVector(array, offset, length);
     }
@@ -558,9 +587,13 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeFloatVector(float[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeFloat(array[offset++]);
+        throws IOException {
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeFloat(array[offsetInt++]);
+        }
     }
 
     /**
@@ -576,7 +609,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeDoubleArray(double[] array, int offset, int length)
-            throws IOException {
+        throws IOException {
         writeInt(length);
         writeDoubleVector(array, offset, length);
     }
@@ -594,9 +627,13 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void writeDoubleVector(double[] array, int offset, int length)
-            throws IOException {
-        for (int i = 0; i < length; i++)
-            writeDouble(array[offset++]);
+        throws IOException {
+
+        int offsetInt = offset;
+
+        for (int i = 0; i < length; i++) {
+            writeDouble(array[offsetInt++]);
+        }
     }
 
     /*

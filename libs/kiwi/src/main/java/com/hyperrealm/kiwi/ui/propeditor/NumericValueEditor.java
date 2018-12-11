@@ -33,7 +33,7 @@ import com.hyperrealm.kiwi.util.DoubleHolder;
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
-
+@SuppressWarnings("MagicNumber")
 public class NumericValueEditor extends PropertyValueEditor {
     private NumericField field;
 

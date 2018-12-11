@@ -183,7 +183,9 @@ public class TemplateFormat {
             StringReader source = new StringReader(text);
             format(source, dest, null);
             source.close();
-        } catch (IOException ex) { /* won't happen */ }
+        } catch (IOException ex) {
+            throw new ParsingException(ex.getMessage());
+        }
     }
 
     /**
@@ -213,10 +215,9 @@ public class TemplateFormat {
     }
 
     /* parsing engine */
-
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings({"CyclomaticComplexity", "MagicNumber"})
     private void format(StringReader source, StringBuilder dest, ArrayList<String> vars)
-            throws ParsingException, IOException {
+        throws ParsingException, IOException {
 
         st = new StreamTokenizer(source);
         st.resetSyntax();
@@ -250,11 +251,13 @@ public class TemplateFormat {
 
                 case '{':
                     if (lastTok == '{') {
-                        if (dest != null)
+                        if (dest != null) {
                             dest.append('{');
+                        }
                         forget = true;
-                    } else if ((lastTok != StreamTokenizer.TT_WORD) && (lastTok != 0))
+                    } else if ((lastTok != StreamTokenizer.TT_WORD) && (lastTok != 0)) {
                         flagMismatch(tok);
+                    }
 
                     break;
 
@@ -280,7 +283,7 @@ public class TemplateFormat {
 
                 default:
                     throw (new ParsingException("Unrecognized token " + tok,
-                            st.lineno()));
+                        st.lineno()));
             }
 
             lastTok = (forget ? 0 : tok);

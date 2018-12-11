@@ -20,7 +20,6 @@
 package com.hyperrealm.kiwi.util;
 
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

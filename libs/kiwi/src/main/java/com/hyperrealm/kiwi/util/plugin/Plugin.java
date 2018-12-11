@@ -57,6 +57,8 @@ public final class Plugin<T> {
 
     private static final String FAILED_TO_INSTANTIATE_PLUGIN = "failed to instantiate plugin ";
 
+    private static final String PLUGIN_NAME = "PluginName";
+
     private boolean loaded = false;
 
     private String className;
@@ -256,7 +258,7 @@ public final class Plugin<T> {
      * @throws com.hyperrealm.kiwi.util.plugin.PluginException If the plugin
      *                                                         could not be loaded.
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings({"CyclomaticComplexity", "NestedIfDepth"})
     private void load() throws PluginException {
 
         Manifest mf;
@@ -287,7 +289,7 @@ public final class Plugin<T> {
             classFile = (String) iter.next();
             attrs = mf.getAttributes(classFile);
 
-            if (attrs.getValue("PluginName") != null) {
+            if (attrs.getValue(PLUGIN_NAME) != null) {
                 found = true;
                 break;
             }
@@ -310,7 +312,7 @@ public final class Plugin<T> {
             String v = attrs.getValue(nm);
 
             switch (a) {
-                case "PluginName":
+                case PLUGIN_NAME:
                     name = v;
                     break;
                 case "PluginType":

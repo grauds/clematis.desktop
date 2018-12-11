@@ -49,7 +49,7 @@ import com.hyperrealm.kiwi.ui.model.KTreeModel;
  * @see com.hyperrealm.kiwi.ui.model.FilesystemDataSource
  * @see com.hyperrealm.kiwi.ui.KTreeTable
  */
-
+@SuppressWarnings({"MagicNumber"})
 public class FilesystemTableView extends KPanel {
 
     private KTreeTable table;
@@ -114,7 +114,6 @@ public class FilesystemTableView extends KPanel {
      *             <code>null</code>, indicating that all available filesystems should be
      *             displayed.
      */
-    @SuppressWarnings("all")
     public void setRoot(File root) {
         FilesystemDataSource fds = new FilesystemDataSource(root, ignoreFiles);
         KTreeModel model = new ExternalKTreeModel(fds);

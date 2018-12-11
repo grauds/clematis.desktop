@@ -24,16 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-//CHECKSTYLE:OFF IllegalImportCheck
-
-import sun.audio.AudioData;
-import sun.audio.AudioDataStream;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
-import sun.audio.ContinuousAudioDataStream;
-
-//CHECKSTYLE:ON
-
+//CHECKSTYLE:OFF
 /**
  * This class represents an audio clip. The audio data is restricted to the
  * 8000Hz, single-channel u-law format. The class relies on the undocumented
@@ -47,16 +38,16 @@ import sun.audio.ContinuousAudioDataStream;
  * @see com.hyperrealm.kiwi.util.ResourceManager#getSound
  * @see com.hyperrealm.kiwi.util.ResourceLoader#getResourceAsURL
  */
-
+@SuppressWarnings("sunapi")
 public class AudioClip implements java.applet.AudioClip {
 
     static int length;
 
-    private AudioData audioData;
+    private sun.audio.AudioData audioData;
 
-    private AudioDataStream audioStream = null;
+    private sun.audio.AudioDataStream audioStream = null;
 
-    private ContinuousAudioDataStream cAudioStream = null;
+    private sun.audio.ContinuousAudioDataStream cAudioStream = null;
 
     private String name = "Untitled";
 
@@ -69,7 +60,7 @@ public class AudioClip implements java.applet.AudioClip {
      */
 
     public AudioClip(URL url) throws IOException {
-        audioData = new AudioStream(url.openStream()).getData();
+        audioData = new sun.audio.AudioStream(url.openStream()).getData();
     }
 
     /**
@@ -93,7 +84,7 @@ public class AudioClip implements java.applet.AudioClip {
      */
 
     public AudioClip(InputStream stream) throws IOException {
-        audioData = new AudioStream(stream).getData();
+        audioData = new sun.audio.AudioStream(stream).getData();
     }
 
     /**
@@ -101,8 +92,8 @@ public class AudioClip implements java.applet.AudioClip {
      */
 
     public void play() {
-        audioStream = new AudioDataStream(audioData);
-        AudioPlayer.player.start(audioStream);
+        audioStream = new sun.audio.AudioDataStream(audioData);
+        sun.audio.AudioPlayer.player.start(audioStream);
     }
 
     /**
@@ -110,8 +101,8 @@ public class AudioClip implements java.applet.AudioClip {
      */
 
     public void loop() {
-        cAudioStream = new ContinuousAudioDataStream(audioData);
-        AudioPlayer.player.start(cAudioStream);
+        cAudioStream = new sun.audio.ContinuousAudioDataStream(audioData);
+        sun.audio.AudioPlayer.player.start(cAudioStream);
     }
 
     /**
@@ -120,10 +111,10 @@ public class AudioClip implements java.applet.AudioClip {
 
     public void stop() {
         if (audioStream != null) {
-            AudioPlayer.player.stop(audioStream);
+            sun.audio.AudioPlayer.player.stop(audioStream);
         }
         if (cAudioStream != null) {
-            AudioPlayer.player.stop(cAudioStream);
+            sun.audio.AudioPlayer.player.stop(cAudioStream);
         }
     }
 
@@ -160,3 +151,5 @@ public class AudioClip implements java.applet.AudioClip {
     }
 
 }
+
+//CHECKSTYLE:ON

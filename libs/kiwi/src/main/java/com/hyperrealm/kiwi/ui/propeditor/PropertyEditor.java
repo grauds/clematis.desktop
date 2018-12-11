@@ -51,15 +51,18 @@ import com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter;
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
-
+@SuppressWarnings("MagicNumber")
 public class PropertyEditor extends KPanel {
+
     private JTree tree;
+
     private KTreeModelTreeAdapter adapter;
-    private PropertyEditorFactory factory
-        = DefaultPropertyEditorFactory.getInstance();
+
+    private PropertyEditorFactory factory = DefaultPropertyEditorFactory.getInstance();
+
     private PropertyCellEditor cellEditor;
-    private ArrayList<PropertySelectionListener> listeners
-        = new ArrayList<PropertySelectionListener>();
+
+    private ArrayList<PropertySelectionListener> listeners = new ArrayList<PropertySelectionListener>();
 
     /**
      * Construct a new, empty <code>PropertyEditor</code>.
@@ -148,7 +151,7 @@ public class PropertyEditor extends KPanel {
      * empty.
      * @since Kiwi 2.3
      */
-
+    @SuppressWarnings("ReturnCount")
     public Property getSelectedProperty() {
         TreePath path = tree.getSelectionPath();
         if (path == null) {

@@ -80,7 +80,8 @@ import com.hyperrealm.kiwi.util.ValueHolder;
 public class TableSorter extends ProxyTableModel {
 
     private static final int MAX_ROW_COUNT = 10000;
-    protected static final int SORT_DELTA = 4;
+
+    private static final int SORT_DELTA = 4;
 
     private int[] indexes;
 
@@ -289,6 +290,8 @@ public class TableSorter extends ProxyTableModel {
         tableView = table;
 
         tableView.setColumnSelectionAllowed(false);
+
+        @SuppressWarnings({"AnonInnerLength"})
         MouseAdapter listMouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
 
@@ -336,7 +339,7 @@ public class TableSorter extends ProxyTableModel {
     }
 
     /* internal code follows */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("ReturnCount")
     private int compareRowsByColumn(int row1, int row2, int column) {
 
         Class type = model.getColumnClass(column);
@@ -453,7 +456,7 @@ public class TableSorter extends ProxyTableModel {
     // between the two arrays. The number of compares appears to vary between N-1
     // and NlogN depending on the initial order but the main reason for using it
     // here is that, unlike qsort, it is stable.
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("ReturnCount")
     private void shuttlesort(int[] from, int[] to, int low, int high) {
 
         if (high - low < 2) {

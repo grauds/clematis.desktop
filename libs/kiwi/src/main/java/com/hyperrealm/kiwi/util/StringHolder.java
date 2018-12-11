@@ -96,19 +96,22 @@ public class StringHolder extends ValueHolder {
     /**
      * Compare this holder object to another.
      */
-    @SuppressWarnings("all")
     public int compareTo(Object other) {
         String v = ((StringHolder) other).getValue();
 
+        int ret;
+
         if ((v == null) && (value == null)) {
-            return (0);
+            ret = 0;
         } else if (v == null) {
-            return (1);
+            ret = 1;
         } else if (value == null) {
-            return (-1);
+            ret = -1;
         } else {
-            return (value.compareTo(v));
+            ret = value.compareTo(v);
         }
+
+        return ret;
     }
 
     /**

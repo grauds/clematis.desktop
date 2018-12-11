@@ -273,7 +273,7 @@ public class DateChooser extends KPanel implements ActionListener {
      * @return <code>true</code> if the year is a leap year, and
      * <code>false</code> otherwise.
      */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings({"MagicNumber"})
     private static boolean isLeapYear(int year) {
         return ((((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0));
     }
@@ -432,7 +432,7 @@ public class DateChooser extends KPanel implements ActionListener {
         lDate.setText(datefmt.format(selectedDate.getTime()));
     }
 
-    @SuppressWarnings("all")
+    @SuppressWarnings({"CyclomaticComplexity", "NestedIfDepth"})
     private void refresh() {
 
         lYear.setText(String.valueOf(selectedDate.get(Calendar.YEAR)));
@@ -469,7 +469,8 @@ public class DateChooser extends KPanel implements ActionListener {
                     int d0 = minDate.get(Calendar.DATE);
 
                     if (selectedDay < d0) {
-                        selectedDate.set(Calendar.DATE, selectedDay = d0);
+                        selectedDay = d0;
+                        selectedDate.set(Calendar.DATE, selectedDay);
                     }
 
                     // allow out-of-range selection
@@ -495,11 +496,9 @@ public class DateChooser extends KPanel implements ActionListener {
                     clipMax = true;
                     int d1 = maxDate.get(Calendar.DATE);
                     if (selectedDay > d1) {
-                        selectedDate.set(Calendar.DATE, selectedDay = d1);
+                        selectedDay = d1;
+                        selectedDate.set(Calendar.DATE, selectedDay);
                     }
-
-                    // allow out-of-range selection
-                    // selectedDate.set(Calendar.DATE, selectedDay);
                 }
             }
 

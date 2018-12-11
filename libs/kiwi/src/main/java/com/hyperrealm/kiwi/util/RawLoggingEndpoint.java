@@ -24,7 +24,6 @@ package com.hyperrealm.kiwi.util;
  *
  * @author Mark Lindner
  */
-@SuppressWarnings("all")
 public class RawLoggingEndpoint implements LoggingEndpoint {
 
     private static final String[] TYPES = {"INFO   ", "STATUS ", "WARNING", "ERROR  "};
@@ -44,12 +43,16 @@ public class RawLoggingEndpoint implements LoggingEndpoint {
      * @param message The message.
      */
 
+    @SuppressWarnings("MagicNumber")
     public void logMessage(int type, String message) {
-        if ((type < 0) || (type > 3)) {
-            type = 1;
+
+        int typeInt = type;
+
+        if ((typeInt < 0) || (typeInt > 3)) {
+            typeInt = 1;
         }
 
-        System.err.println(TYPES[type] + " - " + message);
+        System.err.println(TYPES[typeInt] + " - " + message);
     }
 
     /**

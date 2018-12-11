@@ -27,7 +27,7 @@ package com.hyperrealm.kiwi.util;
  * @since Kiwi 2.0
  * @deprecated ?
  */
-@SuppressWarnings("all")
+@SuppressWarnings({"LocalVariableName", "EqualsHashCode"})
 public final class BitString {
 
     private static final int WORD_LENGTH = 8;

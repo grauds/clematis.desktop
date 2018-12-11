@@ -91,7 +91,7 @@ public class DocumentBrowserFrame extends KFrame {
     }
 
     /* hide the window */
-
+    @SuppressWarnings("deprecation")
     public void hide() {
         setVisible(false);
         dispose();

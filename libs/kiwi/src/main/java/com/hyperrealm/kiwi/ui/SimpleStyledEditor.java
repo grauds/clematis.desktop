@@ -149,7 +149,7 @@ public class SimpleStyledEditor extends JTextPane {
     }
 
     // --- decoder
-    @SuppressWarnings("all")
+    @SuppressWarnings("CyclomaticComplexity")
     private void decode(Element el) {
         // decode the element
 

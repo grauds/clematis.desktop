@@ -207,19 +207,20 @@ public class KPanel extends JPanel {
      *              clipped.
      * @since Kiwi 2.2
      */
-    @SuppressWarnings("all")
     public void setAlpha(float alpha) {
-        if (alpha < 0.0f) {
-            alpha = 0.0f;
-        } else if (alpha > 1.0f) {
-            alpha = 1.0f;
+
+        float alphaInt = alpha;
+
+        if (alphaInt < 0.0f) {
+            alphaInt = 0.0f;
+        } else if (alphaInt > 1.0f) {
+            alphaInt = 1.0f;
         }
 
-        this.alpha = alpha;
+        this.alpha = alphaInt;
 
         if (alpha != 1.0f) {
-            alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                alpha);
+            alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaInt);
         } else {
             alphaComposite = null;
         }

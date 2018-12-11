@@ -194,7 +194,7 @@ public class PathEditor extends KPanel implements ActionListener, ListSelectionL
     /**
      * Handle events. This method is public as an implementation side-effect.
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("ReturnCount")
     public void actionPerformed(ActionEvent evt) {
         Object o = evt.getSource();
         boolean editing = paths.isEditing();

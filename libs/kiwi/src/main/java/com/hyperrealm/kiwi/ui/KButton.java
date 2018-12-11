@@ -191,10 +191,10 @@ public class KButton extends JButton {
 
     /*
      */
-    @SuppressWarnings("all")
     private void init() {
         setOpaque(!UIChangeManager.getButtonsAreTransparent());
 
+        @SuppressWarnings("AnonInnerLength")
         MouseListener mouseListener = new MouseListener() {
             public void mouseClicked(MouseEvent mevt) {
                 pressed = false;

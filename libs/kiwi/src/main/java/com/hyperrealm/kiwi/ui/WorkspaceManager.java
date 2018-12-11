@@ -56,6 +56,12 @@ import com.hyperrealm.kiwi.util.LocaleManager;
 @SuppressWarnings("unused")
 public class WorkspaceManager {
 
+    private static final String KIWI_DIALOG_MESSAGE_SAVE_TO = "kiwi.dialog.message.save_to";
+
+    private static final String KIWI_DIALOG_MESSAGE_SAVE_FAILED = "kiwi.dialog.message.save_failed";
+
+    private static final String UNTITLED = "(Untitled)";
+
     private ArrayList<WorkspaceEditor> editors;
 
     private final ArrayList<WorkspaceListener> listeners;
@@ -415,19 +421,19 @@ public class WorkspaceManager {
      * @see #closeAllEditors
      * @see com.hyperrealm.kiwi.ui.WorkspaceEditor#stopEditing
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings({"NestedIfDepth", "ReturnCount"})
     public boolean closeEditor(WorkspaceEditor editor) {
         if (editor.hasUnsavedChanges()) {
             activateEditor(editor);
             Object o = editor.getObject();
 
-            String msg = loc.getMessage("kiwi.dialog.message.save_to",
-                ((o != null) ? o.toString() : "(Untitled)"));
+            String msg = loc.getMessage(KIWI_DIALOG_MESSAGE_SAVE_TO,
+                ((o != null) ? o.toString() : UNTITLED));
 
             if (dialogs.showQuestionDialog(msg)) {
                 if (!editor.save()) {
                     dialogs.showMessageDialog(
-                        loc.getMessage("kiwi.dialog.message.save_failed"));
+                        loc.getMessage(KIWI_DIALOG_MESSAGE_SAVE_FAILED));
                     return (false);
                 } else {
                     editor.setChangesMade(false);
@@ -633,21 +639,21 @@ public class WorkspaceManager {
         public void internalFrameClosed(InternalFrameEvent evt) {
         }
 
-        @SuppressWarnings("all")
+        @SuppressWarnings("NestedIfDepth")
         public void internalFrameClosing(InternalFrameEvent evt) {
             WorkspaceEditor e = (WorkspaceEditor) evt.getSource();
 
             if (e.hasUnsavedChanges()) {
                 Object o = e.getObject();
 
-                String msg = loc.getMessage("kiwi.dialog.message.save_to",
+                String msg = loc.getMessage(KIWI_DIALOG_MESSAGE_SAVE_TO,
                     ((o != null) ? o.toString()
-                        : "(Untitled)"));
+                        : UNTITLED));
 
                 if (dialogs.showQuestionDialog(msg)) {
                     if (!e.save()) {
                         dialogs.showMessageDialog(
-                            loc.getMessage("kiwi.dialog.message.save_failed"));
+                            loc.getMessage(KIWI_DIALOG_MESSAGE_SAVE_FAILED));
                     } else {
                         e.setChangesMade(false);
                         removeEditor(e);

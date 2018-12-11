@@ -2,11 +2,21 @@ rootProject.name = 'clematis'
 
 include 'desktop'
 
-include 'libs/kiwi'
+include 'kiwi'
+project(':kiwi').projectDir = file('libs/kiwi')
 
-include 'plugins/instui'
-include 'plugins/launcher'
-include 'plugins/net'
-include 'plugins/rtui'
-include 'plugins/sed'
+include 'instui'
+project(':instui').projectDir = file('plugins/instui')
+
+include 'launcher'
+project(':launcher').projectDir = file('plugins/launcher')
+
+include 'net'
+project(':net').projectDir = file('plugins/net')
+
+include 'rtui'
+project(':rtui').projectDir = file('plugins/rtui')
+
+include 'sed'
+project(':sed').projectDir = file('plugins/sed')
 

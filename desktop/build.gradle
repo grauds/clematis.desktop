@@ -15,5 +15,5 @@ processResources {
 }
 
 dependencies {
-    compile project(':libs/kiwi')
+    compile project(':kiwi')
 }

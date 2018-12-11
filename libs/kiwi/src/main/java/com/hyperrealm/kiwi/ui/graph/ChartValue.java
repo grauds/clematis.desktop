@@ -36,7 +36,7 @@ import lombok.Data;
  * @see com.hyperrealm.kiwi.ui.graph.ChartLegend
  */
 @Data
-public class ChartValue implements Cloneable {
+public class ChartValue {
 
     private String name;
 

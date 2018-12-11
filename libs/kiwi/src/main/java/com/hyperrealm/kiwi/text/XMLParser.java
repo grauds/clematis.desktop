@@ -70,7 +70,7 @@ import java.io.StreamTokenizer;
 public abstract class XMLParser {
 
     private static final int STATE_NONE = 0, STATE_TAG = 1, STATE_NAME = 2,
-            STATE_EQUALS = 3, STATE_VALUE = 4, STATE_COMMENT = 5, STATE_ENTITY = 6;
+        STATE_EQUALS = 3, STATE_VALUE = 4, STATE_COMMENT = 5, STATE_ENTITY = 6;
 
     private StreamTokenizer st;
 
@@ -96,7 +96,7 @@ public abstract class XMLParser {
      *                           within text should be collapsed.
      * @since Kiwi 2.1.1
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     public XMLParser(Reader reader, boolean collapseWhitespace) {
 
         st = new StreamTokenizer(reader);
@@ -134,7 +134,7 @@ public abstract class XMLParser {
      *
      * @throws java.io.IOException If an error occurs on the input stream.
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"CyclomaticComplexity", "MethodLength", "MagicNumber"})
     public void parse() throws IOException {
 
         boolean quote = false;
@@ -167,7 +167,9 @@ public abstract class XMLParser {
                                 } else if (st.sval.charAt(st.sval.length() - 1) == '/') {
                                     e.setEmpty(true);
                                     e.setTag(st.sval.substring(0, st.sval.length() - 1));
-                                } else e.setTag(st.sval);
+                                } else {
+                                    e.setTag(st.sval);
+                                }
                                 state = STATE_NAME;
                                 break;
 
@@ -197,13 +199,14 @@ public abstract class XMLParser {
                     break;
 
                 case '>':
-                    if ((state == STATE_TAG) || (state == STATE_NAME))
+                    if ((state == STATE_TAG) || (state == STATE_NAME)) {
                         consumeElement(e);
-                    else if ((state == STATE_EQUALS) || (state == STATE_VALUE)) {
+                    } else if ((state == STATE_EQUALS) || (state == STATE_VALUE)) {
                         e.addAttribute(pname, null);
                         consumeElement(e);
-                    } else if (state == STATE_NONE)
+                    } else if (state == STATE_NONE) {
                         text.append('>');
+                    }
 
                     st.wordChars('"', '"');
                     st.wordChars('!', '!');
@@ -242,15 +245,17 @@ public abstract class XMLParser {
                     break;
 
                 case '=':
-                    if (state == STATE_EQUALS)
+                    if (state == STATE_EQUALS) {
                         state = STATE_VALUE;
+                    }
                     break;
 
                 case '!':
-                    if (state == STATE_TAG)
+                    if (state == STATE_TAG) {
                         state = STATE_COMMENT;
-                    else if (state != STATE_COMMENT)
+                    } else if (state != STATE_COMMENT) {
                         text.append('!');
+                    }
                     break;
 
                 case '&':
@@ -261,9 +266,9 @@ public abstract class XMLParser {
                     break;
 
                 case ';':
-                    if (state == STATE_NONE)
+                    if (state == STATE_NONE) {
                         text.append(';');
-                    else if (state == STATE_ENTITY) {
+                    } else if (state == STATE_ENTITY) {
                         consumeEntity(entity.toString());
                         entity.setLength(0);
                         state = STATE_NONE;
@@ -277,8 +282,9 @@ public abstract class XMLParser {
                 case '\r':
                 case '\b':
                     if (state == STATE_NONE) {
-                        if (!collapseWhitespace || lastTok != ' ')
+                        if (!collapseWhitespace || lastTok != ' ') {
                             text.append(' ');
+                        }
                     }
 
                     tok = ' ';

@@ -154,7 +154,7 @@ public class DocumentBrowserView extends KPanel {
     /**
      * May it be less brutal?
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("ReturnCount")
     private Object[] nodesForPath(String path) {
 
         StringTokenizer st = new StringTokenizer(path, "/");

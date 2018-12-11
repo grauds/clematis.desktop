@@ -336,7 +336,7 @@ public abstract class WizardView extends KPanel {
     }
 
     /* Handle events. */
-    @SuppressWarnings("all")
+    @SuppressWarnings("NestedIfDepth")
     private class ActionListener implements java.awt.event.ActionListener {
         public void actionPerformed(ActionEvent evt) {
             Object o = evt.getSource();

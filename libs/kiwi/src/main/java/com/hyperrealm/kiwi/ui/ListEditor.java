@@ -63,7 +63,7 @@ public class ListEditor extends KPanel implements ActionListener {
 
     private static final Dimension DEFAULT_SIZE = new Dimension(10, 125);
 
-    protected JList list;
+    protected JList<MutableListModel> list;
 
     private Editor editor;
 
@@ -97,6 +97,7 @@ public class ListEditor extends KPanel implements ActionListener {
      */
 
     public ListEditor(Editor editor, MutableListModel model) {
+
         this.editor = editor;
         this.model = model;
 
@@ -115,11 +116,11 @@ public class ListEditor extends KPanel implements ActionListener {
 
         try {
             Class clazz = editComponent.getClass();
-            Method method = clazz.getMethod("addActionListener",
-                ActionListener.class);
+            Method method = clazz.getMethod("addActionListener", ActionListener.class);
 
             method.invoke(editComponent, this);
         } catch (Exception ignored) {
+
         }
 
 
@@ -137,7 +138,7 @@ public class ListEditor extends KPanel implements ActionListener {
         gbc.weightx = 0;
         add(bAdd, gbc);
 
-        list = new JList(this.model);
+        list = new JList<>(this.model);
 
         list.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent evt) {

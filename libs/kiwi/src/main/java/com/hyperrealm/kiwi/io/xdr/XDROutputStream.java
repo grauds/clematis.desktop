@@ -59,7 +59,7 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     public void writeChar(char value) throws IOException {
         write((byte) 0);
         write((byte) 0);
@@ -70,12 +70,12 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     public void writeShort(short value) throws IOException {
         writeShort(value >>> 8, 0xFF & value, value);
     }
 
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     private void writeShort(int i, int i2, int value) throws IOException {
         write((byte) 0);
         write((byte) 0);
@@ -86,7 +86,7 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     public void writeUnsignedShort(int value) throws IOException {
         // will this work??
         writeShort(value >>> 8, 0xFF & value, value);
@@ -95,12 +95,12 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     public void writeInt(int value) throws IOException {
         writeInt(value >>> 24, value >>> 16, value >>> 8, 0xFF & value, value);
     }
 
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     private void writeInt(long i, long i2, long i3, long i4, long value) throws IOException {
         write((byte) (0xFF & (i)));
         write((byte) (0xFF & (i2)));
@@ -111,7 +111,7 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     public void writeUnsignedInt(long value) throws IOException {
         writeInt(value >>> 24, value >>> 16, value >>> 8, 0xFF & value, value);
     }
@@ -119,7 +119,7 @@ public class XDROutputStream extends FilterOutputStream
     /**
      *
      */
-    @SuppressWarnings({"checkstyle:magicnumber", "CheckStyle"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     public void writeLong(long value) throws IOException {
         write((byte) (0xFF & (value >>> 56)));
         write((byte) (0xFF & (value >>> 48)));

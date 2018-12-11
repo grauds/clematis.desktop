@@ -237,7 +237,7 @@ public class IDMap<T> {
 
     /*
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings({"MagicNumber", "CyclomaticComplexity"})
     private void doSort(int off, int len) {
         // Insertion sort on smallest arrays
         if (len < 7) {

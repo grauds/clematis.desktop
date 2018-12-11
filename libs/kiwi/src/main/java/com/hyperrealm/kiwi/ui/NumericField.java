@@ -179,7 +179,6 @@ public class NumericField extends DataField<Number> {
      *
      * @param value The value.
      */
-    @SuppressWarnings("all")
     public synchronized void setValue(double value) {
         this.value = value;
         String s = "?";

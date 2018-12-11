@@ -20,7 +20,6 @@
 package com.hyperrealm.kiwi.ui.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JTree;
 import javax.swing.event.TableModelEvent;

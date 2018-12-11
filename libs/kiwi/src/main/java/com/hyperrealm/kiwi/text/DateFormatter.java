@@ -136,7 +136,7 @@ public class DateFormatter {
 
     /* pattern translator */
 
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings({"CyclomaticComplexity", "MultipleStringLiterals"})
     private String constructPattern(String text) throws IllegalArgumentException {
         StringBuilder sb = new StringBuilder();
         boolean escaped = false;

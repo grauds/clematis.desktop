@@ -26,6 +26,7 @@ package com.hyperrealm.kiwi.util;
  * appropriate to use another object as an identifier. This class allows
  * an object to be associated with either an integer or an arbitrary object.
  *
+ * @param <O>
  * @param <T>
  * @author Mark Lindner
  */
