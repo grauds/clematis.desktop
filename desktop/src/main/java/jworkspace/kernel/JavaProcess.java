@@ -31,11 +31,14 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import static com.hyperrealm.kiwi.ui.SplashScreen.MILLISEC_IN_SECOND;
 
 import jworkspace.LangResource;
 import jworkspace.installer.ApplicationDataSource;
@@ -44,9 +47,27 @@ import jworkspace.util.WorkspaceError;
 /**
  * This class represent a single java runtime process,
  * with all required means for diagnostics and management.
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 public final class JavaProcess {
 
+    private static final int DEFAULT_FONT_SIZE = 13;
+
+    private static final String STARTED_WITH_COMMAND_LINE = "> Started with command line: ";
+
+    private static final String WHITESPACE = " ";
+
+    private static final String JAVA_PROCESS_MESSAGE = "JavaProcess.Process";
+
+    private static final String JAVA_PROCESS_STARTED_AT = "JavaProcess.StartedAt";
+
+    private static final String JAVA_PROCESS_EXIT_VALUE = "JavaProcess.ExitValue";
+
+    private static final String LEFT_BR = " [ ";
+
+    private static final String SEC = "sec";
     /**
      * Default process name
      */
@@ -77,13 +98,12 @@ public final class JavaProcess {
     private JTextArea vlog = new JTextArea() {
 
         public void setFont(Font font) {
-            font = new Font("Monospaced", Font.PLAIN, 13);
-            super.setFont(font);
+            super.setFont(new Font("Monospaced", Font.PLAIN, DEFAULT_FONT_SIZE));
         }
 
         public void append(String str) {
             super.append(str + "\n");
-            Rectangle b = new Rectangle(0, getHeight() - 13, getWidth(), getHeight());
+            Rectangle b = new Rectangle(0, getHeight() - DEFAULT_FONT_SIZE, getWidth(), getHeight());
             scrollRectToVisible(b);
         }
 
@@ -105,9 +125,9 @@ public final class JavaProcess {
             return;
         }
 
-        for (String _arg : args) {
-            log.append(">" + "Started with command line" + " ").append(_arg);
-            vlog.append(">" + "Started with command line" + " " + _arg);
+        for (String arg : args) {
+            log.append(STARTED_WITH_COMMAND_LINE).append(arg);
+            vlog.append(STARTED_WITH_COMMAND_LINE + arg);
         }
 
         setName(processName);
@@ -122,48 +142,47 @@ public final class JavaProcess {
         ReaderThread errorStreamReader = new ReaderThread(process.getErrorStream());
         errorStreamReader.start();
 
-        Thread waitThread = new Thread(new Runnable() {
-
-            public void run() {
-                waitForLogs();
-            }
-        });
+        Thread waitThread = new Thread(this::waitForLogs);
         waitThread.start();
 
-        log.append(LangResource.getString("JavaProcess.Process"))
-            .append(" ")
+        log.append(LangResource.getString(JAVA_PROCESS_MESSAGE))
+            .append(WHITESPACE)
             .append(processName)
-            .append(" ")
-            .append(LangResource.getString("JavaProcess.StartedAt"))
-            .append(" ")
+            .append(WHITESPACE)
+            .append(LangResource.getString(JAVA_PROCESS_STARTED_AT))
+            .append(WHITESPACE)
             .append(java.text.DateFormat.getInstance().format(startTime));
 
-        vlog.append(LangResource.getString("JavaProcess.Process") +
-            " " + processName +
-            " " + LangResource.getString("JavaProcess.StartedAt") +
-            " " + java.text.DateFormat.getInstance().format(startTime));
+        vlog.append(LangResource.getString(JAVA_PROCESS_MESSAGE)
+            + WHITESPACE
+            + processName
+            + WHITESPACE
+            + LangResource.getString(JAVA_PROCESS_STARTED_AT)
+            + WHITESPACE
+            + java.text.DateFormat.getInstance().format(startTime));
         alive = true;
     }
 
     private void waitForLogs() {
-        for (; ; ) {
+        for (;;) {
             try {
                 int x = process.waitFor();
-                log.append(" [ ").append(java.text.DateFormat.getInstance()
+                log.append(LEFT_BR).append(java.text.DateFormat.getInstance()
                     .format(startTime))
-                    .append(" ")
-                    .append(LangResource.getString("JavaProcess.ExitValue"))
-                    .append(" ")
+                    .append(WHITESPACE)
+                    .append(LangResource.getString(JAVA_PROCESS_EXIT_VALUE))
+                    .append(WHITESPACE)
                     .append(x);
-                vlog.append(" [ " +
-                    java.text.DateFormat.getInstance().format(startTime)
-                    + " " + LangResource.getString("JavaProcess.ExitValue") +
-                    " " + x);
+                vlog.append(LEFT_BR
+                    + DateFormat.getInstance().format(startTime)
+                    + WHITESPACE
+                    + LangResource.getString(JAVA_PROCESS_EXIT_VALUE)
+                    + WHITESPACE
+                    + x);
                 alive = false;
                 break;
             } catch (InterruptedException ex) {
-                WorkspaceError.exception
-                    (LangResource.getString("JavaProcess.CannotWait"), ex);
+                WorkspaceError.exception(LangResource.getString("JavaProcess.CannotWait"), ex);
             }
         }
     }
@@ -172,7 +191,7 @@ public final class JavaProcess {
      * Returns time, elapsed from process start.
      */
     private long getElapsedTime() {
-        return ((System.currentTimeMillis() - startTime.getTime()) / 1000);
+        return (System.currentTimeMillis() - startTime.getTime()) / MILLISEC_IN_SECOND;
     }
 
     /**
@@ -187,14 +206,13 @@ public final class JavaProcess {
     /**
      * Sets process name.
      *
-     * @param process_name java.lang.String
+     * @param processName java.lang.String
      */
-    public void setName(java.lang.String process_name) {
-        if (process_name.startsWith(ApplicationDataSource.ROOT)) {
-            this.processName = process_name.substring(ApplicationDataSource.ROOT.
-                length());
+    public void setName(java.lang.String processName) {
+        if (processName.startsWith(ApplicationDataSource.ROOT)) {
+            this.processName = processName.substring(ApplicationDataSource.ROOT.length());
         } else {
-            this.processName = process_name;
+            this.processName = processName;
         }
         /*
          * Set name for log.
@@ -248,8 +266,11 @@ public final class JavaProcess {
      */
     private class ReaderThread extends Thread {
 
+        static final int BUFFER_SIZE = 360;
+
         private InputStream stream;
-        private byte[] buf = new byte[360];
+
+        private byte[] buf = new byte[BUFFER_SIZE];
 
         ReaderThread(InputStream stream) {
             this.stream = stream;
@@ -257,23 +278,28 @@ public final class JavaProcess {
         }
 
         public void run() {
-            for (; ; ) {
+            for (;;) {
                 try {
                     int b = stream.read(buf);
                     if (b > 0) {
                         String str = new String(buf, 0, b);
-                        log.append(" [ ")
+                        log.append(LEFT_BR)
                             .append(getElapsedTime())
-                            .append(" ")
-                            .append("sec")
-                            .append(" ")
+                            .append(WHITESPACE)
+                            .append(SEC)
+                            .append(WHITESPACE)
                             .append(str);
 
                         StringTokenizer st = new StringTokenizer(str, "\n\r\f\t");
 
                         while (st.hasMoreTokens()) {
                             String little = st.nextToken();
-                            vlog.append(" [ " + getElapsedTime() + " " + "sec" + " " + little);
+                            vlog.append(LEFT_BR
+                                + getElapsedTime()
+                                + WHITESPACE
+                                + SEC
+                                + WHITESPACE
+                                + little);
                         }
                     } else {
                         if (b < 0) {

@@ -25,5 +25,8 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
+/**
+ * @author Anton Troshin
+ */
 public class WorkspaceSecurityManager extends SecurityManager {
 }

@@ -35,23 +35,38 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
-import com.hyperrealm.kiwi.util.plugin.PluginLocator;
-import jworkspace.installer.ApplicationDataSource;
-import jworkspace.util.WorkspaceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hyperrealm.kiwi.util.plugin.Plugin;
+import com.hyperrealm.kiwi.util.plugin.PluginException;
+import com.hyperrealm.kiwi.util.plugin.PluginLocator;
+
+import jworkspace.installer.ApplicationDataSource;
+import jworkspace.util.WorkspaceError;
+
 /**
  * Runtime manager is a core component for Java Workspace to start/stop processes registered in installer
+ *
+ * @author Anton Troshin
  */
 public final class RuntimeManager {
 
-    /**
-     * Default logger
-     */
     private static final Logger LOG = LoggerFactory.getLogger(RuntimeManager.class);
+
+    private static final String WHITESPACE = " ";
+
+    private static final String PROGRAMS = "programs/";
+
+    private static final String USER_DIR = "user.dir";
+
+    private static final String CANNOT_SET_WORKING_DIRECTORY = "Cannot set working directory";
+
+    private static final String CANNOT_START_APPLICATION = "Cannot start application";
+
+    private static final String CANNOT_SET_OLD_WORKING_DIRECTORY = "Cannot set old working directory";
+
+    private static final String SLASH = "/";
 
     /**
      * The list of all external processes in Java Workspace.
@@ -81,9 +96,9 @@ public final class RuntimeManager {
     private synchronized void executeExternalProcess(String path) {
 
         String[] args = Workspace.getInstallEngine().getInvocationArgs(path);
-        String working_dir = Workspace.getInstallEngine().getWorkingDir(path);
+        String workingDir = Workspace.getInstallEngine().getWorkingDir(path);
 
-        executeExternalProcess(args, working_dir, trimPath(path));
+        executeExternalProcess(args, workingDir, trimPath(path));
     }
 
     /**
@@ -94,8 +109,8 @@ public final class RuntimeManager {
      * @return trimmed path
      */
     private String trimPath(String path) {
-        if (path.startsWith("programs/")) {
-            path = path.substring("programs/".length());
+        if (path.startsWith(PROGRAMS)) {
+            return path.substring(PROGRAMS.length());
         }
         return path;
     }
@@ -103,20 +118,21 @@ public final class RuntimeManager {
     /**
      * Executes program launching separate process.
      */
-    public void executeExternalProcess(String[] args, String working_dir, String name) {
+    public void executeExternalProcess(String[] args, String workingDir, String name) {
 
-        String old_working_dir = System.getProperty("user.dir");
+        String oldWorkingDir = System.getProperty(USER_DIR);
+        String workingDirInt = workingDir;
 
         if (args == null) {
             return;
         }
 
-        if (working_dir == null) {
-            working_dir = System.getProperty("user.dir");
+        if (workingDirInt == null) {
+            workingDirInt = System.getProperty(USER_DIR);
         } else {
-            File wd = new File(working_dir);
+            File wd = new File(workingDirInt);
             if (!wd.exists()) {
-                working_dir = System.getProperty("user.dir");
+                workingDirInt = System.getProperty(USER_DIR);
             }
         }
 
@@ -124,9 +140,8 @@ public final class RuntimeManager {
             /*
              * Try to set working directory
              */
-            if (!NativeLib.setCurrentDir(working_dir)) {
-                throw new IOException("Cannot set working directory"
-                    + " " + working_dir);
+            if (!NativeLib.setCurrentDir(workingDir)) {
+                throw new IOException(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + workingDirInt);
             }
             /*
              * Create java process
@@ -138,48 +153,48 @@ public final class RuntimeManager {
             processes.addElement(process);
 
         } catch (IOException | Error e) {
-            WorkspaceError.exception("Cannot start application", e);
+            WorkspaceError.exception(CANNOT_START_APPLICATION, e);
         }
 
         try {
             /*
              * Try to set old working directory
              */
-            if (!NativeLib.setCurrentDir(old_working_dir)) {
-                WorkspaceError.msg("Cannot set old working directory" + " " + old_working_dir);
+            if (!NativeLib.setCurrentDir(oldWorkingDir)) {
+                WorkspaceError.msg(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
             }
 
         } catch (Error err) {
-            WorkspaceError.exception("Cannot start application", err);
+            WorkspaceError.exception(CANNOT_START_APPLICATION, err);
         }
     }
 
     /**
      * Execute native command
      */
-    public void executeNativeCommand(String command, String working_dir) {
+    public void executeNativeCommand(String command, String workingDir) {
 
-        String old_working_dir = System.getProperty("user.dir");
+        String oldWorkingDir = System.getProperty(USER_DIR);
 
         try {
             /*
              * Try to set working directory
              */
-            if (working_dir != null) {
-                if (!NativeLib.setCurrentDir(working_dir)) {
-                    WorkspaceError.msg("Cannot set working directory" + " " + old_working_dir);
+            if (workingDir != null) {
+                if (!NativeLib.setCurrentDir(workingDir)) {
+                    WorkspaceError.msg(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
                 }
             }
             Runtime.getRuntime().exec(command);
         } catch (IOException ex) {
             WorkspaceError.exception("Cannot execute native command", ex);
         }
-        if (working_dir != null) {
+        if (workingDir != null) {
             /*
              * Try to set old working directory
              */
-            if (!NativeLib.setCurrentDir(old_working_dir)) {
-                WorkspaceError.msg("Cannot set old working directory" + " " + old_working_dir);
+            if (!NativeLib.setCurrentDir(oldWorkingDir)) {
+                WorkspaceError.msg(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
             }
         }
     }
@@ -193,14 +208,16 @@ public final class RuntimeManager {
          * If application is launched from console, it has not root element prepended, that is
          * necessary for correct installation engine navigation.
          */
-        if (!path.startsWith(ApplicationDataSource.ROOT)) {
-            if (!path.startsWith("/")) {
-                path = ApplicationDataSource.ROOT + "/" + path;
+        String pathInt = path;
+
+        if (!pathInt.startsWith(ApplicationDataSource.ROOT)) {
+            if (!pathInt.startsWith(SLASH)) {
+                pathInt = ApplicationDataSource.ROOT + SLASH + pathInt;
             } else {
-                path = ApplicationDataSource.ROOT + path;
+                pathInt = ApplicationDataSource.ROOT + pathInt;
             }
         }
-        if (Workspace.getInstallEngine().isSeparateProcess(path)) {
+        if (Workspace.getInstallEngine().isSeparateProcess(pathInt)) {
             executeExternalProcess(path);
         }
     }
@@ -268,12 +285,12 @@ public final class RuntimeManager {
      */
     public Plugin[] loadPlugins(String directory) {
 
-        RuntimeManager.LOG.info(">" + "Loading plugins from " + directory);
+        RuntimeManager.LOG.info("> Loading plugins from " + directory);
 
         List<Plugin> plugins = scanPluginsDir(directory);
         Plugin[] retvalue = plugins.toArray(new Plugin[0]);
 
-        RuntimeManager.LOG.info(">" + "Plugins from " + directory + " are loaded");
+        RuntimeManager.LOG.info("> Plugins from " + directory + " are loaded");
 
         return retvalue;
     }

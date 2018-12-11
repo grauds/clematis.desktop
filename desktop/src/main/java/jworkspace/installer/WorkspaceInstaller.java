@@ -55,16 +55,9 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Datasources for all types of entries.
      */
-    private static DefinitionDataSource jvmData, libraryData, applicationData;
-
-    //static final String CK_DATADIR = "jwinstaller.datadir", CK_PROLOG = "jwinstaller.script_prolog";
-
-    //static ConfigFile config;
-    /**
-     * Dynamic tree models are used by UI components
-     * to build visual tree against virtual models.
-     */
-    private static DefaultKTreeModel jvmModel, libraryModel, applicationModel;
+    static DefinitionDataSource jvmData;
+    static DefinitionDataSource libraryData;
+    private static DefinitionDataSource applicationData;
     /**
      * Default logger
      */
@@ -80,7 +73,11 @@ public class WorkspaceInstaller implements InstallEngine {
      * HINT: relogin user.
      */
     private static File dataRoot = null;
-
+    /**
+     * Dynamic tree models are used by UI components
+     * to build visual tree against virtual models.
+     */
+    private DefaultKTreeModel jvmModel, libraryModel, applicationModel;
     /**
      * Default public constructor
      */

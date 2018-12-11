@@ -31,8 +31,9 @@ import javax.swing.JOptionPane;
 import com.hyperrealm.kiwi.util.plugin.PluginContext;
 
 /**
- * Workspace plugin context defines shared
- * workspace resources for use in plugins.
+ * Workspace plugin context defines shared workspace resources for use in plugins.
+ *
+ * @author Anton Troshin
  */
 public class WorkspacePluginContext implements PluginContext {
 

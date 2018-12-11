@@ -27,37 +27,41 @@ package jworkspace.kernel;
 */
 
 
+import java.awt.Frame;
 import java.io.File;
-import java.io.IOException;
 
-import kiwi.ui.dialog.LoginValidator;
+import com.hyperrealm.kiwi.ui.dialog.LoginDialog;
+
 
 /**
  * Login Validator is a specific component that executes validation of input parameters via profile engine methods.
+ *
+ * @author Anton Troshin
  */
-public class WorkspaceLoginValidator implements LoginValidator {
+public class WorkspaceLoginValidator extends LoginDialog {
+
+    public WorkspaceLoginValidator(Frame parent, String comment) {
+        super(parent, comment);
+    }
+
+    public WorkspaceLoginValidator(Frame parent, String title, String comment) {
+        super(parent, title, comment);
+    }
 
     /**
      * Validates input parameters.
      */
     public boolean validate(String name, String password) {
-        if (name == null || name.trim().equals("")) {
-            return false;
-        }
-        try {
-            File file = File.createTempFile(name + "_check", "tmp");
-            file.delete();
-        } catch (IOException ex) {
-            return false;
-        }
-        try {
-            Workspace.getProfilesEngine().login(name, password);
-        } catch (Exception ex) {
-            return false;
+        if (name != null && !name.trim().equals("")) {
+            try {
+                File file = File.createTempFile(name + "_check", "tmp");
+                if (file.delete()) {
+                    Workspace.getProfilesEngine().login(name, password);
+                }
+            } catch (Exception ex) {
+                return false;
+            }
         }
         return true;
-    }
-
-    public void validationCancelled() {
     }
 }

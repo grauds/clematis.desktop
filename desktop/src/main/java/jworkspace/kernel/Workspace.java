@@ -42,8 +42,12 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hyperrealm.kiwi.util.Config;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
+
 import jworkspace.LangResource;
 import jworkspace.api.GUI;
 import jworkspace.api.IEngine;
@@ -51,15 +55,13 @@ import jworkspace.api.IUserProfileEngine;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.InstallEngine;
 import jworkspace.util.WorkspaceError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Workspace is a core class for Java Workspace, which dispatches messages and commands from users. This class also
  * initializes and manages ENGINES, it performs such tasks as loading and saving of user settings,
  * responding to command processor and managing plugins.
  *
- * @since 1.0
+ * @author Anton Troshin
  */
 @SuppressWarnings("unused")
 public final class Workspace {
@@ -118,6 +120,24 @@ public final class Workspace {
      */
     private static final ResourceManager RESOURCE_MANAGER = new ResourceManager();
     /**
+     * String constants
+     */
+    private static final String WORKSPACE_LOGIN_FAILURE = "Workspace.login.failure";
+
+    private static final String WORKSPACE_LOGIN_LOAD_FAILED = "Workspace.login.loadFailed";
+
+    private static final String USER_DIR = "user.dir";
+
+    private static final String WHITESPACE = " ";
+
+    private static final String PLUGINS = "plugins";
+
+    private static final String WORKSPACE_ENGINE_LOAD_FAILED = "Workspace.engine.loadFailed";
+
+    private static final String WORKSPACE_ENGINE_SAVE_FAILED = "Workspace.engine.saveFailed";
+
+    private static final String EMPTY_STRING = "#\n";
+    /**
      * User profile engine interface
      */
     private static IUserProfileEngine profilesEngine = null;
@@ -143,6 +163,12 @@ public final class Workspace {
      * User profile engine clazz name.
      */
     private static String usersAuthenticationClassName = null;
+
+    /**
+     * Class is never instantiated
+     */
+    private Workspace() {
+    }
 
     /**
      * Add ENGINE
@@ -192,48 +218,48 @@ public final class Workspace {
          */
         if (isGUIModified()) {
             JOptionPane.showMessageDialog(gui.getFrame(), "Please save data before logging out");
-            return;
-        }
+        } else {
 
-        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
+            ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
 
-        int result = JOptionPane.showConfirmDialog(gui.getFrame(),
-            LangResource.getString("Workspace.logOff.question")
-                + " " + getProfilesEngine().getUserName() + " ?",
-            LangResource.getString("Workspace.logOff.title"),
-            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
+            int result = JOptionPane.showConfirmDialog(gui.getFrame(),
+                LangResource.getString("Workspace.logOff.question")
+                    + WHITESPACE + getProfilesEngine().getUserName() + " ?",
+                LangResource.getString("Workspace.logOff.title"),
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
 
 
-        if (result == JOptionPane.YES_OPTION) {
+            if (result == JOptionPane.YES_OPTION) {
 
-            killAllProcesses();
+                killAllProcesses();
 
-            saveAndResetUI();
-            saveEngines();
-            USER_PLUGINS.clear();
-            removeAllRegisteredComponents();
+                saveAndResetUI();
+                saveEngines();
+                USER_PLUGINS.clear();
+                removeAllRegisteredComponents();
 
-            getRuntimeManager().resetPluginsCache();
+                getRuntimeManager().resetPluginsCache();
 
-            try {
-                profilesEngine.logout();
-                profilesEngine.getLoginDlg().setVisible(true);
-            } catch (Exception e) {
-                WorkspaceError.exception(LangResource.getString("Workspace.login.failure"), e);
-                return;
-            }
+                try {
+                    profilesEngine.logout();
+                    profilesEngine.getLoginDlg().setVisible(true);
+                } catch (Exception e) {
+                    WorkspaceError.exception(LangResource.getString(WORKSPACE_LOGIN_FAILURE), e);
+                    return;
+                }
 
-            loadEngines();
+                loadEngines();
 
-            USER_PLUGINS.clear();
+                USER_PLUGINS.clear();
 
-            loadUserPlugins();
+                loadUserPlugins();
 
-            try {
-                gui.load();
-            } catch (IOException ex) {
-                WorkspaceError.exception(gui.getName() + " "
-                    + LangResource.getString("Workspace.login.loadFailed"), ex);
+                try {
+                    gui.load();
+                } catch (IOException ex) {
+                    WorkspaceError.exception(gui.getName() + WHITESPACE
+                        + LangResource.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
+                }
             }
         }
     }
@@ -247,7 +273,7 @@ public final class Workspace {
             gui.save();
             gui.reset();
         } catch (IOException ex) {
-            WorkspaceError.exception(gui.getName() + " "
+            WorkspaceError.exception(gui.getName() + WHITESPACE
                 + LangResource.getString("Workspace.logOff.saveFailed"), ex);
         }
     }
@@ -285,8 +311,7 @@ public final class Workspace {
                     profilesEngine.logout();
                     profilesEngine.save();
                 } catch (Exception e) {
-                    WorkspaceError.exception
-                        (LangResource.getString("Workspace.logout.failure"), e);
+                    WorkspaceError.exception(LangResource.getString("Workspace.logout.failure"), e);
                 }
             }
             Workspace.LOG.info("> 1999 - 2018 Copyright Anton Troshin");
@@ -363,9 +388,9 @@ public final class Workspace {
     public static String getUserHome() {
 
         String home = System.getProperty("user.home");
-        if (!home.startsWith(System.getProperty("user.dir"))) {
-            home = System.getProperty("user.dir") +
-                File.separator + Workspace.getProfilesEngine().getPath();
+        if (!home.startsWith(System.getProperty(USER_DIR))) {
+            home = System.getProperty(USER_DIR)
+                + File.separator + Workspace.getProfilesEngine().getPath();
         }
         return home + File.separator;
     }
@@ -387,19 +412,22 @@ public final class Workspace {
             }
         }
 
-        if (alive) {
-            killall = JOptionPane.showConfirmDialog(gui.getFrame(),
-                LangResource.getString("Workspace.killAll.question"),
-                LangResource.getString("Workspace.killAll.title"),
-                JOptionPane.YES_NO_OPTION);
-            if (killall == JOptionPane.YES_OPTION) {
-                for (int pr = 0; pr < pcount; pr++) {
-                    if (Workspace.getRuntimeManager().getAllProcesses()[pr] != null) {
-                        Workspace.getRuntimeManager().getAllProcesses()[pr].kill();
-                    }
+        if (!alive) {
+            return;
+        }
+
+        killall = JOptionPane.showConfirmDialog(gui.getFrame(),
+            LangResource.getString("Workspace.killAll.question"),
+            LangResource.getString("Workspace.killAll.title"),
+            JOptionPane.YES_NO_OPTION);
+        if (killall == JOptionPane.YES_OPTION) {
+            for (int pr = 0; pr < pcount; pr++) {
+                if (Workspace.getRuntimeManager().getAllProcesses()[pr] != null) {
+                    Workspace.getRuntimeManager().getAllProcesses()[pr].kill();
                 }
             }
         }
+
     }
 
     /**
@@ -438,7 +466,7 @@ public final class Workspace {
      * reference to object, loaded dynamically as service. Usually this should be called by
      * UI shells, that take advantage of service functionality.
      */
-    private static Object getService(String clazz_name) {
+    private static Object getService(String clazzName) {
 
         Iterator it = SYSTEM_PLUGINS.iterator();
 
@@ -446,7 +474,7 @@ public final class Workspace {
 
         while (it.hasNext()) {
             plugin = (Plugin) it.next();
-            if (plugin.getClassName().equals(clazz_name)) {
+            if (plugin.getClassName().equals(clazzName)) {
                 break;
             }
         }
@@ -455,7 +483,7 @@ public final class Workspace {
 
         while (it.hasNext()) {
             plugin = (Plugin) it.next();
-            if (plugin.getClassName().equals(clazz_name)) {
+            if (plugin.getClassName().equals(clazzName)) {
                 break;
             }
         }
@@ -485,20 +513,20 @@ public final class Workspace {
             if (!c.isInterface()) {
                 profilesEngine = (IUserProfileEngine) c.newInstance();
             }
-            Workspace.LOG.info(">" + "User profile engine is loaded");
+            Workspace.LOG.info("> User profile engine is loaded");
 
             c = Class.forName(Workspace.installerClassName);
             if (!c.isInterface()) {
                 installEngine = (InstallEngine) c.newInstance();
                 addEngine(installEngine);
             }
-            Workspace.LOG.info(">" + "Installer is loaded");
+            Workspace.LOG.info("> Installer is loaded");
 
             c = Class.forName(Workspace.guiClassName);
             if (!c.isInterface()) {
                 gui = (GUI) c.newInstance();
                 addListener(gui);
-                Workspace.LOG.info(">" + "guiClassName is loaded");
+                Workspace.LOG.info("> UI is loaded");
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             WorkspaceError.exception(LangResource.getString("Workspace.load.abort"), e);
@@ -507,8 +535,7 @@ public final class Workspace {
 
         // LAUNCH SYSTEM PLUGINS FROM PLUGINS DIRECTORY
 
-        String fileName = "plugins";
-        addSystemPlugins(Workspace.getRuntimeManager().loadPlugins(fileName));
+        addSystemPlugins(Workspace.getRuntimeManager().loadPlugins(PLUGINS));
     }
 
     private static void loadEngines() {
@@ -518,9 +545,9 @@ public final class Workspace {
             } catch (IOException ex) {
                 String name = engine.getName();
                 WorkspaceError.exception(name
-                    + " " + LangResource.getString("Workspace.engine.loadFailed"), ex);
+                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_LOAD_FAILED), ex);
                 Workspace.LOG.error(name
-                    + " " + LangResource.getString("Workspace.engine.loadFailed"
+                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_LOAD_FAILED
                     + ex.toString()));
             }
         }
@@ -534,9 +561,9 @@ public final class Workspace {
             } catch (IOException ex) {
                 String name = engine.getName();
                 WorkspaceError.exception(name
-                    + " " + LangResource.getString("Workspace.engine.saveFailed"), ex);
+                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED), ex);
                 Workspace.LOG.error(name
-                    + " " + LangResource.getString("Workspace.engine.saveFailed"
+                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED
                     + ex.toString()));
             }
         }
@@ -544,7 +571,7 @@ public final class Workspace {
 
     private static void loadUserPlugins() {
 
-        String fileName = Workspace.getUserHome() + File.separator + "plugins";
+        String fileName = Workspace.getUserHome() + File.separator + PLUGINS;
         addUserPlugins(Workspace.getRuntimeManager().loadPlugins(fileName));
     }
 
@@ -581,12 +608,9 @@ public final class Workspace {
                     System.exit(0);
                 }
             } else if (par.equalsIgnoreCase("-VERSION")) {
-                System.out.println(Workspace.getVersion());
                 if (paramLength == 1) {
                     System.exit(0);
                 }
-            } else if (par.equalsIgnoreCase("-loglevel")) {
-                System.out.println("Feature is not supported in JWorkspace 2.0");
             }
         }
 
@@ -596,11 +620,11 @@ public final class Workspace {
     public static void start(String[] args) {
 
         long start = System.currentTimeMillis();
-        Workspace.LOG.info(">" + "Starting" + " " + Workspace.getVersion());
+        Workspace.LOG.info(">" + "Starting" + WHITESPACE + Workspace.getVersion());
         Config cfg = new Config(getConfigHeader().toString());
         try {
-            InputStream in = new FileInputStream(System.getProperty("user.dir") +
-                File.separator + CONFIG_JWCONF_CFG);
+            InputStream in = new FileInputStream(System.getProperty(USER_DIR)
+                + File.separator + CONFIG_JWCONF_CFG);
 
             cfg.load(in);
 
@@ -610,8 +634,12 @@ public final class Workspace {
                 + ". Continuing with defaults");
         }
 
-        Workspace.installerClassName = cfg.getString("install_engine", "jworkspace.installerClassName.WorkspaceInstaller");
-        Workspace.usersAuthenticationClassName = cfg.getString("profile_engine", "jworkspace.users.UserProfileEngine");
+        Workspace.installerClassName = cfg.getString("install_engine",
+            "jworkspace.installerClassName.WorkspaceInstaller");
+
+        Workspace.usersAuthenticationClassName = cfg.getString("profile_engine",
+            "jworkspace.users.UserProfileEngine");
+
         Workspace.guiClassName = cfg.getString("gui", "jworkspace.ui.WorkspaceGUI");
 
         try {
@@ -623,7 +651,7 @@ public final class Workspace {
         }
 
         long end = System.currentTimeMillis();
-        System.out.println("Started in: " + (end - start) + " millis");
+        LOG.info("Started in: " + (end - start) + " millis");
     }
 
     /**
@@ -634,11 +662,11 @@ public final class Workspace {
     private static StringBuffer getConfigHeader() {
 
         StringBuffer sb = new StringBuffer();
-        sb.append("#\n");
+        sb.append(EMPTY_STRING);
         sb.append("# Java Workspace kernel configuration. This file configures classes for\n");
         sb.append("# three kernel engines. If any of these classes are incorrectly specified,\n");
         sb.append("# kernel will resort to the default classes.\n");
-        sb.append("#\n");
+        sb.append(EMPTY_STRING);
 
         return sb;
     }
@@ -647,6 +675,7 @@ public final class Workspace {
      * This method is responsible for Workspace initialization.
      * It performs full startup procedure and logs on user.
      */
+    @SuppressWarnings("MagicNumber")
     private static void initWorkspace(String[] args) {
 
         int paramLength = args != null ? args.length : 0;
@@ -701,7 +730,7 @@ public final class Workspace {
             try {
                 profilesEngine.login(quickLogin, "");
             } catch (Exception ex) {
-                WorkspaceError.exception(LangResource.getString("Workspace.login.failure"), ex);
+                WorkspaceError.exception(LangResource.getString(WORKSPACE_LOGIN_FAILURE), ex);
                 quickLogin = null;
             }
         }
@@ -715,9 +744,10 @@ public final class Workspace {
         try {
             gui.load();
         } catch (IOException ex) {
-            WorkspaceError.exception(gui.getName() + " "
-                + LangResource.getString("Workspace.login.loadFailed"), ex);
+            WorkspaceError.exception(gui.getName() + WHITESPACE
+                + LangResource.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
         }
         logo.dispose();
     }
+
 }

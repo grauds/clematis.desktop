@@ -30,15 +30,19 @@ import java.awt.Image;
 import java.io.IOException;
 import java.util.HashMap;
 
-import com.hyperrealm.kiwi.util.ResourceNotFoundException;
-import jworkspace.WorkspaceResourceAnchor;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hyperrealm.kiwi.util.ResourceNotFoundException;
+
+import jworkspace.WorkspaceResourceAnchor;
+
 /**
  * Special resource manager that takes advantage of Apache Commons image loading library.
+ *
+ * @author Anton Troshin
  */
 public class ResourceManager extends com.hyperrealm.kiwi.util.ResourceManager {
 

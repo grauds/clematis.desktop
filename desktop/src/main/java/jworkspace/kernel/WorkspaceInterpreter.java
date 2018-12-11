@@ -25,21 +25,22 @@ package jworkspace.kernel;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-import jworkspace.util.WorkspaceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//
+import bsh.EvalError;
+import bsh.Interpreter;
+//
+import jworkspace.util.WorkspaceError;
 
 /**
- *
+ * @author Anton Troshin
  */
 public final class WorkspaceInterpreter {
 
@@ -47,6 +48,14 @@ public final class WorkspaceInterpreter {
      * Default logger
      */
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInterpreter.class);
+    /**
+     *
+     */
+    private static final String SEMICOLON = ";";
+    /**
+     *
+     */
+    private static final String CANNOT_INTERPRET = "Cannot interpret ";
     /**
      * Single instance
      */
@@ -68,7 +77,7 @@ public final class WorkspaceInterpreter {
      */
     private InputStream in;
 
-    public synchronized static WorkspaceInterpreter getInstance() {
+    public static synchronized WorkspaceInterpreter getInstance() {
 
         if (ourInstance == null) {
             ourInstance = new WorkspaceInterpreter();
@@ -82,7 +91,7 @@ public final class WorkspaceInterpreter {
      */
     private synchronized void startInterpreter() {
 
-        WorkspaceInterpreter.LOG.info(">" + "Starting Bean Shell Interpreter");
+        WorkspaceInterpreter.LOG.info("> Starting Bean Shell Interpreter");
         outPipe = new PipedOutputStream();
         try {
             in = new PipedInputStream(outPipe);
@@ -100,32 +109,33 @@ public final class WorkspaceInterpreter {
     /**
      * Executes script file
      */
-    public void sourceScriptFile(String file_name) {
+    public void sourceScriptFile(String fileName) {
         try {
             if (!isAlive()) {
                 startInterpreter();
             }
-            interpreter.source(file_name);
+            interpreter.source(fileName);
         } catch (EvalError | IOException ex) {
-            WorkspaceError.exception("Cannot interpret" + " " + file_name, ex);
+            WorkspaceError.exception(CANNOT_INTERPRET + fileName, ex);
         }
     }
 
     /**
      * Executes script
      */
-    public void executeScript(String command_line) {
+    public void executeScript(String commandLine) {
+        String commandLineInt = commandLine;
         try {
             if (!isAlive()) {
                 startInterpreter();
             }
-            if (!command_line.endsWith(";")) {
-                command_line = command_line + ";";
+            if (!commandLineInt.endsWith(SEMICOLON)) {
+                commandLineInt = commandLineInt + SEMICOLON;
             }
-            outPipe.write(command_line.getBytes());
+            outPipe.write(commandLineInt.getBytes());
             outPipe.flush();
         } catch (IOException e) {
-            WorkspaceError.exception("Cannot interpret" + " " + command_line, e);
+            WorkspaceError.exception(CANNOT_INTERPRET + commandLineInt, e);
         }
     }
 

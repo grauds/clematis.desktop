@@ -29,7 +29,7 @@ package jworkspace.kernel;
 /**
  * Native library.
  *
- * @deprecated should be replaced with some alternatives
+ * @author Anton Troshin
  */
 public class NativeLib {
 
@@ -38,10 +38,14 @@ public class NativeLib {
         System.loadLibrary("jw");
     }
 
+    private NativeLib() {}
+
     /**
      * Sets working directory for Java Workspace. This feature is essential for launching external Java
      * programms and applets, installed in system. But current JDK version does not provide any means
      * for such operation. This native method, however, bridges this gap.
      */
     public static native boolean setCurrentDir(String dir);
+
+
 }
