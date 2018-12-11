@@ -395,32 +395,6 @@ public final class Utils implements IConstants {
         return (i < j) ? i : j;
     }
 
-    /**
-     * Create button from action without text
-     */
-    public static JButton createButtonFromAction(Action a) {
-        return createButtonFromAction(a, false);
-    }
-
-    /**
-     * Create button from action
-     */
-    public static JButton createButtonFromAction(Action a, boolean text) {
-        JButton b = new JButton((Icon) a.getValue(Action.SMALL_ICON));
-        b.setAction(a);
-        if (text) {
-            b.setText((String) a.getValue(Action.NAME));
-        } else {
-            b.setText("");
-        }
-        b.setEnabled(a.isEnabled());
-        b.setToolTipText((String) a.getValue(Action.SHORT_DESCRIPTION));
-        if (Workspace.getUI() instanceof WorkspaceGUI) {
-            ((WorkspaceGUI) Workspace.getUI()).
-                createActionChangeListener(b);
-        }
-        return b;
-    }
 
     /**
      * Create button from action
@@ -494,76 +468,5 @@ public final class Utils implements IConstants {
                 createActionChangeListener(menu_item);
         }
         return menu_item;
-    }
-
-    /**
-     * Creates a wrapped mulit-line label from several labels
-     */
-    public static JPanel createMultiLineLabel(String s, int cols) {
-        boolean done = false;
-        String msg = wrapLines(s, cols);
-        char[] c = msg.toCharArray();
-        int i = 0;
-        StringBuffer sb = new StringBuffer();
-
-        // use grid bag layout
-        GridBagLayout gb = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 0;
-        // set layout on the panel
-        JPanel p = new JPanel(gb);
-        JLabel l = null;
-
-        // iterate until all strings are added
-        while (!done) {
-            if (i >= c.length || c[i] == '\n') {
-                l = new JLabel(sb.toString());
-                sb = new StringBuffer();
-                // add first label
-                gbc.gridwidth = GridBagConstraints.REMAINDER;
-                gbc.weightx = 1;
-                gbc.insets = KiwiUtils.LAST_INSETS;
-                p.add(l, gbc);
-                if (i >= c.length) {
-                    done = true;
-                }
-            } else {
-                sb.append(c[i]);
-            }
-            i++;
-        }
-        return p;
-    }
-
-    /**
-     * Wraps lines at the given number of columns
-     */
-    public static String wrapLines(String s, int cols) {
-        //StringBuffer sb = new StringBuffer();
-        char[] c = s.toCharArray();
-        char[] d = new char[c.length];
-
-        int i = 0;
-        int j = 0;
-        int lastspace = -1;
-        while (i < c.length) {
-            if (c[i] == '\n') {
-                j = 0;
-            }
-            if (j > cols && lastspace > 0) {
-                d[lastspace] = '\n';
-                j = i - lastspace;
-                lastspace = -1;
-            }
-            if (c[i] == ' ') {
-                lastspace = i;
-            }
-            d[i] = c[i];
-            i++;
-            j++;
-        }
-        return new String(d);
     }
 }

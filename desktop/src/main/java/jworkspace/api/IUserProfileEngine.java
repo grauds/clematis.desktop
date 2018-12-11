@@ -156,15 +156,10 @@ public interface IUserProfileEngine extends IEngine {
     /**
      * Set password
      */
-    void setPassword(String old_password, String password, String confirm_password) throws Exception;
+    void setPassword(String oldPassword, String password, String confirmPassword) throws Exception;
 
     /**
      * Check password
      */
     boolean checkPassword(String password) throws Exception;
-
-    /**
-     * Return encrypted password
-     */
-    byte[] getCipherPassword();
 }

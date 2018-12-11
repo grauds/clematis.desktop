@@ -2,7 +2,7 @@ package jworkspace.users;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -22,7 +22,7 @@ package jworkspace.users;
 
    The author may be contacted at:
 
-   tysinsh@comail.ru
+   anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
 
@@ -32,19 +32,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Arrays;
 //
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.Config;
-//
-import jworkspace.LangResource;
-import jworkspace.ui.Utils;
-import lombok.Data;
 
+import jworkspace.LangResource;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 /**
  * This class represents a single user in workspace.
+ *
  * @author Anton Troshin
  */
 @Data
@@ -68,25 +73,27 @@ public class Profile {
      * Default logger
      */
     private static final Logger LOG = LoggerFactory.getLogger(Profile.class);
-
+    /**
+     * User name
+     */
     private String userName = "";
     /**
-     * Password is encrypted using DES
-     * encryption algorythm.
+     * Password is encrypted using DMD5
      */
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private byte[] cipherpass = new byte[]{};
 
-    // Real name attributes
+    private MessageDigest messageDigest;
+
     private String userFirstName = "";
 
     private String userLastName = "";
 
     private String email = "";
 
-    // User parameters
     private final Config parameters = new Config();
 
-    // Description
     private String description = "";
 
     /**
@@ -99,18 +106,26 @@ public class Profile {
     /**
      * Profile cannot be created directly.
      */
-    protected Profile(String userName, String password,
-                      String userFirstName, String userLastName,
+    protected Profile(String userName,
+                      String password,
+                      String userFirstName,
+                      String userLastName,
                       String email) {
+
         this.userName = userName;
 
-        byte[] passwordBytes = Utils.encrypt(userName, password);
-        this.cipherpass = new byte[passwordBytes.length];
-        System.arraycopy(passwordBytes, 0, cipherpass, 0, passwordBytes.length);
-
-        this.userFirstName = userFirstName;
-        this.userLastName = userLastName;
-        this.email = email;
+        try {
+            this.userFirstName = userFirstName;
+            this.userLastName = userLastName;
+            this.email = email;
+            this.messageDigest = MessageDigest.getInstance("MD5");
+            if (password != null) {
+                this.cipherpass = this.messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (Exception e) {
+            this.messageDigest = null;
+            LOG.error("Can't set password to profile", e);
+        }
     }
 
     /**
@@ -175,9 +190,9 @@ public class Profile {
         if (!newPassword.equals(confirmPassword)) {
             throw new ProfileOperationException(LangResource.getString("Profile.passwd.confirm.failed"));
         }
-        byte[] password = Utils.encrypt(userName, newPassword);
-        this.cipherpass = new byte[password.length];
-        System.arraycopy(password, 0, cipherpass, 0, password.length);
+        if (this.messageDigest != null) {
+            this.cipherpass = this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     /**
@@ -221,45 +236,44 @@ public class Profile {
         /*
          * Read user variables
          */
-        FileInputStream inputFile = new FileInputStream(
+        try (FileInputStream inputFile = new FileInputStream(
             System.getProperty(USER_DIR)
                 + File.separator
                 + getProfileFolder()
                 + File.separator
-                + VAR_CFG);
-        getParameters().load(inputFile);
-        inputFile.close();
+                + VAR_CFG)) {
+            getParameters().load(inputFile);
+        }
         /*
          * Read password
          */
-        inputFile = new FileInputStream(
+        try (FileInputStream inputFile = new FileInputStream(
             System.getProperty(USER_DIR)
                 + File.separator
                 + getProfileFolder()
                 + File.separator
-                + PWD_DAT);
-        DataInputStream dis = new DataInputStream(inputFile);
-        cipherpass = StreamUtils.readStreamToByteArray(dis);
-        dis.close();
-        inputFile.close();
+                + PWD_DAT)) {
+
+            DataInputStream dis = new DataInputStream(inputFile);
+            cipherpass = StreamUtils.readStreamToByteArray(dis);
+        }
     }
 
     /**
      * Save profile on disk
      */
-    public void save(DataOutputStream os)
-        throws IOException {
+    public void save(DataOutputStream os) throws IOException {
         /*
          * Write user variables
          */
-        FileOutputStream outputFile = new FileOutputStream(
+        try (FileOutputStream outputFile = new FileOutputStream(
             System.getProperty(USER_DIR)
                 + File.separator
                 + getProfileFolder()
                 + File.separator
-                + VAR_CFG);
-        getParameters().store(outputFile, "USER VARIABLES");
-        outputFile.close();
+                + VAR_CFG)) {
+            getParameters().store(outputFile, "USER VARIABLES");
+        }
         /*
          * Write all other data
          */
@@ -271,16 +285,16 @@ public class Profile {
         /*
          * Write password
          */
-        outputFile = new FileOutputStream(
+        try (FileOutputStream outputFile = new FileOutputStream(
             System.getProperty(USER_DIR)
                 + File.separator
                 + getProfileFolder()
                 + File.separator
                 + PWD_DAT);
-        DataOutputStream dos = new DataOutputStream(outputFile);
-        dos.write(cipherpass);
-        dos.close();
-        outputFile.close();
+             DataOutputStream dos = new DataOutputStream(outputFile)) {
+
+            dos.write(cipherpass);
+        }
     }
 
     /**
@@ -356,7 +370,9 @@ public class Profile {
                 + File.separator
                 + userName;
             File userDir = new File(newPath);
-            userDir.mkdirs();
+            if (!userDir.mkdirs()) {
+                return false;
+            }
         }
         /*
          * Finally set user name
@@ -381,14 +397,12 @@ public class Profile {
      */
     boolean checkPassword(String passwordCandidate) {
 
-        byte[] test = Utils.encrypt(userName, passwordCandidate);
-
-        for (int i = 0; i < Math.min(test.length, cipherpass.length); i++) {
-            if (test[i] != cipherpass[i]) {
-                return false;
-            }
+        if (this.messageDigest != null) {
+            return Arrays.equals(this.messageDigest
+                .digest(passwordCandidate.getBytes(StandardCharsets.UTF_8)), cipherpass);
+        } else {
+            return passwordCandidate != null
+                && Arrays.equals(passwordCandidate.getBytes(StandardCharsets.UTF_8), cipherpass);
         }
-
-        return true;
     }
 }

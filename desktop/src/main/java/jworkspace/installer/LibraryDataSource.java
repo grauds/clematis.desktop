@@ -38,7 +38,7 @@ class LibraryDataSource extends DefinitionDataSource {
 
     static final String ROOT = "libraries";
 
-    private static String rootName = LibraryDataSource.ROOT;
+    private String rootName;
 
     /**
      * Construct new library data source
@@ -46,9 +46,9 @@ class LibraryDataSource extends DefinitionDataSource {
      *
      * @param root java.io.File
      */
-    LibraryDataSource(File root) {
+    LibraryDataSource(File root) throws IOException {
         super(root);
-        rootName = root.getName();
+        rootName = root != null ? root.getName() : LibraryDataSource.ROOT;
     }
 
     /**

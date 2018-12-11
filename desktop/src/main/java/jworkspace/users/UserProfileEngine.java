@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JDialog;
-import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +42,6 @@ import com.hyperrealm.kiwi.util.Config;
 import jworkspace.LangResource;
 import jworkspace.api.IUserProfileEngine;
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.action.UISwitchListener;
-import jworkspace.util.WorkspaceError;
 
 /**
  * Profile engine is one of required by kernel.
@@ -61,14 +58,14 @@ public class UserProfileEngine implements IUserProfileEngine {
 
     private static final String USER_HOME = "user.home";
 
-    private static ProfilesManager profilesManager = null;
+    private ProfilesManager profilesManager = null;
 
-    private static boolean userLogged = false;
+    private boolean userLogged = false;
 
     /**
      * Login dialog
      */
-    private static LoginDialog loginDlg = null;
+    private LoginDialog loginDlg = null;
 
     /**
      * Default public constructor.
@@ -212,13 +209,6 @@ public class UserProfileEngine implements IUserProfileEngine {
     }
 
     /**
-     * Get encrypted password
-     */
-    public byte[] getCipherPassword() {
-        return profilesManager.getCurrentProfile().getCipherpass();
-    }
-
-    /**
      * Return user description
      */
     public String getDescription() {
@@ -252,17 +242,8 @@ public class UserProfileEngine implements IUserProfileEngine {
     public void login(String name, String password) throws ProfileOperationException {
 
         Profile profile = profilesManager.getProfile(name);
-        if (profile == null && !name.equals(ProfilesManager.DEFAULT_USER_NAME)) {
-            throw new ProfileOperationException(LangResource.getString("UserProfileEngine.profile.null"));
-        } else if (profile == null) {
-            try {
-                profile = Profile.create(ProfilesManager.DEFAULT_USER_NAME,
-                    "", "", "", "");
-                profilesManager.add(profile);
-            } catch (ProfileOperationException | IOException ex) {
-                WorkspaceError.exception(LangResource.getString("UserProfileEngine.profile.ex"), ex);
-            }
-        } else if (!profile.checkPassword(password)) {
+
+        if (!profile.checkPassword(password)) {
             throw new ProfileOperationException(LangResource.getString("UserProfileEngine.passwd.check.failed"));
         }
 
@@ -270,11 +251,8 @@ public class UserProfileEngine implements IUserProfileEngine {
         userLogged = true;
 
         UserProfileEngine.LOG.info("> You are logged as " + getUserName());
-        /*
-         * Change system user path
-         */
-        System.setProperty(USER_HOME, System.getProperty("user.dir") + File.separator + getPath());
 
+        System.setProperty(USER_HOME, System.getProperty("user.dir") + File.separator + getPath());
         UserProfileEngine.LOG.info(">" + "Homepath" + " " + System.getProperty(USER_HOME));
     }
 
@@ -321,15 +299,9 @@ public class UserProfileEngine implements IUserProfileEngine {
             loginDlg = new LoginDialog((Frame) Workspace.getUI().getLogoScreen().getParent(),
                 LangResource.getString("LoginDlg.title"), ""
             );
-
-            //,
-            //                new ImageIcon(new ResourceLoader(WorkspaceResourceAnchor.class)
-            //                        .getResourceAsImage("logo/LogoSmall.gif"))
-
             loginDlg.setAcceptButtonText(LangResource.getString("LoginDlg.login.accept"));
             loginDlg.pack();
             loginDlg.setIcon(null);
-            UIManager.addPropertyChangeListener(new UISwitchListener(loginDlg));
         }
         loginDlg.setTexture(null);
         loginDlg.getContentPane().setBackground(Color.white);

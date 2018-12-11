@@ -36,6 +36,8 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 
+import org.apache.commons.io.FileUtils;
+
 import com.hyperrealm.kiwi.ui.model.TreeDataSource;
 
 /**
@@ -63,10 +65,10 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      *
      * @param root java.io.File
      */
-    DefinitionDataSource(File root) {
+    DefinitionDataSource(File root) throws IOException {
         this.root = new DefinitionNode(null, root);
-        if (!root.exists()) {
-            root.mkdirs();
+        if (root != null && !root.exists()) {
+            FileUtils.forceMkdir(root);
         }
     }
 
@@ -240,12 +242,16 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
         switch (property) {
             case EXPANDABLE_PROPERTY:
                 value = node.isExpandable() ? Boolean.TRUE : Boolean.FALSE;
+                break;
             case LABEL_PROPERTY:
                 value = node.isRoot() ? getRootName() : node.getNodeName();
+                break;
             case COLUMN_NAMES_PROPERTY:
                 value = new String[]{"Name"};
+                break;
             case COLUMN_TYPES_PROPERTY:
                 value = new Class[]{String.class};
+                break;
             default:
                 value = null;
         }

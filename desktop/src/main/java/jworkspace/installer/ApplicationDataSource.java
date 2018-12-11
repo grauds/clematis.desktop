@@ -41,16 +41,16 @@ public class ApplicationDataSource extends DefinitionDataSource {
 
     public static final String ROOT = "programs";
 
-    private static String rootName = ApplicationDataSource.ROOT;
+    private String rootName;
 
     /**
      * Construct new application data source with given file as a root.
      *
      * @param root java.io.File
      */
-    ApplicationDataSource(File root) {
+    ApplicationDataSource(File root) throws IOException {
         super(root);
-        rootName = root.getName();
+        rootName = root != null ? root.getName() : ApplicationDataSource.ROOT;
     }
 
     /**
@@ -64,8 +64,8 @@ public class ApplicationDataSource extends DefinitionDataSource {
      * Make node with hierarchical support, the node
      * itself is an application.
      */
-    protected DefinitionNode makeNode(DefinitionNode parent, File file)
-        throws IOException {
+    protected DefinitionNode makeNode(DefinitionNode parent, File file) throws IOException {
+
         return new Application(parent, file);
     }
 }

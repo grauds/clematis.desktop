@@ -43,10 +43,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hyperrealm.kiwi.util.KiwiUtils;
 //
+import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.Utils;
 
 /**
  * Gui error reporter for the end-user
@@ -54,6 +57,8 @@ import jworkspace.ui.Utils;
  * @author Anton Troshin
  */
 public class WorkspaceError {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
 
     private static final double DEFAULT_SCALE = 0.9;
 
@@ -67,9 +72,9 @@ public class WorkspaceError {
 
     private static final BorderLayout BORDER_LAYOUT = new BorderLayout(5, 5);
 
-    private static Thread laterThread = null;
+    private Thread laterThread;
 
-    private static boolean showingLater = false;
+    private boolean showingLater = false;
 
     /**
      * init some neccessary error stuff
@@ -151,6 +156,7 @@ public class WorkspaceError {
 
     }
 
+
     public static void msg(String usermsg) {
         msg("Error", usermsg);
     }
@@ -164,7 +170,8 @@ public class WorkspaceError {
      * calling thread (due to some nasty drag and drop event handling bugs that cause
      * deadlocks if certain gui operations are done at dnd drop event time)
      */
-    public static void showMessageLater(String title, String usermsg) {
+    public void showMessageLater(String title, String usermsg) {
+
         if (showingLater) {
             return;
         }
@@ -248,18 +255,18 @@ public class WorkspaceError {
             while (!die) {
                 try {
                     synchronized (LATER) {
-                        LATER.wait();
+                        if (!LATER.die) {
+                            LATER.wait();
+                        }
 
                         if (msg != null && title != null) {
-                            Thread.sleep(SLEEP);
-                            // hope half a second is enough
                             msg(title, msg);
                             msg = null;
                             title = null;
                         }
                     }
                 } catch (InterruptedException ex) {
-
+                    LOG.warn(ex.getMessage(), ex);
                 }
             }
         }
@@ -268,7 +275,7 @@ public class WorkspaceError {
     /**
      * @author Anton Troshin
      */
-    public class MessageRunnable implements Runnable {
+    public static class MessageRunnable implements Runnable {
 
         String msg;
 

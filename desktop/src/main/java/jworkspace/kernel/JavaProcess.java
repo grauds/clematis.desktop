@@ -31,6 +31,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -221,7 +222,7 @@ public final class JavaProcess {
     }
 
     public Date getStartTime() {
-        return startTime;
+        return new Date(startTime.getTime());
     }
 
     /**
@@ -282,7 +283,7 @@ public final class JavaProcess {
                 try {
                     int b = stream.read(buf);
                     if (b > 0) {
-                        String str = new String(buf, 0, b);
+                        String str = new String(buf, 0, b, StandardCharsets.UTF_8);
                         log.append(LEFT_BR)
                             .append(getElapsedTime())
                             .append(WHITESPACE)

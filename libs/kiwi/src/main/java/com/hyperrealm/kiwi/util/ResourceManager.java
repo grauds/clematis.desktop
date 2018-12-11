@@ -110,7 +110,7 @@ public class ResourceManager {
     /**
      * The base path for images.
      */
-    private String imagePath;
+    protected String imagePath;
     /**
      * The base path for audio clips.
      */

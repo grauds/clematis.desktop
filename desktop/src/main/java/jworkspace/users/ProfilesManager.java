@@ -43,9 +43,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
-import jworkspace.util.WorkspaceError;
 
 /**
  * This class can add, rename, delete or list user profiles.
@@ -55,6 +60,8 @@ import jworkspace.util.WorkspaceError;
 class ProfilesManager implements Comparator {
 
     static final String DEFAULT_USER_NAME = "root";
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProfilesManager.class);
 
     private static final String PROFILES_MANAGER_PROFILE_NULL = "ProfilesManager.profile.null";
 
@@ -89,8 +96,7 @@ class ProfilesManager implements Comparator {
     public int compare(Object obj1, Object obj2) {
 
         if (obj1 instanceof Profile && obj2 instanceof Profile) {
-            return -(((Profile) obj1).getUserName()).
-                compareTo(((Profile) obj2).getUserName());
+            return (((Profile) obj1).getUserName()).compareTo(((Profile) obj2).getUserName());
         }
         return 0;
     }
@@ -98,8 +104,8 @@ class ProfilesManager implements Comparator {
     /**
      * Delete profile.
      */
-    public void delete(Profile profile, String password)
-        throws ProfileOperationException {
+    public void delete(Profile profile, String password) throws ProfileOperationException {
+
         if (profile == null) {
             throw new ProfileOperationException(LangResource.getString(PROFILES_MANAGER_PROFILE_NULL));
         }
@@ -108,18 +114,14 @@ class ProfilesManager implements Comparator {
         }
 
         File file = new File(getProfileFolder(profile.getUserName()));
-        com.hyperrealm.kiwi.util.KiwiUtils.deleteTree(file);
+        KiwiUtils.deleteTree(file);
     }
 
     /**
      * Returns admin profile
      */
-    public Profile getAdminProfile() throws ProfileOperationException {
-        Profile admin = loadProfile(DEFAULT_USER_NAME);
-        if (admin == null) {
-            admin = Profile.create(ProfilesManager.DEFAULT_USER_NAME, "", "", "", "");
-        }
-        return admin;
+    public Profile getAdminProfile() {
+        return loadProfile(DEFAULT_USER_NAME);
     }
 
     /**
@@ -225,12 +227,12 @@ class ProfilesManager implements Comparator {
     private Profile loadProfile(String userName) {
 
         Profile profile = new Profile();
-        try {
-            FileInputStream ifile = new FileInputStream(getProfileFolder(userName)
-                + File.separator + PROFILE_DAT);
-            DataInputStream di = new DataInputStream(ifile);
+        try (FileInputStream ifile =
+                 new FileInputStream(getProfileFolder(userName) + File.separator + PROFILE_DAT);
+             DataInputStream di = new DataInputStream(ifile)) {
+
             profile.load(di);
-            ifile.close();
+
         } catch (FileNotFoundException e) {
             /*
              * It seems that we have loaded profile for the first time.
@@ -258,7 +260,7 @@ class ProfilesManager implements Comparator {
                 LangResource.getString("ProfileEngine.newProfileAdded.title"),
                 JOptionPane.INFORMATION_MESSAGE, icon);
         } catch (IOException e) {
-            WorkspaceError.exception(LangResource.getString("ProfilesManager.profile.load.failed"), e);
+            LOG.error(LangResource.getString("ProfilesManager.profile.load.failed"), e);
         }
 
         if (profile.getUserName() == null || profile.getUserName().trim().equals("")) {
@@ -276,14 +278,13 @@ class ProfilesManager implements Comparator {
 
         File file = new File(fileName);
 
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-
         try {
+            if (!file.exists()) {
+                FileUtils.forceMkdir(file);
+            }
             saveProfile(fileName);
         } catch (IOException e) {
-            WorkspaceError.exception(LangResource.getString("ProfilesManager.profile.save.failed"), e);
+            LOG.error(LangResource.getString("ProfilesManager.profile.save.failed"), e);
         }
     }
 
@@ -299,7 +300,7 @@ class ProfilesManager implements Comparator {
         File file = new File(fileName);
 
         if (!file.exists()) {
-            file.mkdirs();
+            FileUtils.forceMkdir(file);
         }
 
         saveProfile(fileName);

@@ -28,6 +28,9 @@ package jworkspace.kernel;
 
 import org.junit.Test;
 
+/**
+ * @author Anton Troshin
+ */
 public class WorkspaceTests {
 
     @Test

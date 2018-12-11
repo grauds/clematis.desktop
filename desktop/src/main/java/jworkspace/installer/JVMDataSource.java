@@ -42,7 +42,7 @@ class JVMDataSource extends DefinitionDataSource {
 
     static final String ROOT = "jmachines";
 
-    private static String rootName = JVMDataSource.ROOT;
+    private String rootName = JVMDataSource.ROOT;
 
     /**
      * Construct new jvm data source
@@ -50,9 +50,9 @@ class JVMDataSource extends DefinitionDataSource {
      *
      * @param root java.io.File
      */
-    JVMDataSource(File root) {
+    JVMDataSource(File root) throws IOException {
         super(root);
-        rootName = root.getName();
+        rootName = root != null ? root.getName() : JVMDataSource.ROOT;
     }
 
     /**

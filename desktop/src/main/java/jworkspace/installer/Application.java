@@ -31,13 +31,10 @@ package jworkspace.installer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
-import com.hyperrealm.kiwi.util.StringUtils;
 //
 import jworkspace.kernel.Workspace;
 
@@ -53,9 +50,9 @@ import jworkspace.kernel.Workspace;
  */
 public class Application extends DefinitionNode {
 
-    public static final Icon ICON = Workspace.getResourceManager().getIcon("installer/application.gif");
+    static final String JVM_ARGS_DELIMITER = " ";
 
-    private static final String JVM_ARGS_DELIMITER = " ";
+    private static final Icon ICON = Workspace.getResourceManager().getIcon("installer/application.gif");
 
     private static final String CK_NAME = "application.name",
         CK_VERSION = "application.version",
@@ -186,84 +183,17 @@ public class Application extends DefinitionNode {
     }
 
     /**
-     * Returns command line configured
-     * to launch application.
-     */
-    String[] getInvocationArgs() {
-
-        Vector<String> v = new Vector<>();
-
-        // first get the VM information
-
-        JVM jvmProg = (JVM) WorkspaceInstaller.jvmData.findNode(jvm);
-        if (jvmProg == null) {
-            return null;
-        }
-        v.addElement(jvmProg.getPath());
-
-        if (!systemUserFolder) {
-            v.addElement("-Duser.home=" + System.getProperty("user.dir") + File.separator
-                + Workspace.getProfilesEngine().getPath());
-        }
-        // next, construct the classpath
-
-        String pathSeparator = System.getProperty("path.separator");
-        StringBuilder sb = new StringBuilder();
-        sb.append('"');
-        sb.append('.');
-        Enumeration e = loadLibraries();
-        while (e.hasMoreElements()) {
-            Library lib = (Library) e.nextElement();
-            if (sb.length() > 0) {
-                sb.append(pathSeparator);
-            }
-            sb.append(lib.getPath());
-        }
-
-        // append the library for the program itself to the classpath
-
-        if (sb.length() > 0) {
-            sb.append(pathSeparator);
-        }
-        sb.append(archive);
-        sb.append('"');
-        String classpath = sb.toString();
-
-        // finally, construct the full command line
-
-        StringTokenizer st = new StringTokenizer(jvmProg.getArguments(), JVM_ARGS_DELIMITER);
-        while (st.hasMoreTokens()) {
-            // expand special tokens
-
-            String arg = st.nextToken();
-            switch (arg) {
-                case "%c":
-                    v.addElement(classpath);
-                    break;
-                case "%m":
-                    v.addElement(mainClass);
-                    break;
-                case "%a":
-                    String[] a = StringUtils.split(arguments, JVM_ARGS_DELIMITER);
-                    for (String s : a) {
-                        v.addElement(s);
-                    }
-                    break;
-                default:
-                    v.addElement(arg); // other stuff copies literally
-                    break;
-            }
-        }
-        String[] argList = new String[v.size()];
-        v.copyInto(argList);
-        return argList;
-    }
-
-    /**
      * Returns the name of application jvm.
      */
     public String getJVM() {
         return jvm;
+    }
+
+    /**
+     * Returns the list of libraries for the app in a form of classpath
+     */
+    public String getLibList() {
+        return libList;
     }
 
     /**
@@ -463,22 +393,6 @@ public class Application extends DefinitionNode {
         launchAtStartup = config.getBoolean(CK_LAUNCH_AT_STARTUP, false);
         separateProcess = config.getBoolean(CK_SEPARATE_PROCESS, false);
         systemUserFolder = config.getBoolean(CK_SYSTEM_USER_FOLDER, false);
-    }
-
-    /**
-     * Load libraries from configuration file.
-     */
-    private Enumeration loadLibraries() {
-
-        Vector<DefinitionNode> libs = new Vector<>();
-        String[] linkPaths = StringUtils.split(libList, ",");
-        for (String linkPath : linkPaths) {
-            DefinitionNode node = WorkspaceInstaller.libraryData.findNode(linkPath);
-            if (node != null) {
-                libs.addElement(node);
-            }
-        }
-        return libs.elements();
     }
 
     /**

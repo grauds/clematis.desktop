@@ -35,6 +35,8 @@ import java.util.Stack;
 import javax.swing.Icon;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.io.FileUtils;
+
 import com.hyperrealm.kiwi.event.KTreeModelListener;
 import com.hyperrealm.kiwi.event.KTreeModelSupport;
 import com.hyperrealm.kiwi.util.DomainObject;
@@ -69,7 +71,7 @@ public class DefinitionNode extends DomainObject {
 
     protected File file;
 
-    protected DefinitionNode parent;
+    private DefinitionNode parent;
 
     private KTreeModelSupport hsupport;
 
@@ -101,9 +103,9 @@ public class DefinitionNode extends DomainObject {
      * @param name  of child node java.lang.String
      * @param index is a number in array of children int
      */
-    public void add(String name, int index) {
+    public void add(String name, int index) throws IOException {
         DefinitionNode newNode = new DefinitionNode(this, name);
-        newNode.getFile().mkdirs();
+        FileUtils.forceMkdir(newNode.getFile());
         add(newNode);
     }
 

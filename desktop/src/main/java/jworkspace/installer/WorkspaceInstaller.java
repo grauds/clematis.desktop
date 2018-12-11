@@ -29,14 +29,19 @@ package jworkspace.installer;
 */
 
 import java.io.File;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
 import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
+import com.hyperrealm.kiwi.util.StringUtils;
 
 import jworkspace.api.InstallEngine;
 import jworkspace.kernel.Workspace;
@@ -53,26 +58,18 @@ public class WorkspaceInstaller implements InstallEngine {
      */
     static final String FILE_EXTENSION = ".cfg";
     /**
-     * Datasources for all types of entries.
-     */
-    static DefinitionDataSource jvmData;
-    static DefinitionDataSource libraryData;
-    private static DefinitionDataSource applicationData;
-    /**
      * Default logger
      */
     private static final Logger LOG = LoggerFactory.getLogger(Workspace.class);
     /**
-     * Current data root - this is defined by user path.
-     * <p>
-     * BUG: If user path is changed, for example as a result of changing user nick
-     * in User Details dialog, Installer loses connection to installation database.
-     * This is of course happens because dataroot does not follow user home path.
-     * <p>
-     * WORKAROUND: none.
-     * HINT: relogin user.
+     * Datasources for all types of entries.
      */
-    private static File dataRoot = null;
+    private DefinitionDataSource jvmData;
+
+    private DefinitionDataSource libraryData;
+
+    private DefinitionDataSource applicationData;
+
     /**
      * Dynamic tree models are used by UI components
      * to build visual tree against virtual models.
@@ -119,7 +116,99 @@ public class WorkspaceInstaller implements InstallEngine {
             return null;
         }
 
-        return ((Application) node).getInvocationArgs();
+        return getInvocationArgs(((Application) node));
+    }
+
+    /**
+     * Load libraries from configuration file.
+     */
+    private Enumeration loadLibraries(Application application) {
+
+        Vector<DefinitionNode> libs = new Vector<>();
+        String[] linkPaths = StringUtils.split(application.getLibList(), ",");
+        for (String linkPath : linkPaths) {
+            DefinitionNode node = libraryData.findNode(linkPath);
+            if (node != null) {
+                libs.addElement(node);
+            }
+        }
+        return libs.elements();
+    }
+
+    /**
+     * Returns command line configured
+     * to launch application.
+     * @param application application
+     */
+    private String[] getInvocationArgs(Application application) {
+
+        Vector<String> v = new Vector<>();
+
+        // first get the VM information
+
+        JVM jvmProg = (JVM) jvmData.findNode(application.getJVM());
+        if (jvmProg == null) {
+            return null;
+        }
+        v.addElement(jvmProg.getPath());
+
+        if (!application.isSystemUserFolder()) {
+            v.addElement("-Duser.home=" + System.getProperty("user.dir") + File.separator
+                + Workspace.getProfilesEngine().getPath());
+        }
+        // next, construct the classpath
+
+        String pathSeparator = System.getProperty("path.separator");
+        StringBuilder sb = new StringBuilder();
+        sb.append('"');
+        sb.append('.');
+        Enumeration e = loadLibraries(application);
+        while (e.hasMoreElements()) {
+            Library lib = (Library) e.nextElement();
+            if (sb.length() > 0) {
+                sb.append(pathSeparator);
+            }
+            sb.append(lib.getPath());
+        }
+
+        // append the library for the program itself to the classpath
+
+        if (sb.length() > 0) {
+            sb.append(pathSeparator);
+        }
+        sb.append(application.getArchive());
+        sb.append('"');
+        String classpath = sb.toString();
+
+        // finally, construct the full command line
+
+        StringTokenizer st = new StringTokenizer(jvmProg.getArguments(), Application.JVM_ARGS_DELIMITER);
+        while (st.hasMoreTokens()) {
+            // expand special tokens
+
+            String arg = st.nextToken();
+            switch (arg) {
+                case "%c":
+                    v.addElement(classpath);
+                    break;
+                case "%m":
+                    v.addElement(application.getMainClass());
+                    break;
+                case "%a":
+                    String[] a = StringUtils.split(application.getArguments(),
+                        Application.JVM_ARGS_DELIMITER);
+                    for (String s : a) {
+                        v.addElement(s);
+                    }
+                    break;
+                default:
+                    v.addElement(arg); // other stuff copies literally
+                    break;
+            }
+        }
+        String[] argList = new String[v.size()];
+        v.copyInto(argList);
+        return argList;
     }
 
     /**
@@ -275,27 +364,38 @@ public class WorkspaceInstaller implements InstallEngine {
     public void load() {
 
         WorkspaceInstaller.LOG.info("> Loading installer");
-
-        dataRoot = new File(Workspace.getUserHome());
-
-        if (!dataRoot.exists()) {
-            dataRoot.mkdirs();
-            dataRoot.mkdir();
-        }
-        // create global data models
-
-        applicationData = new ApplicationDataSource(new File(WorkspaceInstaller.dataRoot, ApplicationDataSource.ROOT));
-        applicationModel = new ExternalKTreeModel<>(applicationData);
-
-        libraryData = new LibraryDataSource(new File(WorkspaceInstaller.dataRoot, LibraryDataSource.ROOT));
-        libraryModel = new ExternalKTreeModel<>(libraryData);
-
-        jvmData = new JVMDataSource(new File(WorkspaceInstaller.dataRoot, JVMDataSource.ROOT));
-        /*
-         * Install default virtual machine
+        /**
+         * Current data root - this is defined by user path.
+         * <p>
+         * BUG: If user path is changed, for example as a result of changing user nick
+         * in User Details dialog, Installer loses connection to installation database.
+         * This is of course happens because data root does not follow user home path.
+         * <p>
+         * WORKAROUND: none.
+         * HINT: re-login user.
          */
-        JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
+        File dataRoot = new File(Workspace.getUserHome());
+
         try {
+
+            if (!dataRoot.exists()) {
+                FileUtils.forceMkdir(dataRoot);
+            }
+
+            // create global data models
+            applicationData = new ApplicationDataSource(new File(dataRoot,
+                ApplicationDataSource.ROOT));
+            applicationModel = new ExternalKTreeModel<>(applicationData);
+
+            libraryData = new LibraryDataSource(new File(dataRoot, LibraryDataSource.ROOT));
+            libraryModel = new ExternalKTreeModel<>(libraryData);
+
+            jvmData = new JVMDataSource(new File(dataRoot, JVMDataSource.ROOT));
+            /*
+             * Install default virtual machine
+             */
+            JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
+
             jvm.setName("default jvm");
             jvm.setDescription("the jvm this instance of workspace is currently running");
             jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
@@ -303,6 +403,7 @@ public class WorkspaceInstaller implements InstallEngine {
             jvm.setArguments("-cp %c %m %a");
             jvm.save();
             jvmData.getRoot().add(jvm);
+
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
         }
@@ -329,7 +430,8 @@ public class WorkspaceInstaller implements InstallEngine {
                 if (((Application) node).isLoadedAtStartup()) {
                     if (((Application) node).isSeparateProcess()) {
                         Workspace.getRuntimeManager().
-                            executeExternalProcess(((Application) node).getInvocationArgs(),
+                            executeExternalProcess(
+                                getInvocationArgs((Application) node),
                                 ((Application) node).getWorkingDirectory(),
                                 ((Application) node).getName());
                     }

@@ -5,18 +5,22 @@ include 'desktop'
 include 'kiwi'
 project(':kiwi').projectDir = file('libs/kiwi')
 
-include 'instui'
-project(':instui').projectDir = file('plugins/instui')
+include 'ui'
+project(':ui').projectDir = file('modules/ui')
 
-include 'launcher'
-project(':launcher').projectDir = file('plugins/launcher')
-
-include 'net'
-project(':net').projectDir = file('plugins/net')
-
-include 'rtui'
-project(':rtui').projectDir = file('plugins/rtui')
-
-include 'sed'
-project(':sed').projectDir = file('plugins/sed')
+//
+//include 'instui'
+//project(':instui').projectDir = file('plugins/instui')
+//
+//include 'launcher'
+//project(':launcher').projectDir = file('plugins/launcher')
+//
+//include 'net'
+//project(':net').projectDir = file('plugins/net')
+//
+//include 'rtui'
+//project(':rtui').projectDir = file('plugins/rtui')
+//
+//include 'sed'
+//project(':sed').projectDir = file('plugins/sed')
 

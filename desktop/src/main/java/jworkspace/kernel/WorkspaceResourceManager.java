@@ -35,6 +35,7 @@ import org.apache.commons.imaging.Imaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hyperrealm.kiwi.util.ResourceManager;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
 import jworkspace.WorkspaceResourceAnchor;
@@ -44,12 +45,12 @@ import jworkspace.WorkspaceResourceAnchor;
  *
  * @author Anton Troshin
  */
-public class ResourceManager extends com.hyperrealm.kiwi.util.ResourceManager {
+public class WorkspaceResourceManager extends ResourceManager {
 
     /**
      * Default logger
      */
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceResourceManager.class);
     /**
      * Cache for images
      */
@@ -58,7 +59,7 @@ public class ResourceManager extends com.hyperrealm.kiwi.util.ResourceManager {
     /**
      * Empty default constructor
      */
-    public ResourceManager() {
+    public WorkspaceResourceManager() {
         super(WorkspaceResourceAnchor.class);
     }
 

@@ -118,7 +118,7 @@ public final class Workspace {
     /**
      * Resource manager.
      */
-    private static final ResourceManager RESOURCE_MANAGER = new ResourceManager();
+    private static final WorkspaceResourceManager RESOURCE_MANAGER = new WorkspaceResourceManager();
     /**
      * String constants
      */
@@ -372,7 +372,6 @@ public final class Workspace {
      */
     private static void removeAllRegisteredComponents() {
         LOADED_COMPONENTS.clear();
-        System.gc();
     }
 
     /**
@@ -433,9 +432,9 @@ public final class Workspace {
     /**
      * Returns resource manager for the workspace.
      *
-     * @return kiwi.util.ResourceManager
+     * @return kiwi.util.WorkspaceResourceManager
      */
-    public static ResourceManager getResourceManager() {
+    public static WorkspaceResourceManager getResourceManager() {
         return RESOURCE_MANAGER;
     }
 
@@ -620,11 +619,11 @@ public final class Workspace {
     public static void start(String[] args) {
 
         long start = System.currentTimeMillis();
-        Workspace.LOG.info(">" + "Starting" + WHITESPACE + Workspace.getVersion());
+        Workspace.LOG.info("> Starting" + WHITESPACE + Workspace.getVersion());
         Config cfg = new Config(getConfigHeader().toString());
-        try {
-            InputStream in = new FileInputStream(System.getProperty(USER_DIR)
-                + File.separator + CONFIG_JWCONF_CFG);
+
+        try (InputStream in = new FileInputStream(System.getProperty(USER_DIR)
+            + File.separator + CONFIG_JWCONF_CFG)) {
 
             cfg.load(in);
 
@@ -635,7 +634,7 @@ public final class Workspace {
         }
 
         Workspace.installerClassName = cfg.getString("install_engine",
-            "jworkspace.installerClassName.WorkspaceInstaller");
+            "jworkspace.installer.WorkspaceInstaller");
 
         Workspace.usersAuthenticationClassName = cfg.getString("profile_engine",
             "jworkspace.users.UserProfileEngine");

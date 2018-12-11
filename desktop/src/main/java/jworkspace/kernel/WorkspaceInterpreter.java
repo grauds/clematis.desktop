@@ -25,20 +25,21 @@ package jworkspace.kernel;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+//CHECKSTYLE:OFF
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//
+
 import bsh.EvalError;
 import bsh.Interpreter;
-//
 import jworkspace.util.WorkspaceError;
-
+//CHECKSTYLE:ON
 /**
  * @author Anton Troshin
  */
@@ -98,7 +99,7 @@ public final class WorkspaceInterpreter {
         } catch (IOException e) {
             WorkspaceError.exception("Cannot start Bean Shell Interpreter", e);
         }
-        interpreter = new Interpreter(new InputStreamReader(in),
+        interpreter = new Interpreter(new InputStreamReader(in, StandardCharsets.UTF_8),
             System.out, System.out, false, null);
 
         interpreterThread = new Thread(interpreter);
@@ -123,7 +124,7 @@ public final class WorkspaceInterpreter {
     /**
      * Executes script
      */
-    public void executeScript(String commandLine) {
+    public synchronized void executeScript(String commandLine) {
         String commandLineInt = commandLine;
         try {
             if (!isAlive()) {
@@ -132,7 +133,7 @@ public final class WorkspaceInterpreter {
             if (!commandLineInt.endsWith(SEMICOLON)) {
                 commandLineInt = commandLineInt + SEMICOLON;
             }
-            outPipe.write(commandLineInt.getBytes());
+            outPipe.write(commandLineInt.getBytes(StandardCharsets.UTF_8));
             outPipe.flush();
         } catch (IOException e) {
             WorkspaceError.exception(CANNOT_INTERPRET + commandLineInt, e);
