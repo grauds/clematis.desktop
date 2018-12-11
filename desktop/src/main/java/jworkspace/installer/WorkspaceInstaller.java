@@ -32,15 +32,19 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
-import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
-import jworkspace.api.InstallEngine;
-import jworkspace.kernel.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
+import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
+
+import jworkspace.api.InstallEngine;
+import jworkspace.kernel.Workspace;
+
 /**
  * Install engine is one of required by kernel.
+ *
+ * @author Anton Troshin
  */
 public class WorkspaceInstaller implements InstallEngine {
 
@@ -49,13 +53,9 @@ public class WorkspaceInstaller implements InstallEngine {
      */
     static final String FILE_EXTENSION = ".cfg";
     /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Workspace.class);
-    /**
      * Datasources for all types of entries.
      */
-    static DefinitionDataSource jvmData, libraryData, applicationData;
+    private static DefinitionDataSource jvmData, libraryData, applicationData;
 
     //static final String CK_DATADIR = "jwinstaller.datadir", CK_PROLOG = "jwinstaller.script_prolog";
 
@@ -64,7 +64,11 @@ public class WorkspaceInstaller implements InstallEngine {
      * Dynamic tree models are used by UI components
      * to build visual tree against virtual models.
      */
-    static DefaultKTreeModel jvmModel, libraryModel, applicationModel;
+    private static DefaultKTreeModel jvmModel, libraryModel, applicationModel;
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Workspace.class);
     /**
      * Current data root - this is defined by user path.
      * <p>
@@ -250,11 +254,12 @@ public class WorkspaceInstaller implements InstallEngine {
      * Returns flag, that tells Workspace to launch this application
      * in separate process. Usually, this flag should set to "true" for external java applications.
      * <p>
-     * // TODO: provide security manager if set to false and the sandbox is enabled for a third party application
+     *
      *
      * @param path java.lang.String
      * @return java.lang.String
      */
+    // todo: provide security manager if set to false and the sandbox is enabled for a third party application
     @Override
     public boolean isSeparateProcess(java.lang.String path) {
         DefinitionNode node = applicationData.findNode(path);
@@ -296,19 +301,13 @@ public class WorkspaceInstaller implements InstallEngine {
         try {
             jvm.setName("default jvm");
             jvm.setDescription("the jvm this instance of workspace is currently running");
-            if (SysUtil.isWindows()) {
-                jvm.setPath(System.getProperty("java.home") + File.separator
-                    + "bin" + File.separator + "java.exe");
-            } else if (SysUtil.isSunOS()) {
-                jvm.setPath(System.getProperty("java.home") + File.separator
-                    + "bin" + File.separator + "java");
-            }
+            jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
             jvm.setVersion(System.getProperty("java.version"));
             jvm.setArguments("-cp %c %m %a");
             jvm.save();
             jvmData.getRoot().add(jvm);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error(ex.getMessage(), ex);
         }
         jvmModel = new ExternalKTreeModel<>(jvmData);
         /*
@@ -324,6 +323,7 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Loads recursively all applications, that have launch at startup flag.
      */
+    @SuppressWarnings("NestedIfDepth")
     private void startupLaunch(DefinitionNode[] nodes) {
 
         for (DefinitionNode node : nodes) {

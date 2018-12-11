@@ -45,22 +45,32 @@ import com.hyperrealm.kiwi.util.ResourceManager;
  * Definition node is a base class for application, library and jvm definition nodes.
  * It provides data with hierarchical support, which includes adding, deleting and editing of node,
  * plus finding parents and children of given node.
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 public class DefinitionNode extends DomainObject {
 
-    private static final Icon openIcon, closedIcon, lockedIcon, rootIcon;
+    private static final Icon OPEN_ICON, CLOSED_ICON, LOCKED_ICON, ROOT_ICON;
+
+    private static final String FOLDER_CLOSED_GIF = "folder-closed.gif";
+
+    private static final String FOLDER_OPEN_GIF = "folder-open.gif";
+
+    private static final String FOLDER_LOCKED_GIF = "folder-locked.gif";
 
     static {
         ResourceManager rm = KiwiUtils.getResourceManager();
-        openIcon = rm.getIcon("folder-open.gif");
-        closedIcon = rm.getIcon("folder-closed.gif");
-        lockedIcon = rm.getIcon("folder-locked.gif");
-        rootIcon = rm.getIcon("folder-closed.gif");
+        OPEN_ICON = rm.getIcon(FOLDER_OPEN_GIF);
+        CLOSED_ICON = rm.getIcon(FOLDER_CLOSED_GIF);
+        LOCKED_ICON = rm.getIcon(FOLDER_LOCKED_GIF);
+        ROOT_ICON = rm.getIcon(FOLDER_CLOSED_GIF);
     }
 
     protected File file;
+
     protected DefinitionNode parent;
-    protected int index = 0;
+
     private KTreeModelSupport hsupport;
 
     /**
@@ -140,9 +150,9 @@ public class DefinitionNode extends DomainObject {
      */
     public Icon getClosedIcon() {
         if (isRoot()) {
-            return rootIcon;
+            return ROOT_ICON;
         }
-        return isExpandable() ? closedIcon : lockedIcon;
+        return isExpandable() ? CLOSED_ICON : LOCKED_ICON;
     }
 
     /**
@@ -157,7 +167,7 @@ public class DefinitionNode extends DomainObject {
      * nodes.
      */
     public int getIndex() {
-        return index;
+        return 0;
     }
 
     /**
@@ -212,7 +222,7 @@ public class DefinitionNode extends DomainObject {
     public String getNodeName() {
         String nm = file.getName();
         if (nm.endsWith(WorkspaceInstaller.FILE_EXTENSION)) {
-            nm = nm.substring(0, nm.length() - 4);
+            nm = nm.substring(0, nm.length() - WorkspaceInstaller.FILE_EXTENSION.length());
         }
         return nm;
     }
@@ -223,9 +233,9 @@ public class DefinitionNode extends DomainObject {
      */
     public Icon getOpenIcon() {
         if (isRoot()) {
-            return rootIcon;
+            return ROOT_ICON;
         }
-        return isExpandable() ? openIcon : lockedIcon;
+        return isExpandable() ? OPEN_ICON : LOCKED_ICON;
     }
 
     /**

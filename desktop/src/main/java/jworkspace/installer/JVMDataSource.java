@@ -33,8 +33,13 @@ import java.io.IOException;
 
 /**
  * Data source for jvm.
+ *
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 class JVMDataSource extends DefinitionDataSource {
+
     static final String ROOT = "jmachines";
 
     private static String rootName = JVMDataSource.ROOT;

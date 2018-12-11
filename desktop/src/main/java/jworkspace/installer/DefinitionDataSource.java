@@ -105,6 +105,7 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      *
      * @param linkPath java.lang.String
      */
+    @SuppressWarnings("ReturnCount")
     DefinitionNode findNode(String linkPath) {
 
         if (linkPath == null) {
@@ -234,19 +235,22 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      */
     public Object getValueForProperty(DefinitionNode node, String property) {
 
+        Object value;
+
         switch (property) {
             case EXPANDABLE_PROPERTY:
-                return node.isExpandable() ? Boolean.TRUE : Boolean.FALSE;
+                value = node.isExpandable() ? Boolean.TRUE : Boolean.FALSE;
             case LABEL_PROPERTY:
-                return node.isRoot() ? getRootName() : node.getNodeName();
+                value = node.isRoot() ? getRootName() : node.getNodeName();
             case COLUMN_NAMES_PROPERTY:
-                return new String[]{"Name"};
+                value = new String[]{"Name"};
             case COLUMN_TYPES_PROPERTY:
-                return new Class[]{String.class};
+                value = new Class[]{String.class};
             default:
-                return null;
+                value = null;
         }
 
+        return value;
     }
 
     protected abstract DefinitionNode makeNode(DefinitionNode parent, File file)

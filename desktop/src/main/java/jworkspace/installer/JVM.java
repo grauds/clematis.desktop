@@ -34,16 +34,20 @@ import java.io.IOException;
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
+//
 import jworkspace.kernel.Workspace;
 
 /**
  * JVM entry is a definition node, that stores
  * its data in file on disk, which is in file hierarchy
  * inside virtual machines root directory.
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 public class JVM extends DefinitionNode {
 
-    public static final Icon icon = Workspace.getResourceManager()
+    public static final Icon ICON = Workspace.getResourceManager()
         .getIcon("installer/jvm.gif");
 
     private static final String CK_NAME = "jvm.name",
@@ -53,6 +57,8 @@ public class JVM extends DefinitionNode {
         CK_ARGS = "jvm.arguments",
         CK_DOCDIR = "jvm.documentation_dir",
         CK_DESCRIPTION = "jvm.description";
+
+    private static final String JAVA_VIRTUAL_MACHINE_DEFINITION = "Java Virtual Machine Definition";
 
     private String name = "";
     private String version = "";
@@ -119,7 +125,7 @@ public class JVM extends DefinitionNode {
      * jvm in tree control.
      */
     public Icon getClosedIcon() {
-        return icon;
+        return ICON;
     }
 
     /**
@@ -175,7 +181,7 @@ public class JVM extends DefinitionNode {
      * jvm in tree control.
      */
     public Icon getOpenIcon() {
-        return icon;
+        return ICON;
     }
 
     /**
@@ -230,7 +236,7 @@ public class JVM extends DefinitionNode {
     @SuppressWarnings("Duplicates")
     public void load() throws IOException {
 
-        config = new ConfigFile(file, "Java Virtual Machine Definition");
+        config = new ConfigFile(file, JAVA_VIRTUAL_MACHINE_DEFINITION);
         config.load();
         name = config.getString(CK_NAME, "");
         version = config.getString(CK_VERSION, "");
@@ -247,7 +253,7 @@ public class JVM extends DefinitionNode {
     @SuppressWarnings("Duplicates")
     public void save() throws IOException {
         if (config == null) {
-            config = new ConfigFile(file, "Java Virtual Machine Definition");
+            config = new ConfigFile(file, JAVA_VIRTUAL_MACHINE_DEFINITION);
         }
         config.putString(CK_NAME, name);
         config.putString(CK_VERSION, version);

@@ -34,21 +34,32 @@ import java.io.IOException;
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
+//
 import jworkspace.kernel.Workspace;
 
 /**
  * Library entry is a definition node, that stores
  * its data in file on disk, which is in file hierarchy
  * inside libraries root directory.
+ *
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 public class Library extends DefinitionNode {
-    public static final Icon icon = Workspace.getResourceManager()
+
+    public static final Icon ICON = Workspace.getResourceManager()
         .getIcon("installer/library.gif");
+
     private static final String CK_NAME = "library.name",
-        CK_VERSION = "library.version", CK_PATH = "library.path",
+        CK_VERSION = "library.version",
+        CK_PATH = "library.path",
         CK_SOURCE = "library.source",
         CK_DOCDIR = "library.documentation_dir",
         CK_DESCRIPTION = "library.description";
+
+    private static final String LIBRARY_DEFINITION = "Library Definition";
+
     private String name;
     private String description;
     private String version;
@@ -85,7 +96,7 @@ public class Library extends DefinitionNode {
      * library in tree control.
      */
     public Icon getClosedIcon() {
-        return (icon);
+        return (ICON);
     }
 
     /**
@@ -141,7 +152,7 @@ public class Library extends DefinitionNode {
      * library in tree control.
      */
     public Icon getOpenIcon() {
-        return (icon);
+        return (ICON);
     }
 
     /**
@@ -210,7 +221,7 @@ public class Library extends DefinitionNode {
      * Loads class data from disk file
      */
     public void load() throws IOException {
-        config = new ConfigFile(file, "Library Definition");
+        config = new ConfigFile(file, LIBRARY_DEFINITION);
         config.load();
         name = config.getString(CK_NAME, "");
         version = config.getString(CK_VERSION, "");
@@ -225,7 +236,7 @@ public class Library extends DefinitionNode {
      */
     public void save() throws IOException {
         if (config == null) {
-            config = new ConfigFile(file, "Library Definition");
+            config = new ConfigFile(file, LIBRARY_DEFINITION);
         }
         config.putString(CK_NAME, name);
         config.putString(CK_VERSION, version);
