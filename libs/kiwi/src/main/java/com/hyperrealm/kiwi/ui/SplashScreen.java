@@ -54,7 +54,6 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 public class SplashScreen extends Window {
 
-    public static final int MILLISEC_IN_SECOND = 1000;
     private int delay = DEFAULT_DELAY;
 
     private Image image;
@@ -140,7 +139,7 @@ public class SplashScreen extends Window {
         if (flag && (delay > 0)) {
             Thread thread = new Thread(() -> {
                 try {
-                    Thread.sleep(delay * MILLISEC_IN_SECOND);
+                    Thread.sleep(delay * KiwiUtils.MILLISEC_IN_SECOND);
                 } catch (InterruptedException ignored) {
                 }
                 dispose();

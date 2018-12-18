@@ -1,0 +1,20 @@
+processResources {
+
+    def expandedFiles = ['config/application.properties']
+
+    from ('src/main/resources') {
+        include expandedFiles
+        expand(project.properties)
+    }
+    from ('src/main/resources') {
+        exclude expandedFiles
+    }
+
+    into 'build/main/resources'
+
+}
+
+dependencies {
+    compile project(':kiwi')
+    compile project(':desktop')
+}

@@ -43,6 +43,7 @@ import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
 import jworkspace.installer.ApplicationDataSource;
+import jworkspace.ui.WorkspacePluginContext;
 
 /**
  * Runtime manager is a core component for Java Workspace to start/stop processes registered in installer
@@ -92,7 +93,7 @@ public final class RuntimeManager {
      *
      * @param path in workspace installer's database
      */
-    private synchronized void executeExternalProcess(String path) {
+    private synchronized void executeExternalProcess(String path) throws WorkspaceException {
 
         String[] args = Workspace.getInstallEngine().getInvocationArgs(path);
         String workingDir = Workspace.getInstallEngine().getWorkingDir(path);
@@ -202,7 +203,7 @@ public final class RuntimeManager {
      * This method executes application, previously configured by installer. Path is an address
      * of application configuration file, relative to /programs/ folder.
      */
-    public void run(String path) {
+    public void run(String path) throws WorkspaceException {
         /*
          * If application is launched from console, it has not root element prepended, that is
          * necessary for correct installation engine navigation.
@@ -282,7 +283,7 @@ public final class RuntimeManager {
      *
      * @param directory path to directory
      */
-    public Plugin[] loadPlugins(String directory) {
+    Plugin[] loadPlugins(String directory) {
 
         RuntimeManager.LOG.info("> Loading plugins from " + directory);
 

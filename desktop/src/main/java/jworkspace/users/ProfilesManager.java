@@ -59,7 +59,7 @@ import jworkspace.kernel.Workspace;
 @SuppressWarnings("unused")
 class ProfilesManager implements Comparator {
 
-    static final String DEFAULT_USER_NAME = "root";
+    private static final String DEFAULT_USER_NAME = "root";
 
     private static final Logger LOG = LoggerFactory.getLogger(ProfilesManager.class);
 
@@ -170,7 +170,7 @@ class ProfilesManager implements Comparator {
      *
      * @return java.lang.String
      */
-    public String getCurrentProfileFolder() {
+    String getCurrentProfileFolder() {
         return USERS + File.separator + currentProfile.getUserName();
     }
 

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-/* The internal class loader for plugins.
+/** The internal class loader for plugins.
  *
  * The plugin will be loaded in its own namespace. It will have access to all
  * classes in its own namespace, AND access to any class that belongs to any
@@ -48,8 +48,7 @@ import java.util.jar.JarFile;
  *
  * @author Mark Lindner
  */
-
-class PluginClassLoader extends ClassLoader {
+public class PluginClassLoader extends ClassLoader {
 
     private static final int PATH_EXTRA_LENGTH = 6;
 

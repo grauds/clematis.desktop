@@ -31,7 +31,6 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
@@ -55,6 +54,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.swing.AbstractButton;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -64,45 +64,47 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalTheme;
 
+import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.Imaging;
+
 import com.hyperrealm.kiwi.io.ConfigFile;
+import com.hyperrealm.kiwi.ui.SplashScreen;
 import com.hyperrealm.kiwi.ui.UIChangeManager;
+import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
-import com.hyperrealm.kiwi.util.Task;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
-import jworkspace.LangResource;
+import com.hyperrealm.kiwi.util.plugin.Plugin;
+
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.GUI;
-import jworkspace.api.IWorkspaceListener;
-import jworkspace.kernel.ResourceManager;
+import jworkspace.api.UI;
 import jworkspace.kernel.Workspace;
+import jworkspace.kernel.WorkspaceException;
 import jworkspace.ui.action.ActionChangedListener;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.views.DefaultCompoundView;
-import jworkspace.util.WorkspaceError;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.Imaging;
 
 /**
- * GUI engine is one of required by kernel.
+ * Workspace Desktop user interface
+ * @author Anton Troshin
  */
-public class WorkspaceGUI implements GUI {
+public class WorkspaceGUI implements UI {
 
     /**
      * GUI texture and laf.
      */
-    public static final String CK_TEXTURE = "gui.texture", CK_LAF = "gui.laf",
+    private static final String CK_TEXTURE = "gui.texture",
+        CK_LAF = "gui.laf",
         CK_THEME = "gui.theme",
         CK_KIWI = "gui.kiwi.texture.visible",
         CK_UNDECORATED = "gui.frame.undecorated";
     /**
      * Workspace main frame
      */
-    private static MainFrame frame = null;
+    private static jworkspace.ui.MainFrame frame = null;
     /**
      * Workspace UI logo.
      */
@@ -110,30 +112,30 @@ public class WorkspaceGUI implements GUI {
     /**
      * Workspace background texture
      */
-    protected BufferedImage texture = null;
+    private BufferedImage texture = null;
     /**
      * Components in content panel are cached
      * along with they names as keys. Use RegisterComponent
      * UnregisterComponent and IsRegistered to
      * manage custom views.
      */
-    protected Hashtable components = new Hashtable();
+    private Hashtable components = new Hashtable();
     /**
      * Plugin shells
      */
-    protected HashSet shells = new HashSet();
+    private HashSet shells = new HashSet();
     /**
      * Laf
      */
-    protected String laf = "system";
+    private String laf = "system";
     /**
      * Is texture visible?
      */
-    protected boolean isTextureVisible = false;
+    private boolean isTextureVisible = false;
     /**
      * Is KIWI texture visible?
      */
-    protected boolean isKiwiTextureVisible = false;
+    private boolean isKiwiTextureVisible = false;
     /**
      * GUI actions
      */
@@ -145,7 +147,7 @@ public class WorkspaceGUI implements GUI {
     /**
      * Workspace plugin ICON
      */
-    private ImageIcon shell_icon = null;
+    private ImageIcon shellIcon = null;
     /**
      * Config file
      */
@@ -154,27 +156,26 @@ public class WorkspaceGUI implements GUI {
      * Progress dialog for observing shells load.
      */
     private ProgressDialog pr = null;
-
     /**
      * Default constructor.
      */
     public WorkspaceGUI() {
         super();
-        UIChangeManager.setDefaultFrameIcon(new ResourceManager().getImage("jw_16x16.png"));
+        UIChangeManager.setDefaultFrameIcon(new WorkspaceResourceManager().getImage("jw_16x16.png"));
     }
 
-    public PropertyChangeListener createActionChangeListener(JMenuItem b) {
+    PropertyChangeListener createActionChangeListener(JMenuItem b) {
         return new ActionChangedListener(b);
     }
 
-    public PropertyChangeListener createActionChangeListener(AbstractButton b) {
+    PropertyChangeListener createActionChangeListener(AbstractButton b) {
         return new ActionChangedListener(b);
     }
 
     /**
      * Get workspace GUI actions
      */
-    public UIActions getActions() {
+    UIActions getActions() {
         if (actions == null) {
             actions = new UIActions(this);
         }
@@ -187,20 +188,24 @@ public class WorkspaceGUI implements GUI {
      * @return java.awt.datatransfer.Clipboard
      */
     public Clipboard getClipboard() {
-        return ((MainFrame) getFrame()).getClipboard();
+        return ((jworkspace.ui.MainFrame) getFrame()).getClipboard();
     }
 
     /**
      * Creates frame from the scratch with default
      * parameters.
      */
-    public java.awt.Frame getFrame() {
+    public Frame getFrame() {
         if (frame == null) {
             frame = new MainFrame(Workspace.getVersion(), this);
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     if (e.getSource() == frame) {
-                        Workspace.exit();
+                        try {
+                            Workspace.exit();
+                        } catch (WorkspaceException ex) {
+                            WorkspaceError.exception(ex.getMessage(), ex);
+                        }
                     }
                 }
             });
@@ -217,10 +222,13 @@ public class WorkspaceGUI implements GUI {
             Image im = new ResourceLoader(WorkspaceResourceAnchor.class)
                 .getResourceAsImage("logo/Logo.gif");
             logo = new SplashScreen(new Frame(), im, null);
+
             ImageIcon imc = new ImageIcon(im);
-            Rectangle logoBounds = new Rectangle((screenSize.width -
-                imc.getIconWidth()) / 2,
-                (screenSize.height - imc.getIconHeight()) / 2, imc.getIconWidth(),
+
+            Rectangle logoBounds = new Rectangle((screenSize.width
+                - imc.getIconWidth()) / 2,
+                (screenSize.height - imc.getIconHeight()) / 2,
+                imc.getIconWidth(),
                 imc.getIconHeight());
             logo.setBounds(logoBounds);
             logo.getParent().setBounds(logoBounds);
@@ -248,8 +256,8 @@ public class WorkspaceGUI implements GUI {
      */
     public String getTexturesPath() {
         return System.getProperty("user.dir") + File.separator
-            + "lib" + File.separator +
-            "res" + File.separator + "textures.jar";
+            + "lib" + File.separator
+            + "res" + File.separator + "textures.jar";
     }
 
     /**
@@ -257,8 +265,8 @@ public class WorkspaceGUI implements GUI {
      */
     public String getDesktopIconsPath() {
         return System.getProperty("user.dir") + File.separator
-            + "lib" + File.separator +
-            "res" + File.separator + "desktop.jar";
+            + "lib" + File.separator
+            + "res" + File.separator + "desktop.jar";
     }
 
     /**
@@ -324,8 +332,7 @@ public class WorkspaceGUI implements GUI {
             try {
                 shell.load();
             } catch (IOException ex) {
-                Workspace.getLogger().warning(">"
-                    + "System error: Shell cannot be loaded:" + ex.toString());
+                Workspace.getLogger().warning("> System error: Shell cannot be loaded:" + ex.toString());
             }
             /**
              * Add view to the list of shells
@@ -356,7 +363,7 @@ public class WorkspaceGUI implements GUI {
      */
     public void load() {
         ClassCache.createFileChoosers();
-        shell_icon = new ImageIcon(Workspace.getResourceManager().
+        shellIcon = new ImageIcon(Workspace.getResourceManager().
             getImage("shell_big.png"));
         /**
          * Create new registry.
@@ -627,6 +634,39 @@ public class WorkspaceGUI implements GUI {
     }
 
     /**
+     * Show error to user either way it capable of
+     *
+     * @param question message
+     * @param title
+     * @param icon
+     */
+    @Override
+    public boolean showConfirmDialog(String question, String title, Icon icon) {
+        return false;
+    }
+
+    /**
+     * Show error to user either way it capable of
+     *
+     * @param usermsg message
+     * @param ex      exception
+     */
+    @Override
+    public void showError(String usermsg, Throwable ex) {
+
+    }
+
+    /**
+     * Show message to user either way it capable of
+     *
+     * @param usermsg message
+     */
+    @Override
+    public void showMessage(String usermsg) {
+
+    }
+
+    /**
      * Process event. Such event is send to every
      * subsribed event listener in synchronous manner.
      */
@@ -696,7 +736,7 @@ public class WorkspaceGUI implements GUI {
                     if (shells[i].getBigIcon() != null) {
                         pr.setIcon(shells[i].getBigIcon());
                     } else {
-                        pr.setIcon(shell_icon);
+                        pr.setIcon(shellIcon);
                     }
                     try {
                         shells[i].load();

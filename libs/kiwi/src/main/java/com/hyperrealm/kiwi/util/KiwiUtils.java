@@ -45,8 +45,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import static com.hyperrealm.kiwi.ui.SplashScreen.MILLISEC_IN_SECOND;
-
 import com.hyperrealm.kiwi.ui.AboutFrame;
 
 /**
@@ -107,6 +105,10 @@ public final class KiwiUtils {
      * An origin point: (0,0)
      */
     public static final Point ORIGIN = new Point(0, 0);
+    /**
+     * Milliseconds in one second
+     */
+    public static final int MILLISEC_IN_SECOND = 1000;
     /**
      *
      */

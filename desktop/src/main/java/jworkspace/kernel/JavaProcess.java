@@ -26,20 +26,16 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.StringTokenizer;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static com.hyperrealm.kiwi.ui.SplashScreen.MILLISEC_IN_SECOND;
+import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 
 import jworkspace.LangResource;
 import jworkspace.installer.ApplicationDataSource;
@@ -52,8 +48,10 @@ import jworkspace.installer.ApplicationDataSource;
  * @author Mark Lindner
  */
 public final class JavaProcess {
-
-    private static final int DEFAULT_FONT_SIZE = 13;
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(JavaProcess.class);
 
     private static final String STARTED_WITH_COMMAND_LINE = "> Started with command line: ";
 
@@ -81,40 +79,9 @@ public final class JavaProcess {
      */
     private Date startTime;
     /**
-     * String from process
-     */
-    private StringBuffer log = new StringBuffer();
-    /**
-     * Some UI stuff - the scroller for visual log.
-     */
-    private JScrollPane scroller = null;
-    /**
      * Alive flag
      */
     private boolean alive = false;
-    /**
-     * Scrollback view automatically scrolls view as new entries are added.
-     */
-    private JTextArea vlog = new JTextArea() {
-
-        public void setFont(Font font) {
-            super.setFont(new Font("Monospaced", Font.PLAIN, DEFAULT_FONT_SIZE));
-        }
-
-        public void append(String str) {
-            super.append(str + "\n");
-            Rectangle b = new Rectangle(0, getHeight() - DEFAULT_FONT_SIZE, getWidth(), getHeight());
-            scrollRectToVisible(b);
-        }
-
-        public void setBackground(Color bg) {
-            super.setBackground(Color.lightGray);
-        }
-
-        public void setForeground(Color fg) {
-            super.setForeground(Color.black);
-        }
-    };
 
     /**
      * Constructor
@@ -126,8 +93,7 @@ public final class JavaProcess {
         }
 
         for (String arg : args) {
-            log.append(STARTED_WITH_COMMAND_LINE).append(arg);
-            vlog.append(STARTED_WITH_COMMAND_LINE + arg);
+            LOG.info(STARTED_WITH_COMMAND_LINE + arg);
         }
 
         setName(processName);
@@ -145,45 +111,22 @@ public final class JavaProcess {
         Thread waitThread = new Thread(this::waitForLogs);
         waitThread.start();
 
-        log.append(LangResource.getString(JAVA_PROCESS_MESSAGE))
-            .append(WHITESPACE)
-            .append(processName)
-            .append(WHITESPACE)
-            .append(LangResource.getString(JAVA_PROCESS_STARTED_AT))
-            .append(WHITESPACE)
-            .append(java.text.DateFormat.getInstance().format(startTime));
+        LOG.info(LangResource.getString(JAVA_PROCESS_MESSAGE) + WHITESPACE + processName);
+        LOG.info(LangResource.getString(JAVA_PROCESS_STARTED_AT) + WHITESPACE
+            + DateFormat.getInstance().format(startTime));
 
-        vlog.append(LangResource.getString(JAVA_PROCESS_MESSAGE)
-            + WHITESPACE
-            + processName
-            + WHITESPACE
-            + LangResource.getString(JAVA_PROCESS_STARTED_AT)
-            + WHITESPACE
-            + java.text.DateFormat.getInstance().format(startTime));
         alive = true;
     }
 
     private void waitForLogs() {
-        for (;;) {
-            try {
-                int x = process.waitFor();
-                log.append(LEFT_BR).append(java.text.DateFormat.getInstance()
-                    .format(startTime))
-                    .append(WHITESPACE)
-                    .append(LangResource.getString(JAVA_PROCESS_EXIT_VALUE))
-                    .append(WHITESPACE)
-                    .append(x);
-                vlog.append(LEFT_BR
-                    + DateFormat.getInstance().format(startTime)
-                    + WHITESPACE
-                    + LangResource.getString(JAVA_PROCESS_EXIT_VALUE)
-                    + WHITESPACE
-                    + x);
-                alive = false;
-                break;
-            } catch (InterruptedException ex) {
-                Workspace.ui.showError(LangResource.getString("JavaProcess.CannotWait"), ex);
-            }
+        try {
+            int x = process.waitFor();
+            LOG.info(LEFT_BR + DateFormat.getInstance().format(startTime)
+                + WHITESPACE + LangResource.getString(JAVA_PROCESS_EXIT_VALUE)
+                + WHITESPACE + x);
+            alive = false;
+        } catch (InterruptedException ex) {
+            LOG.error(LangResource.getString("JavaProcess.CannotWait"), ex);
         }
     }
 
@@ -214,38 +157,12 @@ public final class JavaProcess {
         } else {
             this.processName = processName;
         }
-        /*
-         * Set name for log.
-         */
-        vlog.setName(this.processName);
-    }
-
-    public Date getStartTime() {
-        return new Date(startTime.getTime());
-    }
-
-    /**
-     * Get string log
-     */
-    public StringBuffer getLog() {
-        return log;
-    }
-
-    /**
-     * Get log for visual components.
-     */
-    public JScrollPane getVLog() {
-        if (scroller == null) {
-            scroller = new JScrollPane(vlog);
-            scroller.setName(vlog.getName());
-        }
-        return scroller;
     }
 
     /**
      * Kills this process.
      */
-    public void kill() {
+    void kill() {
         if (process != null) {
             process.destroy();
         }
@@ -257,7 +174,7 @@ public final class JavaProcess {
      *
      * @return boolean
      */
-    public boolean isAlive() {
+    boolean isAlive() {
         return alive;
     }
 
@@ -283,31 +200,14 @@ public final class JavaProcess {
                     int b = stream.read(buf);
                     if (b > 0) {
                         String str = new String(buf, 0, b, StandardCharsets.UTF_8);
-                        log.append(LEFT_BR)
-                            .append(getElapsedTime())
-                            .append(WHITESPACE)
-                            .append(SEC)
-                            .append(WHITESPACE)
-                            .append(str);
-
-                        StringTokenizer st = new StringTokenizer(str, "\n\r\f\t");
-
-                        while (st.hasMoreTokens()) {
-                            String little = st.nextToken();
-                            vlog.append(LEFT_BR
-                                + getElapsedTime()
-                                + WHITESPACE
-                                + SEC
-                                + WHITESPACE
-                                + little);
-                        }
+                        LOG.info(LEFT_BR + getElapsedTime() + WHITESPACE + SEC + WHITESPACE + str);
                     } else {
                         if (b < 0) {
                             break;
                         }
                     }
                 } catch (IOException ex) {
-                    Workspace.ui.showError("Cannot read process log", ex);
+                    LOG.error("Cannot read process log", ex);
                     break;
                 }
             }

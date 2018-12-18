@@ -40,7 +40,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +53,7 @@ import jworkspace.api.IUserProfileEngine;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.InstallEngine;
 import jworkspace.api.UI;
+import jworkspace.ui.WorkspaceResourceManager;
 
 /**
  * Workspace is a core class for Java Workspace, which dispatches messages and commands from users. This class also
@@ -215,54 +215,45 @@ public final class Workspace {
     /**
      * User login and logout procedures.
      */
-    public static void changeCurrentProfile() {
+    public static void changeCurrentProfile() throws WorkspaceException {
         /*
          * Check if any unsaved data exists.
          */
-        if (isGUIModified()) {
-            JOptionPane.showMessageDialog(ui.getFrame(), "Please save data before logging out");
-        } else {
+        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
 
-            ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
-
-            int result = JOptionPane.showConfirmDialog(ui.getFrame(),
-                LangResource.getString("Workspace.logOff.question")
-                    + WHITESPACE + getProfilesEngine().getUserName() + " ?",
+        if ((isModified() && ui.showConfirmDialog(LangResource.getString("Workspace.logOff.question")
+                + WHITESPACE + getProfilesEngine().getUserName() + " ?",
                 LangResource.getString("Workspace.logOff.title"),
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
+            icon)) || !isModified()) {
 
+            killAllProcesses();
 
-            if (result == JOptionPane.YES_OPTION) {
+            saveAndResetUI();
+            saveEngines();
+            USER_PLUGINS.clear();
+            removeAllRegisteredComponents();
 
-                killAllProcesses();
+            getRuntimeManager().resetPluginsCache();
 
-                saveAndResetUI();
-                saveEngines();
-                USER_PLUGINS.clear();
-                removeAllRegisteredComponents();
+            try {
+                profilesEngine.logout();
+                profilesEngine.getLoginDlg().setVisible(true);
+            } catch (Exception e) {
+                Workspace.ui.showError(LangResource.getString(WORKSPACE_LOGIN_FAILURE), e);
+                return;
+            }
 
-                getRuntimeManager().resetPluginsCache();
+            loadEngines();
 
-                try {
-                    profilesEngine.logout();
-                    profilesEngine.getLoginDlg().setVisible(true);
-                } catch (Exception e) {
-                    Workspace.ui.showError(LangResource.getString(WORKSPACE_LOGIN_FAILURE), e);
-                    return;
-                }
+            USER_PLUGINS.clear();
 
-                loadEngines();
+            loadUserPlugins();
 
-                USER_PLUGINS.clear();
-
-                loadUserPlugins();
-
-                try {
-                    ui.load();
-                } catch (IOException ex) {
-                    Workspace.ui.showError(ui.getName() + WHITESPACE
-                        + LangResource.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
-                }
+            try {
+                ui.load();
+            } catch (IOException ex) {
+                Workspace.ui.showError(ui.getName() + WHITESPACE
+                    + LangResource.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
             }
         }
     }
@@ -284,24 +275,13 @@ public final class Workspace {
     /**
      * Exits workspace.
      */
-    public static void exit() {
+    public static void exit() throws WorkspaceException {
 
-        /*
-         * Check if any unsaved data exists.
-         */
-        if (isGUIModified()) {
-            JOptionPane.showMessageDialog(ui.getFrame(), "Please save data before leaving");
-            return;
-        }
+        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_exit.png"));
 
-        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("exit.png"));
-
-        int result = JOptionPane.showConfirmDialog(ui.getFrame(),
-            LangResource.getString("Workspace.exit.question"),
+        if ((isModified() && ui.showConfirmDialog(LangResource.getString("Workspace.exit.question"),
             LangResource.getString("Workspace.exit.title"),
-            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
-
-        if (result == JOptionPane.YES_OPTION) {
+            icon)) || !isModified()) {
 
             killAllProcesses();
 
@@ -390,10 +370,12 @@ public final class Workspace {
     public static String getUserHome() {
 
         String home = System.getProperty("user.home");
+
         if (!home.startsWith(System.getProperty(USER_DIR))) {
             home = System.getProperty(USER_DIR)
                 + File.separator + Workspace.getProfilesEngine().getPath();
         }
+
         return home + File.separator;
     }
 
@@ -402,13 +384,11 @@ public final class Workspace {
      */
     private static void killAllProcesses() {
 
-        int killall;
-
-        int pcount = Workspace.getRuntimeManager().getAllProcesses().length;
         boolean alive = false;
+        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("exit.png"));
 
-        for (int i = 0; i < pcount; i++) {
-            if (Workspace.getRuntimeManager().getAllProcesses()[i].isAlive()) {
+        for (JavaProcess jp : Workspace.getRuntimeManager().getAllProcesses()) {
+            if (jp.isAlive()) {
                 alive = true;
                 break;
             }
@@ -418,14 +398,12 @@ public final class Workspace {
             return;
         }
 
-        killall = JOptionPane.showConfirmDialog(ui.getFrame(),
-            LangResource.getString("Workspace.killAll.question"),
-            LangResource.getString("Workspace.killAll.title"),
-            JOptionPane.YES_NO_OPTION);
-        if (killall == JOptionPane.YES_OPTION) {
-            for (int pr = 0; pr < pcount; pr++) {
-                if (Workspace.getRuntimeManager().getAllProcesses()[pr] != null) {
-                    Workspace.getRuntimeManager().getAllProcesses()[pr].kill();
+        if (ui.showConfirmDialog(LangResource.getString("Workspace.killAll.question"),
+            LangResource.getString("Workspace.killAll.title"), icon)) {
+
+            for (JavaProcess jp : Workspace.getRuntimeManager().getAllProcesses()) {
+                if (jp != null) {
+                    jp.kill();
                 }
             }
         }
@@ -536,7 +514,6 @@ public final class Workspace {
         }
 
         // LAUNCH SYSTEM PLUGINS FROM PLUGINS DIRECTORY
-
         addSystemPlugins(Workspace.getRuntimeManager().loadPlugins(PLUGINS));
     }
 
@@ -555,18 +532,20 @@ public final class Workspace {
         }
     }
 
-    private static void saveEngines() {
+    private static void saveEngines() throws WorkspaceException {
         for (IEngine engine : ENGINES) {
             try {
                 engine.save();
                 engine.reset();
             } catch (IOException ex) {
                 String name = engine.getName();
-                Workspace.ui.showError(name
-                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED), ex);
                 Workspace.LOG.error(name
-                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED
+                    + WHITESPACE
+                    + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED
                     + ex.toString()));
+                throw new WorkspaceException(name
+                    + WHITESPACE
+                    + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED), ex);
             }
         }
     }
@@ -578,19 +557,10 @@ public final class Workspace {
     }
 
     /**
-     * Check for unsaved user data in guiClassName and asks user to save data or not.
+     * Check for unsaved user data in gui and asks user to save data or not.
      */
-    private static boolean isGUIModified() {
-        if (ui.isModified()) {
-            int result = JOptionPane.showConfirmDialog(ui.getFrame(),
-                LangResource.getString("Workspace.guiModified.question"),
-                LangResource.getString("Workspace.guiModified.title"),
-                JOptionPane.YES_NO_OPTION);
-
-            return result == JOptionPane.YES_OPTION;
-        } else {
-            return false;
-        }
+    private static boolean isModified() {
+        return ui.isModified();
     }
 
     /**
@@ -619,7 +589,7 @@ public final class Workspace {
         start(args);
     }
 
-    public static void start(String[] args) {
+    static void start(String[] args) {
 
         long start = System.currentTimeMillis();
         Workspace.LOG.info("> Starting" + WHITESPACE + Workspace.getVersion());
@@ -700,8 +670,6 @@ public final class Workspace {
          * LAUNCH STARTUP SERVICES FROM JW ROOT DIRECTORY
          */
         initSystem();
-
-        Workspace.LOG.info("> Kernel is successfully booted");
         /*
          * When ENGINES are initialized, we need to bring up ui system to promote login procedure and
          * so Java Workspace brings main frame of ui system that must be existent.

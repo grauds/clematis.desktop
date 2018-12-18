@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 
-import static com.hyperrealm.kiwi.ui.SplashScreen.MILLISEC_IN_SECOND;
+import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 
 /**
  * A real-time scheduler with a resolution of one minute. The scheduler

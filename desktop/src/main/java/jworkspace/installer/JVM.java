@@ -47,7 +47,7 @@ import jworkspace.kernel.Workspace;
  */
 public class JVM extends DefinitionNode {
 
-    public static final Icon ICON = Workspace.getResourceManager()
+    private static final Icon ICON = Workspace.getResourceManager()
         .getIcon("installer/jvm.gif");
 
     private static final String CK_NAME = "jvm.name",

@@ -31,6 +31,8 @@ import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.util.Hashtable;
 
+import javax.swing.Icon;
+
 /**
  * Graphic User Interface systems of Java Workspace
  * should implement this interface as it provides minimum
@@ -39,6 +41,7 @@ import java.util.Hashtable;
  * @author Anton Troshin
  */
 public interface UI extends IEngine, IWorkspaceListener {
+
     /**
      * Returns special clipboard for graphic interface..
      */
@@ -66,19 +69,19 @@ public interface UI extends IEngine, IWorkspaceListener {
     Hashtable getAllRegistered();
 
     /**
-     * Check whether gui shell is registered
+     * Check whether if a component is registered
      *
      * @return registered component.
      */
     Object isRegistered(String clazz);
 
     /**
-     * Register gui shell.
+     * Register component.
      */
     void register(Object obj);
 
     /**
-     * Unregister gui shell.
+     * Unregister component by class name.
      */
     void unregister(String clazz);
 
@@ -86,6 +89,13 @@ public interface UI extends IEngine, IWorkspaceListener {
      * Updates all UI.
      */
     void update();
+
+    /**
+     * Show error to user either way it capable of
+     *
+     * @param question message
+     */
+    boolean showConfirmDialog(String question, String title, Icon icon);
 
     /**
      * Show error to user either way it capable of

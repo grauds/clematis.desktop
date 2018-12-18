@@ -33,8 +33,6 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +43,7 @@ import com.hyperrealm.kiwi.util.StringUtils;
 
 import jworkspace.api.InstallEngine;
 import jworkspace.kernel.Workspace;
+import jworkspace.kernel.WorkspaceException;
 
 /**
  * Install engine is one of required by kernel.
@@ -62,12 +61,16 @@ public class WorkspaceInstaller implements InstallEngine {
      */
     private static final Logger LOG = LoggerFactory.getLogger(Workspace.class);
     /**
-     * Datasources for all types of entries.
+     * JVM datasource
      */
     private DefinitionDataSource jvmData;
-
+    /**
+     * Library datasource
+     */
     private DefinitionDataSource libraryData;
-
+    /**
+     * Application datasource
+     */
     private DefinitionDataSource applicationData;
 
     /**
@@ -109,13 +112,9 @@ public class WorkspaceInstaller implements InstallEngine {
      * @param path java.lang.String
      * @return java.lang.String
      */
-    public String[] getInvocationArgs(String path) {
+    public String[] getInvocationArgs(String path) throws WorkspaceException {
 
         DefinitionNode node = findApplicationNode(path);
-        if (node == null) {
-            return null;
-        }
-
         return getInvocationArgs(((Application) node));
     }
 
@@ -217,13 +216,9 @@ public class WorkspaceInstaller implements InstallEngine {
      * @param path java.lang.String
      * @return java.lang.String
      */
-    public String getJarFile(java.lang.String path) {
+    public String getJarFile(java.lang.String path) throws WorkspaceException {
 
         DefinitionNode node = findApplicationNode(path);
-        if (node == null) {
-            return null;
-        }
-
         return ((Application) node).getArchive();
     }
 
@@ -269,26 +264,18 @@ public class WorkspaceInstaller implements InstallEngine {
      * @param path java.lang.String
      * @return java.lang.String
      */
-    public String getMainClass(java.lang.String path) {
+    public String getMainClass(java.lang.String path) throws WorkspaceException {
 
         DefinitionNode node = findApplicationNode(path);
-        if (node == null) {
-            return null;
-        }
-
         return ((Application) node).getMainClass();
     }
 
-    public DefinitionNode findApplicationNode(String path) {
+    private DefinitionNode findApplicationNode(String path) throws WorkspaceException {
 
         DefinitionNode node = applicationData.findNode(path);
 
         if (!(node instanceof Application)) {
-            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
-                path + " is not an application",
-                "Java Workspace Installer",
-                JOptionPane.INFORMATION_MESSAGE);
-            return null;
+            throw new WorkspaceException(path + " is not an application");
         }
 
         return node;
@@ -307,13 +294,9 @@ public class WorkspaceInstaller implements InstallEngine {
      * @param path java.lang.String
      * @return java.lang.String
      */
-    public java.lang.String getWorkingDir(java.lang.String path) {
+    public String getWorkingDir(String path) throws WorkspaceException {
 
         DefinitionNode node = findApplicationNode(path);
-        if (node == null) {
-            return null;
-        }
-
         return ((Application) node).getWorkingDirectory();
     }
 
@@ -325,7 +308,7 @@ public class WorkspaceInstaller implements InstallEngine {
      * @return java.lang.String
      */
     @Override
-    public boolean isLoadedAtStartup(java.lang.String path) {
+    public boolean isLoadedAtStartup(String path) {
 
         DefinitionNode node = applicationData.findNode(path);
 
@@ -347,7 +330,7 @@ public class WorkspaceInstaller implements InstallEngine {
      */
     // todo: provide security manager if set to false and the sandbox is enabled for a third party application
     @Override
-    public boolean isSeparateProcess(java.lang.String path) {
+    public boolean isSeparateProcess(String path) {
         DefinitionNode node = applicationData.findNode(path);
 
         if (!(node instanceof Application)) {
@@ -364,7 +347,7 @@ public class WorkspaceInstaller implements InstallEngine {
     public void load() {
 
         WorkspaceInstaller.LOG.info("> Loading installer");
-        /**
+        /*
          * Current data root - this is defined by user path.
          * <p>
          * BUG: If user path is changed, for example as a result of changing user nick

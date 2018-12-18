@@ -1,5 +1,4 @@
 package jworkspace.kernel;
-
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2018 Anton Troshin
@@ -26,45 +25,44 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.JOptionPane;
+import java.io.FilePermission;
+import java.security.AllPermission;
+import java.security.PermissionCollection;
+import java.security.Permissions;
+import java.security.Policy;
+import java.security.ProtectionDomain;
 
-import com.hyperrealm.kiwi.util.plugin.PluginContext;
+import com.hyperrealm.kiwi.util.plugin.PluginClassLoader;
 
 /**
- * Workspace plugin context defines shared workspace resources for use in plugins.
- *
  * @author Anton Troshin
  */
-public class WorkspacePluginContext implements PluginContext {
+public class WorkspaceSecurityPolicy extends Policy {
 
-    /**
-     * Show plugin status in workspace ui
-     *
-     * @param status string
-     */
-    public void showStatus(String status) {
-        // todo: not implemented yet
+    @Override
+    public PermissionCollection getPermissions(ProtectionDomain domain) {
+        if (isPlugin(domain)) {
+            return pluginPermissions();
+        } else {
+            return applicationPermissions();
+        }
     }
 
-    /**
-     * Show message in workspace ui
-     *
-     * @param message to workspace user
-     */
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(Workspace.getUi().getFrame(), message);
+    private boolean isPlugin(ProtectionDomain domain) {
+        return domain.getClassLoader() instanceof PluginClassLoader;
     }
 
-    /**
-     * Show question in workspace ui
-     *
-     * @param question to workspace user
-     * @return boolean answer
-     */
-    public boolean showQuestion(String question) {
-        int result = JOptionPane.showConfirmDialog(Workspace.getUi().getFrame(),
-            question);
+    private PermissionCollection pluginPermissions() {
+        Permissions permissions = new Permissions(); // No permissions
 
-        return result == JOptionPane.YES_OPTION;
+        permissions.add(new FilePermission("plugins/*", "read,write"));
+
+        return permissions;
+    }
+
+    private PermissionCollection applicationPermissions() {
+        Permissions permissions = new Permissions();
+        permissions.add(new AllPermission());
+        return permissions;
     }
 }

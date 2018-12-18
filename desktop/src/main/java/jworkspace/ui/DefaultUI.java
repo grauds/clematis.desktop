@@ -30,11 +30,15 @@ import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.util.Hashtable;
 
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
+
 import com.hyperrealm.kiwi.ui.KFrame;
 
 import jworkspace.api.UI;
+
 /**
- * Default graphic User Interface of Java Workspace
+ * Default graphic user interface
  *
  * @author Anton Troshin
  */
@@ -84,7 +88,7 @@ public class DefaultUI implements UI {
     /**
      * Check whether gui shell is registered
      *
-     * @param clazz
+     * @param clazz to find any instances of
      * @return registered component.
      */
     @Override
@@ -95,7 +99,7 @@ public class DefaultUI implements UI {
     /**
      * Register gui shell.
      *
-     * @param obj
+     * @param obj to register
      */
     @Override
     public void register(Object obj) {
@@ -105,7 +109,7 @@ public class DefaultUI implements UI {
     /**
      * Unregister gui shell.
      *
-     * @param clazz
+     * @param clazz to remove all instances of
      */
     @Override
     public void unregister(String clazz) {
@@ -118,6 +122,19 @@ public class DefaultUI implements UI {
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public boolean showConfirmDialog(String question, String title, Icon icon) {
+
+        int result = JOptionPane.showConfirmDialog(getFrame(),
+            question,
+            title,
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            icon);
+
+        return result == JOptionPane.YES_OPTION;
     }
 
     @Override
@@ -165,9 +182,9 @@ public class DefaultUI implements UI {
     /**
      * Processes event. Such event is send to every subscribed event listener in synchronous manner.
      *
-     * @param event
-     * @param lparam
-     * @param rparam
+     * @param event to process
+     * @param lparam left parameter
+     * @param rparam right parameter
      */
     @Override
     public void processEvent(Object event, Object lparam, Object rparam) {

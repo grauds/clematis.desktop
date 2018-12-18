@@ -1,4 +1,4 @@
-package jworkspace.util;
+package jworkspace.kernel;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -34,7 +34,7 @@ package jworkspace.util;
  */
 public class WorkspaceException extends Exception {
 
-    public Throwable wrappedException = null;
+    private Throwable wrappedException = null;
 
     public WorkspaceException() {
         super();

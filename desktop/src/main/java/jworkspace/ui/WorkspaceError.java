@@ -51,8 +51,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
-import jworkspace.util.Utils;
-import jworkspace.util.WorkspaceException;
+import jworkspace.kernel.WorkspaceException;
 
 /**
  * Gui error reporter for the end-user

@@ -29,6 +29,7 @@ package jworkspace.api;
 import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
 //
 import jworkspace.installer.DefinitionDataSource;
+import jworkspace.kernel.WorkspaceException;
 
 /**
  * Installation systems of Java Workspace
@@ -64,7 +65,7 @@ public interface InstallEngine extends IEngine {
      * @param path String
      * @return String
      */
-    String[] getInvocationArgs(String path);
+    String[] getInvocationArgs(String path) throws WorkspaceException;
 
     /**
      * Returns jar file for installation.
@@ -72,7 +73,7 @@ public interface InstallEngine extends IEngine {
      * @param path String
      * @return String
      */
-    String getJarFile(String path);
+    String getJarFile(String path) throws WorkspaceException;
 
     /**
      * Returns jvm data.
@@ -108,7 +109,7 @@ public interface InstallEngine extends IEngine {
      * @param path String
      * @return String
      */
-    String getMainClass(String path);
+    String getMainClass(String path) throws WorkspaceException;
 
     /**
      * Returns working directory for new process.
@@ -116,7 +117,7 @@ public interface InstallEngine extends IEngine {
      * @param path String
      * @return String
      */
-    String getWorkingDir(String path);
+    String getWorkingDir(String path) throws WorkspaceException;
 
     /**
      * Returns flag, that tells Workspace to launch this application on startup. Usually, this flag should
