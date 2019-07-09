@@ -33,15 +33,15 @@ import java.beans.PropertyChangeListener;
 import javax.swing.SwingUtilities;
 
 /**
- * Listener for changes of UI. This class
- * should be used on any component to
- * ensure UI switch "on-fly". This is
- * nesessary for all components in
+ * Listener for changes of UI. This class should be used on any component to
+ * ensure UI switch "on-fly". This is nesessary for all components in
  * Java Workspace UI.
+ *
+ * @author Anton Troshin
  */
-public class UISwitchListener
-    implements PropertyChangeListener {
-    Component componentToSwitch;
+public class UISwitchListener implements PropertyChangeListener {
+
+    private Component componentToSwitch;
 
     /**
      * Instance of <code>jworkspace.ui.action.UISwitchListener</code>
@@ -59,6 +59,7 @@ public class UISwitchListener
     public void propertyChange(PropertyChangeEvent e) {
         String name = e.getPropertyName();
         if (name.equals("lookAndFeel")) {
+
             SwingUtilities.updateComponentTreeUI(componentToSwitch);
             componentToSwitch.invalidate();
             componentToSwitch.validate();

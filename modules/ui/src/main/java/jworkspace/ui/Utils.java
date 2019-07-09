@@ -2,7 +2,7 @@ package jworkspace.ui;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2002 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -27,8 +27,6 @@ package jworkspace.ui;
 */
 
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
@@ -40,30 +38,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
 
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FileUtils;
+
 import com.hyperrealm.kiwi.io.StreamUtils;
-import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import jworkspace.LangResource;
 import jworkspace.api.IConstants;
-import jworkspace.kernel.Workspace;
-import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.action.ActionChangedListener;
 import jworkspace.ui.cpanel.CButton;
-import jworkspace.util.WorkspaceError;
-import jworkspace.util.crypto.DesCipher;
 
 /**
  * Workspace utils.
+ *
+ * @author Anton Troshin
  */
 public final class Utils implements IConstants {
+
+    private static final int BUFFER = 1024;
     /**
      * Directory for source files in copying or moving
      * whole directories
@@ -75,18 +74,12 @@ public final class Utils implements IConstants {
      */
     private static String dest = null;
 
-    /**
-     * todo
-     */
-    public static byte[] encrypt(String userName, String password) {
-        if (password == null || password.equals("")) {
-            return new byte[]{};
-        }
-        return password;
+    private Utils() {
     }
 
-    private static void _copyDir(File _dir, FileSystemView fileSystem) {
-        File[] list = fileSystem.getFiles(_dir, false);
+    private static void doCopyDir(File dir, FileSystemView fileSystem) throws IOException {
+
+        File[] list = fileSystem.getFiles(dir, false);
         Vector<File> dirList = new Vector<>();
 
         for (File file : list) {
@@ -94,81 +87,82 @@ public final class Utils implements IConstants {
             if (file.isDirectory()) {
                 dirList.addElement(file);
                 // calculate name of new directory
-                File destSubDir = new File(dest + file.getAbsolutePath().substring(dir.length()));
-                destSubDir.mkdir();
+                File destSubDir = new File(dest + file.getAbsolutePath().substring(Utils.dir.length()));
+                FileUtils.forceMkdir(destSubDir);
             } else if (file.isFile()) {
                 File destFile = new File(dest + file.getAbsolutePath().
-                    substring(dir.length()));
+                    substring(Utils.dir.length()));
 
-                try {
-                    FileInputStream input = new FileInputStream(file);
-                    FileOutputStream output = new FileOutputStream(destFile);
-                    output = (FileOutputStream) StreamUtils.readStreamToStream(input, output);
-                    input.close();
-                    output.close();
+                try (FileInputStream input = new FileInputStream(file);
+                     FileOutputStream output = new FileOutputStream(destFile)) {
+
+                    StreamUtils.readStreamToStream(input, output);
                 } catch (IOException e) {
-                    WorkspaceError.exception
-                        (LangResource.getString("Utils.cannotCopyDir"), e);
+                    WorkspaceError.exception(LangResource.getString("Utils.cannotCopyDir"), e);
+                }
+            }
+        }
+
+        for (int i = 0; i < dirList.size(); i++) {
+            doCopyDir(dirList.elementAt(i), fileSystem);
+        }
+    }
+
+    private static void doMoveDir(File dir, FileSystemView fileSystem) throws IOException {
+
+        File[] list = fileSystem.getFiles(dir, false);
+        Vector<File> dirList = new Vector<>();
+
+        for (File file : list) {
+
+            if (file.isDirectory()) {
+                dirList.addElement(file);
+                // calculate name of new directory
+                File destSubDir = new File(dest + file.getAbsolutePath().
+                    substring(Utils.dir.length()));
+                FileUtils.forceMkdir(destSubDir);
+            } else if (file.isFile()) {
+                File destFile = new File(dest + file.getAbsolutePath().
+                    substring(Utils.dir.length()));
+                if (!file.renameTo(destFile)) {
+                    throw new IOException("Couldn't rename the file: " + file.getName() + " to " + destFile.getName());
                 }
             }
         }
         for (int i = 0; i < dirList.size(); i++) {
-            _copyDir(dirList.elementAt(i), fileSystem);
-        }
-    }
-
-    private static final void _moveDir(File _dir, FileSystemView fileSystem) {
-        File[] list = fileSystem.getFiles(_dir, false);
-        Vector dirList = new Vector();
-
-        for (int i = 0; i < list.length; i++) {
-            if (list[i].isDirectory()) {
-                dirList.addElement(list[i]);
-                // calculate name of new directory
-                File destSubDir = new File(dest + list[i].getAbsolutePath().
-                    substring(dir.length()));
-                destSubDir.mkdir();
-            } else if (list[i].isFile()) {
-                File destFile = new File(dest + list[i].getAbsolutePath().
-                    substring(dir.length()));
-                list[i].renameTo(destFile);
-            }
-        }
-        for (int i = 0; i < dirList.size(); i++) {
-            _moveDir((File) dirList.elementAt(i), fileSystem);
+            doMoveDir(dirList.elementAt(i), fileSystem);
         }
     }
 
     /**
-     * Copies directory along with all files
-     * within.
+     * Copies directory along with all files within.
      */
-    public static final void copyDir(String _dir, String _dest) {
+    public static void copyDir(String dir, String dest) throws IOException {
+
         FileSystemView fileSystem = FileSystemView.getFileSystemView();
+        File directory = new File(dir);
 
-        File directory = new File(_dir);
+        Utils.dir = dir;
+        Utils.dest = dest;
 
-        dir = _dir;
-        dest = _dest;
-
-        _copyDir(directory, fileSystem);
+        doCopyDir(directory, fileSystem);
     }
 
     /**
      * Copy file to another directory
      */
-    public static final String copyFileToDir(String _file, String _dest)
-        throws IOException {
-        File file = new File(_file);
+    public static String copyFileToDir(String file, String dest) throws IOException {
 
-        File destFile = new File(_dest + file.getAbsolutePath().
-            substring(file.getAbsolutePath().lastIndexOf(File.separator)));
+        File f = new File(file);
 
-        FileInputStream input = new FileInputStream(file);
-        FileOutputStream output = new FileOutputStream(destFile);
-        output = (FileOutputStream) StreamUtils.readStreamToStream(input, output);
-        input.close();
-        output.close();
+        File destFile = new File(dest + f.getAbsolutePath().
+            substring(f.getAbsolutePath().lastIndexOf(File.separator)));
+
+        try (FileInputStream input = new FileInputStream(f);
+             FileOutputStream output = new FileOutputStream(destFile)) {
+
+            StreamUtils.readStreamToStream(input, output);
+        }
 
         return destFile.getAbsolutePath();
     }
@@ -176,134 +170,129 @@ public final class Utils implements IConstants {
     /**
      * Copy file to another file with the same extension
      */
-    public static final String copyFile(String _file, String _dest,
-                                        String _dest_file)
-        throws IOException {
-        File file = new File(_file);
+    public static String copyFile(String file, String dest, String destFile) throws IOException {
 
-        File destFile = new File(_dest + _dest_file + file.getAbsolutePath().
-            substring(file.getAbsolutePath().lastIndexOf('.')));
+        File f = new File(file);
 
-        FileInputStream input = new FileInputStream(file);
-        FileOutputStream output = new FileOutputStream(destFile);
-        output = (FileOutputStream) StreamUtils.readStreamToStream(input, output);
-        input.close();
-        output.close();
+        File d = new File(dest + destFile
+            + f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf('.')));
 
-        return destFile.getAbsolutePath();
+        try (FileInputStream input = new FileInputStream(f);
+             FileOutputStream output = new FileOutputStream(d)) {
+
+            StreamUtils.readStreamToStream(input, output);
+        }
+        return d.getAbsolutePath();
     }
 
     /**
      * Utility method to copy a file from one directory to another
      */
     public static void copyFile(File from, File to) throws IOException {
+
         if (!from.canRead()) {
-            throw new IOException("Cannot read file '" + from + "'.");
+            throw new IOException("Cannot read file: " + from);
         }
         if (to.exists() && (!to.canWrite())) {
-            throw new IOException("Cannot write to file '" +
-                to + "'.");
+            throw new IOException("Cannot write to file: " + to);
         }
 
-        FileInputStream fis = new FileInputStream(from);
-        FileOutputStream fos = new FileOutputStream(to);
+        try (FileInputStream fis = new FileInputStream(from);
+        FileOutputStream fos = new FileOutputStream(to)) {
 
-        byte[] buf = new byte[1024];
-        int bytesLeft;
-        while ((bytesLeft = fis.available()) > 0) {
-            if (bytesLeft >= buf.length) {
-                fis.read(buf);
-                fos.write(buf);
-            } else {
-                byte[] smallBuf = new byte[bytesLeft];
-                fis.read(smallBuf);
-                fos.write(smallBuf);
+            byte[] buf = new byte[BUFFER];
+            int bytesLeft;
+            while ((bytesLeft = fis.available()) > 0) {
+                if (bytesLeft >= buf.length) {
+                    if (fis.read(buf) != -1) {
+                        fos.write(buf);
+                    }
+                } else {
+                    byte[] smallBuf = new byte[bytesLeft];
+                    if (fis.read(smallBuf) != -1) {
+                        fos.write(smallBuf);
+                    }
+                }
             }
         }
-        fos.close();
-        fis.close();
     }
 
     /**
      * Copy file to another file with the same extension
      */
-    public static final String copyFile(String _file, String _dest_file)
-        throws IOException {
-        File file = new File(_file);
+    public static String copyFile(String file, String destFile) throws IOException {
 
-        File destFile = new File(_dest_file);
+        File f = new File(file);
+        File d = new File(destFile);
 
-        FileInputStream input = new FileInputStream(file);
-        FileOutputStream output = new FileOutputStream(destFile);
-        output = (FileOutputStream) StreamUtils.readStreamToStream(input, output);
-        input.close();
-        output.close();
+        try (FileInputStream input = new FileInputStream(f);
+        FileOutputStream output = new FileOutputStream(d)) {
+            StreamUtils.readStreamToStream(input, output);
+        }
 
-        return destFile.getAbsolutePath();
+        return d.getAbsolutePath();
     }
 
     /**
      * Draw dashed rectangle.
      */
-    public static void drawDashedRect(Graphics g, int x, int y,
-                                      int width, int height) {
-        int vx, vy;
+    public static void drawDashedRect(Graphics g, int x, int y, int width, int height) {
+
+        drawUpperLowerDashes(g, x, y, width, height);
+        drawLeftRightDashes(g, x, y, width, height);
+    }
+
+    private static void drawUpperLowerDashes(Graphics g, int x, int y, int width, int height) {
+
+        int vx;
 
         // draw upper and lower horizontal dashes
         for (vx = x; vx < (x + width); vx += 2) {
             g.drawLine(vx, y, vx, y);
             g.drawLine(vx, y + height - 1, vx, y + height - 1);
-        }
-
-        // draw left and right vertical dashes
-        for (vy = y; vy < (y + height); vy += 2) {
-            g.drawLine(x, vy, x, vy);
-            g.drawLine(x + width - 1, vy, x + width - 1, vy);
         }
     }
 
     /**
      * Returns input stream from given file.
      */
-    public static InputStream getInputStream(File file, Class c)
-        throws FileNotFoundException {
-        InputStream rtn;
+    public static InputStream getInputStream(File file, Class c) {
+
+        InputStream rtn = null;
         String s;
         if (file != null) {
             try {
-                return new FileInputStream(file);
+                rtn = new FileInputStream(file);
             } catch (FileNotFoundException e) {
                 s = file.toString();
                 int i = s.indexOf(File.separator);
                 if (i >= 0) {
                     s = s.substring(i);
-                    s = s.replaceAll("\\", "/");
-                    if ((rtn = c.getResourceAsStream(s)) != null) {
-                        return rtn;
-                    }
+                    s = s.replaceAll("\\\\", "/");
+                    rtn = c.getResourceAsStream(s);
                 }
-                throw e;
             }
         }
-        return null;
+        return rtn;
     }
 
     /**
      * Draw dashed rectangle.
      */
     public static void drawDashedRect(Graphics g, Rectangle rect) {
+
         int x = rect.getLocation().x;
         int y = rect.getLocation().y;
         int width = rect.getSize().width;
         int height = rect.getSize().height;
 
-        int vx, vy;
+        drawUpperLowerDashes(g, x, y, width, height);
+        drawLeftRightDashes(g, x, y, width, height);
+    }
 
-        // draw upper and lower horizontal dashes
-        for (vx = x; vx < (x + width); vx += 2) {
-            g.drawLine(vx, y, vx, y);
-            g.drawLine(vx, y + height - 1, vx, y + height - 1);
-        }
+    private static void drawLeftRightDashes(Graphics g, int x, int y, int width, int height) {
+
+        int vy;
 
         // draw left and right vertical dashes
         for (vy = y; vy < (y + height); vy += 2) {
@@ -316,15 +305,16 @@ public final class Utils implements IConstants {
      * Moves directory to new location along with all files
      * within.
      */
-    public static final void moveDir(String _dir, String _dest) {
+    public static void moveDir(String dir, String dest) throws IOException {
+
         FileSystemView fileSystem = FileSystemView.getFileSystemView();
 
-        File directory = new File(_dir);
+        File directory = new File(dir);
 
-        dir = _dir;
-        dest = _dest;
+        Utils.dir = dir;
+        Utils.dest = dest;
 
-        _moveDir(directory, fileSystem);
+        doMoveDir(directory, fileSystem);
     }
 
     /**
@@ -347,8 +337,7 @@ public final class Utils implements IConstants {
      * a top left corner of a screen.
      */
     public static boolean isNorthernQuadrant(Point center, Point b) {
-        return (distance(center.x, b.x) <= distance(center.y, b.y)) &&
-            (center.y >= b.y);
+        return (distance(center.x, b.x) <= distance(center.y, b.y)) && (center.y >= b.y);
     }
 
     /**
@@ -357,8 +346,7 @@ public final class Utils implements IConstants {
      * a top left corner of a screen.
      */
     public static boolean isSouthernQuadrant(Point center, Point b) {
-        return (distance(center.x, b.x) <= distance(center.y, b.y)) &&
-            (center.y <= b.y);
+        return (distance(center.x, b.x) <= distance(center.y, b.y)) && (center.y <= b.y);
     }
 
     /**
@@ -367,8 +355,7 @@ public final class Utils implements IConstants {
      * a top left corner of a screen.
      */
     public static boolean isEasternQuadrant(Point center, Point b) {
-        return (distance(center.x, b.x) >= distance(center.y, b.y)) &&
-            (center.x <= b.x);
+        return (distance(center.x, b.x) >= distance(center.y, b.y)) && (center.x <= b.x);
     }
 
     /**
@@ -377,8 +364,7 @@ public final class Utils implements IConstants {
      * a top left corner of a screen.
      */
     public static boolean isWesternQuadrant(Point center, Point b) {
-        return (distance(center.x, b.x) >= distance(center.y, b.y)) &&
-            (center.x >= b.x);
+        return (distance(center.x, b.x) >= distance(center.y, b.y)) && (center.x >= b.x);
     }
 
     /**
@@ -395,21 +381,18 @@ public final class Utils implements IConstants {
         return (i < j) ? i : j;
     }
 
-
     /**
      * Create button from action
      */
     public static CButton createCButtonFromAction(Action a) {
+
         Icon icon = (Icon) a.getValue(Action.SMALL_ICON);
         CButton b = new CButton(icon, icon);
         b.setEnabled(a.isEnabled());
         b.setToolTipText((String) a.getValue(Action.SHORT_DESCRIPTION));
         b.setAction(a);
         b.setText(null);
-        if (Workspace.getUI() instanceof WorkspaceGUI) {
-            ((WorkspaceGUI) Workspace.getUI()).
-                createActionChangeListener(b);
-        }
+        createActionChangeListener(b);
         return b;
     }
 
@@ -418,14 +401,23 @@ public final class Utils implements IConstants {
      */
     public static JMenuItem createMenuItem(ActionListener listener,
                                            String name, String actionCommand, Icon icon) {
-        JMenuItem menu_item = new JMenuItem(name, icon);
-        menu_item.addActionListener(listener);
-        menu_item.setActionCommand(actionCommand);
-        if (Workspace.getUI() instanceof WorkspaceGUI) {
-            ((WorkspaceGUI) Workspace.getUI()).
-                createActionChangeListener(menu_item);
-        }
-        return menu_item;
+        JMenuItem menuItem = new JMenuItem(name, icon);
+        menuItem.addActionListener(listener);
+        menuItem.setActionCommand(actionCommand);
+        createActionChangeListener(menuItem);
+        return menuItem;
+    }
+
+    private static void createActionChangeListener(JMenuItem b) {
+        new ActionChangedListener(b);
+    }
+
+    private static void menuItem(AbstractButton b) {
+        new ActionChangedListener(b);
+    }
+
+    private static void createActionChangeListener(CButton b) {
+        new ActionChangedListener(b);
     }
 
     /**
@@ -433,40 +425,31 @@ public final class Utils implements IConstants {
      * instead of action ICON in Swing.
      */
     public static JMenuItem createMenuItem(Action a) {
-        JMenuItem menu_item = new JMenuItem(a);
-        menu_item.setEnabled(a.isEnabled());
+        JMenuItem menuItem = new JMenuItem(a);
+        menuItem.setEnabled(a.isEnabled());
         Icon icon = (Icon) a.getValue(MENU_ICON);
-        menu_item.setIcon(icon);
-        if (Workspace.getUI() instanceof WorkspaceGUI) {
-            ((WorkspaceGUI) Workspace.getUI()).
-                createActionChangeListener(menu_item);
-        }
-        return menu_item;
+        menuItem.setIcon(icon);
+        createActionChangeListener(menuItem);
+        return menuItem;
     }
 
     /**
      * Create checkbox menu item.
      */
     public static JCheckBoxMenuItem createCheckboxMenuItem(Action a) {
-        JCheckBoxMenuItem menu_item = new JCheckBoxMenuItem(a);
-        menu_item.setEnabled(a.isEnabled());
-        if (Workspace.getUI() instanceof WorkspaceGUI) {
-            ((WorkspaceGUI) Workspace.getUI()).
-                createActionChangeListener(menu_item);
-        }
-        return menu_item;
+        JCheckBoxMenuItem boxMenuItem = new JCheckBoxMenuItem(a);
+        boxMenuItem.setEnabled(a.isEnabled());
+        createActionChangeListener(boxMenuItem);
+        return boxMenuItem;
     }
 
     /**
      * Create radio menu item.
      */
     public static JRadioButtonMenuItem createRadioMenuItem(Action a) {
-        JRadioButtonMenuItem menu_item = new JRadioButtonMenuItem(a);
-        menu_item.setEnabled(a.isEnabled());
-        if (Workspace.getUI() instanceof WorkspaceGUI) {
-            ((WorkspaceGUI) Workspace.getUI()).
-                createActionChangeListener(menu_item);
-        }
-        return menu_item;
+        JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(a);
+        menuItem.setEnabled(a.isEnabled());
+        createActionChangeListener(menuItem);
+        return menuItem;
     }
 }

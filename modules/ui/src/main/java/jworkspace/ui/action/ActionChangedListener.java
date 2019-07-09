@@ -36,10 +36,14 @@ import javax.swing.JMenuItem;
 /**
  * Action changed listener updates all menus and button,
  * associated with some action that changes.
+ *
+ * @author Anton Troshin
  */
 public class ActionChangedListener implements PropertyChangeListener {
-    JMenuItem menuItem = null;
-    AbstractButton b = null;
+
+    private JMenuItem menuItem = null;
+
+    private AbstractButton b = null;
 
     public ActionChangedListener(JMenuItem mi) {
         super();
@@ -58,10 +62,9 @@ public class ActionChangedListener implements PropertyChangeListener {
     }
 
     public void propertyChange(PropertyChangeEvent e) {
+
         String propertyName = e.getPropertyName();
-        /**
-         * Name
-         */
+
         if (e.getPropertyName().equals(Action.NAME)) {
             String text = (String) e.getNewValue();
             if (menuItem != null) {
@@ -70,26 +73,18 @@ public class ActionChangedListener implements PropertyChangeListener {
             if (b != null) {
                 b.setText(text);
             }
-        }
-        /**
-         * Enabled / disabled
-         */
-        else if (propertyName.equals("enabled")) {
+        } else if (propertyName.equals("enabled")) {
             Boolean enabledState = (Boolean) e.getNewValue();
             if (enabledState == null) {
                 enabledState = true;
             }
             if (menuItem != null) {
-                menuItem.setEnabled(enabledState.booleanValue());
+                menuItem.setEnabled(enabledState);
             }
             if (b != null) {
-                b.setEnabled(enabledState.booleanValue());
+                b.setEnabled(enabledState);
             }
-        }
-        /**
-         * Selected / unselected
-         */
-        else if (propertyName.equals(AbstractStateAction.SELECTED)) {
+        } else if (propertyName.equals(AbstractStateAction.SELECTED)) {
             Boolean selectedState = (Boolean) e.getNewValue();
             if (menuItem != null) {
                 menuItem.setSelected(selectedState);
@@ -97,11 +92,7 @@ public class ActionChangedListener implements PropertyChangeListener {
             if (b != null) {
                 b.setSelected(selectedState);
             }
-        }
-        /**
-         * Small ICON
-         */
-        else if (e.getPropertyName().equals(Action.SMALL_ICON)) {
+        } else if (e.getPropertyName().equals(Action.SMALL_ICON)) {
             Icon icon = (Icon) e.getNewValue();
             if (menuItem != null) {
                 menuItem.setIcon(icon);
@@ -110,9 +101,11 @@ public class ActionChangedListener implements PropertyChangeListener {
                 b.setIcon(icon);
             }
         }
+
         if (menuItem != null) {
             menuItem.repaint();
         }
+
         if (b != null) {
             b.repaint();
         }

@@ -32,11 +32,14 @@ import javax.swing.Icon;
 /**
  * Abstract state implements action allows controlling of checkbox
  * menu items or buttons.
+ *
+ * @author Anton Troshin
  */
-public abstract class AbstractStateAction extends AbstractAction
-    implements StateAction {
-    public static final String SELECTED = "SELECTED";
-    public static final String SELECTABLE = "SELECTABLE";
+public abstract class AbstractStateAction extends AbstractAction implements StateAction {
+
+    static final String SELECTED = "SELECTED";
+
+    private static final String SELECTABLE = "SELECTABLE";
 
     public AbstractStateAction() {
         super();

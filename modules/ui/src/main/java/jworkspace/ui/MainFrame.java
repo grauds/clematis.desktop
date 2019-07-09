@@ -47,19 +47,26 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-import com.hyperrealm.kiwi.ui.KFrame;
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.widgets.GlassDragPane;
-import jworkspace.util.WorkspaceError;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hyperrealm.kiwi.ui.KFrame;
 
 /**
  * Main frame for Java Workspace UI.
  */
 public class MainFrame extends KFrame implements PropertyChangeListener {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(MainFrame.class);
     /**
      * The name of content manager
      */
@@ -71,7 +78,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     /**
      * A reference to Workspace GUI
      */
-    protected WorkspaceGUI gui = null;
+    protected WorkspaceGUI gui;
     /**
      * Control panel.
      */
@@ -101,7 +108,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * with only title. All initialization is made
      * by components of main frame by themselves.
      */
-    public MainFrame(String title, WorkspaceGUI gui) {
+    MainFrame(String title, WorkspaceGUI gui) {
         super(title);
         /*
          * Insert menu bar on the top.
@@ -120,7 +127,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Creates default frame.
      */
     public void create() {
-        Workspace.getLogger().info(">" + "Building gui" + "...");
+        WorkspaceGUI.getLogger().info(">" + "Building gui" + "...");
         try {
             Class clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
@@ -313,7 +320,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          *  My details
          */
         JMenuItem my_details = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.myDetailsActionName));
+            (gui.getActions().getAction(UIActions.MY_DETAILS_ACTION_NAME));
         my_details.setAccelerator
             (KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK));
         wmenu.add(my_details);
@@ -321,13 +328,13 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          * Settings
          */
         JMenuItem settings = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.settingsActionName));
+            (gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
         wmenu.add(settings);
         /*
          * Show control panel
          */
         JCheckBoxMenuItem showControlPanel = Utils.createCheckboxMenuItem
-            (gui.getActions().getAction(UIActions.showPanelActionName));
+            (gui.getActions().getAction(UIActions.SHOW_PANEL_ACTION_NAME));
         showControlPanel.setSelected(getControlPanel().isVisible());
         showControlPanel.setAccelerator
             (KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK));
@@ -337,27 +344,27 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          * Help
          */
         JMenuItem help = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.helpActionName));
+            (gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
         help.setEnabled(false);
         wmenu.add(help);
         /*
          * About
          */
         JMenuItem about = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.aboutActionName));
+            (gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
         wmenu.add(about);
         wmenu.addSeparator();
         /*
          * Log off
          */
         JMenuItem log_off = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.logoffActionName));
+            (gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
         wmenu.add(log_off);
         /*
          * Exit
          */
         JMenuItem exit = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.exitActionName));
+            (gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
         exit.setAccelerator
             (KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.ALT_MASK));
         wmenu.add(exit);

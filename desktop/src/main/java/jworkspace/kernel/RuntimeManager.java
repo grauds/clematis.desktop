@@ -283,7 +283,7 @@ public final class RuntimeManager {
      *
      * @param directory path to directory
      */
-    Plugin[] loadPlugins(String directory) {
+    public Plugin[] loadPlugins(String directory) {
 
         RuntimeManager.LOG.info("> Loading plugins from " + directory);
 

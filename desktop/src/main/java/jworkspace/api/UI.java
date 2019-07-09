@@ -29,6 +29,7 @@ package jworkspace.api;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.swing.Icon;
@@ -66,7 +67,7 @@ public interface UI extends IEngine, IWorkspaceListener {
     /**
      * Returns all registered components.
      */
-    Hashtable getAllRegistered();
+    HashMap<String, Object> getAllRegistered();
 
     /**
      * Check whether if a component is registered
