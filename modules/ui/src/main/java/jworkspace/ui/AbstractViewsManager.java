@@ -32,17 +32,12 @@ import javax.swing.JMenu;
 import javax.swing.JPanel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+
 import jworkspace.ui.cpanel.CButton;
-
 /**
- * Content manager system should provide
- * easy and flexible way of setting views,
- * links to programs, navigation and so on.
- */
-
-/**
- * 15.11.2001 - Public interface IContentManager
- * is considered deprecated and removed.
+ * Views switcher and manager
+ *
+ * @author Anton Troshin
  */
 public abstract class AbstractViewsManager extends KPanel {
     /**

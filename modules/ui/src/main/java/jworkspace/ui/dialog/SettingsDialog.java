@@ -31,18 +31,20 @@ import java.awt.Frame;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
+
 import jworkspace.LangResource;
-import kiwi.ui.dialog.ComponentDialog;
 
 /**
  * Settings dialog shows a list of general workspace options.
  * This configures laf, texture and other features.
+ * @author Anton Troshin
  */
 public class SettingsDialog extends ComponentDialog {
-    private TexturePanel first_panel;
-    private PlafPanel second_panel;
-    private LoggingPanel logging_panel;
-    private JTabbedPane tabbed_pane;
+
+    private TexturePanel texturePanel;
+
+    private PlafPanel plafPanel;
 
     public SettingsDialog(Frame parent) {
         super(parent, LangResource.getString("SettingsDialog.title"), true);
@@ -52,21 +54,22 @@ public class SettingsDialog extends ComponentDialog {
     protected JComponent buildDialogUI() {
         setComment(null);
 
-        tabbed_pane = new JTabbedPane();
-        first_panel = new TexturePanel();
-        second_panel = new PlafPanel();
-        logging_panel = new LoggingPanel();
-        tabbed_pane.addTab(LangResource.getString("SettingsDialog.textureTab"),
-            first_panel);
-        tabbed_pane.addTab(LangResource.getString("SettingsDialog.lafTab"),
-            second_panel);
-        tabbed_pane.addTab(LangResource.getString("SettingsDialog.loggingTab"),
-            logging_panel);
-        return (tabbed_pane);
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        texturePanel = new TexturePanel();
+        plafPanel = new PlafPanel();
+
+        LoggingPanel loggingPanel = new LoggingPanel();
+
+        tabbedPane.addTab(LangResource.getString("SettingsDialog.textureTab"), texturePanel);
+        tabbedPane.addTab(LangResource.getString("SettingsDialog.lafTab"), plafPanel);
+        tabbedPane.addTab(LangResource.getString("SettingsDialog.loggingTab"), loggingPanel);
+
+        return (tabbedPane);
     }
 
     protected boolean accept() {
-        return (true && first_panel.syncData() && second_panel.syncData());
+        return texturePanel.syncData() && plafPanel.syncData();
     }
 
     public void dispose() {
@@ -75,6 +78,6 @@ public class SettingsDialog extends ComponentDialog {
     }
 
     public void setData() {
-        first_panel.setData();
+        texturePanel.setData();
     }
 }

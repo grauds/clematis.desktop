@@ -49,16 +49,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalTheme;
+
+import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.Imaging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
 import com.hyperrealm.kiwi.ui.SplashScreen;
@@ -68,6 +78,7 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.Task;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
+
 import jworkspace.LangResource;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IWorkspaceListener;
@@ -79,12 +90,6 @@ import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.views.DefaultCompoundView;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.Imaging;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Workspace Desktop user interface
@@ -93,21 +98,20 @@ import org.slf4j.LoggerFactory;
  */
 public class WorkspaceGUI implements UI {
 
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Workspace.class);
-    /**
-     * GUI texture and laf.
-     */
+    static final String LOG_FINISH = "...";
+
+    static final String LOG_SPACE = " ";
+
+    static final String PROMPT = ">";
+
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceGUI.class);
+
     private static final String CK_TEXTURE = "gui.texture",
         CK_LAF = "gui.laf",
         CK_THEME = "gui.theme",
         CK_KIWI = "gui.kiwi.texture.visible",
         CK_UNDECORATED = "gui.frame.undecorated";
-    /**
-     * Default look and feel
-     */
+
     private static final String DEFAULT_LAF = "system";
 
     private static final String USER_DIR_PROPERTY = "user.dir";
@@ -126,10 +130,6 @@ public class WorkspaceGUI implements UI {
 
     private static final String DATA_FILE = "jwxwin.dat";
 
-    private static final String PROMPT = ">";
-
-    private static final String LOG_FINISH = "...";
-
     private static final String LOADING_LAF_MESSAGE = "Loading laf";
 
     private static final String READING_FILE = "Reading file";
@@ -137,6 +137,9 @@ public class WorkspaceGUI implements UI {
     private static final String WRITING_FILE = "Writing file";
 
     private static final String SAVING = "Saving";
+
+    private static final String FRAME_PARAMETER = "frame";
+
     /**
      * Workspace main frame
      */
@@ -150,14 +153,14 @@ public class WorkspaceGUI implements UI {
      */
     private BufferedImage texture = null;
     /**
-     * Components in content panel are cached along with they names as keys. Use RegisterComponent
-     * UnregisterComponent and IsRegistered to manage custom views.
+     * Components in content panel are cached along with they names as keys.
+     * Use RegisterComponent, UnregisterComponent and IsRegistered to manage custom views.
      */
-    private HashMap<String, Object> components = new HashMap<>();
+    private Map<String, Object> components = new HashMap<>();
     /**
      * Plugin shells
      */
-    private HashSet<Plugin> shells = new HashSet<>();
+    private Set<Plugin> shells = new HashSet<>();
     /**
      * Laf
      */
@@ -193,6 +196,7 @@ public class WorkspaceGUI implements UI {
     public WorkspaceGUI() {
         super();
         UIChangeManager.setDefaultFrameIcon(new WorkspaceResourceManager().getImage("jw_16x16.png"));
+        registerListeners();
     }
 
     /**
@@ -206,6 +210,17 @@ public class WorkspaceGUI implements UI {
     }
 
     /**
+     * Register workspace listeners
+     */
+    @Override
+    public void registerListeners() {
+        Workspace.addListener(new ExternalFrameListener());
+        Workspace.addListener(new SwitchMenuListener());
+        Workspace.addListener(new WorkspaceViewListener());
+        Workspace.addListener(new WorkspaceWindowListener());
+    }
+
+    /**
      * Returns clipboard for graphic interface.
      *
      * @return java.awt.datatransfer.Clipboard
@@ -215,10 +230,6 @@ public class WorkspaceGUI implements UI {
         return ((jworkspace.ui.MainFrame) getFrame()).getClipboard();
     }
 
-    /**
-     * Creates frame from the scratch with default
-     * parameters.
-     */
     @Override
     public Frame getFrame() {
         if (frame == null) {
@@ -238,9 +249,7 @@ public class WorkspaceGUI implements UI {
         return frame;
     }
 
-    /**
-     * Returns splash screen.
-     */
+
     @Override
     public Window getLogoScreen() {
 
@@ -503,7 +512,7 @@ public class WorkspaceGUI implements UI {
     /**
      * Returns all registered components.
      */
-    public HashMap<String, Object> getAllRegistered() {
+    public Map<String, Object> getAllRegistered() {
         return components;
     }
 
@@ -694,51 +703,13 @@ public class WorkspaceGUI implements UI {
 
     }
 
-    /**
-     * Process event. Such event is send to every
-     * subsribed event listener in synchronous manner.
-     */
-    public void processEvent(Object event, Object lparam, Object rparam) {
-        /*
-         * Activate unique GUI shell, i.e. bring the shell to the front
-         */
-        if (event instanceof Integer && (Integer) event == 1000) {
-            if (lparam instanceof Hashtable
-                && ((Hashtable) lparam).get("view") instanceof IView
-                && ((Hashtable) lparam).get("display") instanceof Boolean
-                && ((Hashtable) lparam).get("register") instanceof Boolean) {
-
-                Hashtable lhparam = (Hashtable) lparam;
-                IView view = (IView) lhparam.get("view");
-                Boolean display = (Boolean) lhparam.get("display");
-                Boolean register = (Boolean) lhparam.get("register");
-
-                ((MainFrame) getFrame()).getContentManager().addView(view, display, register);
-            }
-        } else if (event instanceof Integer && (Integer) event == 1001) {
-            /*
-             * Adds new internal frame (JInternalFrame) on currently opened desktop
-             */
-            new AddWorkspaceWindowListener().processEvent(event, lparam, rparam);
-        } else if (event instanceof Integer && (Integer) event == 1002) {
-            /*
-             * Switch menu of the view, then it's becomes inactive or otherwise activated.
-             */
-            new SwitchMenuListener().processEvent(event, lparam, rparam);
-        } else if (event instanceof Integer && (Integer) event == 1003) {
-            /*
-             * Show external frame and put frame into array of displayed frames
-             */
-            new AddExternalFrameListener().processEvent(event, lparam, rparam);
-        }
-    }
-
     /*
-     * Shells loader. Each shell is actually a
-     * Kiwi library plugin. This class uses work
+     * Shells loader. Each shell is actually a Kiwi library plugin. This class uses work
      * thread to load plugins
      */
     class ShellsLoader extends Task {
+
+        static final int PROGRESS_COMPLETED = 100;
 
         ShellsLoader() {
             super();
@@ -747,30 +718,31 @@ public class WorkspaceGUI implements UI {
 
         public void run() {
             String fileName = Workspace.getUserHome() + "shells";
-            Plugin[] shells = Workspace.getRuntimeManager().loadPlugins(fileName);
-            if (shells == null || shells.length == 0) {
+            Plugin[] plugins = Workspace.getRuntimeManager().loadPlugins(fileName);
+
+            if (plugins == null || plugins.length == 0) {
                 pr.setMessage(LangResource.getString("WorkspaceGUI.shells.notFound"));
-                pr.setProgress(100);
+                pr.setProgress(PROGRESS_COMPLETED);
                 return;
             } else {
-                for (int i = 0; i < shells.length; i++) {
+
+                for (int i = 0; i < plugins.length; i++) {
                     pr.setMessage(LangResource.getString("WorkspaceGUI.shell.loading")
-                        + " " + shells[i].getName());
-                    WorkspaceGUI.LOG.info(PROMPT + "Loading " + shells[i].getName() + LOG_FINISH);
-                    if (shells[i].getIcon() != null) {
-                        pr.setIcon(shells[i].getIcon());
+                        + LOG_SPACE + plugins[i].getName());
+                    WorkspaceGUI.LOG.info(PROMPT + "Loading " + plugins[i].getName() + LOG_FINISH);
+                    if (plugins[i].getIcon() != null) {
+                        pr.setIcon(plugins[i].getIcon());
                     }
                     try {
-                        shells[i].newInstance();
-                        installShell(shells[i]);
-                        WorkspaceGUI.LOG.info(PROMPT + "Installed " + shells[i].getName() + LOG_FINISH);
+                        installShell(plugins[i]);
+                        WorkspaceGUI.LOG.info(PROMPT + "Installed " + plugins[i].getName() + LOG_FINISH);
                     } catch (Exception | Error ex) {
-                        WorkspaceGUI.LOG.warn(PROMPT + "GUI Shell " + shells[i].getName()
+                        WorkspaceGUI.LOG.warn(PROMPT + "GUI Shell " + plugins[i].getName()
                             + " failed to load " + ex.toString());
                     }
-                    pr.setProgress(i * 100 / shells.length);
+                    pr.setProgress(i * PROGRESS_COMPLETED / plugins.length);
                 }
-                pr.setProgress(100);
+                pr.setProgress(PROGRESS_COMPLETED);
             }
             update();
         }
@@ -797,19 +769,52 @@ public class WorkspaceGUI implements UI {
         }
     }
 
-    class AddWorkspaceWindowListener implements IWorkspaceListener {
+    class WorkspaceViewListener implements IWorkspaceListener {
+
+        public static final int CODE = 1000;
+
+        @Override
+        public int getCode() {
+            return CODE;
+        }
+
+        public void processEvent(Object event, Object lparam, Object rparam) {
+
+            if (lparam instanceof Hashtable
+                && ((Hashtable) lparam).get(IWorkspaceListener.VIEW_PARAMETER) instanceof IView
+                && ((Hashtable) lparam).get(IWorkspaceListener.DISPLAY_PARAMETER) instanceof Boolean
+                && ((Hashtable) lparam).get(IWorkspaceListener.REGISTER_PARAMETER) instanceof Boolean) {
+
+                Hashtable lhparam = (Hashtable) lparam;
+                IView view = (IView) lhparam.get(IWorkspaceListener.VIEW_PARAMETER);
+                Boolean display = (Boolean) lhparam.get(IWorkspaceListener.DISPLAY_PARAMETER);
+                Boolean register = (Boolean) lhparam.get(IWorkspaceListener.REGISTER_PARAMETER);
+
+                ((MainFrame) getFrame()).getContentManager().addView(view, display, register);
+            }
+        }
+    }
+
+    class WorkspaceWindowListener implements IWorkspaceListener {
+
+        public static final int CODE = 1001;
+
+        @Override
+        public int getCode() {
+            return CODE;
+        }
 
         public void processEvent(Object event, Object lparam, Object rparam) {
 
             if ((lparam instanceof Hashtable)
-                && ((Hashtable) lparam).get("view") instanceof JComponent
-                && ((Hashtable) lparam).get("display") instanceof Boolean
-                && ((Hashtable) lparam).get("register") instanceof Boolean) {
+                && ((Hashtable) lparam).get(VIEW_PARAMETER) instanceof JComponent
+                && ((Hashtable) lparam).get(DISPLAY_PARAMETER) instanceof Boolean
+                && ((Hashtable) lparam).get(REGISTER_PARAMETER) instanceof Boolean) {
 
                 Hashtable lhparam = (Hashtable) lparam;
-                JComponent view = (JComponent) lhparam.get("view");
-                Boolean display = (Boolean) lhparam.get("display");
-                Boolean register = (Boolean) lhparam.get("register");
+                JComponent view = (JComponent) lhparam.get(VIEW_PARAMETER);
+                Boolean display = (Boolean) lhparam.get(DISPLAY_PARAMETER);
+                Boolean register = (Boolean) lhparam.get(REGISTER_PARAMETER);
 
                 IView currentView = ((MainFrame) getFrame()).getContentManager().getCurrentView();
                 if (currentView instanceof Desktop) {
@@ -827,48 +832,67 @@ public class WorkspaceGUI implements UI {
     }
 
     class SwitchMenuListener implements IWorkspaceListener {
+
+        public static final String MENUS_PARAMETER = "menus";
+
+        public static final String FLAG_PARAMETER = "flag";
+
+        public static final int CODE = 1002;
+
+        @Override
+        public int getCode() {
+            return CODE;
+        }
+
         public void processEvent(Object event, Object lparam, Object rparam) {
 
             if (lparam instanceof Hashtable
-                && ((Hashtable) lparam).get("menus") instanceof Vector
-                && ((Hashtable) lparam).get("flag") instanceof Boolean) {
-                Hashtable lhparam = (Hashtable) lparam;
-                Vector menus = (Vector) lhparam.get("menus");
-                /*
-                 * Flag - true - add, false - remove.
-                 */
-                Boolean flag = (Boolean) lhparam.get("flag");
+                && ((Hashtable) lparam).get(MENUS_PARAMETER) instanceof Vector
+                && ((Hashtable) lparam).get(FLAG_PARAMETER) instanceof Boolean) {
 
-                if (flag) {
-                    for (int i = 0; i < menus.size(); i++) {
-                        if (menus.elementAt(i) instanceof JMenu) {
-                            ((MainFrame) getFrame()).getJMenuBar().add((JMenu) menus.elementAt(i));
-                        }
+                Hashtable lhparam = (Hashtable) lparam;
+
+                Vector menus = (Vector) lhparam.get(MENUS_PARAMETER);
+                Boolean flag = (Boolean) lhparam.get(FLAG_PARAMETER);
+
+                JMenuBar menuBar = ((MainFrame) getFrame()).getJMenuBar();
+
+                for (int i = 0; i < menus.size(); i++) {
+                    if (!(menus.elementAt(i) instanceof JMenu)) {
+                        continue;
                     }
-                } else {
-                    for (int i = 0; i < menus.size(); i++) {
-                        if (menus.elementAt(i) instanceof JMenu) {
-                            ((MainFrame) getFrame()).getJMenuBar().remove((JMenu) menus.elementAt(i));
-                        }
+
+                    if (flag) {
+                        menuBar.add((JMenu) menus.elementAt(i));
+                    } else {
+                        menuBar.remove((JMenu) menus.elementAt(i));
                     }
                 }
-                ((MainFrame) getFrame()).getJMenuBar().revalidate();
-                ((MainFrame) getFrame()).getJMenuBar().repaint();
+
+                menuBar.revalidate();
+                menuBar.repaint();
             }
         }
     }
 
-    class AddExternalFrameListener implements IWorkspaceListener {
+    class ExternalFrameListener implements IWorkspaceListener {
+
+        public static final int CODE = 1003;
+
+        @Override
+        public int getCode() {
+            return CODE;
+        }
+
         public void processEvent(Object event, Object lparam, Object rparam) {
             if (lparam instanceof Hashtable
-                && ((Hashtable) lparam).get("frame") instanceof Frame) {
+                && ((Hashtable) lparam).get(FRAME_PARAMETER) instanceof Frame) {
 
-                    Frame frame = (Frame) ((Hashtable) lparam).get("frame");
-                    if (frame != null) {
-                        displayedFrames.add(frame);
-                        frame.addWindowListener(new FrameCloseListener(frame));
-                        frame.setVisible(true);
-                    }
+                Frame frameParameter = (Frame) ((Hashtable) lparam).get(FRAME_PARAMETER);
+                if (frameParameter != null) {
+                    displayedFrames.add(frameParameter);
+                    frameParameter.addWindowListener(new FrameCloseListener(frameParameter));
+                    frameParameter.setVisible(true);
                 }
             }
         }

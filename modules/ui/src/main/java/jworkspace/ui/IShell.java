@@ -31,6 +31,8 @@ import jworkspace.ui.cpanel.CButton;
 
 /**
  * User gui shell - a collection of user views.
+ *
+ * @author Anton Troshin
  */
 public interface IShell {
     /**

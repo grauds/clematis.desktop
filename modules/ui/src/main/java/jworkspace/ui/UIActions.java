@@ -2,7 +2,7 @@ package jworkspace.ui;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2016 Anton Troshin
+   Copyright (C) 1999-2016, 2019 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -31,42 +31,49 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import jworkspace.LangResource;
-import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IConstants;
-import jworkspace.kernel.Workspace;
-import jworkspace.ui.action.AbstractStateAction;
-import jworkspace.ui.dialog.SettingsDialog;
-import jworkspace.ui.dialog.UserDetailsDialog;
-import jworkspace.ui.widgets.ImageRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.DocumentBrowserFrame;
 import com.hyperrealm.kiwi.ui.model.DocumentDataSource;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
+
+import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.IConstants;
+import jworkspace.kernel.Workspace;
+import jworkspace.kernel.WorkspaceException;
+import jworkspace.ui.action.AbstractStateAction;
+import jworkspace.ui.dialog.SettingsDialog;
+import jworkspace.ui.dialog.UserDetailsDialog;
+import jworkspace.ui.widgets.ImageRenderer;
+
 /**
  * This class contains all actions of workspace frame that are for system use.
  * @author Anton Troshin
  */
 public class UIActions implements IConstants {
+
     /**
      * Logoff action name
      */
     static final String LOGOFF_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.logoff") + "...";
+        LangResource.getString("WorkspaceFrame.menu.logoff") + WorkspaceGUI.LOG_FINISH;
     /**
      * Exit action name
      */
     static final String EXIT_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.exit") + "...";
+        LangResource.getString("WorkspaceFrame.menu.exit") + WorkspaceGUI.LOG_FINISH;
     /**
      * About action name
      */
@@ -76,68 +83,48 @@ public class UIActions implements IConstants {
      * Help action name
      */
     static final String HELP_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.help") + "...";
+        LangResource.getString("WorkspaceFrame.menu.help") + WorkspaceGUI.LOG_FINISH;
     /**
      * Settings action name
      */
     static final String SETTINGS_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.settings") + "...";
+        LangResource.getString("WorkspaceFrame.menu.settings") + WorkspaceGUI.LOG_FINISH;
     /**
      * My details action name
      */
     static final String MY_DETAILS_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.mydetails") + "...";
-    /**
-     * New user action name
-     */
-    static final String NEW_USER_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.newuser") + "...";
+        LangResource.getString("WorkspaceFrame.menu.mydetails") + WorkspaceGUI.LOG_FINISH;
     /**
      * Show control panel action name
      */
     static final String SHOW_PANEL_ACTION_NAME =
         LangResource.getString("WorkspaceFrame.menu.cp");
+
+    private static final Logger LOG = LoggerFactory.getLogger(UIActions.class);
+
+    /**
+     * New user action name
+     */
+    private static final String NEW_USER_ACTION_NAME =
+        LangResource.getString("WorkspaceFrame.menu.newuser") + WorkspaceGUI.LOG_FINISH;
+
     /**
      * Full screen action name
      */
-    static final String FULL_SCREEN_ACTION_NAME =
+    private static final String FULL_SCREEN_ACTION_NAME =
         LangResource.getString("WorkspaceFrame.menu.fullscr");
+
+    private static final int MARGIN = 10;
+
+    private static final int SIZE_FACTOR = 3;
     /**
      * Instance of Workspace GUI
      */
-    protected WorkspaceGUI gui = null;
+    protected WorkspaceGUI gui;
     /**
      * All actions
      */
-    private Hashtable actions = new Hashtable();
-    /**
-     * Logoff action
-     */
-    private Action logoffAction;
-    /**
-     * Exit action
-     */
-    private Action exitAction;
-    /**
-     * About action
-     */
-    private Action aboutAction;
-    /**
-     * Help action
-     */
-    private Action helpAction;
-    /**
-     * Settings action
-     */
-    private Action settingsAction;
-    /**
-     * My details action
-     */
-    private Action myDetailsAction;
-    /**
-     * New user action
-     */
-    private Action newUserAction;
+    private Map<String, Action> actions = new HashMap<>();
     /**
      * Show control panel action
      */
@@ -153,16 +140,13 @@ public class UIActions implements IConstants {
     }
 
     Action getAction(String name) {
-        return (Action) actions.get(name);
+        return actions.get(name);
     }
 
     public Action[] getActions() {
-        Enumeration e = actions.elements();
+        Collection<Action> e = actions.values();
         Action[] temp = new Action[actions.size()];
-        for (int i = 0; i < temp.length; i++) {
-            temp[i] = (Action) e.nextElement();
-        }
-        return temp;
+        return e.toArray(temp);
     }
 
     ShowPanelAction getShowPanelAction() {
@@ -171,13 +155,35 @@ public class UIActions implements IConstants {
 
     private void createActions() {
 
-        aboutAction = new AboutAction();
-        helpAction = new HelpAction();
-        exitAction = new ExitAction();
-        logoffAction = new LogoffAction();
-        myDetailsAction = new MyDetailsAction();
-        newUserAction = new NewUserAction();
-        settingsAction = new SettingsAction();
+        /*
+         * About action
+         */
+        Action aboutAction = new AboutAction();
+        /*
+         * Help action
+         */
+        Action helpAction = new HelpAction();
+        /*
+         * Exit action
+         */
+        Action exitAction = new ExitAction();
+        /*
+         * Logoff action
+         */
+        Action logoffAction = new LogoffAction();
+        /*
+         * My details action
+         */
+        Action myDetailsAction = new MyDetailsAction();
+        /*
+         * New user action
+         */
+        Action newUserAction = new NewUserAction();
+        /*
+         * Settings action
+         */
+        Action settingsAction = new SettingsAction();
+
         showPanelAction = new ShowPanelAction();
 
         actions.put(ABOUT_ACTION_NAME, aboutAction);
@@ -220,17 +226,18 @@ public class UIActions implements IConstants {
      */
     private void showHelp() {
         try {
+
             DocumentDataSource helpSource = new DocumentDataSource(Workspace.getResourceManager());
             DocumentBrowserFrame dbf = new DocumentBrowserFrame(Workspace.getVersion()
-                + " " +
-                LangResource.getString("message#184"),
+                + WorkspaceGUI.LOG_SPACE + LangResource.getString("message#184"),
                 "", helpSource);
+
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            dbf.setBounds(10, 10, (int) (2 * screenSize.getWidth() / 3),
-                (int) (2 * screenSize.getHeight() / 3));
+            dbf.setBounds(MARGIN, MARGIN, (int) (2 * screenSize.getWidth() / SIZE_FACTOR),
+                (int) (2 * screenSize.getHeight() / SIZE_FACTOR));
             dbf.setVisible(true);
         } catch (ResourceNotFoundException ex) {
-            JOptionPane.showMessageDialog(Workspace.getUI().getFrame(),
+            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
                 LangResource.getString("UIActions.resource.notFound")
                     + " " + ex.getMessage());
         }
@@ -239,9 +246,8 @@ public class UIActions implements IConstants {
     /**
      * Show my details dialog
      */
-    public void showMyDetails() {
-        UserDetailsDialog dlg =
-            new UserDetailsDialog(Workspace.getUI().getFrame());
+    private void showMyDetails() {
+        UserDetailsDialog dlg = new UserDetailsDialog(Workspace.getUi().getFrame());
         dlg.setData();
         dlg.setVisible(true);
     }
@@ -249,8 +255,8 @@ public class UIActions implements IConstants {
     /**
      * Show workspace ui settings dialog
      */
-    public void showSettings() {
-        SettingsDialog dlg = new SettingsDialog(Workspace.getUI().getFrame());
+    private void showSettings() {
+        SettingsDialog dlg = new SettingsDialog(Workspace.getUi().getFrame());
         dlg.setData();
         dlg.setVisible(true);
     }
@@ -261,22 +267,30 @@ public class UIActions implements IConstants {
         }
 
         public void actionPerformed(ActionEvent e) {
-            Workspace.changeCurrentProfile();
+            try {
+                Workspace.changeCurrentProfile();
+            } catch (WorkspaceException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
         }
     }
 
     protected class ExitAction extends AbstractAction {
-        public ExitAction() {
+        ExitAction() {
             super(EXIT_ACTION_NAME);
         }
 
         public void actionPerformed(ActionEvent e) {
-            Workspace.exit();
+            try {
+                Workspace.exit();
+            } catch (WorkspaceException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
         }
     }
 
     protected class AboutAction extends AbstractAction {
-        public AboutAction() {
+        AboutAction() {
             super(ABOUT_ACTION_NAME);
         }
 
@@ -286,7 +300,7 @@ public class UIActions implements IConstants {
     }
 
     protected class HelpAction extends AbstractAction {
-        public HelpAction() {
+        HelpAction() {
             super(HELP_ACTION_NAME);
         }
 
@@ -296,7 +310,7 @@ public class UIActions implements IConstants {
     }
 
     protected class SettingsAction extends AbstractAction {
-        public SettingsAction() {
+        SettingsAction() {
             super(SETTINGS_ACTION_NAME);
         }
 
@@ -306,7 +320,7 @@ public class UIActions implements IConstants {
     }
 
     protected class MyDetailsAction extends AbstractAction {
-        public MyDetailsAction() {
+        MyDetailsAction() {
             super(MY_DETAILS_ACTION_NAME);
         }
 
@@ -316,7 +330,7 @@ public class UIActions implements IConstants {
     }
 
     protected class NewUserAction extends AbstractAction {
-        public NewUserAction() {
+        NewUserAction() {
             super(NEW_USER_ACTION_NAME);
         }
 
@@ -325,7 +339,7 @@ public class UIActions implements IConstants {
     }
 
     protected class ShowPanelAction extends AbstractStateAction {
-        public ShowPanelAction() {
+        ShowPanelAction() {
             super(SHOW_PANEL_ACTION_NAME);
         }
 

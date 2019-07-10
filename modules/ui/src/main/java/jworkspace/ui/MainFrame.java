@@ -28,11 +28,11 @@ package jworkspace.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.io.DataInputStream;
@@ -47,6 +47,11 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hyperrealm.kiwi.ui.KFrame;
+
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.UISwitchListener;
@@ -54,13 +59,9 @@ import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.widgets.GlassDragPane;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.hyperrealm.kiwi.ui.KFrame;
-
 /**
- * Main frame for Java Workspace UI.
+ * Main frame for Java Workspace UI
+ * @author Anton Troshin
  */
 public class MainFrame extends KFrame implements PropertyChangeListener {
     /**
@@ -71,6 +72,10 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * The name of content manager
      */
     private static final String CONTENT_MANAGER = "jworkspace.ui.views.ViewsManager";
+    /**
+     * Message to show if this frame has failed to load
+     */
+    private static final String MAIN_FRAME_LOAD_FAILED_MESSAGE = "MainFrame.cmLoad.failed";
     /**
      * Content.
      */
@@ -127,7 +132,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Creates default frame.
      */
     public void create() {
-        WorkspaceGUI.getLogger().info(">" + "Building gui" + "...");
+        LOG.info(WorkspaceGUI.PROMPT + "Building gui" + WorkspaceGUI.LOG_FINISH);
         try {
             Class clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
@@ -137,15 +142,10 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             }
 
             content = (AbstractViewsManager) object;
-            Workspace.getLogger().info(">" + "Loaded content manager" +
-                " " + MainFrame.CONTENT_MANAGER);
-        }
-        /*
-         * Catch exception is there is no multidesktop manager
-         * installed, or it cannot be loaded.
-         */ catch (Exception e) {
-            WorkspaceError.exception
-                (LangResource.getString("MainFrame.load.CM.failed"), e);
+            LOG.info(WorkspaceGUI.PROMPT + "Loaded content manager" 
+                + WorkspaceGUI.LOG_SPACE + MainFrame.CONTENT_MANAGER);
+        } catch (Exception e) {
+            WorkspaceError.exception(LangResource.getString("MainFrame.load.CM.failed"), e);
             System.exit(-1);
         }
         /*
@@ -179,7 +179,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
         assemble();
         setVisible(true);
-        Workspace.getLogger().info(">" + "Frame is loaded with default configuration");
+        LOG.info(WorkspaceGUI.PROMPT + "Frame is loaded with default configuration");
     }
 
     /*
@@ -197,10 +197,13 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     /*
      * Drags control panel along the frame.
      */
-    private void drag(int _x, int _y) {
-        if ((_y < getMainContainer().getSize().height / 3) &&
-            (_x > getMainContainer().getSize().width / 3) &&
-            (_x < 2 * getMainContainer().getSize().width / 3)) {
+    @SuppressWarnings("MagicNumber")
+    private void drag(int x, int y) {
+        
+        if ((y < getMainContainer().getSize().height / 3) 
+            && (x > getMainContainer().getSize().width / 3) 
+            && (x < 2 * getMainContainer().getSize().width / 3)) {
+            
             if (dragPane == null) {
                 dragPane = new GlassDragPane();
             }
@@ -213,16 +216,16 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             orientation = BorderLayout.NORTH;
             getMainContainer().repaint();
 
-        } else if ((_y > 2 * getMainContainer().getSize().height / 3) &&
-            (_x > getMainContainer().getSize().width / 3) &&
-            (_x < 2 * getMainContainer().getSize().width / 3)) {
+        } else if ((y > 2 * getMainContainer().getSize().height / 3) 
+            && (x > getMainContainer().getSize().width / 3) 
+            && (x < 2 * getMainContainer().getSize().width / 3)) {
             if (dragPane == null) {
                 dragPane = new GlassDragPane();
             }
 
             dragPane.setBounds(getMainContainer().getLocation().x,
-                getMainContainer().getLocation().y +
-                    getMainContainer().getSize().height - Math.min(controlPanel.getWidth(),
+                getMainContainer().getLocation().y 
+                    + getMainContainer().getSize().height - Math.min(controlPanel.getWidth(),
                     controlPanel.getHeight()),
 
                 getMainContainer().getSize().width, Math.min(controlPanel.getWidth(),
@@ -231,7 +234,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
             orientation = BorderLayout.SOUTH;
             getMainContainer().repaint();
-        } else if (_x < getMainContainer().getSize().width / 3) {
+        } else if (x < getMainContainer().getSize().width / 3) {
             if (dragPane == null) {
                 dragPane = new GlassDragPane();
             }
@@ -244,13 +247,13 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
             orientation = BorderLayout.WEST;
             getMainContainer().repaint();
-        } else if ((_x > 2 * getMainContainer().getSize().width / 3)) {
+        } else if ((x > 2 * getMainContainer().getSize().width / 3)) {
             if (dragPane == null) {
                 dragPane = new GlassDragPane();
             }
 
-            dragPane.setBounds(getMainContainer().getLocation().x +
-                    getMainContainer().getSize().width - Math.min(controlPanel.getWidth(),
+            dragPane.setBounds(getMainContainer().getLocation().x 
+                    + getMainContainer().getSize().width - Math.min(controlPanel.getWidth(),
                 controlPanel.getHeight()),
 
                 getMainContainer().getLocation().y, Math.min(controlPanel.getWidth(),
@@ -312,61 +315,50 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     private void createMenuBar() {
         systemMenu = new JMenuBar();
 
-        JMenu wmenu = new JMenu
-            (LangResource.getString("WorkspaceFrame.menu.workspace"));
-        wmenu.setMnemonic
-            (LangResource.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
+        JMenu wmenu = new JMenu(LangResource.getString("WorkspaceFrame.menu.workspace"));
+        wmenu.setMnemonic(LangResource.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
         /*
          *  My details
          */
-        JMenuItem my_details = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.MY_DETAILS_ACTION_NAME));
-        my_details.setAccelerator
-            (KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK));
-        wmenu.add(my_details);
+        JMenuItem myDetails = Utils.createMenuItem(gui.getActions().getAction(UIActions.MY_DETAILS_ACTION_NAME));
+        myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+        wmenu.add(myDetails);
         /*
          * Settings
          */
-        JMenuItem settings = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
+        JMenuItem settings = Utils.createMenuItem(gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
         wmenu.add(settings);
         /*
          * Show control panel
          */
-        JCheckBoxMenuItem showControlPanel = Utils.createCheckboxMenuItem
-            (gui.getActions().getAction(UIActions.SHOW_PANEL_ACTION_NAME));
+        JCheckBoxMenuItem showControlPanel = Utils.createCheckboxMenuItem(gui.getActions()
+            .getAction(UIActions.SHOW_PANEL_ACTION_NAME));
         showControlPanel.setSelected(getControlPanel().isVisible());
-        showControlPanel.setAccelerator
-            (KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK));
+        showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
         wmenu.add(showControlPanel);
         wmenu.addSeparator();
         /*
          * Help
          */
-        JMenuItem help = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
+        JMenuItem help = Utils.createMenuItem(gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
         help.setEnabled(false);
         wmenu.add(help);
         /*
          * About
          */
-        JMenuItem about = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
+        JMenuItem about = Utils.createMenuItem(gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
         wmenu.add(about);
         wmenu.addSeparator();
         /*
          * Log off
          */
-        JMenuItem log_off = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
-        wmenu.add(log_off);
+        JMenuItem logOff = Utils.createMenuItem(gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
+        wmenu.add(logOff);
         /*
          * Exit
          */
-        JMenuItem exit = Utils.createMenuItem
-            (gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
-        exit.setAccelerator
-            (KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.ALT_MASK));
+        JMenuItem exit = Utils.createMenuItem(gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_MASK));
         wmenu.add(exit);
 
         systemMenu.add(wmenu);
@@ -385,7 +377,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * is from file jwxwin.dat.
      */
     public void load(DataInputStream inputStream) {
-        Workspace.getLogger().info(">" + "Loading workspace frame");
+        LOG.info(WorkspaceGUI.PROMPT + "Loading workspace frame");
         /*
          * Try to load content manager
          */
@@ -398,13 +390,8 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             }
 
             content = (AbstractViewsManager) object;
-        }
-        /*
-         * Catch exception is there is no multidesktop manager
-         * installed, or it cannot be loaded.
-         */ catch (Exception e) {
-            WorkspaceError.exception
-                (LangResource.getString("MainFrame.cmLoad.failed"), e);
+        } catch (Exception e) {
+            WorkspaceError.exception(LangResource.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
             System.exit(-1);
         }
         boolean visible = false;
@@ -432,8 +419,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             width = inputStream.readInt();
             height = inputStream.readInt();
         } catch (IOException e) {
-            WorkspaceError.exception
-                (LangResource.getString("WorkspaceFrame.load.failed"), e);
+            WorkspaceError.exception(LangResource.getString("WorkspaceFrame.load.failed"), e);
         }
         /*
          * Control panel
@@ -444,7 +430,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         /*
          * Set bounds
          */
-        _setBounds(x, y, width, height);
+        setGlassBounds(x, y, width, height);
 
         try {
             /*
@@ -473,14 +459,13 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             content.load();
         } catch (IOException e) {
-            WorkspaceError.exception
-                (LangResource.getString("MainFrame.cmLoad.failed"), e);
+            WorkspaceError.exception(LangResource.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
         }
         /*
          * End of Main Frame config.
          */
         assemble();
-        Workspace.getLogger().info(">" + "Loaded workspace frame");
+        LOG.info(WorkspaceGUI.PROMPT + "Loaded workspace frame");
         setVisible(true);
     }
 
@@ -525,7 +510,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     public void reset() {
         getMainContainer().remove(content);
         getMainContainer().remove(getControlPanel());
-        removeMenuBar();
         setTexture(null);
 
         content = null;
@@ -537,25 +521,29 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         setVisible(false);
     }
 
-    private void _setBounds(int x, int y, int width, int height) {
+    @SuppressWarnings("MagicNumber")
+    private void setGlassBounds(int x, int y, int width, int height) {
         /*
          * Set bounds only if this frame is decorated
          */
+        int locationX = x;
+        int locationY = y;
+
         if (!isUndecorated()) {
             if (x > Toolkit.getDefaultToolkit().getScreenSize().width) {
-                x = Toolkit.getDefaultToolkit().getScreenSize().width - 10;
+                locationX = Toolkit.getDefaultToolkit().getScreenSize().width - 10;
             } else if (x < 0) {
-                x = 0;
+                locationX = 0;
             }
             if (y > Toolkit.getDefaultToolkit().getScreenSize().height) {
-                y = Toolkit.getDefaultToolkit().getScreenSize().height - 10;
+                locationY = Toolkit.getDefaultToolkit().getScreenSize().height - 10;
             } else if (y < 0) {
-                y = 0;
+                locationY = 0;
             }
-            setLocation(x, y);
+            setLocation(locationX, locationY);
 
-            if (width < 50 || height < 50 ||
-                width > Toolkit.getDefaultToolkit().getScreenSize().width
+            if (width < 50 || height < 50
+                || width > Toolkit.getDefaultToolkit().getScreenSize().width
                 || height > Toolkit.getDefaultToolkit().getScreenSize().height) {
                 setSize(Toolkit.getDefaultToolkit().getScreenSize());
             } else {
@@ -568,7 +556,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Saves profile data.
      */
     public void save(DataOutputStream outputStream) {
-        Workspace.getLogger().info(">" + "Saving workspace frame");
+        LOG.info(WorkspaceGUI.PROMPT + "Saving workspace frame");
         /*
          * Write out Main Frame configuration.
          */
@@ -589,10 +577,9 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             content.reset();
         } catch (IOException e) {
-            WorkspaceError.exception
-                (LangResource.getString("MainFrame.save.failed"), e);
+            WorkspaceError.exception(LangResource.getString("MainFrame.save.failed"), e);
         }
-        Workspace.getLogger().info(">" + "Saved workspace frame");
+        LOG.info(WorkspaceGUI.PROMPT + "Saved workspace frame");
     }
 
     /**
@@ -636,8 +623,8 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Updates controls for the component.
      */
     public void update() {
-        setTitle(Workspace.getVersion() + " " +
-            Workspace.getProfilesEngine().getUserName());
+        setTitle(Workspace.getVersion() + WorkspaceGUI.LOG_SPACE
+            + Workspace.getProfilesEngine().getUserName());
         invalidate();
         validate();
         repaint();
