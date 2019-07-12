@@ -42,20 +42,22 @@ import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 
 /**
- * File previewer works with graphic files,
- * allowing thumbnails in JFileDialog.
+ * File previewer works with graphic files, allowing thumbnails in JFileDialog.
+ * @author Anton Troshin
  */
-public class FilePreviewer extends JComponent
-    implements PropertyChangeListener {
-    ImageIcon thumbnail = null;
-    File f = null;
+@SuppressWarnings("MagicNumber")
+public class FilePreviewer extends JComponent implements PropertyChangeListener {
+
+    private ImageIcon thumbnail = null;
+
+    private File f = null;
 
     public FilePreviewer(JFileChooser fc) {
         setPreferredSize(new Dimension(200, 50));
         fc.addPropertyChangeListener(this);
     }
 
-    public void loadImage() {
+    private void loadImage() {
         if (f != null) {
             Image image;
             try {
@@ -68,7 +70,7 @@ public class FilePreviewer extends JComponent
                     thumbnail = tmpIcon;
                 }
             } catch (ImageReadException | IOException e) {
-                e.printStackTrace();
+                thumbnail = null;
             }
         }
     }
@@ -92,7 +94,7 @@ public class FilePreviewer extends JComponent
 
     public void propertyChange(PropertyChangeEvent e) {
         String prop = e.getPropertyName();
-        if (prop == JFileChooser.SELECTED_FILE_CHANGED_PROPERTY) {
+        if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
             f = (File) e.getNewValue();
             if (isShowing()) {
                 loadImage();

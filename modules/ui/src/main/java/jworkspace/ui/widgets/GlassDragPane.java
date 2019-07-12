@@ -34,11 +34,13 @@ import javax.swing.JComponent;
 import jworkspace.ui.Utils;
 
 /**
- * Drag pane is created each time a component
- * is moved in Java Workspace. For example,
+ * Drag pane is created each time a component is moved in Java Workspace. For example,
  * desktop icons or control panel use this component.
+ *
+ * @author Anton Troshin
  */
 public class GlassDragPane extends JComponent {
+
     private Color bg = Color.darkGray;
 
     public void paint(Graphics g) {

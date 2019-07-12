@@ -34,6 +34,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -45,15 +46,22 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.hyperrealm.kiwi.ui.KPanel;
-import jworkspace.LangResource;
-import kiwi.ui.dialog.ComponentDialog;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
-public class FontChooser extends ComponentDialog
-    implements ActionListener, ListSelectionListener {
+import jworkspace.LangResource;
+/**
+ * @author Anton Troshin
+ */
+public class FontChooser extends ComponentDialog implements ActionListener, ListSelectionListener {
+
     private Font font;
-    private JList fontNames, fontSizes, fontStyles;
+
+    private JList<String> fontNames, fontSizes, fontStyles;
+
     private JTextField currentSize;
+
     private Font[] availableFonts;
+
     private FontPreviewPanel preview;
 
     /**
@@ -64,8 +72,9 @@ public class FontChooser extends ComponentDialog
         super(parent, LangResource.getString("FontChooserDialog.title"), true);
         this.font = font;
         if (font != null) {
-            currentSize.setText((new Integer(font.getSize())).toString());
-            fontSizes.setSelectedValue((new Integer(font.getSize())).toString(), true);
+            String fontSize = (new Integer(font.getSize())).toString();
+            currentSize.setText(fontSize);
+            fontSizes.setSelectedValue(fontSize, true);
             fontNames.setSelectedValue(font.getFamily(), true);
             if (font.getStyle() == Font.PLAIN) {
                 fontStyles.setSelectedValue("Regular", false);
@@ -78,10 +87,6 @@ public class FontChooser extends ComponentDialog
             }
         }
         setResizable(false);
-    }
-
-    public static void main(java.lang.String[] args) {
-        new FontChooser(new Frame(), new Font("Arial", Font.BOLD, 12)).setVisible(true);
     }
 
     private void updateFont(Font f) {
@@ -132,15 +137,12 @@ public class FontChooser extends ComponentDialog
             updateFont(f);
         }
         if (e.getSource() == fontSizes) {
-            currentSize.setText((String) fontSizes.getSelectedValue());
-            updateFontSize((new Integer(currentSize.getText())).intValue());
+            currentSize.setText(fontSizes.getSelectedValue());
+            updateFontSize(new Integer(currentSize.getText()));
         }
         if (e.getSource() == fontStyles) {
             int style = Font.PLAIN;
-            String selection = (String) fontStyles.getSelectedValue();
-            if (selection.equals("Regular")) {
-                style = Font.PLAIN;
-            }
+            String selection = fontStyles.getSelectedValue();
             if (selection.equals("Bold")) {
                 style = Font.BOLD;
             }
@@ -162,52 +164,53 @@ public class FontChooser extends ComponentDialog
         destroy();
     }
 
+    @SuppressWarnings("MagicNumber")
     protected JComponent buildDialogUI() {
         setComment(null);
-        /**
+        /*
          * Holder for all dialog controls
          */
         KPanel holder = new KPanel();
         holder.setLayout(new BorderLayout(5, 5));
-        /**
+        /*
          * Operation environment font list
          */
         Font[] fontList = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-        Vector fonts = new Vector(1, 1);
-        Vector names = new Vector(1, 1);
-        for (int i = 0; i < fontList.length; i++) {
-            String fontName = fontList[i].getFamily();
+        List<Font> fonts = new Vector<>(1, 1);
+        Vector<String> names = new Vector<>(1, 1);
+        for (Font value : fontList) {
+            String fontName = value.getFamily();
             if (!names.contains(fontName)) {
-                names.addElement(fontName);
-                fonts.addElement(fontList[i]);
+                names.add(fontName);
+                fonts.add(value);
             }
         }
         availableFonts = new Font[fonts.size()];
         for (int i = 0; i < fonts.size(); i++) {
-            availableFonts[i] = (Font) fonts.elementAt(i);
+            availableFonts[i] = fonts.get(i);
         }
-        /**
-         * List names
+        /*
+         * List names (must be a vector)
          */
-        fontNames = new JList(names);
+        fontNames = new JList<>(names);
         fontNames.addListSelectionListener(this);
-        /**
+        /*
          * Styles list
          */
-        Object[] styles = {"Regular", "Bold", "Italic", "BoldItalic"};
-        fontStyles = new JList(styles);
+        String[] styles = {"Regular", "Bold", "Italic", "BoldItalic"};
+        fontStyles = new JList<>(styles);
         fontStyles.setSelectedIndex(0);
         fontStyles.addListSelectionListener(this);
-        /**
+        /*
          * Sizes
          */
         String[] sizes = new String[69];
         for (int i = 3; i < 72; i++) {
             sizes[i - 3] = (new Integer(i + 1)).toString();
         }
-        fontSizes = new JList(sizes);
+        fontSizes = new JList<>(sizes);
         fontSizes.addListSelectionListener(this);
-        /**
+        /*
          *  ********* Visual controls go here **********
          */
         JScrollPane fontNamesScroll = new JScrollPane(fontNames);
@@ -217,41 +220,41 @@ public class FontChooser extends ComponentDialog
         currentSize = new JTextField(5);
         currentSize.addActionListener(this);
 
-        /**
+        /*
          * Size panel
          */
         KPanel sizePane = new KPanel();
         sizePane.setLayout(new BorderLayout(3, 3));
         KPanel top = new KPanel();
         top.setLayout(new BorderLayout(3, 3));
-        JLabel label = new JLabel(LangResource.getString("FontChooserDialog.size") + ":");
+        JLabel label = new JLabel(LangResource.getString("FontChooserDialog.size"));
         top.add(label, BorderLayout.WEST);
         sizePane.add(currentSize, BorderLayout.SOUTH);
         sizePane.add(top, BorderLayout.NORTH);
         sizePane.add(fontSizesScroll, BorderLayout.CENTER);
-        /**
+        /*
          * Style panel
          */
         KPanel stylePane = new KPanel();
         stylePane.setLayout(new BorderLayout(3, 3));
         top = new KPanel();
         top.setLayout(new BorderLayout(3, 3));
-        label = new JLabel(LangResource.getString("FontChooserDialog.style") + ":");
+        label = new JLabel(LangResource.getString("FontChooserDialog.style"));
         top.add(label, BorderLayout.CENTER);
         stylePane.add(top, BorderLayout.NORTH);
         stylePane.add(fontStylesScroll, BorderLayout.CENTER);
-        /**
+        /*
          * Names panel
          */
         KPanel namePane = new KPanel();
         namePane.setLayout(new BorderLayout(3, 3));
         top = new KPanel();
         top.setLayout(new BorderLayout(3, 3));
-        label = new JLabel(LangResource.getString("FontChooserDialog.name") + ":");
+        label = new JLabel(LangResource.getString("FontChooserDialog.name"));
         top.add(label, BorderLayout.CENTER);
         namePane.add(top, BorderLayout.NORTH);
         namePane.add(fontNamesScroll, BorderLayout.CENTER);
-        /**
+        /*
          * Top panel
          */
         GridBagLayout g = new GridBagLayout();
@@ -271,7 +274,7 @@ public class FontChooser extends ComponentDialog
         top.add(sizePane);
         g.setConstraints(sizePane, c);
 
-        /**
+        /*
          * Preview panel
          */
         preview = new FontPreviewPanel(this.font);

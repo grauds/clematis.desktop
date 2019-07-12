@@ -30,12 +30,15 @@ import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- * Icon node is nessesary for nodes in Java Workspace trees,
- * each node allows placement of images.
+ * Icon node is necessary for nodes in Java Workspace trees, each node allows placement of images.
+ *
+ * @author Anton Troshin
  */
 public class IconNode extends DefaultMutableTreeNode {
-    protected Icon icon;
-    protected String iconName;
+
+    private Icon icon;
+
+    private String iconName;
 
     public IconNode() {
         this(null);

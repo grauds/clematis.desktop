@@ -38,9 +38,12 @@ import javax.swing.border.TitledBorder;
 import com.hyperrealm.kiwi.ui.KPanel;
 
 /**
- * A simple panel that renders a font preview for {@link com.lamatek.swingextras.JFontChooser JFontChooser} component.
+ * A simple panel that renders a font preview for JFontChooser component.
+ * @author Anton Troshin
  */
+@SuppressWarnings("MagicNumber")
 public class FontPreviewPanel extends KPanel {
+
     private Font font;
 
     /**
@@ -48,7 +51,7 @@ public class FontPreviewPanel extends KPanel {
      *
      * @param f The font used to render the preview
      */
-    public FontPreviewPanel(Font f) {
+    FontPreviewPanel(Font f) {
         super();
         setOpaque(false);
         setFont(f);
@@ -75,7 +78,10 @@ public class FontPreviewPanel extends KPanel {
         Image osi = createImage(getSize().width, getSize().height);
         Graphics osg = osi.getGraphics();
         osg.setFont(this.font);
-        Rectangle2D bounds = font.getStringBounds(font.getFontName(), 0, font.getFontName().length(), new FontRenderContext(null, true, false));
+        Rectangle2D bounds = font.getStringBounds(font.getFontName(),
+            0,
+            font.getFontName().length(),
+            new FontRenderContext(null, true, false));
         int height = (new Double(bounds.getHeight())).intValue();
         osg.drawString(font.getFontName(), 5, (((getSize().height - height) / 2) + height));
         g.drawImage(osi, 0, 0, this);

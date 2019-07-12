@@ -53,6 +53,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 import com.hyperrealm.kiwi.util.ResourceLoader;
+
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 
@@ -63,22 +64,34 @@ import jworkspace.kernel.Workspace;
  * @author Slava Pestov
  * @version $Id: HelpViewer.java,v 1.1.1.1 2001/12/20 10:01:53 tysinsh Exp $
  */
+@SuppressWarnings("MagicNumber")
 public class HelpViewer extends JPanel {
+
+    private static final String FILE_PROTOCOL = "file:";
+
+    private static final String CANNOT_OPEN_LOCATION_MESSAGE = "Cannot open location: ";
+
+    private static final String HELP_BROWSER_TITLE = "Help Browser";
+
     // private members
     private JButton back;
+
     private JButton forward;
+
     private JEditorPane viewer;
+
     private JTextField urlField;
+
     private URL[] history;
+
     private int historyPos;
 
     /**
      * Creates a new viewer for the specified URL.
      *
      * @param url The URL
-     * @deprecated Use the static gotoURL() method instead
      */
-    public HelpViewer(URL url) {
+    private HelpViewer(URL url) {
         super();
         setLayout(new BorderLayout());
         history = new URL[25];
@@ -145,11 +158,12 @@ public class HelpViewer extends JPanel {
      */
     public static void gotoFile(String file) {
         try {
-            gotoURL(new URL("file:" + file));
+            gotoURL(new URL(FILE_PROTOCOL + file));
         } catch (MalformedURLException e) {
-            JOptionPane.showMessageDialog(Workspace.getUI().getFrame(),
-                "Cannot open location: " + "file:" + file,
-                "Help Browser", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
+                CANNOT_OPEN_LOCATION_MESSAGE + FILE_PROTOCOL + file,
+                HELP_BROWSER_TITLE,
+                JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -161,7 +175,7 @@ public class HelpViewer extends JPanel {
      * @since jEdit 2.2final
      */
     public static void gotoURL(URL url) {
-        JFrame frame = new JFrame("Help Browser");
+        JFrame frame = new JFrame(HELP_BROWSER_TITLE);
         frame.getContentPane().add(new HelpViewer(url));
         frame.setBounds(50, 50, 400, 300);
         frame.setVisible(true);
@@ -193,8 +207,8 @@ public class HelpViewer extends JPanel {
                 }
             }
         } catch (IOException io) {
-            JOptionPane.showMessageDialog(this, "Cannot open location: "
-                + url, "Help Browser", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, CANNOT_OPEN_LOCATION_MESSAGE
+                + url, HELP_BROWSER_TITLE, JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -211,31 +225,31 @@ public class HelpViewer extends JPanel {
             } else if (source == forward) {
                 if (history.length - historyPos <= 1) {
                     getToolkit().beep();
+                    return;
+                }
+
+                URL url = history[historyPos];
+                if (url == null) {
+                    getToolkit().beep();
                 } else {
-                    URL url = history[historyPos];
-                    if (url == null) {
-                        getToolkit().beep();
-                    } else {
-                        historyPos++;
-                        gotoURL(url, false);
-                    }
+                    historyPos++;
+                    gotoURL(url, false);
                 }
             }
         }
     }
 
     class LinkHandler implements HyperlinkListener {
+
         public void hyperlinkUpdate(HyperlinkEvent evt) {
+
             if (evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 if (evt instanceof HTMLFrameHyperlinkEvent) {
                     ((HTMLDocument) viewer.getDocument())
                         .processHTMLFrameHyperlinkEvent(
                             (HTMLFrameHyperlinkEvent) evt);
-                } else {
-                    URL url = evt.getURL();
-                    if (url != null) {
-                        gotoURL(url, true);
-                    }
+                } else if (evt.getURL() != null) {
+                    gotoURL(evt.getURL(), true);
                 }
             } else if (evt.getEventType() == HyperlinkEvent.EventType.ENTERED) {
                 viewer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -249,9 +263,9 @@ public class HelpViewer extends JPanel {
         public void keyPressed(KeyEvent evt) {
             if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
                 try {
-                    gotoURL(new URL(urlField.getText()),
-                        true);
+                    gotoURL(new URL(urlField.getText()), true);
                 } catch (MalformedURLException mu) {
+                    // show error page to user?
                 }
             }
         }
