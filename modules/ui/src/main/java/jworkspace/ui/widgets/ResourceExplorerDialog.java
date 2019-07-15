@@ -47,23 +47,25 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
+
 import jworkspace.LangResource;
 import jworkspace.ui.ClassCache;
-import kiwi.ui.dialog.ComponentDialog;
 
 /**
  * Resource explorer dialog is a holder for ResourceExplorerPanel.
+ * @author Anton Troshin
  */
 public class ResourceExplorerDialog extends ComponentDialog
     implements ActionListener {
-    /**
-     * String for caching it in Workspace Cache
-     */
-    public static final String RESOURCE_EXPLORER = "RESOURCE_EXPLORER";
-    ResourceExplorerPanel rexplorer;
-    JButton b_icon_browse;
-    JTextField tf;
-    String path;
+
+    private ResourceExplorerPanel rexplorer;
+
+    private JButton bIconBrowse;
+
+    private JTextField tf;
+
+    private String path;
 
     public ResourceExplorerDialog(Frame parent) {
         super(parent, LangResource.getString("ResourceExplorerDlg.title"), true);
@@ -77,7 +79,7 @@ public class ResourceExplorerDialog extends ComponentDialog
 
     public void actionPerformed(ActionEvent evt) {
         Object o = evt.getSource();
-        if (o == b_icon_browse) {
+        if (o == bIconBrowse) {
             File f = ClassCache.chooseArchiveOrDir(this);
             if (f != null) {
                 tf.setText(f.getAbsolutePath());
@@ -86,28 +88,28 @@ public class ResourceExplorerDialog extends ComponentDialog
         }
     }
 
+    @SuppressWarnings("MagicNumber")
     protected JComponent buildDialogUI() {
         setComment(null);
         KPanel holder = new KPanel();
         holder.setLayout(new BorderLayout(5, 5));
-        /**
+        /*
          * Browser panel.
          */
-        KPanel browse_panel = new KPanel();
-        browse_panel.setLayout(new BorderLayout(5, 5));
-        browse_panel.setPreferredSize(new Dimension(150, 30));
-        browse_panel.setBorder(new EmptyBorder(5, 0, 0, 0));
+        KPanel browsePanel = new KPanel();
+        browsePanel.setLayout(new BorderLayout(5, 5));
+        browsePanel.setPreferredSize(new Dimension(150, 30));
+        browsePanel.setBorder(new EmptyBorder(5, 0, 0, 0));
 
         JLabel l = new JLabel(LangResource.getString("ResourceExplorerDlg.path"));
-        browse_panel.add(l, BorderLayout.WEST);
+        browsePanel.add(l, BorderLayout.WEST);
 
-        b_icon_browse = new JButton("...");
-        b_icon_browse.setToolTipText
-            (LangResource.getString("ResourceExplorerDlg.browse.tooltip"));
-        b_icon_browse.addActionListener(this);
-        b_icon_browse.setDefaultCapable(false);
-        b_icon_browse.setOpaque(false);
-        browse_panel.add(b_icon_browse, BorderLayout.EAST);
+        bIconBrowse = new JButton("...");
+        bIconBrowse.setToolTipText(LangResource.getString("ResourceExplorerDlg.browse.tooltip"));
+        bIconBrowse.addActionListener(this);
+        bIconBrowse.setDefaultCapable(false);
+        bIconBrowse.setOpaque(false);
+        browsePanel.add(bIconBrowse, BorderLayout.EAST);
 
         tf = new JTextField(15);
         tf.setPreferredSize(new Dimension(30, 20));
@@ -119,11 +121,11 @@ public class ResourceExplorerDialog extends ComponentDialog
                 }
             }
         });
-        browse_panel.add(tf, BorderLayout.CENTER);
+        browsePanel.add(tf, BorderLayout.CENTER);
 
         rexplorer = new ResourceExplorerPanel();
 
-        holder.add(browse_panel, BorderLayout.NORTH);
+        holder.add(browsePanel, BorderLayout.NORTH);
         JScrollPane scroll = new JScrollPane(rexplorer,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

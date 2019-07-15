@@ -39,11 +39,13 @@ import com.hyperrealm.kiwi.ui.UIElementViewer;
 
 /**
  * Simple image renderer.
+ * @author Anton Troshin
  */
 public class ImageRenderer extends JComponent
     implements ImageObserver, UIElementViewer {
     protected ImageIcon image = null;
 
+    @SuppressWarnings("MagicNumber")
     public ImageRenderer() {
         super();
         setOpaque(true);

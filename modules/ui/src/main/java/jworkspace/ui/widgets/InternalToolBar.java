@@ -60,23 +60,42 @@ import javax.swing.event.InternalFrameEvent;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
-public class InternalToolBar extends KPanel
-    implements MouseListener, MouseMotionListener {
+/**
+ * @author Anton Troshin
+ */
+public class InternalToolBar extends KPanel implements MouseListener, MouseMotionListener {
+
     public static final int VERTICAL = 0;
+
     public static final int HORIZONTAL = 1;
-    protected int orientation = 0;
-    protected boolean floatable = false;
-    protected boolean docked = false;
-    protected JDesktopPane desktop = null;
-    private String title = null;
-    private GridBagLayout g = null;
-    private GridBagConstraints c = null;
-    private ImageIcon icon = null;
-    private Thumb thumb = null;
-    private InternalFrame frame = null;
-    private JPanel panel = null;
-    private Border border = null;
-    private Rectangle dockSpace = null;
+
+    private int orientation;
+
+    private boolean floatable;
+
+    private boolean docked;
+
+    private JDesktopPane desktop;
+
+    private String title;
+
+    private GridBagLayout g;
+
+    private GridBagConstraints c;
+
+    private ImageIcon icon;
+
+    private Thumb thumb;
+
+    private InternalFrame frame;
+
+    private JPanel panel;
+
+    private Border border;
+
+    private Rectangle dockSpace;
+
+    @SuppressWarnings("MagicNumber")
     public InternalToolBar(String title, int orientation, JDesktopPane desktop) {
         super(new BorderLayout());
         floatable = false;
@@ -92,10 +111,10 @@ public class InternalToolBar extends KPanel
         setBorder(border);
         if (orientation == 1) {
             c.fill = 3;
-            super.add("West", panel);
+            super.add(BorderLayout.WEST, panel);
         } else if (orientation == 0) {
             c.fill = 2;
-            super.add("North", panel);
+            super.add(BorderLayout.NORTH, panel);
         }
         this.title = title;
         this.orientation = orientation;
@@ -185,12 +204,14 @@ public class InternalToolBar extends KPanel
         setBorder(b);
     }
 
-    protected void unDock() {
+    private void unDock() {
         dockSpace = new Rectangle(getLocationOnScreen().x, getLocationOnScreen().y, getSize().width, getSize().height);
         remove(panel);
         setBorder(null);
         Component p;
-        for (p = getParent(); !(p instanceof Frame); p = p.getParent()) {
+        p = getParent();
+        while (!(p instanceof Frame)) {
+            p = p.getParent();
         }
         p.validate();
         panel.remove(thumb);
@@ -199,7 +220,8 @@ public class InternalToolBar extends KPanel
         frame.addComponentListener(new ComponentAdapter() {
 
             public void componentMoved(ComponentEvent e) {
-                Rectangle r = new Rectangle(frame.getLocationOnScreen().x, frame.getLocationOnScreen().y, frame.getSize().width, frame.getSize().height);
+                Rectangle r = new Rectangle(frame.getLocationOnScreen().x,
+                    frame.getLocationOnScreen().y, frame.getSize().width, frame.getSize().height);
                 if (dockSpace.intersects(r)) {
                     frame.setVisible(false);
                     dock();
@@ -215,7 +237,7 @@ public class InternalToolBar extends KPanel
         docked = false;
     }
 
-    protected void dock() {
+    private void dock() {
         frame.getContentPane().remove(panel);
         panel.add(thumb);
         thumb.showReleased();
@@ -230,7 +252,9 @@ public class InternalToolBar extends KPanel
         }
         setBorder(border);
         Component p;
-        for (p = getParent(); !(p instanceof Frame); p = p.getParent()) {
+        p = getParent();
+        while (!(p instanceof Frame)) {
+            p = p.getParent();
         }
         p.validate();
         floatable = false;
@@ -243,19 +267,24 @@ public class InternalToolBar extends KPanel
 
     class Thumb extends JComponent {
 
-        InternalToolBar jit = null;
-        Color paint = null;
-        Color bg = null;
-        Color highlight = null;
+        static final String CONTROL_COLOUR = "control";
+
+        static final String CONTROL_SHADOW_COLOUR = "controlShadow";
+
+        InternalToolBar jit;
+        Color paint;
+        Color bg;
+        Color highlight;
 
         Thumb(InternalToolBar jit) {
             this.jit = jit;
             UIDefaults ui = UIManager.getLookAndFeel().getDefaults();
-            bg = ui.getColor("control");
-            highlight = ui.getColor("controlShadow");
+            bg = ui.getColor(CONTROL_COLOUR);
+            highlight = ui.getColor(CONTROL_SHADOW_COLOUR);
             paint = bg;
         }
 
+        @SuppressWarnings("MagicNumber")
         public void paint(Graphics g) {
             g.setColor(paint);
             g.fillRect(0, 0, getSize().width, getSize().height);
@@ -280,16 +309,17 @@ public class InternalToolBar extends KPanel
 
         }
 
-        public void showPressed() {
+        void showPressed() {
             paint = highlight;
             repaint();
         }
 
-        public void showReleased() {
+        void showReleased() {
             paint = bg;
             repaint();
         }
 
+        @SuppressWarnings("MagicNumber")
         public Dimension getMinimumSize() {
             if (jit.orientation == 0) {
                 return new Dimension(jit.getSize().width - 2, 20);
@@ -304,8 +334,8 @@ public class InternalToolBar extends KPanel
 
         public void updateUI() {
             UIDefaults ui = UIManager.getLookAndFeel().getDefaults();
-            bg = ui.getColor("control");
-            highlight = ui.getColor("controlShadow");
+            bg = ui.getColor(CONTROL_COLOUR);
+            highlight = ui.getColor(CONTROL_SHADOW_COLOUR);
             paint = bg;
             repaint();
         }
@@ -313,7 +343,7 @@ public class InternalToolBar extends KPanel
 
     class InternalFrame extends JInternalFrame {
 
-        private InternalToolBar tb = null;
+        private InternalToolBar tb;
 
 
         InternalFrame(String title, JPanel c, JDesktopPane d, InternalToolBar toolbar) {
@@ -336,8 +366,8 @@ public class InternalToolBar extends KPanel
 
     class Separator extends JComponent {
 
-        private int size = 0;
-        private InternalToolBar parent = null;
+        private int size;
+        private InternalToolBar parent;
 
         Separator(int size, InternalToolBar p) {
             this.size = size;
@@ -355,11 +385,7 @@ public class InternalToolBar extends KPanel
             if (parent.orientation == 1) {
                 return new Dimension(size, 1);
             }
-            if (parent.orientation == 0) {
-                return new Dimension(1, size);
-            } else {
-                return new Dimension(size, size);
-            }
+            return parent.orientation == 0 ? new Dimension(1, size) : new Dimension(size, size);
         }
 
         public Dimension getMinimumSize() {

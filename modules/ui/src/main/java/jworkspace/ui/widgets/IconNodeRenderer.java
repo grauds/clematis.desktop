@@ -37,8 +37,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
  * The renderer for class IconNode.
+ * @author Anton Troshin
  */
 public class IconNodeRenderer extends DefaultTreeCellRenderer {
+
     public IconNodeRenderer() {
         super();
     }
@@ -51,23 +53,34 @@ public class IconNodeRenderer extends DefaultTreeCellRenderer {
         return UIManager.getColor("controlDraftBorder");
     }
 
-    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
+                                                  boolean expanded, boolean leaf, int row, boolean hasFocus) {
+
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         if (value instanceof IconNode) {
             Icon icon = ((IconNode) value).getIcon();
+
             if (icon == null) {
-                Hashtable icons = (Hashtable) tree.getClientProperty("JTree.icons");
-                String name = ((IconNode) value).getIconName();
-                if ((icons != null) && (name != null)) {
-                    icon = (Icon) icons.get(name);
-                    if (icon != null) {
-                        setIcon(icon);
-                    }
-                }
-            } else {
+                icon = getIcon(tree, (IconNode) value);
+            }
+
+            if (icon != null) {
                 setIcon(icon);
             }
+
         }
         return this;
+    }
+
+    private Icon getIcon(JTree tree, IconNode value) {
+        Icon icon = null;
+
+        Hashtable icons = (Hashtable) tree.getClientProperty("JTree.icons");
+        String name = value.getIconName();
+        if ((icons != null) && (name != null)) {
+            icon = (Icon) icons.get(name);
+        }
+
+        return icon;
     }
 }

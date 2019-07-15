@@ -38,34 +38,34 @@ import javax.swing.JMenuItem;
 import jworkspace.LangResource;
 
 /**
- * SubClass JMenu to provide the same "more" functionality as
- * Sizeable JPopupMenu
+ * SubClass JMenu to provide the same "more" functionality as sizeable JPopupMenu
+ * @author Anton Troshin
  */
 public class JMoreMenu extends JMenu {
     /**
      * More Menu Text - makes changing text easier later
      */
-    public static final String MORE = LangResource.getString("JMoreMenu.more");
+    private static final String MORE = LangResource.getString("JMoreMenu.more");
     /**
      * Take into account most window managers have a task or system
      * bar always on top on the bottom of the screen.  Empirically
      * determined value.
      */
-    public static final int TASKBAR_HEIGHT = 55;
+    private static final int TASKBAR_HEIGHT = 55;
     /**
      * The maximum height in screen pixles a menu is allowed to be.
      */
-    protected double maximumHeight;
+    private double maximumHeight;
     /**
      * Manually keep track of height - getPreferredSize/getSize seems
      * to only work properly after the menu has been dispayed at least
      * once.
      */
-    protected double myHeight;
+    private double myHeight;
     /**
      * Used to provide arbitrarily deep more menus.
      */
-    JMoreMenu moreMenu;
+    private JMoreMenu moreMenu;
 
     /**
      * Default constructor
@@ -79,7 +79,7 @@ public class JMoreMenu extends JMenu {
     /**
      * Constructor - override JMenu constructor set the default height
      */
-    public JMoreMenu(String label) {
+    JMoreMenu(String label) {
         super(label);
         maximumHeight = Toolkit.getDefaultToolkit().getScreenSize().
             getHeight() - TASKBAR_HEIGHT;
@@ -133,7 +133,7 @@ public class JMoreMenu extends JMenu {
         // on that height, determine if we can add it to the
         // base menu or if we must
 
-        JMenuItem retVal = null;
+        JMenuItem retVal;
 
         // Forcibly insert the item into the menu
         JMenuItem tempMenuItem = super.add(a);
@@ -183,8 +183,8 @@ public class JMoreMenu extends JMenu {
      * JPopupMenu and JMenu that make them not completely straightforward
      * to integrate.
      */
-    public Component addComponent(Component c) {
-        Component retVal = null;
+    private Component addComponent(Component c) {
+        Component retVal;
 
         // Use locals for a convenient reference point
         // to check when debugging.
@@ -218,25 +218,23 @@ public class JMoreMenu extends JMenu {
      * Get all Components **MINUS THE MORE BUTTONS**
      * Use vectors, they are easier to work with when dynamically appending
      */
-    public Vector getAllSubComponents() {
-        Vector components = new Vector();
+    Vector<Component> getAllSubComponents() {
+        Vector<Component> components = new Vector<>();
         Component[] componentArray = getMenuComponents();
 
-        for (int i = 0; i < componentArray.length; i++) {
-            if (componentArray[i] instanceof JMenuItem) { // sanity check
+        for (Component component : componentArray) {
+            if (component instanceof JMenuItem) { // sanity check
                 // Skip over more menu item.
-                if (componentArray[i] != moreMenu) {
-                    components.add(componentArray[i]);
+                if (component != moreMenu) {
+                    components.add(component);
                 }
             } else {
-                components.add(componentArray[i]);
+                components.add(component);
             }
         }
         if (moreMenu != null) {
-            Vector moreComponents = moreMenu.getAllSubComponents();
-            for (int j = 0; j < moreComponents.size(); j++) {
-                components.add(moreComponents.elementAt(j));
-            }
+            Vector<Component> moreComponents = moreMenu.getAllSubComponents();
+            components.addAll(moreComponents);
         }
         return components;
     }
@@ -245,8 +243,8 @@ public class JMoreMenu extends JMenu {
      * Override of JMenu::getComponentAtIndex(int).  Automatically
      * skip over the menu generated "more>" item.
      */
-    public Component getComponentAtIndex(int index) {
-        Component retVal = null;
+    Component getComponentAtIndex(int index) {
+        Component retVal;
         Component[] components = getMenuComponents();
 
         if (index < components.length) {
@@ -261,7 +259,7 @@ public class JMoreMenu extends JMenu {
      * Override of JMenu getComponentIndex(Component).  Automatically
      * skips over menu genereated "more>" item.
      */
-    public int getComponentIndex(Component c) {
+    int getComponentIndex(Component c) {
         Component[] components = getMenuComponents();
         int retVal = -1;
 
@@ -292,7 +290,7 @@ public class JMoreMenu extends JMenu {
      * Set the maximum allowable height if default screenheight-taskbar
      * is insufficient.
      */
-    public void setMaximumHeight(double aHeight) {
+    void setMaximumHeight(double aHeight) {
         maximumHeight = aHeight;
         if (moreMenu != null) {
             moreMenu.setMaximumHeight(aHeight);
@@ -312,7 +310,7 @@ public class JMoreMenu extends JMenu {
      * Hence removeAll, then re-add everything inserting the new one
      * when appropriate.
      */
-    public void insert(Component c, int index) {
+    void insert(Component c, int index) {
         Vector components = getAllSubComponents();
         removeAll();
 
@@ -375,14 +373,12 @@ public class JMoreMenu extends JMenu {
         //   do a regular insert(component)
         double componentHeight = c.getPreferredSize().getHeight();
 
-        if ((myHeight + componentHeight) <
-            maximumHeight - componentHeight) {
+        if ((myHeight + componentHeight) < maximumHeight - componentHeight) {
             // Force the component to go below the moreMenu
             super.add(c);
             myHeight += c.getPreferredSize().getHeight();
         } else {
-            int itemCount = getMenuComponentCount();
-            Component componentToMove = null;
+            Component componentToMove;
             do {
                 // the standard item is 1 before
                 // the more menu hence -1
@@ -391,7 +387,6 @@ public class JMoreMenu extends JMenu {
 
                 moreMenu.insert(componentToMove, 0);
                 myHeight -= componentToMove.getPreferredSize().getHeight();
-                itemCount = getMenuComponentCount();
             }
             while ((componentHeight + myHeight) >= maximumHeight);
             super.add(c);
@@ -410,9 +405,6 @@ public class JMoreMenu extends JMenu {
         } else {
             if (moreMenu != null) {
                 moreMenu.remove(index - components.length);
-            } else {
-                // Assertion point - More Menu should
-                // not be null here
             }
         }
     }
@@ -446,10 +438,6 @@ public class JMoreMenu extends JMenu {
      * When making mods, proceed with MUCH CAUTION!.
      */
     public void setPopupMenuVisible(boolean b) {
-        Point location = getLocation();
-
-        int oldX = (int) location.getX();
-        int oldY = (int) location.getY();
 
         // WORK AROUND
         // SwingUtilities convertPointTo/FromScreen Utilities do not
@@ -461,7 +449,6 @@ public class JMoreMenu extends JMenu {
         int screenX = (int) screenWorkAround.getX();
 
         // WORK AROUND KNOWN getPreferredSize() problem
-        Component c = getComponentAtIndex(0);
         int componentWidth = (int) getSize().getWidth();
 
         // Compute new Location on Screen
@@ -498,9 +485,9 @@ public class JMoreMenu extends JMenu {
         Component[] components = getComponents();
         Component selectedComponent = null;
 
-        for (int i = 0; i < components.length; i++) {
-            if (components[i] == c) {
-                selectedComponent = components[i];
+        for (Component component : components) {
+            if (component == c) {
+                selectedComponent = component;
                 break;
             }
         }
@@ -518,16 +505,15 @@ public class JMoreMenu extends JMenu {
     /**
      * Convenience add on
      */
-    public int SizeableGetItemCount() {
-        int retVal = 0;
+    int sizeableGetItemCount() {
+        int retVal;
         int itemCount = getMenuComponentCount();
 
         if (moreMenu == null) {
             retVal = itemCount;
         } else {
             // Account for the more menu item - hence the '-1'
-            retVal = (itemCount - 1) +
-                moreMenu.SizeableGetItemCount();
+            retVal = (itemCount - 1) + moreMenu.sizeableGetItemCount();
         }
         return retVal;
     }

@@ -32,9 +32,9 @@ import java.awt.event.FocusListener;
 import javax.swing.JWindow;
 
 /**
- * This window class is a workaround for a Swing bug in
- * JWindow. WIndow does not get focus on any component
+ * This window class is a workaround for a Swing bug in JWindow. WIndow does not get focus on any component
  * on it, for example, a text field does not show cursor, etc.
+ * @author Anton Troshin
  */
 public class JWindowEx extends JWindow implements FocusListener {
     public JWindowEx(javax.swing.JFrame parent) {
