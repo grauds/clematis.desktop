@@ -27,24 +27,27 @@ package jworkspace.ui.views;
 */
 
 import java.awt.event.ActionListener;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.IShell;
+import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.cpanel.CButton;
 
 /**
- * Simple user gui shell and view. This shell does nothing,
- * but appears as plain panel in multidesktop system of views.
+ * Simple user gui shell and view. This shell does nothing, but appears as plain panel in desktop.
+ * @author Anton Troshin
  */
 public class DefaultCompoundView extends DefaultView
     implements IShell, ActionListener {
+
     /**
      * Are the buttons loaded?
      */
-    protected boolean buttonsLoaded = false;
+    private boolean buttonsLoaded = false;
 
-    public DefaultCompoundView() {
+    DefaultCompoundView() {
         super();
     }
 
@@ -54,15 +57,15 @@ public class DefaultCompoundView extends DefaultView
     public void actionPerformed(java.awt.event.ActionEvent e) {
         String command = e.getActionCommand();
         if (command.equals(DefaultCompoundView.SHOW)) {
-            /**
+            /*
              * Send message to workspace gui with request
              * to add to layout?
              */
-            Hashtable lparam = new Hashtable();
+            Map<String, Object> lparam = new HashMap<>();
             lparam.put("view", this);
-            lparam.put("display", new Boolean(true));
-            lparam.put("register", new Boolean(isUnique()));
-            Workspace.fireEvent(new Integer(1000), lparam, null);
+            lparam.put("display", Boolean.TRUE);
+            lparam.put("register", isUnique());
+            Workspace.fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
         }
     }
 

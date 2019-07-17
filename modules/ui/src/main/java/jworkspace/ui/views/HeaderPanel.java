@@ -44,24 +44,27 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import jworkspace.kernel.Workspace;
 
 /**
- * Header panel serves as information bridge for
- * desktop navigation, displaying the name of
+ * Header panel serves as information bridge for desktop navigation, displaying the name of
  * current desktop and current time.
+ *
+ * @author Anton Troshin
  */
 public class HeaderPanel extends KPanel implements MouseListener, LayoutManager, MouseMotionListener {
     /**
      * Possible orientations of header panel.
      * HEADER - on the top of the frame.
      */
-    public static final String HEADER = BorderLayout.NORTH;
+    private static final String HEADER = BorderLayout.NORTH;
     /**
      * Possible orientations of header panel.
      * FOOTER - on the bottom of the frame.
      */
-    public static final String FOOTER = BorderLayout.SOUTH;
+    private static final String FOOTER = BorderLayout.SOUTH;
     /**
      * Header label is the only component to display info.
      */
@@ -104,8 +107,9 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     public HeaderPanel(String title, String orientation) {
         super();
 
-        if (!orientation.equals(HeaderPanel.HEADER) &&
-            !orientation.equals(HeaderPanel.FOOTER)) {
+        if (!orientation.equals(HeaderPanel.HEADER)
+            && !orientation.equals(HeaderPanel.FOOTER)) {
+
             throw new IllegalArgumentException("Orientation MUST be HEADER or FOOTER");
         }
 
@@ -121,20 +125,18 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
         setTimer();
     }
 
-    protected void setTimer() {
-        Thread motor = new Thread() {
-            public void run() {
-                while (true) {
-                    if (isVisible()) {
-                        repaint();
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                    }
+    private void setTimer() {
+        Thread motor = new Thread(() -> {
+            do {
+                if (isVisible()) {
+                    repaint();
                 }
-            }
-        };
+                try {
+                    Thread.sleep(KiwiUtils.MILLISEC_IN_SECOND);
+                } catch (Exception ignored) {
+                }
+            } while (true);
+        });
         motor.setPriority(Thread.MIN_PRIORITY);
         motor.start();
     }
@@ -145,22 +147,21 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     /**
      * Returns orientation of header panel
      */
-    public String getOrientation() {
+    String getOrientation() {
         return orientation;
     }
 
     /**
      * Sets header orientation
      */
-    public void setOrientation(String orientation) {
+    void setOrientation(String orientation) {
         this.orientation = orientation;
     }
 
+    @SuppressWarnings("MagicNumber")
     public void layoutContainer(Container parent) {
-        headerLabel.setBounds(15, 0, getWidth() * 2 / 3,
-            preferredLayoutSize(parent).height);
-        clockLabel.setBounds(getWidth() - clockLabel.getPreferredSize().width - 15,
-            0, getWidth(),
+        headerLabel.setBounds(15, 0, getWidth() * 2 / 3, preferredLayoutSize(parent).height);
+        clockLabel.setBounds(getWidth() - clockLabel.getPreferredSize().width - 15, 0, getWidth(),
             preferredLayoutSize(parent).height);
     }
 
@@ -168,8 +169,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
      * Returns the minimum layout size of this component.
      */
     public Dimension minimumLayoutSize(Container parent) {
-        return new Dimension(margin.left + margin.right,
-            clockLabel.getPreferredSize().height + 2);
+        return new Dimension(margin.left + margin.right, clockLabel.getPreferredSize().height + 2);
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -242,8 +242,14 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     /**
      * Clock
      */
+    @SuppressWarnings("MagicNumber")
     class ClockLabel extends JLabel {
-        public ClockLabel() {
+
+        static final String LEADING_ZERO = "0";
+
+        private static final String COLON = ":";
+
+        private ClockLabel() {
             super();
             setIcon(new ImageIcon(Workspace.getResourceManager().getImage("clock.png")));
         }
@@ -253,7 +259,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
                 return;
             }
             super.paintComponent(g);
-            /**
+            /*
              * Draw clock
              */
             Calendar c = new GregorianCalendar();
@@ -263,22 +269,22 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
             String s, m, h;
 
             if (si < 10) {
-                s = "0" + si;
+                s = LEADING_ZERO + si;
             } else {
                 s = "" + si;
             }
             if (mi < 10) {
-                m = "0" + mi;
+                m = LEADING_ZERO + mi;
             } else {
                 m = "" + mi;
             }
             if (hi < 10) {
-                h = "0" + hi;
+                h = LEADING_ZERO + hi;
             } else {
                 h = "" + hi;
             }
 
-            String ss = h + ":" + m + ":" + s;
+            String ss = h + COLON + m + COLON + s;
             setText(ss);
         }
     }

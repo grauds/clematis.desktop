@@ -25,31 +25,31 @@ package jworkspace.ui.views;
   ----------------------------------------------------------------------------
 */
 
-import java.io.IOException;
-
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+
 import jworkspace.ui.IView;
 
 /**
  * Default user gui view.
+ * @author Anton Troshin
  */
 public class DefaultView extends KPanel implements IView {
     /**
      * Show this window
      */
-    public final static String SHOW = "SHOW";
+    static final String SHOW = "SHOW";
     /**
      * Modified flag is open to all descendants
      * of this class.
      */
-    protected boolean modified_flag = false;
+    private boolean modified = false;
     /**
      * If this view active?
      */
-    protected boolean active = false;
+    private boolean active = false;
     /**
      * Save path. Relative to user.home
      */
@@ -111,7 +111,7 @@ public class DefaultView extends KPanel implements IView {
      * Returns modified flag for the view
      */
     public boolean isModified() {
-        return modified_flag;
+        return modified;
     }
 
     /**
@@ -125,7 +125,7 @@ public class DefaultView extends KPanel implements IView {
     /**
      * Load view from disk
      */
-    public void load() throws IOException {
+    public void load() {
     }
 
     /**
@@ -137,7 +137,7 @@ public class DefaultView extends KPanel implements IView {
     /**
      * Save all settings to default path
      */
-    public void save() throws IOException {
+    public void save() {
     }
 
     /**

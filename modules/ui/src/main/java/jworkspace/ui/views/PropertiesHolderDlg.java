@@ -38,44 +38,47 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.hyperrealm.kiwi.ui.KPanel;
-import jworkspace.LangResource;
-import kiwi.ui.dialog.ComponentDialog;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
+import jworkspace.LangResource;
 /**
- * This dialog holds a properties panel for a view.
- * Each panel is placed as a component to a tab view.
- * After user selects to close dialog, this class
- * invokes <code>syncData</code> method on every panel
- * in tabbed sequence, thus delegating of save procedure.
- * If no such method is discovered, this class silently
+ * This dialog holds a properties panel for a view. Each panel is placed as a component to a tab view.
+ * After user selects to close dialog, this class invokes <code>syncData</code> method on every panel
+ * in tabbed sequence, thus delegating of save procedure. If no such method is discovered, this class silently
  * ignores the situation.
+ * @author Anton Troshin
  */
 public class PropertiesHolderDlg extends ComponentDialog {
-    private JTabbedPane tabbed_pane;
+
+    private JTabbedPane tabbedPane;
 
     /**
      * Constructor for property viewer panel.
      *
      * @param parent        frame
-     * @param option_panels array of JPanels as an option panels for current view.
+     * @param optionPanels array of JPanels as an option panels for current view.
      */
-    public PropertiesHolderDlg(Frame parent, JPanel[] option_panels) {
+    public PropertiesHolderDlg(Frame parent, JPanel[] optionPanels) {
+
         super(parent, LangResource.getString("PropertiesHolder.title"), true);
-        if (option_panels == null || option_panels.length == 0) {
-            KPanel empty_panel = new KPanel();
-            empty_panel.setPreferredSize(new Dimension(250, 300));
-            empty_panel.setLayout(new BorderLayout());
+
+        if (optionPanels == null || optionPanels.length == 0) {
+
+            KPanel emptyPanel = new KPanel();
+            emptyPanel.setPreferredSize(new Dimension(250, 300));
+            emptyPanel.setLayout(new BorderLayout());
             JLabel l = new JLabel(LangResource.getString("PropertiesHolder.empty.message"));
             l.setHorizontalAlignment(JLabel.CENTER);
             l.setOpaque(false);
-            empty_panel.add(l, BorderLayout.CENTER);
-            tabbed_pane.addTab(LangResource.getString("PropertiesHolder.empty.tab"), empty_panel);
+            emptyPanel.add(l, BorderLayout.CENTER);
+
+            tabbedPane.addTab(LangResource.getString("PropertiesHolder.empty.tab"), emptyPanel);
         } else {
-            for (int i = 0; i < option_panels.length; i++) {
-                if (option_panels[i].getName() != null) {
-                    tabbed_pane.addTab(option_panels[i].getName(), option_panels[i]);
+            for (JPanel optionPanel : optionPanels) {
+                if (optionPanel.getName() != null) {
+                    tabbedPane.addTab(optionPanel.getName(), optionPanel);
                 } else {
-                    tabbed_pane.addTab(LangResource.getString("PropertiesHolder.empty.tab.header"), option_panels[i]);
+                    tabbedPane.addTab(LangResource.getString("PropertiesHolder.empty.tab.header"), optionPanel);
                 }
             }
         }
@@ -89,37 +92,31 @@ public class PropertiesHolderDlg extends ComponentDialog {
     }
 
     protected boolean accept() {
-        if (tabbed_pane == null) {
+        if (tabbedPane == null) {
             return true;
         }
-        for (int i = 0; i < tabbed_pane.getTabCount(); i++) {
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             try {
-                Method sync_data = tabbed_pane.getComponentAt(i).getClass().
+                Method syncData = tabbedPane.getComponentAt(i).getClass().
                     getMethod("syncData");
-                sync_data.invoke(tabbed_pane.getComponentAt(i));
-            } catch (NoSuchMethodException ex) {
-                ex.printStackTrace();
-            } catch (InvocationTargetException ex) {
-                ex.printStackTrace();
-            } catch (IllegalAccessException ex) {
-                ex.printStackTrace();
+                syncData.invoke(tabbedPane.getComponentAt(i));
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+
             }
         }
         return true;
     }
 
     protected boolean setData() {
-        if (tabbed_pane == null) {
+        if (tabbedPane == null) {
             return true;
         }
-        for (int i = 0; i < tabbed_pane.getTabCount(); i++) {
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             try {
-                Method sync_data = tabbed_pane.getComponentAt(i).getClass().
+                Method syncData = tabbedPane.getComponentAt(i).getClass().
                     getMethod("setData");
-                sync_data.invoke(tabbed_pane.getComponentAt(i));
-            } catch (NoSuchMethodException ex) {
-            } catch (InvocationTargetException ex) {
-            } catch (IllegalAccessException ex) {
+                syncData.invoke(tabbedPane.getComponentAt(i));
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
             }
         }
         return true;
@@ -127,8 +124,8 @@ public class PropertiesHolderDlg extends ComponentDialog {
 
     protected JComponent buildDialogUI() {
         setComment(null);
-        tabbed_pane = new JTabbedPane();
-        tabbed_pane.setOpaque(false);
-        return tabbed_pane;
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setOpaque(false);
+        return tabbedPane;
     }
 }

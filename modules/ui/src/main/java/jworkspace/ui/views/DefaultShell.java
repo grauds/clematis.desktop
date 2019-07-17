@@ -27,22 +27,24 @@ package jworkspace.ui.views;
 */
 
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.IShell;
 import jworkspace.ui.IView;
+import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.cpanel.CButton;
 
 /**
  * Default user gui shell.
+ * @author Anton Troshin
  */
 public abstract class DefaultShell implements IShell, ActionListener {
     /**
      * Show this window
      */
-    public final static String NEW_VIEW = "NEW_VIEW";
+    private static final String NEW_VIEW = "NEW_VIEW";
     /**
      * Save path. Relative to user.home
      */
@@ -54,15 +56,15 @@ public abstract class DefaultShell implements IShell, ActionListener {
     public void actionPerformed(java.awt.event.ActionEvent e) {
         String command = e.getActionCommand();
         if (command.equals(DefaultShell.NEW_VIEW)) {
-            /**
+            /*
              * Send message to workspace gui with request
              * to add to layout?
              */
-            Hashtable lparam = new Hashtable();
-            lparam.put("view", getView());
-            lparam.put("display", new Boolean(true));
-            lparam.put("register", new Boolean(false));
-            Workspace.fireEvent(new Integer(1000), lparam, null);
+            Map<String, Object> lparam = new HashMap<>();
+            lparam.put("view", this);
+            lparam.put("display", Boolean.TRUE);
+            lparam.put("register", Boolean.FALSE);
+            Workspace.fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
         }
     }
 
@@ -85,7 +87,7 @@ public abstract class DefaultShell implements IShell, ActionListener {
     /**
      * Load shell from disk
      */
-    public void load() throws IOException {
+    public void load() {
     }
 
     /**
@@ -97,7 +99,7 @@ public abstract class DefaultShell implements IShell, ActionListener {
     /**
      * Save all settings to default path
      */
-    public void save() throws IOException {
+    public void save() {
     }
 
     /**
