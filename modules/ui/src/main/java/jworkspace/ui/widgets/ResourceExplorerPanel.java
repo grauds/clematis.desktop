@@ -26,7 +26,6 @@ package jworkspace.ui.widgets;
    ----------------------------------------------------------------------------
 */
 
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -44,6 +43,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -55,29 +58,36 @@ import javax.swing.JLabel;
 import javax.swing.Scrollable;
 import javax.swing.border.Border;
 
-import com.hyperrealm.kiwi.ui.KPanel;
-import com.hyperrealm.kiwi.util.ResourceManager;
-import com.hyperrealm.kiwi.util.ResourceNotFoundException;
-import com.hyperrealm.kiwi.util.Task;
-import jworkspace.LangResource;
-import jworkspace.kernel.Workspace;
-import jworkspace.ui.WorkspaceGUI;
-import jworkspace.util.WorkspaceError;
-import kiwi.ui.dialog.ProgressDialog;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
+import com.hyperrealm.kiwi.util.ResourceManager;
+import com.hyperrealm.kiwi.util.ResourceNotFoundException;
+import com.hyperrealm.kiwi.util.Task;
+
+import jworkspace.LangResource;
+import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceError;
+import jworkspace.ui.WorkspaceGUI;
+
 /**
- * This is a graphic resources explorer panel. Graphic resources
- * can reside inside of a jar file or directory. This panel traverses
- * directory or jar file recursively and shows all graphic files.
- * JIMI library is used.
+ * This is a graphic resources explorer panel. Graphic resources can reside inside of a jar file or directory.
+ * This panel traverses directory or jar file recursively and shows all graphic files.
+ *
+ * @author Anton Troshin
  */
-public class ResourceExplorerPanel extends KPanel
-    implements Scrollable, ComponentListener {
-    static Dimension thumbnailDimension = null;
-    static Border unselectedThumbnailBorder;
-    static Border selectedThumbnailBorder;
+@SuppressWarnings("MagicNumber")
+public class ResourceExplorerPanel extends KPanel implements Scrollable, ComponentListener {
+
+    private static final String LOAD_FAILED_MESSAGE = LangResource.getString("ResourceExplorerPanel.load.failed");
+
+    private static Dimension thumbnailDimension;
+
+    private static Border unselectedThumbnailBorder;
+
+    private static Border selectedThumbnailBorder;
 
     // We only need one copy of these for all instances
     static {
@@ -88,36 +98,39 @@ public class ResourceExplorerPanel extends KPanel
 
     /**
      * This dialog can choose textures or desktop icons in workspace
-     * Hint prevents KIWI textures from loading into desktop icons
-     * chooser
+     * Hint prevents KIWI textures from loading into desktop icons chooser
      */
-    protected boolean isTextureChooser = true;
+    boolean isTextureChooser = true;
     /**
      * Path to repository
      */
-    String path = null;
+    private String path = null;
     /**
      * List of all Thumbnails in this panel
      */
-    Vector list = new Vector();
+    private List<Thumbnail> list = new Vector<>();
     /**
      * Width of this panel
      */
-    int setWidth = 450;
+    private int setWidth = 450;
     /**
      * Instance of workspace gui
      */
     private WorkspaceGUI wgui = null;
+
     private ProgressDialog pr = null;
 
-    public ResourceExplorerPanel() {
+    ResourceExplorerPanel() {
         super();
+
         // Align to left, 5 pixels spacing H and V
         setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         addComponentListener(this); // catch resize events
         setPreferredDimension();
-        if (Workspace.getUI() instanceof WorkspaceGUI) {
-            wgui = (WorkspaceGUI) Workspace.getUI();
+
+        // todo: what is this??
+        if (Workspace.getUi() instanceof WorkspaceGUI) {
+            wgui = (WorkspaceGUI) Workspace.getUi();
         }
     }
 
@@ -126,13 +139,13 @@ public class ResourceExplorerPanel extends KPanel
      * the height. This panel must be at it's set width so
      * that all components fit into it.
      */
-    void setPreferredDimension() {
+    private void setPreferredDimension() {
         int w, h;
         w = setWidth; // this is fixed by user resizing the panel
         // We should compute this, based upon knowledge of FlowLayout
-        int componentcount = getComponentCount();
-        if (componentcount > 0 && isVisible()) {
-            Component lastcomponent = getComponent(componentcount - 1);
+        int componentCount = getComponentCount();
+        if (componentCount > 0 && isVisible()) {
+            Component lastcomponent = getComponent(componentCount - 1);
             Point p = lastcomponent.getLocation();
             h = p.y; // top of last component
             h += thumbnailDimension.height;
@@ -144,7 +157,7 @@ public class ResourceExplorerPanel extends KPanel
         revalidate();
     }
 
-    // We implement ComponenetListener for resize events
+    // We implement ComponentListener for resize events
     public void componentHidden(ComponentEvent e) {
     }
 
@@ -192,17 +205,16 @@ public class ResourceExplorerPanel extends KPanel
     /**
      * Get selected icons
      */
-    public synchronized ImageIcon[] getSelectedImages() {
-        Vector icons = new Vector();
-        for (int i = 0; i < list.size(); i++) {
-            Thumbnail tt = (Thumbnail) list.elementAt(i);
+    synchronized ImageIcon[] getSelectedImages() {
+        List<ImageIcon> icons = new Vector<>();
+        for (Thumbnail tt : list) {
             if (tt.isSelected()) {
-                icons.addElement(tt._getIcon());
+                icons.add(tt.doGetIcon());
             }
         }
         ImageIcon[] mass = new ImageIcon[icons.size()];
         for (int i = 0; i < icons.size(); i++) {
-            mass[i] = (ImageIcon) icons.elementAt(i);
+            mass[i] = icons.get(i);
         }
         return mass;
     }
@@ -218,16 +230,14 @@ public class ResourceExplorerPanel extends KPanel
      * Set path to repository
      */
     public void setPath(String path) {
-        if (path != null) {
-            this.path = path;
-        } else {
-            this.path = null;
-        }
+
+        this.path = path;
 
         removeAll();
-        list.removeAllElements();
+        list.clear();
+
         revalidate();
-        pr = new ProgressDialog(Workspace.getUI().getFrame(),
+        pr = new ProgressDialog(Workspace.getUi().getFrame(),
             LangResource.getString("ResourceExplorerPanel.loadingRep"), true);
         Loader loader = new Loader();
         pr.track(loader);
@@ -237,8 +247,8 @@ public class ResourceExplorerPanel extends KPanel
     /**
      * This method loads KIWI textures if specified flag is set.
      */
-    void enumLibTextures() throws IOException {
-        InputStream is = null;
+    private void enumLibTextures() throws IOException {
+        InputStream is;
         try {
             is = ResourceManager.getKiwiResourceManager().
                 getStream("textures/_index.txt");
@@ -247,26 +257,24 @@ public class ResourceExplorerPanel extends KPanel
         }
         String s;
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        /**
+        /*
          * Read next line - this is a texture file name
          */
         while ((s = reader.readLine()) != null) {
             try {
-                Image image = ResourceManager.
-                    getKiwiResourceManager().getTexture(s);
-                ImageIcon im_icon = new ImageIcon(image);
-                if (image != null
-                    && im_icon.getIconHeight() != -1
-                    && im_icon.getIconWidth() != -1) {
+                Image image = ResourceManager.getKiwiResourceManager().getTexture(s);
+                ImageIcon imageIcon = new ImageIcon(image);
+                if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
+
                     Thumbnail thumb = new Thumbnail();
-                    thumb._setIcon(im_icon);
+                    thumb.doSetIcon(imageIcon);
                     thumb.setText(s);
-                    list.addElement(thumb);
+                    list.add(thumb);
                     this.add(thumb);
                     revalidate();
                 }
-            } catch (ResourceNotFoundException ex) {
-                continue;
+            } catch (ResourceNotFoundException ignored) {
+
             }
         }
         reader.close();
@@ -276,10 +284,9 @@ public class ResourceExplorerPanel extends KPanel
     /**
      * Unselect all thumbnails
      */
-    void unselectAll() {
-        for (int i = 0; i < list.size(); i++) {
-            Thumbnail tt = (Thumbnail) list.elementAt(i);
-            tt.setSelected(false);
+    private void deselectAll() {
+        for (Thumbnail thumbnail : list) {
+            thumbnail.setSelected(false);
         }
     }
 
@@ -287,13 +294,14 @@ public class ResourceExplorerPanel extends KPanel
      * Inner class to show progress dialog
      */
     class Loader extends Task {
-        public Loader() {
+
+        private Loader() {
             super();
             addProgressObserver(pr);
         }
 
         public void run() {
-            /**
+            /*
              * First get all KIWI textures if specified flag is
              * set.
              */
@@ -301,94 +309,117 @@ public class ResourceExplorerPanel extends KPanel
                 try {
                     enumLibTextures();
                 } catch (IOException ex) {
-                    WorkspaceError.exception
-                        (LangResource.getString("ResourceExplorerPanel.load.failed"), ex);
+                    WorkspaceError.exception(LOAD_FAILED_MESSAGE, ex);
                 }
             }
-            /**
-             * Check if path valid
-             */
-            File file = null;
-            if (path == null || !(file = new File(path)).exists()) {
+
+            File file = getFile();
+            if (file != null) {
+                /*
+                 * Now determine if it is a directory or a jar file
+                 */
+                if (file.isDirectory() && scanDirectory(file)) {
+                    return;
+                } else if (!file.isDirectory() && path.endsWith("jar")) {
+                    scanArchive(file);
+                }
+                revalidate();
                 pr.setProgress(100);
-                return;
             }
-            /**
-             * Now determine if it is a directory
-             * or a jar file
+        }
+
+        private void scanArchive(File file) {
+            try {
+                ZipInputStream is = new ZipInputStream(new FileInputStream(file));
+                ZipFile zfile = new ZipFile(file);
+                ZipEntry ze;
+                /*
+                 * Get through all entries
+                 */
+                while ((ze = is.getNextEntry()) != null) {
+                    if (!ze.isDirectory()) {
+                        InputStream zip = zfile.getInputStream(ze);
+                        /*
+                         * Now try to load it with JIMI
+                         */
+                        loadZipImage(ze, zip);
+                    }
+                }
+            } catch (IOException ex) {
+                WorkspaceError.exception(LOAD_FAILED_MESSAGE, ex);
+            }
+        }
+
+        private boolean scanDirectory(File file) {
+            /*
+             * List files
              */
-            if (file.isDirectory()) {
-                /**
-                 * List files
-                 */
-                File[] files = file.listFiles();
-                float step = 100 / files.length;
-                float progress = 0;
-                /**
-                 * Resource explorer does not iterate throught
-                 * subdirectories.
-                 */
-                for (int i = 0; i < files.length; i++) {
-                    if (!files[i].isDirectory()) {
-                        try {
-                            Image image = Imaging.getBufferedImage(files[i]);
-                            ImageIcon im_icon = new ImageIcon(image);
-                            if (im_icon.getIconHeight() != -1
-                                && im_icon.getIconWidth() != -1) {
-                                Thumbnail thumb = new Thumbnail();
-                                thumb._setIcon(im_icon);
-                                thumb.setText(files[i].getName());
-                                list.addElement(thumb);
-                                add(thumb);
-                            }
-                            progress += step;
-                            pr.setProgress(Math.round(progress));
-                        } catch (IOException | ImageReadException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            } else if (!file.isDirectory() && path.endsWith("jar")) {
-                try {
-                    ZipInputStream is = new ZipInputStream(new FileInputStream(file));
-                    ZipFile zfile = new ZipFile(file);
-                    ZipEntry ze = null;
-                    /**
-                     * Get througth all entries
-                     */
-                    while ((ze = is.getNextEntry()) != null) {
-                        if (!ze.isDirectory()) {
-                            InputStream zip = zfile.getInputStream(ze);
-                            /**
-                             * Now try to load it with JIMI
-                             */
-                            try {
-                                Image image = Imaging.getBufferedImage(zip);
-                                ImageIcon im_icon = new ImageIcon(image);
-                                if (im_icon.getIconHeight() != -1
-                                    && im_icon.getIconWidth() != -1) {
-                                    Thumbnail thumb = new Thumbnail();
-                                    thumb._setIcon(im_icon);
-                                    int index = ze.getName().lastIndexOf('/');
-                                    if (index != -1) {
-                                        thumb.setText(ze.getName().substring(index + 1
-                                        ));
-                                    }
-                                    list.addElement(thumb);
-                                    add(thumb);
-                                }
-                            } catch (ImageReadException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                } catch (IOException ex) {
-                    WorkspaceError.exception
-                        (LangResource.getString("ResourceExplorerPanel.load.failed"), ex);
+            File[] files = file.listFiles();
+            if (files == null) {
+                return true;
+            }
+            float step = 100 / files.length;
+            float progress = 0;
+            /*
+             * Resource explorer does not iterate through subdirectories.
+             */
+            for (File value : files) {
+                if (!value.isDirectory()) {
+                    progress = loadImage(step, progress, value);
                 }
             }
-            revalidate();
-            pr.setProgress(100);
+            return false;
+        }
+
+        private void loadZipImage(ZipEntry ze, InputStream zip) throws IOException {
+            try {
+                Image image = Imaging.getBufferedImage(zip);
+                ImageIcon imageIcon = new ImageIcon(image);
+
+                if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
+
+                    Thumbnail thumb = new Thumbnail();
+                    thumb.doSetIcon(imageIcon);
+                    int index = ze.getName().lastIndexOf('/');
+                    if (index != -1) {
+                        thumb.setText(ze.getName().substring(index + 1));
+                    }
+                    list.add(thumb);
+                    add(thumb);
+                }
+            } catch (ImageReadException ignored) {
+
+            }
+        }
+
+        private float loadImage(float step, float progress, File value) {
+            try {
+                Image image = Imaging.getBufferedImage(value);
+                ImageIcon imageIcon = new ImageIcon(image);
+
+                if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
+
+                    Thumbnail thumb = new Thumbnail();
+                    thumb.doSetIcon(imageIcon);
+                    thumb.setText(value.getName());
+                    list.add(thumb);
+                    add(thumb);
+                }
+                pr.setProgress(Math.round(progress + step));
+            } catch (IOException | ImageReadException ignored) {
+
+            }
+            return progress + step;
+        }
+
+        private File getFile() {
+
+            if (!Files.exists(Paths.get(path), LinkOption.NOFOLLOW_LINKS)) {
+                pr.setProgress(100);
+                return null;
+            }
+
+            return new File(path);
         }
     }
 
@@ -397,10 +428,12 @@ public class ResourceExplorerPanel extends KPanel
      * separate ICON.
      */
     class Thumbnail extends JLabel implements MouseListener {
-        private boolean isselected = false;
-        private ImageIcon image_icon = null;
 
-        public Thumbnail() {
+        private boolean selected = false;
+
+        private ImageIcon imageIcon = null;
+
+        private Thumbnail() {
             super();
             setPreferredSize(thumbnailDimension);
             setSelected(false);
@@ -411,20 +444,20 @@ public class ResourceExplorerPanel extends KPanel
         }
 
         public boolean isSelected() {
-            return isselected;
+            return selected;
         }
 
         public void setSelected(boolean b) {
-            isselected = b;
-            if (isselected) {
+            selected = b;
+            if (selected) {
                 setBorder(selectedThumbnailBorder);
             } else {
                 setBorder(unselectedThumbnailBorder);
             }
         }
 
-        public void _setIcon(ImageIcon i) {
-            image_icon = i;
+        void doSetIcon(ImageIcon i) {
+            imageIcon = i;
             Image image = i.getImage();
 
             int h, w;
@@ -441,8 +474,8 @@ public class ResourceExplorerPanel extends KPanel
             revalidate();
         }
 
-        public ImageIcon _getIcon() {
-            return image_icon;
+        ImageIcon doGetIcon() {
+            return imageIcon;
         }
 
         public void mousePressed(MouseEvent e) {
@@ -459,15 +492,18 @@ public class ResourceExplorerPanel extends KPanel
 
         public void mouseClicked(MouseEvent e) {
             Container c = getParent();
-            if (c instanceof ResourceExplorerPanel) {
-                ResourceExplorerPanel tp = (ResourceExplorerPanel) c;
-                if (e.getClickCount() == 1) {
-                    if (!e.isControlDown()) {
-                        tp.unselectAll(); // unselect all thumbnails
-                    }
-                    setSelected(!isSelected()); // add this one
-                    revalidate();
+
+            if (!(c instanceof ResourceExplorerPanel)) {
+                return;
+            }
+
+            ResourceExplorerPanel tp = (ResourceExplorerPanel) c;
+            if (e.getClickCount() == 1) {
+                if (!e.isControlDown()) {
+                    tp.deselectAll(); // unselect all thumbnails
                 }
+                setSelected(!isSelected()); // add this one
+                revalidate();
             }
         }
     }

@@ -27,17 +27,27 @@ package jworkspace.ui.widgets;
 */
 
 import java.io.File;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.filechooser.FileView;
 
 import jworkspace.kernel.Workspace;
 
+/**
+ * @author Anton Troshin
+ */
+@SuppressWarnings("MagicNumber")
 public class WorkspaceFileView extends FileView {
-    private Hashtable icons = new Hashtable(5);
-    private Hashtable fileDescriptions = new Hashtable(5);
-    private Hashtable typeDescriptions = new Hashtable(5);
+
+    private static final Icon HTML_ICON = Workspace.getResourceManager().getIcon("filedlg/html.gif");
+
+    private Map<String, Icon> icons = new HashMap<>();
+
+    private Map<File, String> fileDescriptions = new HashMap<>();
+
+    private Map<String, String> typeDescriptions = new HashMap<>();
 
     public WorkspaceFileView() {
         super();
@@ -53,30 +63,23 @@ public class WorkspaceFileView extends FileView {
             getIcon("filedlg/class.gif"));
         putIcon("jsp", Workspace.getResourceManager().
             getIcon("filedlg/jsp.gif"));
-        putIcon("html", Workspace.getResourceManager().
-            getIcon("filedlg/html.gif"));
-        putIcon("htm", Workspace.getResourceManager().
-            getIcon("filedlg/html.gif"));
-        putIcon("shtml", Workspace.getResourceManager().
-            getIcon("filedlg/html.gif"));
+        putIcon("html", HTML_ICON);
+        putIcon("htm", HTML_ICON);
+        putIcon("shtml", HTML_ICON);
     }
 
     public String getDescription(File f) {
-        return (String) fileDescriptions.get(f);
+        return fileDescriptions.get(f);
     }
 
     /**
-     * Conveinience method that returnsa the "dot" extension for the
-     * given file.
+     * Convenient method that returns the extension for the given file.
      */
-    public String getExtension(File f) {
-        String name = f.getName();
-        if (name != null) {
+    private String getExtension(File f) {
+        if (f != null) {
+            String name = f.getName();
             int extensionIndex = name.lastIndexOf('.');
-            if (extensionIndex < 0) {
-                return null;
-            }
-            return name.substring(extensionIndex + 1).toLowerCase();
+            return extensionIndex < 0 ? null : name.substring(extensionIndex + 1).toLowerCase();
         }
         return null;
     }
@@ -85,7 +88,7 @@ public class WorkspaceFileView extends FileView {
         Icon icon = null;
         String extension = getExtension(f);
         if (extension != null) {
-            icon = (Icon) icons.get(extension);
+            icon = icons.get(extension);
         }
         return icon;
     }
@@ -95,7 +98,7 @@ public class WorkspaceFileView extends FileView {
     }
 
     public String getTypeDescription(File f) {
-        return (String) typeDescriptions.get(getExtension(f));
+        return typeDescriptions.get(getExtension(f));
     }
 
     /**
@@ -103,8 +106,7 @@ public class WorkspaceFileView extends FileView {
      * true if the filename starts with a "."
      */
     public Boolean isHidden(File f) {
-        String name = f.getName();
-        if (name != null && !name.equals("") && name.charAt(0) == '.') {
+        if (f != null && !f.getName().equals("") && f.getName().charAt(0) == '.') {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -123,14 +125,14 @@ public class WorkspaceFileView extends FileView {
      * Adds a human readable description of the file.
      */
     public void putDescription(File f, String fileDescription) {
-        fileDescriptions.put(fileDescription, f);
+        fileDescriptions.put(f, fileDescription);
     }
 
     /**
      * Adds an ICON based on the file type "dot" extension
      * string, e.g: ".gif". Case is ignored.
      */
-    public void putIcon(String extension, Icon icon) {
+    private void putIcon(String extension, Icon icon) {
         icons.put(extension, icon);
     }
 
@@ -147,7 +149,7 @@ public class WorkspaceFileView extends FileView {
      * Adds a human readable type description for files. Based on "dot"
      * extension strings, e.g: ".gif". Case is ignored.
      */
-    public void putTypeDescription(String extension, String typeDescription) {
+    private void putTypeDescription(String extension, String typeDescription) {
         typeDescriptions.put(typeDescription, extension);
     }
 }

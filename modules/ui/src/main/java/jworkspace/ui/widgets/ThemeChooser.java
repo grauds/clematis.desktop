@@ -34,12 +34,13 @@ import javax.swing.plaf.metal.MetalTheme;
 
 /**
  * Chooser for metal themes in look and feel
+ * @author Anton Troshin
  */
-public class ThemesChooser extends JComboBox {
+public class ThemeChooser extends JComboBox {
     /**
-     * Construct a new <code>ThemesChooser</code>.
+     * Construct a new <code>ThemeChooser</code>.
      */
-    public ThemesChooser() {
+    public ThemeChooser() {
         super();
         setRenderer(new DefaultListCellRenderer() {
             public Component getListCellRendererComponent(JList list, Object value,

@@ -27,16 +27,23 @@ package jworkspace.ui.widgets;
 */
 
 import java.io.File;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.filechooser.FileFilter;
 
-public class WorkspaceFileFilter extends FileFilter
-    implements java.io.FileFilter {
-    private Hashtable filters = null;
+/**
+ * @author Anton Troshin
+ */
+public class WorkspaceFileFilter extends FileFilter implements java.io.FileFilter {
+
+    private Map<String, FileFilter> filters;
+
     private String description = null;
+
     private String fullDescription = null;
+
     private boolean useExtensionsInDescription = true;
 
     public WorkspaceFileFilter() {
@@ -65,10 +72,10 @@ public class WorkspaceFileFilter extends FileFilter
      * @see #addExtension
      */
     public WorkspaceFileFilter(String[] filters, String description) {
-        this.filters = new Hashtable(filters.length);
-        for (int i = 0; i < filters.length; i++) {
+        this.filters = new HashMap<>(filters.length);
+        for (String filter : filters) {
             // add filters one by one
-            addExtension(filters[i]);
+            addExtension(filter);
         }
         setDescription(description);
     }
@@ -104,13 +111,7 @@ public class WorkspaceFileFilter extends FileFilter
      */
     public boolean accept(File f) {
         if (f != null) {
-            if (f.isDirectory()) {
-                return true;
-            }
-            String extension = getExtension(f);
-            if (extension != null && filters.get(getExtension(f)) != null) {
-                return true;
-            }
+            return f.isDirectory() || (getExtension(f) != null && filters.get(getExtension(f)) != null);
         }
         return false;
     }
@@ -129,7 +130,7 @@ public class WorkspaceFileFilter extends FileFilter
      */
     public void addExtension(String extension) {
         if (filters == null) {
-            filters = new Hashtable(5);
+            filters = new HashMap<>();
         }
         filters.put(extension.toLowerCase(), this);
         fullDescription = null;
@@ -144,19 +145,16 @@ public class WorkspaceFileFilter extends FileFilter
     public String getDescription() {
         if (fullDescription == null) {
             if (description == null || isExtensionListInDescription()) {
-                if (description != null) {
-                    fullDescription = description;
-                }
-                fullDescription += " (";
+                StringBuilder sb = new StringBuilder();
+                sb.append(description != null ? description : "");
+                sb.append(" (");
                 // build the description from the extension list
-                Enumeration extensions = filters.keys();
-                if (extensions != null) {
-                    fullDescription += "." + extensions.nextElement();
-                    while (extensions.hasMoreElements()) {
-                        fullDescription += ", " + extensions.nextElement();
-                    }
+                Iterator<String> extensions = filters.keySet().iterator();
+                sb.append(".").append(extensions.next());
+                while (extensions.hasNext()) {
+                    sb.append(", ").append(extensions.next());
                 }
-                fullDescription += ")";
+                fullDescription += sb.append(")").toString();
             } else {
                 fullDescription = description;
             }
