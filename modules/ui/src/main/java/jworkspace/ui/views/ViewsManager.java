@@ -28,8 +28,8 @@ package jworkspace.ui.views;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Event;
 import java.awt.Frame;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -37,7 +37,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -55,32 +59,48 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.AbstractViewsManager;
 import jworkspace.ui.IView;
+import jworkspace.ui.Utils;
+import jworkspace.ui.WorkspaceError;
+import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
-import jworkspace.util.WorkspaceError;
-import jworkspace.ui.Utils;
 
 /**
- * Multidesktop manager is component for
- * managing gui views in common JFrame
- * environment. It adds special means for
- * adding, deleting, renaming, browsing of views.
+ * Desktop manager drives views in common JFrame environment. It may add/delete/switch the view in a card layout
+ * fashion.
+ * @author Anton Troshin
  */
 public class ViewsManager extends AbstractViewsManager {
     /**
-     * Actions of multidesktop
+     * Default logger
      */
-    protected ViewsActions actions;
+    private static final Logger LOG = LoggerFactory.getLogger(ViewsManager.class);
+    /**
+     *
+     */
+    private static final String DESKTOP_CONFIG = "desktops.dat";
+    /**
+     *
+     */
+    private static final String VIEW = "view_";
+    /*
+     * Actions list
+     */
+    private ViewsActions actions;
     /**
      * The collection of views in current system.
      */
-    private Vector views = new Vector();
+    private List<IView> views = new Vector<>();
     /**
      * The number of current panel.
      */
@@ -88,40 +108,11 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Main menu
      */
-    private JMenu go = new JMenu
-        (LangResource.getString("ViewsManager.menu.go"));
-    /**
-     * Go back.
-     */
-    private JMenuItem go_back = null;
-    /**
-     * Go forward.
-     */
-    private JMenuItem go_forward = null;
-    /**
-     * New desktop.
-     */
-    private JMenuItem new_desktop = null;
-    /**
-     * Rename desktop
-     */
-    private JMenuItem properties = null;
-    /**
-     * Delete desktop
-     */
-    private JMenuItem delete_view = null;
-    /**
-     * Reload view
-     */
-    private JMenuItem reload_view = null;
-    /**
-     * Save view
-     */
-    private JMenuItem save_view = null;
+    private JMenu go = new JMenu(LangResource.getString("ViewsManager.menu.go"));
     /**
      * Menu for Workspace system menubar.
      */
-    private JRadioButtonMenuItem[] views_menu = new JRadioButtonMenuItem[]{};
+    private JRadioButtonMenuItem[] viewsMenu = new JRadioButtonMenuItem[]{};
     /**
      * Group of buttons
      */
@@ -134,7 +125,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Menu item for header panel toggle.
      */
-    private JCheckBoxMenuItem toggle_header = null;
+    private JCheckBoxMenuItem toggleHeader = null;
     /**
      * Scroller
      */
@@ -147,38 +138,33 @@ public class ViewsManager extends AbstractViewsManager {
         super();
         setOpaque(false);
         setLayout(new BorderLayout());
-        /**
+        /*
          * Create actions
          */
         this.actions = new ViewsActions(this);
-        /**
+        /*
          * Add scroller
          */
         add(getScroller(), BorderLayout.CENTER);
     }
 
-    /**
-     * Manager activated or deactivated
-     */
-    public void activated(boolean flag) {
-        // does nothing, as this is not used in current
-        // workspace x windows.
-    }
-
-    /**
+   /**
      * Add desktop
      */
-    public void addDesktop() {
-        Frame parent = jworkspace.kernel.Workspace.getUI().getFrame();
+    void addDesktop() {
+        Frame parent = jworkspace.kernel.Workspace.getUi().getFrame();
         if (parent != null) {
+
             ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
                 getImage("desktop/desktop_big.png"));
+
             String result = (String) JOptionPane.showInputDialog(
                 parent,
                 LangResource.getString("ViewsManager.newDesktop.message"),
                 LangResource.getString("ViewsManager.newDesktop.title"),
                 JOptionPane.QUESTION_MESSAGE,
                 icon, null, null);
+
             if (result == null) {
                 return;
             }
@@ -190,11 +176,15 @@ public class ViewsManager extends AbstractViewsManager {
      * Remove view
      */
     public void removeView() {
-        Frame parent = jworkspace.kernel.Workspace.getUI().getFrame();
+
+        Frame parent = jworkspace.kernel.Workspace.getUi().getFrame();
+
         if (parent != null) {
             int result;
+
             ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
                 getImage("desktop/remove.png"));
+
             result = JOptionPane.showConfirmDialog(parent,
                 LangResource.getString("ViewsManager.removeView.message"),
                 LangResource.getString("ViewsManager.removeView.title"),
@@ -208,10 +198,9 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * View properties
      */
-    public void viewProperties() {
-        Frame parent = jworkspace.kernel.Workspace.getUI().getFrame();
-        PropertiesHolderDlg prhg = new PropertiesHolderDlg(parent,
-            getCurrentView().getOptionPanels());
+    void viewProperties() {
+        Frame parent = jworkspace.kernel.Workspace.getUi().getFrame();
+        PropertiesHolderDlg prhg = new PropertiesHolderDlg(parent, getCurrentView().getOptionPanels());
         prhg.setVisible(true);
         update();
     }
@@ -219,7 +208,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Creates and adds new desktop.
      */
-    public void addDesktop(String title) {
+    private void addDesktop(String title) {
         Desktop desktop = new Desktop();
         desktop.setName(title);
         addDesktop(desktop, true);
@@ -230,12 +219,12 @@ public class ViewsManager extends AbstractViewsManager {
      * Adds desktop and displays it as current view if
      * appropriate flag is set.
      */
-    public void addDesktop(Desktop desktop, boolean displayImmediately) {
+    private void addDesktop(Desktop desktop, boolean displayImmediately) {
         if (desktop == null) {
             return;
         }
 
-        views.addElement(desktop);
+        views.add(desktop);
 
         getScroller().setViewportView(desktop);
 
@@ -250,33 +239,28 @@ public class ViewsManager extends AbstractViewsManager {
      * Return buttons for control panel
      */
     public CButton[] getButtons() {
-        /**
+        /*
          * Back button.
          */
-        CButton b_back = Utils.createCButtonFromAction
-            (actions.getAction(ViewsActions.browseBackActionName));
-        /**
+        CButton bBack = Utils.createCButtonFromAction(actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME));
+        /*
          * Forward button.
          */
-        CButton b_forward = Utils.createCButtonFromAction
-            (actions.getAction(ViewsActions.browseForwardActionName));
-        /**
+        CButton bForward = Utils.createCButtonFromAction(actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME));
+        /*
          * Add desktop.
          */
-        CButton b_add = Utils.createCButtonFromAction
-            (actions.getAction(ViewsActions.addDesktopActionName));
-        /**
+        CButton bAdd = Utils.createCButtonFromAction(actions.getAction(ViewsActions.ADD_DESKTOP_ACTION_NAME));
+        /*
          * View desktop properties.
          */
-        CButton b_prop = Utils.createCButtonFromAction
-            (actions.getAction(ViewsActions.propertiesActionName));
-        /**
+        CButton bProp = Utils.createCButtonFromAction(actions.getAction(ViewsActions.PROPERTIES_ACTION_NAME));
+        /*
          * Delete desktop.
          */
-        CButton b_delete = Utils.createCButtonFromAction
-            (actions.getAction(ViewsActions.removeViewActionName));
+        CButton bDelete = Utils.createCButtonFromAction(actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME));
 
-        return new CButton[]{b_back, b_forward, b_add, b_prop, b_delete};
+        return new CButton[]{bBack, bForward, bAdd, bProp, bDelete};
     }
 
     /**
@@ -284,56 +268,49 @@ public class ViewsManager extends AbstractViewsManager {
      * Still there is no menus.
      */
     public JMenu[] getMenu() {
-        go.setMnemonic
-            (LangResource.getString("ViewsManager.go.key").charAt(0));
-        /**
+
+        go.setMnemonic(LangResource.getString("ViewsManager.go.key").charAt(0));
+        /*
          * Back action.
          */
-        go_back = Utils.createMenuItem
-            (actions.getAction(ViewsActions.browseBackActionName));
-        go.add(go_back);
-        /**
+        JMenuItem goBack = Utils.createMenuItem(actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME));
+        go.add(goBack);
+        /*
          * Forward action.
          */
-        go_forward = Utils.createMenuItem
-            (actions.getAction(ViewsActions.browseForwardActionName));
-        go.add(go_forward);
+        JMenuItem goForward = Utils.createMenuItem(actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME));
+        go.add(goForward);
         go.addSeparator();
-        /**
+        /*
          * Toggle header panel
          */
         go.add(getToggleHeaderMenuItem());
         go.addSeparator();
-        /**
+        /*
          * Add desktop.
          */
-        new_desktop = Utils.createMenuItem
-            (actions.getAction(ViewsActions.addDesktopActionName));
-        go.add(new_desktop);
-        /**
+        JMenuItem newDesktop = Utils.createMenuItem(actions.getAction(ViewsActions.ADD_DESKTOP_ACTION_NAME));
+        go.add(newDesktop);
+        /*
          * Delete desktop.
          */
-        delete_view = Utils.createMenuItem
-            (actions.getAction(ViewsActions.removeViewActionName));
-        go.add(delete_view);
+        JMenuItem deleteView = Utils.createMenuItem(actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME));
+        go.add(deleteView);
         go.addSeparator();
-        /**
+        /*
          * Reload current view.
          */
-        reload_view = Utils.createMenuItem
-            (actions.getAction(ViewsActions.reloadViewActionName));
-        go.add(reload_view);
-        /**
+        JMenuItem reloadView = Utils.createMenuItem(actions.getAction(ViewsActions.RELOAD_VIEW_ACTION_NAME));
+        go.add(reloadView);
+        /*
          * Saves current view.
          */
-        save_view = Utils.createMenuItem
-            (actions.getAction(ViewsActions.saveViewActionName));
-        go.add(save_view);
-        /**
+        JMenuItem saveView = Utils.createMenuItem(actions.getAction(ViewsActions.SAVE_VIEW_ACTION_NAME));
+        go.add(saveView);
+        /*
          * View desktop properties.
          */
-        properties = Utils.createMenuItem
-            (actions.getAction(ViewsActions.propertiesActionName));
+        JMenuItem properties = Utils.createMenuItem(actions.getAction(ViewsActions.PROPERTIES_ACTION_NAME));
         go.add(properties);
         go.addSeparator();
 
@@ -353,7 +330,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Browses one step back.
      */
-    public void browseBack() {
+    void browseBack() {
         if (canBrowseBack()) {
             setCurrentView(currentView - 1);
         }
@@ -364,7 +341,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Browses one step forward.
      */
-    public void browseForward() {
+    void browseForward() {
         if (canBrowseForward()) {
             setCurrentView(currentView + 1);
         }
@@ -375,24 +352,24 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Checks if navigation can browse one step back.
      */
-    public boolean canBrowseBack() {
+    private boolean canBrowseBack() {
         return currentView != 0;
     }
 
     /**
      * Checks if navigation can browse one step forward.
      */
-    public boolean canBrowseForward() {
+    private boolean canBrowseForward() {
         return currentView != views.size() - 1;
     }
 
     /**
-     * Closes allframes  on all desktop objects.
+     * Closes all frames on all desktop objects.
      */
     public void closeAllFrames() {
-        for (int i = 0; i < views.size(); i++) {
-            if (views.elementAt(i) instanceof Desktop) {
-                ((Desktop) views.elementAt(i)).closeAllFrames();
+        for (IView view : views) {
+            if (view instanceof Desktop) {
+                ((Desktop) view).closeAllFrames();
             }
         }
     }
@@ -402,7 +379,7 @@ public class ViewsManager extends AbstractViewsManager {
      * default assemble of ui components.
      */
     public void create() {
-        /**
+        /*
          * Assemble default configuration.
          */
         addDesktop(LangResource.getString("Desktop.defaultName"));
@@ -413,26 +390,26 @@ public class ViewsManager extends AbstractViewsManager {
      * Deletes current desktop.
      */
     public void deleteCurrentView() {
+
         if (views.size() == 1) {
-            JOptionPane.showMessageDialog
-                (Workspace.getUI().getFrame(),
+            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
                     LangResource.getString("ViewsManager.cannotRmView.message"),
                     LangResource.getString("ViewsManager.cannotRmView.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        /**
+        /*
          * Remember view to delete
          */
-        int index_to_delete = currentView;
+        int indexToDelete = currentView;
 
         if (canBrowseForward()) {
             browseForward();
-            views.removeElementAt(index_to_delete);
+            views.remove(indexToDelete);
             currentView--;
         } else if (canBrowseBack()) {
             browseBack();
-            views.removeElementAt(index_to_delete);
+            views.remove(indexToDelete);
         }
 
         update();
@@ -444,7 +421,7 @@ public class ViewsManager extends AbstractViewsManager {
     public IView[] getAllViews() {
         IView[] all = new IView[views.size()];
         for (int i = 0; i < all.length; i++) {
-            all[i] = (IView) views.elementAt(i);
+            all[i] = views.remove(i);
         }
         return all;
     }
@@ -452,10 +429,9 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Returns current desktop.
      */
-    public Desktop getCurrentDesktop() {
-        if (views.elementAt(currentView)
-            instanceof Desktop) {
-            return (Desktop) views.elementAt(currentView);
+    private Desktop getCurrentDesktop() {
+        if (views.get(currentView) instanceof Desktop) {
+            return (Desktop) views.get(currentView);
         }
         return null;
     }
@@ -464,76 +440,76 @@ public class ViewsManager extends AbstractViewsManager {
      * Returns current component.
      */
     public IView getCurrentView() {
-        return (IView) views.elementAt(currentView);
+        return views.get(currentView);
     }
 
     /**
-     * Sets desktop with number ascurrent and displays it.
+     * Sets desktop with number as current and displays it.
      */
-    public void setCurrentView(int index) {
+    private void setCurrentView(int index) {
+
+        int localIndex = index;
+
         if (views.size() == 0) {
             return;
         }
 
         if (index < 0) {
-            index = 0;
+            localIndex = 0;
         } else if (index > views.size() - 1) {
-            index = views.size() - 1;
+            localIndex = views.size() - 1;
         }
 
-        /**
+        /*
          * Notify component that it became inactive.
          */
-        if (views.elementAt(currentView) instanceof IView) {
+        if (views.get(currentView) != null) {
             try {
-                ((IView) views.elementAt(currentView)).activated(false);
+                views.get(currentView).activated(false);
             } catch (Throwable err) {
                 WorkspaceError.exception(LangResource.getString("ViewsManager.deactivate.fault"), err);
                 // do nothing, just go on
             }
-            /**
+            /*
              * Ask for menus
              */
-            JMenu[] menus = ((IView) views.elementAt(currentView)).getMenu();
+            JMenu[] menus = views.get(currentView).getMenu();
             if (menus != null) {
-                Hashtable lparam = new Hashtable();
-                Vector vmenus = new Vector();
-                for (int m = 0; m < menus.length; m++) {
-                    vmenus.addElement(menus[m]);
-                }
-                lparam.put("menus", vmenus);
-                lparam.put("flag", new Boolean(false));
-                Workspace.fireEvent(new Integer(1002), lparam, null);
+                Map<String, Object> lparam = new HashMap<>();
+                List<JMenu> vmenus = new Vector<>(Arrays.asList(menus));
+                lparam.put(WorkspaceGUI.MENUS_PARAMETER, vmenus);
+                lparam.put(WorkspaceGUI.FLAG_PARAMETER, Boolean.FALSE);
+                Workspace.fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
             }
         }
-        currentView = index;
-        getScroller().setViewportView((Component) views.elementAt(index));
-        /**
+        currentView = localIndex;
+        getScroller().setViewportView((Component) views.get(index));
+        /*
          * Notify component that it became active.
          */
-        if (views.elementAt(index) instanceof IView) {
-            /**
+        if (views.get(localIndex) != null) {
+            /*
              * Notify component that it became active.
              */
             try {
-                ((IView) views.elementAt(index)).activated(true);
+                views.get(index).activated(true);
             } catch (Throwable err) {
                 WorkspaceError.exception(LangResource.getString("ViewsManager.activate.fault"), err);
                 // do nothing, just go on
             }
-            /**
+            /*
              * Ask for menus
              */
-            JMenu[] menus = ((IView) views.elementAt(index)).getMenu();
+            JMenu[] menus = views.get(index).getMenu();
             if (menus != null) {
-                Hashtable lparam = new Hashtable();
-                Vector vmenus = new Vector();
-                for (int m = 0; m < menus.length; m++) {
-                    vmenus.addElement(menus[m]);
-                }
-                lparam.put("menus", vmenus);
-                lparam.put("flag", new Boolean(true));
-                Workspace.fireEvent(new Integer(1002), lparam, null);
+                Map<String, Object> lparam = new HashMap<>();
+
+                List<JMenu> vmenus = new Vector<>();
+                Collections.addAll(vmenus, menus);
+
+                lparam.put(WorkspaceGUI.MENUS_PARAMETER, vmenus);
+                lparam.put(WorkspaceGUI.FLAG_PARAMETER, Boolean.TRUE);
+                Workspace.fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
             }
         }
         update();
@@ -542,7 +518,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Returns number of current view.
      */
-    public int getCurrentViewNo() {
+    private int getCurrentViewNo() {
         return currentView;
     }
 
@@ -550,10 +526,10 @@ public class ViewsManager extends AbstractViewsManager {
      * Returns desktop by title.
      */
     public Desktop getDesktop(String title) {
-        for (int i = 0; i < views.size(); i++) {
-            if (((Component) views.elementAt(i)).getName().equals(title)
-                && views.elementAt(i) instanceof Desktop) {
-                return (Desktop) views.elementAt(i);
+        for (IView view : views) {
+            if (((Component) view).getName().equals(title)
+                && view instanceof Desktop) {
+                return (Desktop) view;
             }
         }
 
@@ -564,21 +540,19 @@ public class ViewsManager extends AbstractViewsManager {
      * Returns desktop by zero-based position.
      */
     public Desktop getDesktopAt(int i) {
-        if (i < 0 || i > views.size() - 1) {
-            return null;
-        }
 
-        if (views.elementAt(i) instanceof Desktop) {
-            return (Desktop) views.elementAt(i);
+        if (i > 0 && i <= views.size() - 1) {
+            if (views.get(i) instanceof Desktop) {
+                return (Desktop) views.get(i);
+            }
         }
-
         return null;
     }
 
     /**
      * Safely returns header panel.
      */
-    protected HeaderPanel getHeaderPanel() {
+    HeaderPanel getHeaderPanel() {
         if (headerPanel == null) {
             headerPanel = new HeaderPanel("");
         }
@@ -596,13 +570,11 @@ public class ViewsManager extends AbstractViewsManager {
      * Header panel management
      */
     private JCheckBoxMenuItem getToggleHeaderMenuItem() {
-        if (toggle_header == null) {
-            toggle_header = Utils.createCheckboxMenuItem
-                (actions.getAction(ViewsActions.switchHeaderActionName));
-            toggle_header.setAccelerator
-                (KeyStroke.getKeyStroke(KeyEvent.VK_H, Event.CTRL_MASK));
+        if (toggleHeader == null) {
+            toggleHeader = Utils.createCheckboxMenuItem(actions.getAction(ViewsActions.SWITCH_HEADER_ACTION_NAME));
+            toggleHeader.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
         }
-        return toggle_header;
+        return toggleHeader;
     }
 
     /**
@@ -610,7 +582,7 @@ public class ViewsManager extends AbstractViewsManager {
      *
      * @return JScrollPane
      */
-    public JScrollPane getScroller() {
+    private JScrollPane getScroller() {
         if (scroller == null) {
             scroller = new JScrollPane();
             scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -623,10 +595,10 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Finds equal view and returns found.
      */
-    public IView getView(IView newView) {
-        for (int i = 0; i < views.size(); i++) {
-            if (views.elementAt(i).equals(newView)) {
-                return (IView) views.elementAt(i);
+    private IView getView(IView newView) {
+        for (IView view : views) {
+            if (view.equals(newView)) {
+                return view;
             }
         }
         return null;
@@ -636,8 +608,8 @@ public class ViewsManager extends AbstractViewsManager {
      * Check whether any of views are modified.
      */
     public boolean isModified() {
-        for (int i = 0; i < views.size(); i++) {
-            if (((IView) views.elementAt(i)).isModified()) {
+        for (IView view : views) {
+            if (view.isModified()) {
                 return true;
             }
         }
@@ -647,9 +619,9 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Returns number of desktop denoted by its title.
      */
-    public int getViewNo(JComponent comp) {
+    private int getViewNo(JComponent comp) {
         for (int i = 0; i < views.size(); i++) {
-            if (views.elementAt(i).equals(comp)) {
+            if (views.get(i).equals(comp)) {
                 return i;
             }
         }
@@ -663,7 +635,7 @@ public class ViewsManager extends AbstractViewsManager {
     public String[] getNames() {
         String[] temp = new String[views.size()];
         for (int i = 0; i < views.size(); i++) {
-            temp[i] = ((JComponent) views.elementAt(i)).getName();
+            temp[i] = ((JComponent) views.get(i)).getName();
         }
         return temp;
     }
@@ -684,10 +656,8 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Sets the list of objects for management.
      */
-    public void setDesktopList(Vector views) {
-        for (int i = 0; i < views.size(); i++) {
-            this.views.addElement(views.elementAt(i));
-        }
+    public void setDesktopList(List<IView> views) {
+        this.views.addAll(views);
     }
 
     /**
@@ -700,14 +670,14 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Switch view
      */
-    public void switchView(int viewNo) {
+    void switchView(int viewNo) {
         setCurrentView(viewNo);
     }
 
     /**
      * Switches control panel on and off.
      */
-    protected void switchHeaderPanel() {
+    void switchHeaderPanel() {
         getHeaderPanel().setVisible(!getHeaderPanel().isVisible());
         validate();
         repaint();
@@ -717,35 +687,25 @@ public class ViewsManager extends AbstractViewsManager {
      * Set navigation
      */
     private void enableNavigationActions() {
-        /**
+        /*
          * Determine the state of browse buttons
          */
         if (views.size() == 1) {
-            actions.getAction
-                (ViewsActions.browseBackActionName).setEnabled(false);
-            actions.getAction
-                (ViewsActions.browseForwardActionName).setEnabled(false);
-            actions.getAction
-                (ViewsActions.removeViewActionName).setEnabled(false);
+            actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME).setEnabled(false);
+            actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME).setEnabled(false);
+            actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME).setEnabled(false);
         } else if (views.size() > 1) {
             if (currentView == 0) {
-                actions.getAction
-                    (ViewsActions.browseForwardActionName).setEnabled(true);
-                actions.getAction
-                    (ViewsActions.browseBackActionName).setEnabled(false);
+                actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME).setEnabled(true);
+                actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME).setEnabled(false);
             } else if (currentView == views.size() - 1) {
-                actions.getAction
-                    (ViewsActions.browseForwardActionName).setEnabled(false);
-                actions.getAction
-                    (ViewsActions.browseBackActionName).setEnabled(true);
+                actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME).setEnabled(false);
+                actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME).setEnabled(true);
             } else {
-                actions.getAction
-                    (ViewsActions.browseForwardActionName).setEnabled(true);
-                actions.getAction
-                    (ViewsActions.browseBackActionName).setEnabled(true);
+                actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME).setEnabled(true);
+                actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME).setEnabled(true);
             }
-            actions.getAction
-                (ViewsActions.removeViewActionName).setEnabled(true);
+            actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME).setEnabled(true);
         }
     }
 
@@ -755,11 +715,9 @@ public class ViewsManager extends AbstractViewsManager {
     public void update() {
         if (getCurrentView() instanceof JComponent
             && ((JComponent) getCurrentView()).getName() != null) {
-            getHeaderPanel().setHeaderLabelText
-                (((JComponent) getCurrentView()).getName());
+            getHeaderPanel().setHeaderLabelText(((JComponent) getCurrentView()).getName());
         } else {
-            getHeaderPanel().setHeaderLabelText
-                (LangResource.getString("ViewsManager.header.default"));
+            getHeaderPanel().setHeaderLabelText(LangResource.getString("ViewsManager.header.default"));
         }
 
         setViewsList(getNames(), getCurrentViewNo());
@@ -774,34 +732,32 @@ public class ViewsManager extends AbstractViewsManager {
      */
     public void addView(IView view, boolean displayImmediately,
                         boolean register) {
-        if (view == null || !(view instanceof JComponent)) {
-            throw new IllegalArgumentException
-                (LangResource.getString("View should be a JComponent"));
+        if (!(view instanceof JComponent)) {
+            throw new IllegalArgumentException(LangResource.getString("View should be a JComponent"));
         }
 
         if (register) {
-            /**
+            /*
              * Check if there is a registered but not nesesarily displayed
              * component.
              */
-            Object existing = Workspace.getUI().isRegistered(view.getClass().getName());
+            Object existing = Workspace.getUi().isRegistered(view.getClass().getName());
 
             if (existing == null) {
-                Workspace.getUI().register(view);
+                Workspace.getUi().register(view);
             }
         }
-        if (getView(view) == null || view.isUnique() == false) {
-            /**
+        if (getView(view) == null || !view.isUnique()) {
+            /*
              * If view is not added to collection.
              */
-            views.addElement(view);
-            //add((JComponent) view, BorderLayout.CENTER);
+            views.add(view);
             getScroller().setViewportView((JComponent) view);
             if (displayImmediately) {
                 setCurrentView(views.size() - 1);
             }
         } else {
-            /**
+            /*
              * Already added to collection.
              */
             if (displayImmediately) {
@@ -809,8 +765,7 @@ public class ViewsManager extends AbstractViewsManager {
             }
         }
 
-        UIManager.addPropertyChangeListener
-            (new UISwitchListener((JComponent) view));
+        UIManager.addPropertyChangeListener(new UISwitchListener((JComponent) view));
         update();
     }
 
@@ -818,9 +773,9 @@ public class ViewsManager extends AbstractViewsManager {
      * Resets all views to initial state
      */
     public void reset() {
-        for (int i = 0; i < views.size(); i++) {
-            if (views.elementAt(i) instanceof IView) {
-                ((IView) views.elementAt(i)).reset();
+        for (IView view : views) {
+            if (view != null) {
+                view.reset();
             }
         }
     }
@@ -828,35 +783,32 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Reloads current view from disk
      */
-    public void reloadCurrentView() {
+    void reloadCurrentView() {
         try {
-            if (getCurrentView() instanceof IView) {
+            if (getCurrentView() != null) {
                 getCurrentView().reset();
                 getCurrentView().load();
                 ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
                     getImage("desktop/reload.png"));
-                JOptionPane.showMessageDialog(Workspace.getUI().getFrame(),
+                JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
                     LangResource.getString("ViewsManager.reload.message"),
                     LangResource.getString("ViewsManager.reload.title"),
                     JOptionPane.INFORMATION_MESSAGE, icon);
             }
         } catch (IOException ex) {
-            WorkspaceError.exception
-                (LangResource.getString("ViewsManager.reload.failed"), ex);
+            WorkspaceError.exception(LangResource.getString("ViewsManager.reload.failed"), ex);
         }
     }
 
     /**
-     * Loads profile data from multidesktop.dat.
+     * Loads profile data from desktop.dat.
      */
     public void load() {
-        /**
-         * Read header panel orientation and
-         * visibility.
+        /*
+         * Read header panel orientation and visibility.
          */
-        String fileName = Workspace.getUserHome()
-            + getPath() + File.separator + "multidesktop.dat";
-        Workspace.getLogger().info(">" + "Reading file" + " " + fileName + "...");
+        String fileName = Workspace.getUserHome() + getPath() + File.separator + DESKTOP_CONFIG;
+        LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
         try {
             FileInputStream inputFile = new FileInputStream(fileName);
             DataInputStream dataStream = new DataInputStream(inputFile);
@@ -871,12 +823,11 @@ public class ViewsManager extends AbstractViewsManager {
 
             if (size >= 1) {
                 for (int i = 0; i < size; i++) {
-                    /**
+                    /*
                      * Construct relative path for loading shells
                      */
-                    String viewSavePath = getPath() + File.separator +
-                        "view_" + i;
-                    /**
+                    String viewSavePath = getPath() + File.separator + VIEW + i;
+                    /*
                      * Loads shell via GUI method.
                      */
                     Desktop desktop = new Desktop();
@@ -888,14 +839,14 @@ public class ViewsManager extends AbstractViewsManager {
                 throw new IOException();
             }
         } catch (IOException e) {
-            /**
+            /*
              * Assemble default configuration.
              */
             create();
             update();
             return;
         }
-        /**
+        /*
          * Add header panel
          */
         setCurrentView(0);
@@ -907,13 +858,12 @@ public class ViewsManager extends AbstractViewsManager {
      * Writes down configuration on disk.
      */
     public void save() throws IOException {
-        String fileName = Workspace.getUserHome() +
-            getPath() + File.separator + "multidesktop.dat";
-        Workspace.getLogger().info(">" + "Writing file" + " " + fileName + "...");
+        String fileName = Workspace.getUserHome() + getPath() + File.separator + DESKTOP_CONFIG;
+        LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
 
         File file = new File(Workspace.getUserHome() + getPath());
 
-        /**
+        /*
          * Create or delete directory "multidesktop"
          */
         if (!file.exists()) {
@@ -927,28 +877,21 @@ public class ViewsManager extends AbstractViewsManager {
 
         outputStream.writeBoolean(getHeaderPanel().isVisible());
         outputStream.writeUTF(getHeaderPanel().getOrientation());
-        /**
-         * How many view are now opened?
-         */
+
         int counter = 0;
 
-        for (int i = 0; i < views.size(); i++) {
-            if (views.elementAt(i) instanceof Desktop) {
-                String viewSavePath = getPath() +
-                    File.separator + "view_" + counter;
-                File file1 = new File(Workspace.getUserHome() +
-                    getPath() + File.separator +
-                    "view_" + counter);
+        for (IView view : views) {
+            if (view instanceof Desktop) {
+                String viewSavePath = getPath() + File.separator + VIEW + counter;
+                File file1 = new File(Workspace.getUserHome() + getPath() + File.separator + VIEW + counter);
                 if (!file1.exists()) {
                     file1.mkdirs();
                 }
 
-                ((Desktop) views.elementAt(i)).setPath(viewSavePath);
-                ((Desktop) views.elementAt(i)).save();
+                view.setPath(viewSavePath);
                 counter++;
-            } else if (views.elementAt(i) instanceof IView) {
-                ((IView) views.elementAt(i)).save();
             }
+            view.save();
         }
         outputStream.writeInt(counter);
     }
@@ -956,30 +899,29 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Sets the list of desktop items
      */
-    public void setViewsList(String[] names, int selected) {
+    private void setViewsList(String[] names, int selected) {
         if (names == null) {
             return;
         }
-        /**
+        /*
          * Remove all items
          */
-        if (views_menu != null) {
-            /**
+        if (viewsMenu != null) {
+            /*
              * Else remove stuff, that is already in menu
              */
-            for (int i = 0; i < views_menu.length; i++) {
-                go.remove(views_menu[i]);
+            for (JRadioButtonMenuItem menu : viewsMenu) {
+                go.remove(menu);
             }
-            /**
+            /*
              * Remove last separator
              */
-            if (go.getMenuComponent(go.getMenuComponentCount() - 1)
-                instanceof JSeparator) {
+            if (go.getMenuComponent(go.getMenuComponentCount() - 1) instanceof JSeparator) {
                 go.remove(go.getMenuComponentCount() - 1);
             }
         }
 
-        views_menu = new JRadioButtonMenuItem[names.length];
+        viewsMenu = new JRadioButtonMenuItem[names.length];
 
         if (names.length > 0) {
             go.addSeparator();
@@ -989,14 +931,14 @@ public class ViewsManager extends AbstractViewsManager {
             String itemname = names[i];
 
             if (itemname == null || itemname.equals("")) {
-                itemname = new Integer(i).toString();
+                itemname = Integer.toString(i);
             }
 
             JRadioButtonMenuItem item = new JRadioButtonMenuItem(itemname);
 
             group.add(item);
             go.add(item);
-            views_menu[i] = item;
+            viewsMenu[i] = item;
 
             item.setAction(actions.createSwitchViewAction(i));
             item.setText(itemname);

@@ -32,13 +32,15 @@ import java.awt.Frame;
 
 import javax.swing.JComponent;
 
-import jworkspace.LangResource;
-import kiwi.ui.dialog.ComponentDialog;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
+import jworkspace.LangResource;
 /**
  * Carrier class for <code>jworkspace.ui.desktop.DesktopIconPanel</code>
+ * @author Anton Troshin
  */
 class DesktopIconDialog extends ComponentDialog {
+
     private DesktopIconPanel panel;
 
     DesktopIconDialog(Frame parent) {

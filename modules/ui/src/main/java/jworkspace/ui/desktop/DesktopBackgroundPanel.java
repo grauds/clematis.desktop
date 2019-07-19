@@ -162,16 +162,16 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
                 /**
                  * Drawing of desktop image can occur in several rendering modes.
                  */
-                if (render_mode == Desktop.CENTER_IMAGE) {
+                if (render_mode == DesktopConstants.CENTER_IMAGE) {
                     g.drawImage(cover.getImage(),
                         (pic_width - (int) (cover.getIconWidth() * pic_x_scale)) / 2,
                         (pic_height - (int) (cover.getIconHeight() * pic_y_scale)) / 2,
                         (int) (cover.getIconWidth() * pic_x_scale),
                         (int) (cover.getIconHeight() * pic_y_scale),
                         this);
-                } else if (render_mode == Desktop.STRETCH_IMAGE) {
+                } else if (render_mode == DesktopConstants.STRETCH_IMAGE) {
                     g.drawImage(cover.getImage(), 0, 0, pic_width, pic_height, this);
-                } else if (render_mode == Desktop.TILE_IMAGE) {
+                } else if (render_mode == DesktopConstants.TILE_IMAGE) {
                     int x = 0, y = 0;
                     while (x < pic_width) {
                         while (y < pic_height) {
@@ -183,21 +183,21 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
                         x += cover.getIconWidth() * pic_x_scale;
                         y = 0;
                     }
-                } else if (render_mode == Desktop.TOP_LEFT_CORNER_IMAGE) {
+                } else if (render_mode == DesktopConstants.TOP_LEFT_CORNER_IMAGE) {
                     g.drawImage(cover.getImage(), 0, 0,
                         (int) (cover.getIconWidth() * pic_x_scale),
                         (int) (cover.getIconHeight() * pic_y_scale), this);
-                } else if (render_mode == Desktop.TOP_RIGHT_CORNER_IMAGE) {
+                } else if (render_mode == DesktopConstants.TOP_RIGHT_CORNER_IMAGE) {
                     g.drawImage(cover.getImage(),
                         pic_width - (int) (cover.getIconWidth() * pic_x_scale), 0,
                         (int) (cover.getIconWidth() * pic_x_scale),
                         (int) (cover.getIconHeight() * pic_y_scale), this);
-                } else if (render_mode == Desktop.BOTTOM_LEFT_CORNER_IMAGE) {
+                } else if (render_mode == DesktopConstants.BOTTOM_LEFT_CORNER_IMAGE) {
                     g.drawImage(cover.getImage(), 0,
                         pic_height - (int) (cover.getIconHeight() * pic_y_scale),
                         (int) (cover.getIconWidth() * pic_x_scale),
                         (int) (cover.getIconHeight() * pic_y_scale), this);
-                } else if (render_mode == Desktop.BOTTOM_RIGHT_CORNER_IMAGE) {
+                } else if (render_mode == DesktopConstants.BOTTOM_RIGHT_CORNER_IMAGE) {
                     g.drawImage(cover.getImage(), pic_width - (int) (cover.getIconWidth() * pic_x_scale),
                         pic_height - (int) (cover.getIconHeight() * pic_y_scale),
                         (int) (cover.getIconWidth() * pic_x_scale),
@@ -222,7 +222,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         coverVisible = desktop.isCoverVisible();
         render_mode = desktop.getRenderMode();
         gradientFill = desktop.isGradientFill();
-        path_to_image = desktop.path_to_image;
+        path_to_image = desktop.pathToImage;
 
         this.desktop = desktop;
 
@@ -276,25 +276,25 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
             Object selected = cb_style.getSelectedItem();
             if (selected.equals
                 (LangResource.getString("DesktopBgPanel.center"))) {
-                render_mode = Desktop.CENTER_IMAGE;
+                render_mode = DesktopConstants.CENTER_IMAGE;
             } else if (selected.equals
                 (LangResource.getString("DesktopBgPanel.tile"))) {
-                render_mode = Desktop.TILE_IMAGE;
+                render_mode = DesktopConstants.TILE_IMAGE;
             } else if (selected.equals
                 (LangResource.getString("DesktopBgPanel.stretch"))) {
-                render_mode = Desktop.STRETCH_IMAGE;
+                render_mode = DesktopConstants.STRETCH_IMAGE;
             } else if (selected.equals(LangResource.getString
                 ("DesktopBgPanel.top_Left_Corner"))) {
-                render_mode = Desktop.TOP_LEFT_CORNER_IMAGE;
+                render_mode = DesktopConstants.TOP_LEFT_CORNER_IMAGE;
             } else if (selected.equals(LangResource.getString
                 ("DesktopBgPanel.top_Right_Corner"))) {
-                render_mode = Desktop.TOP_RIGHT_CORNER_IMAGE;
+                render_mode = DesktopConstants.TOP_RIGHT_CORNER_IMAGE;
             } else if (selected.equals(LangResource.getString
                 ("DesktopBgPanel.bottom_Left_Corner"))) {
-                render_mode = Desktop.BOTTOM_LEFT_CORNER_IMAGE;
+                render_mode = DesktopConstants.BOTTOM_LEFT_CORNER_IMAGE;
             } else if (selected.equals(LangResource.getString
                 ("DesktopBgPanel.bottom_Right_Corner"))) {
-                render_mode = Desktop.BOTTOM_RIGHT_CORNER_IMAGE;
+                render_mode = DesktopConstants.BOTTOM_RIGHT_CORNER_IMAGE;
             }
             repaint();
         } else if (command.equals(DesktopBackgroundPanel.TOGGLE_GRADIENT)) {
@@ -400,31 +400,31 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
             });
         cb_style.setEditable(false);
         switch (desktop.getRenderMode()) {
-            case Desktop.TILE_IMAGE:
+            case TILE_IMAGE:
                 cb_style.setSelectedItem
                     (LangResource.getString("DesktopBgPanel.tile"));
                 break;
-            case Desktop.STRETCH_IMAGE:
+            case STRETCH_IMAGE:
                 cb_style.setSelectedItem
                     (LangResource.getString("DesktopBgPanel.stretch"));
                 break;
-            case Desktop.TOP_LEFT_CORNER_IMAGE:
+            case TOP_LEFT_CORNER_IMAGE:
                 cb_style.setSelectedItem
                     (LangResource.getString("DesktopBgPanel.top_Left_Corner"));
                 break;
-            case Desktop.TOP_RIGHT_CORNER_IMAGE:
+            case TOP_RIGHT_CORNER_IMAGE:
                 cb_style.setSelectedItem
                     (LangResource.getString("DesktopBgPanel.top_Right_Corner"));
                 break;
-            case Desktop.BOTTOM_LEFT_CORNER_IMAGE:
+            case BOTTOM_LEFT_CORNER_IMAGE:
                 cb_style.setSelectedItem
                     (LangResource.getString("DesktopBgPanel.bottom_Left_Corner"));
                 break;
-            case Desktop.BOTTOM_RIGHT_CORNER_IMAGE:
+            case BOTTOM_RIGHT_CORNER_IMAGE:
                 cb_style.setSelectedItem
                     (LangResource.getString("DesktopBgPanel.bottom_Right_Corner"));
                 break;
-            case Desktop.CENTER_IMAGE:
+            case CENTER_IMAGE:
             default:
                 cb_style.setSelectedItem
                     (LangResource.getString("DesktopBgPanel.center"));

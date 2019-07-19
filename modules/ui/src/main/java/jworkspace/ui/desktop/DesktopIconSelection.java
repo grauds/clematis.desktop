@@ -33,19 +33,21 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
 /**
- * Desktop ICON selection is nessesary for
- * group operations with icons.
+ * Desktop ICON selection is necessary for group operations with icons.
  */
 class DesktopIconSelection implements ClipboardOwner, Transferable {
-    public static DataFlavor DesktopIconFlavor
+
+    static DataFlavor desktopIconFlavor
         = new DataFlavor(DesktopIconSelectionData.class, "Desktop Icon Collection");
+
     private DesktopIconSelectionData data;
-    private DataFlavor[] flavors = {DesktopIconFlavor};
+
+    private DataFlavor[] flavors = {desktopIconFlavor};
 
     /**
      * Public constructor.
      */
-    public DesktopIconSelection(DesktopIconSelectionData data) {
+    DesktopIconSelection(DesktopIconSelectionData data) {
         super();
         this.data = data;
     }
@@ -53,9 +55,8 @@ class DesktopIconSelection implements ClipboardOwner, Transferable {
     /**
      * Returns transfer data, that is actually a desktop ICON data.
      */
-    public Object getTransferData(DataFlavor flavor)
-        throws java.io.IOException, UnsupportedFlavorException {
-        if (flavor.equals(DesktopIconFlavor)) {
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+        if (flavor.equals(desktopIconFlavor)) {
             return data;
         } else {
             throw new UnsupportedFlavorException(flavor);
@@ -67,9 +68,8 @@ class DesktopIconSelection implements ClipboardOwner, Transferable {
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return (flavor.equals(DesktopIconFlavor));
+        return (flavor.equals(desktopIconFlavor));
     }
 
-    public void lostOwnership(Clipboard clipboard, Transferable contents) {
-    }
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {}
 }

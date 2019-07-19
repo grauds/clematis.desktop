@@ -98,11 +98,15 @@ import jworkspace.ui.views.DefaultCompoundView;
  */
 public class WorkspaceGUI implements UI {
 
-    static final String LOG_FINISH = "...";
+    public static final String MENUS_PARAMETER = "menus";
 
-    static final String LOG_SPACE = " ";
+    public static final String FLAG_PARAMETER = "flag";
 
-    static final String PROMPT = ">";
+    public static final String LOG_FINISH = "...";
+
+    public static final String LOG_SPACE = " ";
+
+    public static final String PROMPT = ">";
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceGUI.class);
 
@@ -769,7 +773,10 @@ public class WorkspaceGUI implements UI {
         }
     }
 
-    class WorkspaceViewListener implements IWorkspaceListener {
+    /**
+     * @author Anton Troshin
+     */
+    public class WorkspaceViewListener implements IWorkspaceListener {
 
         public static final int CODE = 1000;
 
@@ -830,12 +837,10 @@ public class WorkspaceGUI implements UI {
             }
         }
     }
-
-    class SwitchMenuListener implements IWorkspaceListener {
-
-        public static final String MENUS_PARAMETER = "menus";
-
-        public static final String FLAG_PARAMETER = "flag";
+    /**
+     * @author Anton Troshin
+     */
+    public class SwitchMenuListener implements IWorkspaceListener {
 
         public static final int CODE = 1002;
 

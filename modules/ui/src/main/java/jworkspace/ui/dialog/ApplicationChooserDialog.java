@@ -38,17 +38,21 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import com.hyperrealm.kiwi.ui.KTreeTable;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
+
 import jworkspace.LangResource;
 import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.kernel.Workspace;
-import kiwi.ui.dialog.ComponentDialog;
 
 /**
  * Application chooser.
  */
+@SuppressWarnings("MagicNumber")
 public class ApplicationChooserDialog extends ComponentDialog {
+
     private KTreeTable treeTable;
+
     private Application application = null;
 
     /**
@@ -58,7 +62,7 @@ public class ApplicationChooserDialog extends ComponentDialog {
     public ApplicationChooserDialog(Frame parent) {
         super(parent, LangResource.getString("ApplicationChooser.title"), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        setTopIcon(new ImageIcon(Workspace.getResourceManager().
+        setIcon(new ImageIcon(Workspace.getResourceManager().
             getImage("application_big.png")));
     }
 

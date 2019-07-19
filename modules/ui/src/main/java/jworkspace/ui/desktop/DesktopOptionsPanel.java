@@ -36,20 +36,22 @@ import javax.swing.JDesktopPane;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import jworkspace.LangResource;
 
 /**
  * Class to set desktop options.
+ * @author Anton Troshin
  */
-public class DesktopOptionsPanel extends KPanel implements ActionListener {
+class DesktopOptionsPanel extends KPanel implements ActionListener {
     /**
      * Toggle drag mode
      */
-    public static final String TOGGLE_DRAG_MODE = "TOGGLE_DRAG_MODE";
+    private static final String TOGGLE_DRAG_MODE = "TOGGLE_DRAG_MODE";
     /**
      * Toggle transparency
      */
-    public static final String TOGGLE_TRANSPARENCY = "TOGGLE_TRANSPARENCY";
+    private static final String TOGGLE_TRANSPARENCY = "TOGGLE_TRANSPARENCY";
     /**
      * Desktop that has to be edited
      */
@@ -57,7 +59,7 @@ public class DesktopOptionsPanel extends KPanel implements ActionListener {
     /**
      * Drag mode
      */
-    private JCheckBox drag_mode = new JCheckBox();
+    private JCheckBox dragMode = new JCheckBox();
     /**
      * Drag mode
      */
@@ -65,23 +67,22 @@ public class DesktopOptionsPanel extends KPanel implements ActionListener {
     /**
      * Outline flag
      */
-    private boolean outline = false;
+    private boolean outline;
 
-    public DesktopOptionsPanel(Desktop desktop) {
+    DesktopOptionsPanel(Desktop desktop) {
         super();
         this.desktop = desktop;
+
         setName(LangResource.getString("DesktopOptionsPanel.title"));
 
         outline = desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE;
 
-        drag_mode.setText
-            (LangResource.getString("DesktopOptionsPanel.outlineDrag"));
-        drag_mode.addActionListener(this);
-        drag_mode.setActionCommand(DesktopOptionsPanel.TOGGLE_DRAG_MODE);
-        drag_mode.setOpaque(false);
+        dragMode.setText(LangResource.getString("DesktopOptionsPanel.outlineDrag"));
+        dragMode.addActionListener(this);
+        dragMode.setActionCommand(DesktopOptionsPanel.TOGGLE_DRAG_MODE);
+        dragMode.setOpaque(false);
 
-        transparent.setText
-            (LangResource.getString("DesktopOptionsPanel.transparency"));
+        transparent.setText(LangResource.getString("DesktopOptionsPanel.transparency"));
         transparent.addActionListener(this);
         transparent.setActionCommand(DesktopOptionsPanel.TOGGLE_TRANSPARENCY);
         transparent.setOpaque(false);
@@ -97,7 +98,7 @@ public class DesktopOptionsPanel extends KPanel implements ActionListener {
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        add(drag_mode, gbc);
+        add(dragMode, gbc);
 
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -106,7 +107,7 @@ public class DesktopOptionsPanel extends KPanel implements ActionListener {
 
     public boolean setData() {
         if (desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE) {
-            drag_mode.setSelected(true);
+            dragMode.setSelected(true);
         }
         transparent.setSelected(!desktop.isOpaque());
         return true;

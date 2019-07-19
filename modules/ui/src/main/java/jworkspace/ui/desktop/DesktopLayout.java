@@ -1,8 +1,7 @@
 package jworkspace.ui.desktop;
-
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2003, 2019 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -25,28 +24,44 @@ package jworkspace.ui.desktop;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.io.Serializable;
 
 /**
- * Desktop ICON selection data is necessary
- * for copy/paste of icons groups.
+ * DesktopLayout class lays out desktop with icons.
+ * @author Anton Troshin
  */
-class DesktopIconSelectionData implements Serializable {
-    private Integer size;
-    // Icon data
-    private DesktopIconData[] iconData;
+@SuppressWarnings("MagicNumber")
+class DesktopLayout implements LayoutManager, Serializable {
+    private Desktop desktop;
 
-    DesktopIconSelectionData(int size, DesktopIconData[] iconData) {
-        this.size = size;
-        this.iconData = iconData;
+    DesktopLayout(Desktop desktop) {
+        this.desktop = desktop;
     }
 
-    DesktopIconData[] getIconData() {
-        return iconData;
+    public void layoutContainer(Container c) {
+        for (DesktopIcon icon : desktop.getDesktopIcons()) {
+            icon.setBounds(icon.getXPos(),
+                icon.getYPos(),
+                icon.getPreferredSize().width,
+                icon.getPreferredSize().height);
+        }
     }
 
-    public Integer getSize() {
-        return size;
+    public void addLayoutComponent(String str, Component c) {
+    }
+
+    public Dimension minimumLayoutSize(Container c) {
+        return c.getPreferredSize();
+    }
+
+    public Dimension preferredLayoutSize(Container c) {
+        return new Dimension(50, 50);
+    }
+
+    public void removeLayoutComponent(Component c) {
     }
 }
