@@ -1,0 +1,37 @@
+-- // "T";"Po";"P";"Pa";"U";"DD";"Ff";"ff10";"ff3";"N";"WW";"W1";"W2";"Tn";"Tx";"Cl";"Nh";
+-- // "H";"Cm";"Ch";"VV";"Td";"RRR";"tR";"E";"Tg";"E'";"sss"
+
+CREATE TABLE `observations` (
+     `id` binary(16) NOT NULL,
+     `weather_station_id` int(11) NOT NULL,
+     `date` datetime NOT NULL,
+     `t` float(11) DEFAULT NULL,
+     `po` float(11) DEFAULT NULL,
+     `p` float(11) DEFAULT NULL,
+     `pa` float(11) DEFAULT NULL,
+     `u` float(11) DEFAULT NULL,
+     `dd` varchar(255) DEFAULT NULL,
+     `ff` varchar(255) DEFAULT NULL,
+     `ff10` varchar(255) DEFAULT NULL,
+     `ff3` varchar(255) DEFAULT NULL,
+     `n` varchar(255) DEFAULT NULL,
+     `ww` varchar(255) DEFAULT NULL,
+     `w1` varchar(255) DEFAULT NULL,
+     `w2` varchar(255) DEFAULT NULL,
+     `tn` float(11) DEFAULT NULL,
+     `tx` float(11) DEFAULT NULL,
+     `cl` varchar(255) DEFAULT NULL,
+     `nh` varchar(255) DEFAULT NULL,
+     `h` varchar(255) DEFAULT NULL,
+     `cm` varchar(255) DEFAULT NULL,
+     `ch` varchar(255) DEFAULT NULL,
+     `vv` float(11) DEFAULT NULL,
+     `td` float(11) DEFAULT NULL,
+     `rrr` float(11) DEFAULT NULL,
+     `tr` float(11) DEFAULT NULL,
+     `e` varchar(255) DEFAULT NULL,
+     `tg` float(11) DEFAULT NULL,
+     `eApos` varchar(255) DEFAULT NULL,
+     `sss` float(11) DEFAULT NULL,
+     PRIMARY KEY (`id`)
+);

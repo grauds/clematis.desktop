@@ -1,3 +1,37 @@
 tasks.withType(JavaCompile) {
     options.warnings = false
 }
+
+dependencies {
+
+    compile "org.flywaydb:flyway-core:4.0.3"
+    compile "org.hsqldb:hsqldb:2.5.0"
+    compile "org.hibernate:hibernate-java8:5.0.12.Final"
+
+    compile 'org.codehaus.groovy:groovy-all:2.4.11'
+    compile 'org.spockframework:spock-core:1.1-groovy-2.4'
+
+    // for groovy
+    compile 'commons-io:commons-io:2.6'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'log4j:log4j:1.2.16'
+    compile 'org.apache.poi:poi-ooxml:4.0.0'
+    compile 'org.apache.commons:commons-csv:1.5'
+    compile 'de.siegmar:fastcsv:1.0.3'
+    compile 'org.apache.ivy:ivy:2.1.0'
+    compile 'com.google.guava:guava:19.0'
+
+    testCompile "org.hibernate:hibernate-annotations:3.5.6-Final"
+    testCompile "com.h2database:h2:1.4.192"
+    testCompile "org.flywaydb:flyway-core:4.0.3"
+
+}
+
+test {
+    useJUnit {
+        includeCategories 'com.testwithspring.master.UnitTest'
+    }
+    testLogging {
+        showStandardStreams = true
+    }
+}

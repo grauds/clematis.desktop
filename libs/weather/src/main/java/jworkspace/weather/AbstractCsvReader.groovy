@@ -1,14 +1,40 @@
 package jworkspace.weather
+/* ----------------------------------------------------------------------------
+   Java Workspace
+   Copyright (C) 2019 Anton Troshin
 
-import com.google.common.base.Stopwatch
+   This file is part of Java Workspace.
+
+   This application is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This application is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this application; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   The author may be contacted at:
+
+   anton.troshin@gmail.com
+  ----------------------------------------------------------------------------
+*/
 import groovy.transform.TupleConstructor
+
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.lang3.math.NumberUtils
 import org.apache.log4j.Logger
 
+import com.google.common.base.Stopwatch
+
 @TupleConstructor
-abstract class AbstractCsvReader {
+abstract class AbstractCsvReader<T> {
 
     private static final Logger LOG = Logger.getLogger(AbstractCsvReader.class)
 
@@ -16,9 +42,9 @@ abstract class AbstractCsvReader {
 
     String csvFileName
 
-    abstract def mapToItems(CSVParser records)
+    abstract List<T> mapToItems(CSVParser records)
 
-    protected def read() {
+    protected List<T> read() {
         def stopwatch = Stopwatch.createStarted()
         LOG.info(String.format("Start reading {}", csvFileName))
 
@@ -32,15 +58,14 @@ abstract class AbstractCsvReader {
     protected CSVParser readRecordsFromCsvFile() {
         Reader fileReader = getReader()
         def records = getDefaultParser().parse(fileReader)
-
         records
     }
 
-    protected Float safeParseFloat(String text) {
+    protected static Float safeParseFloat(String text) {
         return NumberUtils.isParsable(text) ? Float.parseFloat(text) : null
     }
 
-    protected Float safeParseInteger(String text) {
+    protected static Float safeParseInteger(String text) {
         return NumberUtils.isParsable(text) ? Integer.parseInt(text) : null
     }
 

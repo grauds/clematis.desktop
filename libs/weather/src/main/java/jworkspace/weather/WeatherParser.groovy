@@ -1,21 +1,34 @@
 package jworkspace.weather
+/* ----------------------------------------------------------------------------
+   Java Workspace
+   Copyright (C) 2019 Anton Troshin
 
+   This file is part of Java Workspace.
+
+   This application is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This application is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this application; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   The author may be contacted at:
+
+   anton.troshin@gmail.com
+  ----------------------------------------------------------------------------
+*/
 import org.apache.commons.csv.CSVParser
 import org.apache.log4j.Logger
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-
-@GrabResolver(name = 'Maven Central', root = 'http://repo1.maven.org/')
-
-@Grab(group = 'commons-io', module = 'commons-io', version = '2.6')
-@Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.5')
-@Grab(group = 'log4j', module = 'log4j', version = '1.2.16')
-
-@Grab('org.apache.poi:poi-ooxml:4.0.0')
-@Grab('org.apache.commons:commons-csv:1.5')
-
-@Grab('de.siegmar:fastcsv:1.0.3')
 
 /**
  * # Weather station Moscow, Russia, WMO_ID=27612,selection from 01.02.2005 till 01.02.2006, all days
@@ -28,7 +41,7 @@ import java.text.SimpleDateFormat
  * @param fileName
  * @return array of observations
  */
-class CsvReader extends AbstractCsvReader {
+class CsvReader extends AbstractCsvReader<Observation> {
 
     private static final Logger LOG = Logger.getLogger(CsvReader.class)
 
@@ -45,7 +58,7 @@ class CsvReader extends AbstractCsvReader {
     }
 
     @Override
-    def mapToItems(CSVParser records) {
+    List<Observation> mapToItems(CSVParser records) {
         int counter = 0;
         records.collect {
             // "T";"Po";"P";"Pa";"U";"DD";"Ff";"ff10";"ff3";"N";"WW";"W1";"W2";"Tn";"Tx";"Cl";"Nh";
@@ -96,9 +109,3 @@ class CsvReader extends AbstractCsvReader {
         }
     }
 }
-
-List<Observation> result = new CsvReader(true, "27612.01.02.2005.01.02.2006.1.0.0.en.unic.00000000.csv").read()
-result.addAll((List<Observation>)new CsvReader(true, "27612.01.02.2006.01.02.2010.1.0.0.en.unic.00000000.csv").read())
-result.addAll((List<Observation>)new CsvReader(true, "27612.01.02.2010.01.02.2015.1.0.0.en.unic.00000000.csv").read())
-result.addAll((List<Observation>)new CsvReader(true, "27612.01.02.2015.28.07.2019.1.0.0.en.unic.00000000.csv").read())
-println "Observations parsed: " + result.size()
