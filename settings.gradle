@@ -5,6 +5,9 @@ include 'desktop'
 include 'kiwi'
 project(':kiwi').projectDir = file('libs/kiwi')
 
+include 'weather'
+project(':weather').projectDir = file('libs/weather')
+
 include 'ui'
 project(':ui').projectDir = file('modules/ui')
 
