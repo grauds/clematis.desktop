@@ -1,20 +1,12 @@
 buildscript {
     repositories {
-        maven {
-            url 'http://central.maven.org/maven2/'
-        }
         mavenLocal()
         mavenCentral()
         jcenter()
+        maven {
+            url 'http://central.maven.org/maven2/'
+        }
     }
-    dependencies {
-        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.2.1"
-    }
-}
-
-plugins {
-    id "org.flywaydb.flyway" version "3.2.1"
-    id "com.palantir.docker" version "0.13.0"
 }
 
 group 'name.troshin.anton.clematis'
@@ -23,7 +15,6 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'findbugs'
 apply plugin: 'checkstyle'
-//apply plugin: 'org.sonarqube'
 
 idea {
     project {
@@ -45,14 +36,16 @@ allprojects {
 }
 
 ext {
+    logbackVersion = '1.1.11'
+    log4jVersion = '1.2.16'
+    slf4jVersion = '1.7.12'
+
+    lombokVersion = '1.18.4'
+    apacheCommonsVersion = '3.0.1'
 
     findbugsVersion = '3.0.1'
     junitVersion = '4.12'
     junitParamsVersion = '1.0.4'
-    logbackVersion = '1.1.11'
-    lombokVersion = '1.18.4'
-    slf4jVersion = '1.7.12'
-    apacheCommonsVersion = '3.0.1'
 }
 
 subprojects {
@@ -69,23 +62,23 @@ subprojects {
         options.compilerArgs << '-Xlint:sunapi' << '-XDenableSunApiLintControl'
     }
 
-    repositories {
-        jcenter()
-    }
-
     dependencies {
 
         compile "org.slf4j:slf4j-api:$slf4jVersion"
+        compile "log4j:log4j:$log4jVersion"
         compile "ch.qos.logback:logback-classic:$logbackVersion"
 
-        compile "commons-io:commons-io:2.5"
         compile "org.apache.commons:commons-imaging:1.0"
+        compile "org.apache.commons:commons-lang3:3.5"
+
+        compile "commons-io:commons-io:2.6"
         compile "commons-codec:commons-codec:1.11"
         compile "commons-logging:commons-logging:1.1.1"
 
+        compile "org.apache.commons:commons-lang3:3.5"
+
         compile "org.apache-extras.beanshell:bsh:2.0b6"
 
-        //annotationProcessor("org.projectlombok:lombok:$lombokVersion")
         compileOnly "org.projectlombok:lombok:$lombokVersion"
         testCompileOnly "org.projectlombok:lombok:$lombokVersion"
         compileOnly "com.google.code.findbugs:findbugs-annotations:$findbugsVersion"
@@ -168,22 +161,5 @@ subprojects {
 }
 
 flyway {
-    locations = ["filesystem:${file('etc/db/migration')}"]
-}
-
-//sonarqube {
-//    properties {
-//        property "sonar.projectKey", "org.clematis:jworkspace"
-//        property "sonar.projectName", "Clematis Desktop"
-//        property "sonar.sourceEncoding", "UTF-8"
-//        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-//    }
-//}
-
-docker {
-    name 'jworkspace'
-    if (project.hasProperty('imageTag')) {
-        tags imageTag
-    }
-    copySpec.from('.').include('etc/**','**/jworkspace.jar').into('/')
+    locations = ["filesystem:${file('db/migration')}"]
 }

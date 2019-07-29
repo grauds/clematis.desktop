@@ -27,7 +27,10 @@ package jworkspace.weather;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * A weather observation in accordance with Moscow VDNH station logs.
@@ -35,8 +38,10 @@ import lombok.Data;
  *
  * @author Anton Troshin
  */
+@Entity
 @Data
-public class Observation {
+@EqualsAndHashCode(callSuper = true)
+public class Observation extends BaseEntity<Long> {
     /**
      * Weather station unique id (27612 for VDNH)
      */

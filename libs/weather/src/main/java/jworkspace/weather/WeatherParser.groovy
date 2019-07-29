@@ -59,7 +59,7 @@ class CsvReader extends AbstractCsvReader<Observation> {
 
     @Override
     List<Observation> mapToItems(CSVParser records) {
-        int counter = 0;
+        int counter = 0
         records.collect {
             // "T";"Po";"P";"Pa";"U";"DD";"Ff";"ff10";"ff3";"N";"WW";"W1";"W2";"Tn";"Tx";"Cl";"Nh";
             // "H";"Cm";"Ch";"VV";"Td";"RRR";"tR";"E";"Tg";"E'";"sss"
