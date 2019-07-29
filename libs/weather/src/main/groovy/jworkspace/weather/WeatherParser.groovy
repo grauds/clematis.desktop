@@ -1,4 +1,7 @@
 package jworkspace.weather
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2019 Anton Troshin
@@ -58,6 +61,7 @@ class CsvReader extends AbstractCsvReader<Observation> {
     }
 
     @Override
+    @SuppressFBWarnings("SE_NO_SERIALVERSIONID")
     List<Observation> mapToItems(CSVParser records) {
         int counter = 0
         records.collect {

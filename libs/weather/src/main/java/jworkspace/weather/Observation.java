@@ -29,6 +29,7 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -49,6 +50,7 @@ public class Observation extends BaseEntity<Long> {
     /**
      * Local time in this location. Summer time (Daylight Saving Time) is taken into consideration
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     private Date date;
     /**
      * Air temperature (degrees Celsius) at 2 metre height above the earth's surface

@@ -14,7 +14,16 @@ processResources {
 
 }
 
+ext {
+    imagingVersion = '1.0'
+    codecVersion = '1.11'
+}
+
 dependencies {
+
     compile project(':kiwi')
     compile project(':desktop')
+
+    compile "org.apache.commons:commons-imaging:$imagingVersion"
+    compile "commons-codec:commons-codec:$codecVersion"
 }

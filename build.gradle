@@ -41,11 +41,23 @@ ext {
     slf4jVersion = '1.7.12'
 
     lombokVersion = '1.18.4'
-    apacheCommonsVersion = '3.0.1'
 
+    apacheCommonsVersion = '3.0.1'
+    commonsLang3Version = '3.5'
+    commonsIoVersion = '2.6'
+    commonsLoggingVersion = '1.1.1'
+
+    bshVersion = '2.0b6'
+
+    checkstyleVersion = '7.6'
     findbugsVersion = '3.0.1'
+
     junitVersion = '4.12'
     junitParamsVersion = '1.0.4'
+    assertjCoreVersion = '3.6.1'
+    mustacheJavaVersion = '0.9.4'
+    mockitoVersion = '1.6.4'
+    mockitoJunit4Version = '1.6.6'
 }
 
 subprojects {
@@ -68,28 +80,23 @@ subprojects {
         compile "log4j:log4j:$log4jVersion"
         compile "ch.qos.logback:logback-classic:$logbackVersion"
 
-        compile "org.apache.commons:commons-imaging:1.0"
-        compile "org.apache.commons:commons-lang3:3.5"
+        compile "org.apache.commons:commons-lang3:$commonsLang3Version"
+        compile "commons-io:commons-io:$commonsIoVersion"
+        compile "commons-logging:commons-logging:$commonsLoggingVersion"
 
-        compile "commons-io:commons-io:2.6"
-        compile "commons-codec:commons-codec:1.11"
-        compile "commons-logging:commons-logging:1.1.1"
-
-        compile "org.apache.commons:commons-lang3:3.5"
-
-        compile "org.apache-extras.beanshell:bsh:2.0b6"
+        compile "org.apache-extras.beanshell:bsh:$bshVersion"
 
         compileOnly "org.projectlombok:lombok:$lombokVersion"
         testCompileOnly "org.projectlombok:lombok:$lombokVersion"
         compileOnly "com.google.code.findbugs:findbugs-annotations:$findbugsVersion"
 
         testCompile "org.projectlombok:lombok:$lombokVersion"
-        testCompile "org.assertj:assertj-core:3.6.1"
-        testCompile "com.github.spullara.mustache.java:mustache.java:0.9.4"
-        testCompile "org.powermock:powermock-mockito-release-full:1.6.4"
-        testCompile "org.powermock:powermock-module-junit4-rule-agent:1.6.6"
+        testCompile "org.assertj:assertj-core:$assertjCoreVersion"
+        testCompile "com.github.spullara.mustache.java:mustache.java:$mustacheJavaVersion"
+        testCompile "org.powermock:powermock-mockito-release-full:$mockitoVersion"
+        testCompile "org.powermock:powermock-module-junit4-rule-agent:$mockitoJunit4Version"
 
-        checkstyle "com.puppycrawl.tools:checkstyle:7.6"
+        checkstyle "com.puppycrawl.tools:checkstyle:$checkstyleVersion"
     }
 
     jar {
@@ -158,8 +165,4 @@ subprojects {
         exclude '**/*Test*'
     }
 
-}
-
-flyway {
-    locations = ["filesystem:${file('db/migration')}"]
 }
