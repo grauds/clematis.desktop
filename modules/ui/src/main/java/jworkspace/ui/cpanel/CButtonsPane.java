@@ -35,7 +35,8 @@ import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -57,24 +58,36 @@ import javax.swing.plaf.metal.MetalBorders;
 import javax.swing.plaf.metal.MetalButtonUI;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+
 import jworkspace.ui.Utils;
 
 /**
- * Class <code>jworkspace.ui.cpanel.CButtonsPane</code>
- * is an invisible layer that actually deals with buttons and
+ * Class <code>jworkspace.ui.cpanel.CButtonsPane</code> is an invisible layer that actually deals with buttons and
  * performs scrolling.
+ *
+ * @author Anton Troshin
  */
 class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener {
-    private final static Insets insets0 = new Insets(0, 0, 0, 0);
+    /**
+     * Zero insets
+     */
+    private static final Insets ZERO_INSETS = new Insets(0, 0, 0, 0);
     /**
      * Is rollover property.
      */
-    private static String IS_ROLLOVER = "CButtonsPane.isRollover";
+    private static final String IS_ROLLOVER = "CButtonsPane.isRollover";
+    /**
+     * Orientation property
+     */
+    private static final String ORIENTATION_PROPERTY = "ORIENTATION";
     /**
      * Metal borders
      */
     private static Border metalRolloverBorder = new CompoundBorder(
         new MetalBorders.RolloverButtonBorder(), new BasicBorders.MarginBorder());
+    /**
+     * Metal non rollover borders
+     */
     private static Border metalNonRolloverBorder = new CompoundBorder(
         new MetalBorders.ButtonBorder(), new BasicBorders.MarginBorder());
     /**
@@ -82,29 +95,25 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      */
     private static Border basicRolloverBorder = new CompoundBorder(
         BorderFactory.createBevelBorder(BevelBorder.RAISED), new BasicBorders.MarginBorder());
+    /**
+     * Basic non rollover borders
+     */
+    @SuppressWarnings("MagicNumber")
     private static Border basicNonRolloverBorder = new CompoundBorder(
         BorderFactory.createEmptyBorder(3, 3, 3, 3), new BasicBorders.MarginBorder());
-    /**
-     * Listener for rollover property change
-     */
-    protected PropertyChangeListener rolloverListener;
-    /**
-     * Container listener
-     */
-    protected ContainerListener contListener;
     /**
      * Orientation of control bar relative to
      * parent component.
      */
-    private int orientation = ControlPanel.Y_AXIS;
+    private int orientation;
     /**
      * The table of borders.
      */
-    private Hashtable borderTable = new Hashtable();
+    private Map<JButton, Border> borderTable = new HashMap<>();
     /**
      * The table of margins
      */
-    private Hashtable marginTable = new Hashtable();
+    private Map<JButton, Insets> marginTable = new HashMap<>();
     /**
      * Initial state of buttons.
      */
@@ -113,28 +122,26 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     /**
      * ControlPanel constructor.
      */
-    public CButtonsPane(int orientation) {
+    CButtonsPane(int orientation) {
         super();
         this.orientation = orientation;
-        /**
+        /*
          * Set default layout
          */
         setLayout();
         //        setBorder(new EmptyBorder(0, 3, 0, 0));
-        /**
-         * Create rollover listener
+        /*
+         * Listener for rollover property change
          */
-        rolloverListener = createRolloverListener();
-        if (rolloverListener != null) {
-            addPropertyChangeListener(rolloverListener);
-        }
+        PropertyChangeListener rolloverListener = createRolloverListener();
+        addPropertyChangeListener(rolloverListener);
         updateUI();
     }
 
     /**
      * New metal rollover listener.
      */
-    protected PropertyChangeListener createRolloverListener() {
+    private PropertyChangeListener createRolloverListener() {
         return new MetalRolloverListener();
     }
 
@@ -148,7 +155,7 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     /**
      * Adds action to this buttons pane layout
      */
-    public CButton addButton(Action a) {
+    CButton addButton(Action a) {
         CButton button = Utils.createCButtonFromAction(a);
         add(button);
         return button;
@@ -159,9 +166,9 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      * add it to the button's pane layout and internal buttons
      * vector.
      */
-    public CButton addButton(ActionListener listener,
-                             ImageIcon image, ImageIcon hoverImage,
-                             String command, String toolTipText) {
+    CButton addButton(ActionListener listener,
+                      ImageIcon image, ImageIcon hoverImage,
+                      String command, String toolTipText) {
         CButton button = CButton.create(listener,
             image, hoverImage,
             command, toolTipText);
@@ -173,7 +180,7 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      * Adds control button to the button's pane layout and internal buttons
      * vector.
      */
-    public void addButton(CButton button) {
+    void addButton(CButton button) {
         add(button);
     }
 
@@ -213,12 +220,13 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      * @return The "block" increment for scrolling in the specified direction.
      * @see JScrollBar#setBlockIncrement
      */
+    @SuppressWarnings("MagicNumber")
     public int getScrollableBlockIncrement(Rectangle visibleRect,
                                            int orientation, int direction) {
-        return 10;//for testing purposes
+        return 10;
     }
 
-    protected Dimension getPreferredPanelSize() {
+    Dimension getPreferredPanelSize() {
         return getPreferredSize();
     }
 
@@ -272,18 +280,17 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      * handle incoming event.
      */
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
-        if (evt.getNewValue() instanceof Integer &&
-            evt.getPropertyName().equals("ORIENTATION")) {
-            firePropertyChange("ORIENTATION", orientation,
-                ((Integer) evt.getNewValue()).intValue());
+        if (evt.getNewValue() instanceof Integer
+            && evt.getPropertyName().equals(ORIENTATION_PROPERTY)) {
 
-            orientation = ((Integer) evt.getNewValue()).intValue();
+            firePropertyChange(ORIENTATION_PROPERTY, orientation, ((Integer) evt.getNewValue()).intValue());
+            orientation = (Integer) evt.getNewValue();
             setLayout();
         }
     }
 
     protected void setLayout() {
-        BoxLayout layout = null;
+        BoxLayout layout;
         if (orientation == ControlPanel.X_AXIS) {
             layout = new BoxLayout(this, BoxLayout.LINE_AXIS);
         } else {
@@ -295,14 +302,14 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     /**
      * Rollover borders support
      */
-    public boolean isRolloverBorders() {
+    private boolean isRolloverBorders() {
         return rolloverBorders;
     }
 
     /**
      * Sets rollover borders
      */
-    public void setRolloverBorders(boolean rollover) {
+    private void setRolloverBorders(boolean rollover) {
         rolloverBorders = rollover;
 
         if (rolloverBorders) {
@@ -317,25 +324,21 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      */
     public void updateUI() {
         super.updateUI();
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                setRolloverBorders(isRolloverBorders());
-            }
-        });
+        SwingUtilities.invokeLater(() -> setRolloverBorders(isRolloverBorders()));
     }
 
     /**
      * Installs rollover borders
      */
-    protected void installRolloverBorders(JComponent c) {
+    private void installRolloverBorders(JComponent c) {
         // Put rollover borders on buttons
         Component[] components = c.getComponents();
 
-        for (int i = 0; i < components.length; ++i) {
-            if (components[i] instanceof JComponent) {
-                ((JComponent) components[i]).updateUI();
+        for (Component component : components) {
+            if (component instanceof JComponent) {
+                ((JComponent) component).updateUI();
 
-                setBorderToRollover(components[i]);
+                setBorderToRollover(component);
             }
         }
     }
@@ -343,15 +346,15 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     /**
      * Installs non rollover borders
      */
-    protected void installNonRolloverBorders(JComponent c) {
-        // Put nonrollover borders on buttons
+    private void installNonRolloverBorders(JComponent c) {
+        // Put non rollover borders on buttons
         Component[] components = c.getComponents();
 
-        for (int i = 0; i < components.length; ++i) {
-            if (components[i] instanceof JComponent) {
-                ((JComponent) components[i]).updateUI();
+        for (Component component : components) {
+            if (component instanceof JComponent) {
+                ((JComponent) component).updateUI();
 
-                setBorderToNonRollover(components[i]);
+                setBorderToNonRollover(component);
             }
         }
     }
@@ -363,50 +366,22 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
         // Put back the normal borders on buttons
         Component[] components = c.getComponents();
 
-        for (int i = 0; i < components.length; ++i) {
-            setBorderToNormal(components[i]);
+        for (Component component : components) {
+            setBorderToNormal(component);
         }
     }
 
     /**
      * Sets rollover borders.
      */
-    protected void setBorderToRollover(Component c) {
+    private void setBorderToRollover(Component c) {
         if (c instanceof JButton) {
             JButton b = (JButton) c;
 
             if (b.getUI() instanceof MetalButtonUI) {
-                if (b.getBorder() instanceof UIResource) {
-                    borderTable.put(b, b.getBorder());
-                }
-
-                if (//b.getBorder() instanceof UIResource ||
-                    b.getBorder() == metalNonRolloverBorder) {
-                    b.setBorder(metalRolloverBorder);
-                }
-
-                if (b.getMargin() == null ||
-                    b.getMargin() instanceof UIResource) {
-                    marginTable.put(b, b.getMargin());
-                    b.setMargin(insets0);
-                }
-                b.setRolloverEnabled(true);
+                swapBorders(b, metalNonRolloverBorder, metalRolloverBorder);
             } else if (b.getUI() instanceof BasicButtonUI) {
-                if (b.getBorder() instanceof UIResource) {
-                    borderTable.put(b, b.getBorder());
-                }
-
-                if (//b.getBorder() instanceof UIResource ||
-                    b.getBorder() == basicNonRolloverBorder) {
-                    b.setBorder(basicRolloverBorder);
-                }
-
-                if (b.getMargin() == null ||
-                    b.getMargin() instanceof UIResource) {
-                    marginTable.put(b, b.getMargin());
-                    b.setMargin(insets0);
-                }
-                b.setRolloverEnabled(true);
+                swapBorders(b, basicNonRolloverBorder, basicRolloverBorder);
             }
         }
     }
@@ -414,72 +389,53 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     /**
      * Sets borders to non rollover
      */
-    protected void setBorderToNonRollover(Component c) {
+    private void setBorderToNonRollover(Component c) {
         if (c instanceof JButton) {
             JButton b = (JButton) c;
 
             if (b.getUI() instanceof MetalButtonUI) {
-                if (b.getBorder() instanceof UIResource) {
-                    borderTable.put(b, b.getBorder());
-                }
-
-                if (//b.getBorder() instanceof UIResource ||
-                    b.getBorder() == metalRolloverBorder) {
-                    b.setBorder(metalNonRolloverBorder);
-                }
-
-                if (b.getMargin() == null ||
-                    b.getMargin() instanceof UIResource) {
-                    marginTable.put(b, b.getMargin());
-                    b.setMargin(insets0);
-                }
-
-                b.setRolloverEnabled(false);
+                swapBorders(b, metalRolloverBorder, metalNonRolloverBorder, false);
             } else if (b.getUI() instanceof BasicButtonUI) {
-                if (b.getBorder() instanceof UIResource) {
-                    borderTable.put(b, b.getBorder());
-                }
-
-                if (//b.getBorder() instanceof UIResource ||
-                    b.getBorder() == basicRolloverBorder) {
-                    b.setBorder(basicNonRolloverBorder);
-                }
-
-                if (b.getMargin() == null || b.getMargin() instanceof UIResource) {
-                    marginTable.put(b, b.getMargin());
-                    b.setMargin(insets0);
-                }
-
-                b.setRolloverEnabled(false);
+                swapBorders(b, basicRolloverBorder, basicNonRolloverBorder, false);
             }
         }
     }
 
-    protected void setBorderToNormal(Component c) {
+    private void swapBorders(JButton b, Border oldBorder, Border newBorder, boolean rolloverEnabled) {
+
+        if (b.getBorder() instanceof UIResource) {
+            borderTable.put(b, b.getBorder());
+        }
+
+        if (b.getBorder() == oldBorder) {
+            b.setBorder(newBorder);
+        }
+
+        if (b.getMargin() == null || b.getMargin() instanceof UIResource) {
+            marginTable.put(b, b.getMargin());
+            b.setMargin(ZERO_INSETS);
+        }
+
+        b.setRolloverEnabled(rolloverEnabled);
+    }
+
+    private void swapBorders(JButton b, Border nonRolloverBorder, Border rolloverBorder) {
+        swapBorders(b, nonRolloverBorder, rolloverBorder, true);
+    }
+
+    private void setBorderToNormal(Component c) {
         if (c instanceof JButton) {
             JButton b = (JButton) c;
-
-            if (b.getUI() instanceof MetalButtonUI) {
-                if (b.getBorder() == metalRolloverBorder ||
-                    b.getBorder() == metalNonRolloverBorder) {
-                    b.setBorder((Border) borderTable.remove(b));
-                }
-
-                if (b.getMargin() == insets0) {
-                    b.setMargin((Insets) marginTable.remove(b));
-                }
-
-                b.setRolloverEnabled(false);
-            } else if (b.getUI() instanceof BasicButtonUI) {
-                if (b.getBorder() == basicRolloverBorder
-                    || b.getBorder() == basicNonRolloverBorder) {
-                    b.setBorder((Border) borderTable.remove(b));
-                }
-                if (b.getMargin() == insets0) {
-                    b.setMargin((Insets) marginTable.remove(b));
-                }
-                b.setRolloverEnabled(false);
+            if (b.getBorder() == metalRolloverBorder || b.getBorder() == metalNonRolloverBorder
+                || b.getBorder() == basicRolloverBorder || b.getBorder() == basicNonRolloverBorder) {
+                b.setBorder(borderTable.remove(b));
             }
+
+            if (b.getMargin() == ZERO_INSETS) {
+                b.setMargin(marginTable.remove(b));
+            }
+
+            b.setRolloverEnabled(false);
         }
     }
 
@@ -492,7 +448,7 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
 
             if (name.equals(IS_ROLLOVER)) {
                 if (e.getNewValue() != null) {
-                    setRolloverBorders(((Boolean) e.getNewValue()).booleanValue());
+                    setRolloverBorders((Boolean) e.getNewValue());
                 } else {
                     setRolloverBorders(false);
                 }

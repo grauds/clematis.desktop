@@ -49,34 +49,35 @@ import com.hyperrealm.kiwi.ui.KPanel;
 
 /**
  * System control panel
+ *
+ * @author Anton Troshin
  */
-public class ControlPanel extends KPanel
-    implements LayoutManager,
-    MouseListener,
-    MouseMotionListener,
-    ActionListener {
+public class ControlPanel extends KPanel implements LayoutManager, MouseListener, MouseMotionListener, ActionListener {
     /**
      * Specifies that components should be laid out left to right.
      */
-    public static final int X_AXIS = 0;
-
+    static final int X_AXIS = 0;
     /**
      * Specifies that components should be laid out top to bottom.
      */
-    public static final int Y_AXIS = 1;
-
+    static final int Y_AXIS = 1;
+    /**
+     * Orientation property
+     */
+    static final String ORIENTATION_PROPERTY = "ORIENTATION";
     /**
      * Orientation of control bar relative to
      * parent component.
      */
-    private int orientation = ControlPanel.Y_AXIS;
-    /**
-     * Scrolling mechanism.
-     */
+    private int orientation;
+
     private CScrollButton upButton = null;
+
     private CScrollButton downButton = null;
+
     private JViewport viewport = new JViewport();
-    private CButtonsPane buttonsPane = null;
+
+    private CButtonsPane buttonsPane;
     /**
      * Mouse pointer coordinate.
      */
@@ -87,99 +88,83 @@ public class ControlPanel extends KPanel
     private boolean dragged = false;
 
     /**
-     * Empty constructor for compatibility
-     * with beans standard. If control panel created
-     * this way, internal listener for button will
-     * <code>null</code>. Therefore, use addLayoutComponent
-     * methos to add new buttons, or set internal listener
-     * if you prefer direct events to a single listener.
+     * Empty constructor for compatibility with beans standard. If control panel created
+     * this way, internal listener for button will <code>null</code>. Therefore, use addLayoutComponent
+     * methods to add new buttons, or set internal listener if you prefer direct events to a single listener.
      */
     public ControlPanel() {
         this(ControlPanel.Y_AXIS);
     }
 
     /**
-     * Control panel should be created with
-     * specified action listener, that allows
-     * listening for action events.
+     * Control panel should be created with specified action listener, that allows listening for action events.
      */
-    public ControlPanel(int orientation) {
+    private ControlPanel(int orientation) {
         super();
         this.orientation = orientation;
         buttonsPane = new CButtonsPane(orientation);
         addPropertyChangeListener(buttonsPane);
         createScrollButtons(this);
-        firePropertyChange("ORIENTATION", -1, orientation);
+        firePropertyChange(ORIENTATION_PROPERTY, -1, orientation);
         addMouseListener(this);
         addMouseMotionListener(this);
         viewport.setOpaque(false);
     }
 
     /**
-     * Scrolling action handler. One click on scroll
-     * button will result in one unit scroll of
-     * buttons pane.
+     * Scrolling action handler. One click on scroll button will result in one unit scroll of buttons pane.
      */
     public void actionPerformed(ActionEvent e) {
-        int direction = 1;
-        /**
+
+        /*
          * Increment scrolls down and right.
          */
+        int direction = 1;
         if (e.getActionCommand().equals("INCREMENT")) {
             direction = -1;
         }
-        /**
-         * Decrement scrolls up and left.
-         */
-        else if (e.getActionCommand().equals("DECREMENT")) {
-            direction = 1;
-        }
-        /**
+        /*
          * The visible rectangle of viewport is a kind of window
          * through which subcomponents can be seen.
          */
         Rectangle visRect = viewport.getViewRect();
-        /**
+        /*
          * The actual size of buttons pane.
          */
         Dimension vSize = buttonsPane.getPreferredPanelSize();
 
-        int amount = 0;
+        int amount;
 
         if (orientation == ControlPanel.X_AXIS) {
-            amount = buttonsPane.getScrollableBlockIncrement
-                (visRect, SwingConstants.HORIZONTAL, direction);
+            amount = buttonsPane.getScrollableBlockIncrement(visRect, SwingConstants.HORIZONTAL, direction);
             visRect.x += direction * amount;
-            /**
-             * The top most position. |.. visRect.x ..|..... visRect.width .......|
-             *                        |................vSize.width................|
-             */
             if ((vSize.width - visRect.x) < visRect.width) {
+                /*
+                 * The top most position. |.. visRect.x ..|..... visRect.width .......|
+                 *                        |................vSize.width................|
+                 */
                 visRect.x = Math.max(0, vSize.width - visRect.width);
-            }
-            /**
-             * The bottom most position. |..... visRect.width .......|.. visRect.x ..|
-             *                             	 |................vSize.width................|
-             */
-            else if (visRect.x < 0) {
+            } else if (visRect.x < 0) {
+                /*
+                 * The bottom most position. |..... visRect.width .......|.. visRect.x ..|
+                 *                             	 |................vSize.width................|
+                 */
                 visRect.x = 0;
             }
         } else if (orientation == ControlPanel.Y_AXIS) {
-            amount = buttonsPane.getScrollableBlockIncrement
-                (visRect, SwingConstants.VERTICAL, direction);
+            amount = buttonsPane.getScrollableBlockIncrement(visRect, SwingConstants.VERTICAL, direction);
             visRect.y += direction * amount;
-            /**
-             * The top most position. |.. visRect.y ..|..... visRect.height .......|
-             *                        |................vSize.height................|
-             */
             if ((vSize.height - visRect.y) < visRect.height) {
+                /*
+                 * The top most position. |.. visRect.y ..|..... visRect.height .......|
+                 *                        |................vSize.height................|
+                 */
                 visRect.y = Math.max(0, vSize.height - visRect.height);
-            }
-            /**
-             * The bottom most position. |..... visRect.height .......|.. visRect.y ..|
-             *                             	 |................vSize.height................|
-             */
-            else if (visRect.y < 0) {
+            } else if (visRect.y < 0) {
+                /*
+                 * The bottom most position. |..... visRect.height .......|.. visRect.y ..|
+                 *                             	 |................vSize.height................|
+                 */
                 visRect.y = 0;
             }
         }
@@ -188,15 +173,12 @@ public class ControlPanel extends KPanel
     }
 
     /**
-     * Creates control panel button from parameters and
-     * add it to the button's pane layout and internal buttons
-     * vector.
+     * Creates control panel button from parameters and add it to the button's pane layout and internal buttons vector.
      */
-    public CButton addButton(ActionListener listener,
-                             ImageIcon image, ImageIcon hoverImage,
+    public CButton addButton(ActionListener listener, ImageIcon image, ImageIcon hoverImage,
                              String command, String toolTipText) {
-        return buttonsPane.addButton(listener, image, hoverImage,
-            command, toolTipText);
+
+        return buttonsPane.addButton(listener, image, hoverImage, command, toolTipText);
     }
 
     /**
@@ -236,14 +218,12 @@ public class ControlPanel extends KPanel
      * Also assembles buttons pane if the pane is being
      * created.
      */
-    protected void createScrollButtons(ActionListener listener) {
+    private void createScrollButtons(ActionListener listener) {
         if (downButton == null || upButton == null) {
             setLayout(this);
 
-            downButton =
-                new CScrollButton(listener, false);
-            upButton =
-                new CScrollButton(listener, true);
+            downButton = new CScrollButton(listener, false);
+            upButton = new CScrollButton(listener, true);
 
             downButton.addActionListener(this);
             upButton.addActionListener(this);
@@ -283,7 +263,7 @@ public class ControlPanel extends KPanel
             && orientation != ControlPanel.Y_AXIS) {
             return;
         }
-        firePropertyChange("ORIENTATION", this.orientation, orientation);
+        firePropertyChange(ORIENTATION_PROPERTY, this.orientation, orientation);
         this.orientation = orientation;
     }
 

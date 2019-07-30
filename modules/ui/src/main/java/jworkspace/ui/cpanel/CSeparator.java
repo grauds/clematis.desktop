@@ -34,17 +34,13 @@ import javax.swing.JComponent;
 import javax.swing.UIManager;
 
 /**
- * Separator is generally a thin component, that divides
- * button on logic groups. The pecularity is expressed in
- * boolean reverse field, that is used by control panel's
- * layout algorythm. Use <code>addLayoutComponent()</code>
- * method with specified parameters to insert buttons
- * and separators into control panel.
+ * Separator is generally a thin component, that divides button on logic groups. The pecularity is expressed in
+ * boolean reverse field, that is used by control panel's layout algorythm. Use <code>addLayoutComponent()</code>
+ * method with specified parameters to insert buttons and separators into control panel.
  */
 class CSeparator extends JComponent implements PropertyChangeListener {
     /**
-     * Orientation of control bar relative to
-     * parent component.
+     * Orientation of control bar relative to parent component.
      */
     private int orientation;
 
@@ -52,52 +48,26 @@ class CSeparator extends JComponent implements PropertyChangeListener {
      * Empty constructor for compatibility
      * with beans standard.
      */
-    public CSeparator() {
-        super();
-    }
-
-    /**
-     * Empty constructor for compatibility
-     * with beans standard.
-     */
-    public CSeparator(int orientation) {
+    private CSeparator(int orientation) {
         super();
         this.orientation = orientation;
     }
 
     /**
-     * Returns orientation.
-     */
-    public int getOrientation() {
-        return orientation;
-    }
-
-    /**
-     * Sets orientation.
-     */
-    public void setOrientation(int orientation) {
-        this.orientation = orientation;
-    }
-
-    /**
-     * Paints separator. In this case it is just
-     * two one pixel width lines of colors,
-     * compatible with Java Workspace Look And Feel (Glass Onion).
-     * BUG: this is not nesessarily works on other's laf
-     * color schemes. Should be replaced by
-     * <code>Color.darker()</code> and <code>Color.lighter</code>
-     * methods.
+     * Paints separator. In this case it is just two one pixel width lines of colors, compatible with
+     * Java Workspace Look And Feel (Glass Onion). BUG: this is not necessarily works on other's laf
+     * color schemes. Should be replaced by <code>Color.darker()</code> and <code>Color.lighter</code> methods.
      */
     public void paintComponent(Graphics g) {
         if (orientation == ControlPanel.X_AXIS) {
-            g.setColor(UIManager.getColor("controlShadow"));
+            g.setColor(UIManager.getColor(CScrollButton.CONTROL_SHADOW_COLOUR));
             g.drawLine(0, 0, 0, getSize().height);
-            g.setColor(UIManager.getColor("controlHighlight"));
+            g.setColor(UIManager.getColor(CScrollButton.CONTROL_HIGHLIGHT_COLOUR));
             g.drawLine(1, 0, 1, getSize().height);
         } else if (orientation == ControlPanel.Y_AXIS) {
-            g.setColor(UIManager.getColor("controlShadow"));
+            g.setColor(UIManager.getColor(CScrollButton.CONTROL_SHADOW_COLOUR));
             g.drawLine(0, 0, getSize().width, 0);
-            g.setColor(UIManager.getColor("controlHighlight"));
+            g.setColor(UIManager.getColor(CScrollButton.CONTROL_HIGHLIGHT_COLOUR));
             g.drawLine(0, 1, getSize().width, 1);
         }
     }
@@ -108,9 +78,8 @@ class CSeparator extends JComponent implements PropertyChangeListener {
      * handle incoming event.
      */
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
-        if (evt.getNewValue() instanceof Integer &&
-            evt.getPropertyName().equals("ORIENTATION")) {
-            orientation = ((Integer) evt.getNewValue()).intValue();
+        if (evt.getNewValue() instanceof Integer && evt.getPropertyName().equals(ControlPanel.ORIENTATION_PROPERTY)) {
+            orientation = (Integer) evt.getNewValue();
         }
     }
 
@@ -123,9 +92,10 @@ class CSeparator extends JComponent implements PropertyChangeListener {
     }
 
     /**
-     * Calculates the preferred size dimensions for the specified
-     * panel given the components in the specified parent container.
+     * Calculates the preferred size dimensions for the specified panel given the components
+     * in the specified parent container.
      */
+    @SuppressWarnings("MagicNumber")
     public Dimension getPreferredSize() {
         if (orientation == ControlPanel.X_AXIS) {
             return new Dimension(2, 20);

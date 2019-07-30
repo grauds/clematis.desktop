@@ -38,12 +38,11 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 
 /**
- * A special kind of buttons that are to be inserted into
- * control panel. This pecularity is expressed in
- * boolean reverse field, that is used by control panel's
- * layout algorythm. Use <code>addLayoutComponent()</code>
- * method with specified parameters to insert buttons
- * and separators into control panel.
+ * A special kind of buttons that are to be inserted into control panel. This pecularity is expressed in
+ * boolean reverse field, that is used by control panel's layout algorythm. Use <code>addLayoutComponent()</code>
+ * method with specified parameters to insert buttons and separators into control panel.
+ *
+ * @author Anton Troshin
  */
 public class CButton extends JButton {
     /**
@@ -65,7 +64,7 @@ public class CButton extends JButton {
         setPressedIcon(rolloverImage);
         setRolloverEnabled(true);
         setDefaultCapable(false);
-        /**
+        /*
          * These buttons are always transparent
          */
         setOpaque(false);
