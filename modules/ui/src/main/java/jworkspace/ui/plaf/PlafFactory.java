@@ -32,24 +32,35 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalTheme;
 
-import jworkspace.kernel.Workspace;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * Pluggable look and feel factory
+ * @author Anton Troshin
  */
 public class PlafFactory {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(PlafFactory.class);
+    /**
+     * The directory of config
+     */
+    private static final String CONFIG_FILE_PATH = "config";
     /**
      * Single instance
      */
@@ -61,8 +72,7 @@ public class PlafFactory {
     /**
      * Array of plaf connectors
      */
-    private ArrayList connectors = new ArrayList();
-
+    private List<XPlafConnector> connectors = new ArrayList<>();
     /**
      * Private constructor
      */
@@ -74,7 +84,7 @@ public class PlafFactory {
      *
      * @return single instance
      */
-    public synchronized static PlafFactory getInstance() {
+    public static synchronized PlafFactory getInstance() {
         if (instance == null) {
             instance = new PlafFactory();
             instance.load();
@@ -86,32 +96,26 @@ public class PlafFactory {
      * Load and install look and feels from user configuration file
      */
     private void load() {
-        String fileName = "config" + File.separator + sysConfig;
-        Workspace.getLogger().info(">" + "Reading file" + " " + fileName + "...");
+        String fileName = CONFIG_FILE_PATH + File.separator + sysConfig;
+        LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
         try {
             File file = new File(fileName);
             SAXBuilder builder = new SAXBuilder();
             Document doc = builder.build(file);
             Element root = doc.getRootElement();
-            /**
+            /*
              * Here we should find all plaf elements, described
              * in xml file under <plaf> tags
              */
-            List plafs = root.getChildren("plaf");
-            for (int i = 0; i < plafs.size(); i++) {
-                /**
-                 * Parse each plaf individually
-                 */
-                XPlafConnector connector =
-                    XPlafConnector.create((Element) plafs.get(i));
+            List<Element> plafs = root.getChildren("plaf");
+            for (Element plaf : plafs) {
+                XPlafConnector connector = XPlafConnector.create(plaf);
                 if (connector != null) {
                     connectors.add(connector);
                 }
             }
-        } catch (JDOMException e) {
-            Workspace.getLogger().log(Level.WARNING, "Cannot load plaf factory", e);
-        } catch (IOException e) {
-            Workspace.getLogger().log(Level.INFO, "Cannot load plaf factory due to IO exception " + e.getMessage());
+        } catch (JDOMException | IOException e) {
+            LOG.error("Cannot load plaf factory", e);
         }
     }
 
@@ -119,12 +123,12 @@ public class PlafFactory {
      * Save all look and feel user config
      */
     public void save() {
-        String fileName = "config" + File.separator + sysConfig;
-        Workspace.getLogger().info(">" + "Writing file" + " " + fileName + "...");
+        String fileName = CONFIG_FILE_PATH + File.separator + sysConfig;
+        LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
         try {
             Element plafs = new Element("plafs");
-            for (int i = 0; i < connectors.size(); i++) {
-                plafs.addContent(((XPlafConnector) connectors.get(i)).serialize());
+            for (XPlafConnector connector : connectors) {
+                plafs.addContent(connector.serialize());
             }
 
             XMLOutputter serializer = new XMLOutputter();
@@ -138,7 +142,7 @@ public class PlafFactory {
             os.flush();
             os.close();
         } catch (IOException e) {
-            Workspace.getLogger().warning("Cannot save plaf factory");
+            LOG.warn("Cannot save plaf factory", e);
         }
     }
 
@@ -165,14 +169,15 @@ public class PlafFactory {
      */
     private LookAndFeel lookUp(String selectedLaf) throws ClassNotFoundException {
         UIManager.LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
-        for (int i = 0; i < infos.length; i++) {
-            if (infos[i].getName().equals(selectedLaf)
-                || infos[i].getClassName().equals(selectedLaf)) {
+        for (UIManager.LookAndFeelInfo info : infos) {
+            if (info.getName().equals(selectedLaf)
+                || info.getClassName().equals(selectedLaf)) {
                 Class clazz = Class.forName(selectedLaf, true, Thread.currentThread().
                     getContextClassLoader());
                 try {
                     return (LookAndFeel) clazz.newInstance();
                 } catch (Exception e) {
+                    LOG.error("Cannot instantiate the plaf discovered", e);
                 }
             }
         }
@@ -187,10 +192,8 @@ public class PlafFactory {
      * @return plaf connector for selected laf
      */
     private XPlafConnector lookUpConnector(LookAndFeel selectedLaf) {
-        for (int i = 0; i < connectors.size(); i++) {
-            XPlafConnector connector = (XPlafConnector) connectors.get(i);
-
-            if (connector.info.getName().equals(selectedLaf.getName())) {
+        for (XPlafConnector connector : connectors) {
+            if (connector.getInfo().getName().equals(selectedLaf.getName())) {
                 return connector;
             }
         }
@@ -205,10 +208,10 @@ public class PlafFactory {
      * @return plaf connector for selected laf
      */
     private XPlafConnector lookUpConnector(String className) {
-        for (int i = 0; i < connectors.size(); i++) {
-            XPlafConnector connector = (XPlafConnector) connectors.get(i);
+        for (Object o : connectors) {
+            XPlafConnector connector = (XPlafConnector) o;
 
-            if (connector.info.getClassName().equals(className)) {
+            if (connector.getInfo().getClassName().equals(className)) {
                 return connector;
             }
         }
@@ -225,7 +228,7 @@ public class PlafFactory {
     public MetalTheme[] listThemes(LookAndFeel selectedLaf) {
         XPlafConnector connector = lookUpConnector(selectedLaf);
         if (connector != null) {
-            return connector.themes;
+            return connector.getThemes();
         } else {
             return new MetalTheme[0];
         }
@@ -245,7 +248,7 @@ public class PlafFactory {
             }
             return true;
         } catch (Exception ex) {
-            Workspace.getLogger().log(Level.WARNING, "Cannot set look and feel", ex);
+            LOG.error("Cannot set look and feel", ex);
         }
         return false;
     }
@@ -253,11 +256,11 @@ public class PlafFactory {
     /**
      * Returns currently selected theme for a given laf
      *
-     * @param selectedLaf
+     * @param selectedLaf by user
      * @return currently selected theme
      */
     public MetalTheme getCurrentTheme(LookAndFeel selectedLaf) {
-        /**
+        /*
          * Look up connector for current look and feel
          */
         XPlafConnector connector = lookUpConnector(selectedLaf);
@@ -273,7 +276,7 @@ public class PlafFactory {
      * @return currently selected theme
      */
     public MetalTheme getCurrentTheme() {
-        /**
+        /*
          * Look up connector for current look and feel
          */
         XPlafConnector connector = lookUpConnector(UIManager.getLookAndFeel());
@@ -290,7 +293,7 @@ public class PlafFactory {
      * @param theme class of theme to be set
      */
     public void setCurrentTheme(String laf, String theme) {
-        /**
+        /*
          * Look up connector for current look and feel
          */
         XPlafConnector connector = lookUpConnector(laf);

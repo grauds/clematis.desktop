@@ -27,12 +27,11 @@ package jworkspace.ui.logging;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.swing.JTextArea;
 
-import kiwi.ui.KFrame;
+import com.hyperrealm.kiwi.ui.KFrame;
 
 /**
  * Stream window
@@ -53,7 +52,7 @@ public class StreamWindow extends KFrame {
      * and install listeners. Make the window visible
      * after everything else is done
      */
-    public StreamWindow(String name) {
+    StreamWindow(String name) {
         super(name);
         out = new StreamWindowStream();
         setupGUI();
@@ -62,6 +61,7 @@ public class StreamWindow extends KFrame {
     /**
      * Add the text area to the window, and set the window size
      */
+    @SuppressWarnings("MagicNumber")
     private void setupGUI() {
         Container cp = getContentPane();
         textArea = new JTextArea();
@@ -108,14 +108,14 @@ public class StreamWindow extends KFrame {
         /**
          * Closing the stream closes the window
          */
-        public void close() throws IOException {
+        public void close() {
             dispose();
         }
 
         /**
          * Write a single byte
          */
-        public void write(int b) throws IOException {
+        public void write(int b) {
             // Store the single byte in the array and
             // write the array
             tinyBuffer[0] = (byte) b;
@@ -125,7 +125,7 @@ public class StreamWindow extends KFrame {
         /**
          * Write an array of bytes
          */
-        public void write(byte[] b) throws IOException {
+        public void write(byte[] b) {
             // Convert the bytes to a string and append
             String s = new String(b);
             appendText(s);
@@ -134,7 +134,7 @@ public class StreamWindow extends KFrame {
         /**
          * Write a sub-array of bytes
          */
-        public void write(byte[] b, int off, int len) throws IOException {
+        public void write(byte[] b, int off, int len) {
             // Convert the bytes to a string and append
             String s = new String(b, off, len);
             appendText(s);

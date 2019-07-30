@@ -880,7 +880,10 @@ public class WorkspaceGUI implements UI {
         }
     }
 
-    class ExternalFrameListener implements IWorkspaceListener {
+    /**
+     * @author Anton Troshin
+     */
+    public class ExternalFrameListener implements IWorkspaceListener {
 
         public static final int CODE = 1003;
 

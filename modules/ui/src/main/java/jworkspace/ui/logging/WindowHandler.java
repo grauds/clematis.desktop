@@ -26,7 +26,8 @@ package jworkspace.ui.logging;
 */
 
 import java.io.OutputStream;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
@@ -35,6 +36,7 @@ import java.util.logging.StreamHandler;
 
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * Window logging handler
@@ -46,8 +48,8 @@ import jworkspace.kernel.Workspace;
 public class WindowHandler extends StreamHandler {
     // The default width and height for a logging window;
     // these can be overridden in the logging.properties file
-    static private final int defaultWidth = 400;
-    static private final int defaultHeight = 500;
+    private static final int DEFAULT_WIDTH = 400;
+    private static final int DEFAULT_HEIGHT = 500;
     // The logger being displayed in this window
     private Logger logger;
 
@@ -95,11 +97,12 @@ public class WindowHandler extends StreamHandler {
      * closed
      */
     class WindowHandlerWindow extends StreamWindow {
-        public WindowHandlerWindow(String name) {
+        @SuppressWarnings("MagicNumber")
+        WindowHandlerWindow(String name) {
             super(LangResource.getString("LoggingPanel.loggerFor") + " " + name);
             // Assume the defaults, initially
-            int width = defaultWidth;
-            int height = defaultHeight;
+            int width = DEFAULT_WIDTH;
+            int height = DEFAULT_HEIGHT;
             LogManager manager = LogManager.getLogManager();
             // We need the fully-qualified class name to access
             // the properties
@@ -114,9 +117,9 @@ public class WindowHandler extends StreamHandler {
             }
             setSize(width, height);
             // Fire event
-            Hashtable lparam = new Hashtable();
+            Map<String, Object> lparam = new HashMap<>();
             lparam.put("frame", this);
-            Workspace.fireEvent(new Integer(1003), lparam, null);
+            Workspace.fireEvent(WorkspaceGUI.ExternalFrameListener.CODE, lparam, null);
         }
 
         public void dispose() {
