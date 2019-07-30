@@ -92,7 +92,7 @@ import jworkspace.ui.widgets.GlassDragPane;
  * Java Desktop
  * @author Anton Troshin
  */
-@SuppressWarnings("MagicNumber")
+@SuppressWarnings({"MagicNumber"})
 public class Desktop extends KDesktopPane implements IView, MouseListener, MouseMotionListener,
     ActionListener, ClipboardOwner {
     /**
@@ -100,7 +100,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     private static final Logger LOG = LoggerFactory.getLogger(Desktop.class);
     /**
-     * Image ICON - desktop wallpaper.
+     * Image icon - desktop wallpaper.
      */
     private ImageIcon cover = null;
     /**
@@ -297,8 +297,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
             case DesktopConstants.CHOOSE_BACKGROUND_IMAGE:
                 JFileChooser fch = ClassCache.getIconChooser();
-                if (fch.showOpenDialog(Workspace.getUi().getFrame())
-                    != JFileChooser.APPROVE_OPTION) {
+                if (fch.showOpenDialog(Workspace.getUi().getFrame()) != JFileChooser.APPROVE_OPTION) {
                     return;
                 }
                 File imf = fch.getSelectedFile();
@@ -324,11 +323,11 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Create and add desktop ICON to desktop.
+     * Create and add desktop icon to desktop.
      *
-     * @param name        The name of desktop ICON
+     * @param name        The name of desktop icon
      * @param commandLine Command, that will this desktop
-     *                    ICON launch, depending on execution mode.
+     *                    icon launch, depending on execution mode.
      * @param mode        Execution mode can be the follows
      *                    <ol>
      *                    <li>SCRIPTED_METHOD_MODE = 0 - Executes scripted BSH method;
@@ -337,9 +336,9 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      *                    <li>JAVA_APP_MODE = 3 - Executes installed application;
      *                    </li>
      *                    </ol>
-     * @param icon        Picture for this desktop ICON
-     * @param xPos        Initial x coordinate of desktop ICON
-     * @param yPos        Initial y coordinate of desktop ICON
+     * @param icon        Picture for this desktop icon
+     * @param xPos        Initial x coordinate of desktop icon
+     * @param yPos        Initial y coordinate of desktop icon
      */
     private void addDesktopIcon(String name,
                                 String commandLine,
@@ -360,13 +359,17 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Add desktop ICON to desktop.
+     * Add desktop icon to desktop.
      */
     private void addDesktopIcon(DesktopIcon icon) {
         desktopIcons.add(icon);
         icon.add();
         validate();
         repaint();
+    }
+
+    String getPathToImage() {
+        return pathToImage;
     }
 
     /**
@@ -451,20 +454,20 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
                 public void menuSelected(MenuEvent e) {
                     desktopMenu.removeAll();
-                    desktopMenu.add(desktopPopupMenu.createShortcut);
-                    desktopMenu.add(desktopPopupMenu.gradientFill);
-                    desktopMenu.add(desktopPopupMenu.paste);
+                    desktopMenu.add(desktopPopupMenu.getCreateShortcut());
+                    desktopMenu.add(desktopPopupMenu.getGradientFill());
+                    desktopMenu.add(desktopPopupMenu.getPaste());
 
                     desktopMenu.addSeparator();
 
-                    desktopMenu.add(desktopPopupMenu.selectAll);
-                    desktopMenu.add(desktopPopupMenu.background);
-                    desktopMenu.add(desktopPopupMenu.chooseBgImage);
-                    desktopMenu.add(desktopPopupMenu.switchCover);
+                    desktopMenu.add(desktopPopupMenu.getSelectAll());
+                    desktopMenu.add(desktopPopupMenu.getBackground());
+                    desktopMenu.add(desktopPopupMenu.getChooseBgImage());
+                    desktopMenu.add(desktopPopupMenu.getSwitchCover());
 
                     desktopMenu.addSeparator();
 
-                    desktopMenu.add(desktopPopupMenu.closeAllWindows);
+                    desktopMenu.add(desktopPopupMenu.getCloseAllWindows());
 
                     updateMenuItems();
                 }
@@ -563,10 +566,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         this.cover = loadCover();
     }
 
-    /**
-     * Loads cover
-     * todo: does this require advanced images handling?
-     */
     private ImageIcon loadCover() {
         if (pathToImage != null) {
             cover = new ImageIcon(pathToImage);
@@ -674,8 +673,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Calculates vector which poins direction for desktop
-     * icons dragging.
+     * Calculates vector which points to direction for desktop icons dragging.
      */
     Point getTransferVector(int xshift, int yshift) {
         Point topLeft = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -720,8 +718,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Calculates vector which poins direction for desktop
-     * icons dragging.
+     * Calculates vector which points to direction for desktop icons dragging.
      */
     private Point getTransferVector(int finalx, int finaly, DesktopIconSelectionData icons) {
 
@@ -861,7 +858,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Returns true, if argument desktop ICON is selected with group.
+     * Returns true, if argument desktop icon is selected with group.
      */
     boolean isSelectedInGroup(DesktopIcon icon) {
         return isGroupSelected() && icon.isSelected();
@@ -1103,8 +1100,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Key navigation handler. Select ICON depending
-     * on argument cursor ICON.
+     * Key navigation handler. Select icon depending
+     * on argument cursor icon.
      */
     void selectNextIcon(int direction, DesktopIcon desktopIcon) {
 
@@ -1113,7 +1110,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
          */
         DesktopIcon[] selectedIcons = getSelectedIcons();
         /*
-         * If no icons are selected, select the top left ICON
+         * If no icons are selected, select the top left icon
          * on this desktop.
          */
         if (selectedIcons.length == 0) {
@@ -1125,24 +1122,24 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             return;
         }
         /*
-         * The desktop ICON, nearest to ours.
+         * The desktop icon, nearest to ours.
          */
         DesktopIcon min = null;
         /*
-         * Declare point to min ICON
+         * Declare point to min icon
          */
         Point minIconPoint = null;
         /*
-         * Find cursor ICON coordinates
+         * Find cursor icon coordinates
          */
         Point cursorIconPoint = new Point(desktopIcon.getXPos(), desktopIcon.getYPos());
         /*
-         * Iterate through all icons and find the closest. If there is only one ICON,
+         * Iterate through all icons and find the closest. If there is only one icon,
          * return it as a closest to itself.
          */
         for (DesktopIcon icon : desktopIcons) {
             /*
-             * If this is a cursor ICON, continue
+             * If this is a cursor icon, continue
              */
             if (icon.equals(desktopIcon)) {
                 continue;
@@ -1163,7 +1160,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 || (direction == DesktopConstants.ICON_ON_WEST
                 && Utils.isWesternQuadrant(cursorIconPoint, currentIconPoint))) {
                 /*
-                 * Min is becoming the first ICON in quadrant
+                 * Min is becoming the first icon in quadrant
                  */
                 if (minIconPoint == null) {
                     minIconPoint = currentIconPoint;
@@ -1177,7 +1174,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             }
         }
         /*
-         * Finally, select chosen ICON
+         * Finally, select chosen icon
          */
         if (min != null) {
             deselectAll();
@@ -1360,28 +1357,28 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     void updateMenuItems() {
 
         if (gradientFill) {
-            desktopPopupMenu.gradientFill.setText(LangResource.getString("Desktop.menu.hideGradient"));
+            desktopPopupMenu.getGradientFill().setText(LangResource.getString("Desktop.menu.hideGradient"));
         } else {
-            desktopPopupMenu.gradientFill.setText(LangResource.getString("Desktop.menu.showGradient"));
+            desktopPopupMenu.getGradientFill().setText(LangResource.getString("Desktop.menu.showGradient"));
         }
         if (getCover() == null) {
-            desktopPopupMenu.switchCover.setEnabled(false);
-            desktopPopupMenu.switchCover.setText(LangResource.getString("Desktop.menu.noCover"));
+            desktopPopupMenu.getSwitchCover().setEnabled(false);
+            desktopPopupMenu.getSwitchCover().setText(LangResource.getString("Desktop.menu.noCover"));
         } else {
-            desktopPopupMenu.switchCover.setEnabled(true);
+            desktopPopupMenu.getSwitchCover().setEnabled(true);
             if (isCoverVisible()) {
-                desktopPopupMenu.switchCover.setText(LangResource.getString("Desktop.menu.hideCover"));
+                desktopPopupMenu.getSwitchCover().setText(LangResource.getString("Desktop.menu.hideCover"));
             } else {
-                desktopPopupMenu.switchCover.setText(LangResource.getString("Desktop.menu.showCover"));
+                desktopPopupMenu.getSwitchCover().setText(LangResource.getString("Desktop.menu.showCover"));
             }
         }
         Transferable contents = Workspace.getUi().getClipboard().getContents(this);
         if (contents == null) {
-            desktopPopupMenu.paste.setEnabled(false);
+            desktopPopupMenu.getPaste().setEnabled(false);
         } else if (contents instanceof DesktopIconSelection) {
-            desktopPopupMenu.paste.setEnabled(true);
+            desktopPopupMenu.getPaste().setEnabled(true);
         } else {
-            desktopPopupMenu.paste.setEnabled(false);
+            desktopPopupMenu.getPaste().setEnabled(false);
         }
     }
 

@@ -39,30 +39,32 @@ import jworkspace.LangResource;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.UISwitchListener;
+import lombok.Data;
 
 /**
  * Desktop menu
  * @author Anton Troshin
  */
+@Data
 class DesktopMenu extends JPopupMenu {
 
     private Desktop desktop;
 
-    JMenuItem createShortcut;
+    private JMenuItem createShortcut;
 
-    JMenuItem gradientFill;
+    private JMenuItem gradientFill;
 
-    JMenuItem paste;
+    private JMenuItem paste;
 
-    JMenuItem selectAll;
+    private JMenuItem selectAll;
 
-    JMenuItem background;
+    private JMenuItem background;
 
-    JMenuItem closeAllWindows;
+    private JMenuItem closeAllWindows;
 
-    JMenuItem switchCover;
+    private JMenuItem switchCover;
 
-    JMenuItem chooseBgImage;
+    private JMenuItem chooseBgImage;
 
     DesktopMenu(Desktop desktop, ActionListener listener) {
         super();

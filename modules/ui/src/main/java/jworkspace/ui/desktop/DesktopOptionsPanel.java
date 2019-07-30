@@ -55,7 +55,7 @@ class DesktopOptionsPanel extends KPanel implements ActionListener {
     /**
      * Desktop that has to be edited
      */
-    Desktop desktop;
+    private Desktop desktop;
     /**
      * Drag mode
      */
@@ -110,10 +110,6 @@ class DesktopOptionsPanel extends KPanel implements ActionListener {
             dragMode.setSelected(true);
         }
         transparent.setSelected(!desktop.isOpaque());
-        return true;
-    }
-
-    public boolean syncData() {
         return true;
     }
 

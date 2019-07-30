@@ -48,62 +48,71 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.Imaging;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
+
+import static jworkspace.ui.desktop.DesktopConstants.BOTTOM_LEFT_CORNER_IMAGE;
+import static jworkspace.ui.desktop.DesktopConstants.BOTTOM_RIGHT_CORNER_IMAGE;
+import static jworkspace.ui.desktop.DesktopConstants.CENTER_IMAGE;
+import static jworkspace.ui.desktop.DesktopConstants.STRETCH_IMAGE;
+import static jworkspace.ui.desktop.DesktopConstants.TILE_IMAGE;
+import static jworkspace.ui.desktop.DesktopConstants.TOP_LEFT_CORNER_IMAGE;
+import static jworkspace.ui.desktop.DesktopConstants.TOP_RIGHT_CORNER_IMAGE;
+
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
 
 /**
  * Desktop property panel
  */
-public class DesktopBackgroundPanel extends KPanel implements ActionListener {
-    /**
-     * Action
-     */
-    public static final String CHOOSE_BACKGROUND_IMAGE = "CHOOSE_BACKGROUND_IMAGE";
-    public static final String TOGGLE_WALLPAPER = "TOGGLE_WALLPAPER";
-    public static final String TOGGLE_GRADIENT = "TOGGLE_GRADIENT";
-    public static final String CHOOSE_GRADIENT_COLOR_1 = "CHOOSE_GRADIENT_COLOR_1";
-    public static final String CHOOSE_GRADIENT_COLOR_2 = "CHOOSE_GRADIENT_COLOR_2";
+@SuppressWarnings("MagicNumber")
+class DesktopBackgroundPanel extends KPanel implements ActionListener {
+    private static final String DESKTOP_BG_PANEL_CENTER = "DesktopBgPanel.center";
+    private static final String DESKTOP_BG_PANEL_TILE = "DesktopBgPanel.tile";
+    private static final String DESKTOP_BG_PANEL_STRETCH = "DesktopBgPanel.stretch";
+    private static final String DESKTOP_BG_PANEL_TOP_LEFT_CORNER = "DesktopBgPanel.top_Left_Corner";
+    private static final String DESKTOP_BG_PANEL_TOP_RIGHT_CORNER = "DesktopBgPanel.top_Right_Corner";
+    private static final String DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER = "DesktopBgPanel.bottom_Left_Corner";
+    private static final String DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER = "DesktopBgPanel.bottom_Right_Corner";
     /**
      * Path to image
      */
-    protected String path_to_image = null;
+    private String pathToImage;
     /**
      * Desktop render style
      */
-    JComboBox cb_style;
+    private JComboBox<String> cbStyle;
     /**
      * Path field
      */
-    JTextField path_field = new JTextField(15);
+    private JTextField pathField = new JTextField(15);
     /**
      * Name of desktop
      */
-    JTextField t_name;
+    private JTextField tName;
     /**
      * Desktop that has to be edited
      */
-    Desktop desktop;
+    private Desktop desktop;
     /**
      * Current image render mode
      */
-    private int render_mode = 2;
+    private int renderMode;
     /**
      * Image cover is visible?
      */
-    private boolean coverVisible = true;
+    private boolean coverVisible;
     /**
      * Make cover visible
      */
-    private JCheckBox cover_visible = new JCheckBox();
+    private JCheckBox coverVisibleCheckbox = new JCheckBox();
     /**
      * Gradient fill switch
      */
@@ -111,222 +120,148 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
     /**
      * Gradient fill flag.
      */
-    private boolean gradientFill = false;
+    private boolean gradientFill;
     /**
-     * Image ICON - desktop wallpaper candidate.
+     * Image icon - desktop wallpaper candidate.
      */
-    private ImageIcon cover = null;
+    private ImageIcon cover;
     /**
      * Color of desktop.
      */
-    private Color bg_color = UIManager.getColor("desktop");
+    private Color bgColor;
     /**
      * Button to toggle first color
      */
-    private JButton b_browse_top;
+    private JButton bBrowseTop;
     /**
      * 2nd color of desktop.
      */
-    private Color bg_color_2 = UIManager.getColor("desktop");
-    ImageRenderer l_image = new ImageRenderer() {
-        int pic_width = 156;
-        int pic_height = 111;
-        double pic_x_scale = 1;
-        double pic_y_scale = 1;
-
-        public void paintComponent(Graphics g) {
-            if (image != null) {
-                g.drawImage(image.getImage(), (getWidth() - image.getIconWidth()) / 2,
-                    (getHeight() - image.getIconHeight()) / 2, this);
-            }
-            g.translate(getWidth() / 2 - 80, 11);
-            g.setClip(0, 0, pic_width, pic_height);
-            pic_x_scale = (double) pic_width / (double) desktop.getWidth();
-            pic_y_scale = (double) pic_height / (double) desktop.getHeight();
-            render(g);
-        }
-
-        /**
-         * Paints preview as Desktop does
-         */
-        void render(Graphics g) {
-            g.setColor(bg_color);
-            g.fillRect(0, 0, pic_width, pic_height);
-            if (gradientFill) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setPaint
-                    (new GradientPaint(0, 0, bg_color, 0, pic_height, bg_color_2));
-                g2.fill(new Rectangle(0, 0, pic_width, pic_height));
-            }
-            if (cover != null && coverVisible) {
-                /**
-                 * Drawing of desktop image can occur in several rendering modes.
-                 */
-                if (render_mode == DesktopConstants.CENTER_IMAGE) {
-                    g.drawImage(cover.getImage(),
-                        (pic_width - (int) (cover.getIconWidth() * pic_x_scale)) / 2,
-                        (pic_height - (int) (cover.getIconHeight() * pic_y_scale)) / 2,
-                        (int) (cover.getIconWidth() * pic_x_scale),
-                        (int) (cover.getIconHeight() * pic_y_scale),
-                        this);
-                } else if (render_mode == DesktopConstants.STRETCH_IMAGE) {
-                    g.drawImage(cover.getImage(), 0, 0, pic_width, pic_height, this);
-                } else if (render_mode == DesktopConstants.TILE_IMAGE) {
-                    int x = 0, y = 0;
-                    while (x < pic_width) {
-                        while (y < pic_height) {
-                            g.drawImage(cover.getImage(), x, y,
-                                (int) (cover.getIconWidth() * pic_x_scale),
-                                (int) (cover.getIconHeight() * pic_y_scale), this);
-                            y += cover.getIconHeight() * pic_y_scale;
-                        }
-                        x += cover.getIconWidth() * pic_x_scale;
-                        y = 0;
-                    }
-                } else if (render_mode == DesktopConstants.TOP_LEFT_CORNER_IMAGE) {
-                    g.drawImage(cover.getImage(), 0, 0,
-                        (int) (cover.getIconWidth() * pic_x_scale),
-                        (int) (cover.getIconHeight() * pic_y_scale), this);
-                } else if (render_mode == DesktopConstants.TOP_RIGHT_CORNER_IMAGE) {
-                    g.drawImage(cover.getImage(),
-                        pic_width - (int) (cover.getIconWidth() * pic_x_scale), 0,
-                        (int) (cover.getIconWidth() * pic_x_scale),
-                        (int) (cover.getIconHeight() * pic_y_scale), this);
-                } else if (render_mode == DesktopConstants.BOTTOM_LEFT_CORNER_IMAGE) {
-                    g.drawImage(cover.getImage(), 0,
-                        pic_height - (int) (cover.getIconHeight() * pic_y_scale),
-                        (int) (cover.getIconWidth() * pic_x_scale),
-                        (int) (cover.getIconHeight() * pic_y_scale), this);
-                } else if (render_mode == DesktopConstants.BOTTOM_RIGHT_CORNER_IMAGE) {
-                    g.drawImage(cover.getImage(), pic_width - (int) (cover.getIconWidth() * pic_x_scale),
-                        pic_height - (int) (cover.getIconHeight() * pic_y_scale),
-                        (int) (cover.getIconWidth() * pic_x_scale),
-                        (int) (cover.getIconHeight() * pic_y_scale), this);
-                }
-            }
-        }
-    };
+    private Color bgColor2;
     /**
      * Button to toggle second color
      */
-    private JButton b_browse_bottom;
+    private JButton bBrowseBottom;
 
-    public DesktopBackgroundPanel(Desktop desktop) {
+    DesktopBackgroundPanel(Desktop desktop) {
         super();
         setLayout(new BorderLayout());
         setName(LangResource.getString("DesktopBgPanel.title"));
 
-        bg_color = desktop.getBackground();
-        bg_color_2 = desktop.getSecondBackground();
+        bgColor = desktop.getBackground();
+        bgColor2 = desktop.getSecondBackground();
         cover = desktop.getCover();
         coverVisible = desktop.isCoverVisible();
-        render_mode = desktop.getRenderMode();
+        renderMode = desktop.getRenderMode();
         gradientFill = desktop.isGradientFill();
-        path_to_image = desktop.pathToImage;
+        pathToImage = desktop.getPathToImage();
 
         this.desktop = desktop;
 
-        l_image.setImage(Workspace.getResourceManager().
+        ImageRenderer imageRenderer = new ThisPanelImageRenderer();
+        imageRenderer.setImage(Workspace.getResourceManager().
             getImage("desktop/monitor.gif"));
-        l_image.setBorder(new EmptyBorder(5, 0, 0, 0));
-        l_image.setOpaque(false);
-        this.add(l_image, BorderLayout.CENTER);
+        imageRenderer.setBorder(new EmptyBorder(5, 0, 0, 0));
+        imageRenderer.setOpaque(false);
+        this.add(imageRenderer, BorderLayout.CENTER);
         this.add(createControlsPanel(), BorderLayout.SOUTH);
     }
 
     public boolean syncData() {
-        desktop.setRenderMode(render_mode);
-        desktop.setName(t_name.getText());
-        desktop.setCover(path_to_image);
+        desktop.setRenderMode(renderMode);
+        desktop.setName(tName.getText());
+        desktop.setCover(pathToImage);
         desktop.setGradientFill(gradient.isSelected());
-        desktop.setCoverVisible(cover_visible.isSelected());
-        desktop.setBackground(bg_color);
-        desktop.setSecondBackground(bg_color_2);
+        desktop.setCoverVisible(coverVisibleCheckbox.isSelected());
+        desktop.setBackground(bgColor);
+        desktop.setSecondBackground(bgColor2);
         return true;
     }
 
+    @SuppressWarnings("CyclomaticComplexity")
     public void actionPerformed(ActionEvent evt) {
         String command = evt.getActionCommand();
-        if (command.equals(DesktopBackgroundPanel.CHOOSE_BACKGROUND_IMAGE)) {
-            JFileChooser fch = ClassCache.
-                getIconChooser(path_to_image == null ? " " : path_to_image);
-            if (fch.showOpenDialog(Workspace.getUI().getFrame())
-                != JFileChooser.APPROVE_OPTION) {
-                return;
-            }
-            File imf = fch.getSelectedFile();
-            if (imf != null) {
-                String test_path = imf.getAbsolutePath();
-                ImageIcon test_cover =
-                    null;
-                try {
-                    test_cover = new ImageIcon(Imaging.getBufferedImage(imf));
-
-                    if (test_cover.getIconHeight() != -1 && test_cover.getIconWidth() != -1) {
-                        path_to_image = test_path;
-                        cover = test_cover;
-                        path_field.setText(test_path);
-                        repaint();
-                    }
-                } catch (ImageReadException | IOException e) {
-                    e.printStackTrace();
+        switch (command) {
+            case DesktopConstants.CHOOSE_BACKGROUND_IMAGE:
+                JFileChooser fch = ClassCache.
+                    getIconChooser(pathToImage == null ? " " : pathToImage);
+                if (fch.showOpenDialog(Workspace.getUi().getFrame()) != JFileChooser.APPROVE_OPTION) {
+                    return;
                 }
-            }
-        } else if (command.equals("comboBoxChanged")) {
-            Object selected = cb_style.getSelectedItem();
-            if (selected.equals
-                (LangResource.getString("DesktopBgPanel.center"))) {
-                render_mode = DesktopConstants.CENTER_IMAGE;
-            } else if (selected.equals
-                (LangResource.getString("DesktopBgPanel.tile"))) {
-                render_mode = DesktopConstants.TILE_IMAGE;
-            } else if (selected.equals
-                (LangResource.getString("DesktopBgPanel.stretch"))) {
-                render_mode = DesktopConstants.STRETCH_IMAGE;
-            } else if (selected.equals(LangResource.getString
-                ("DesktopBgPanel.top_Left_Corner"))) {
-                render_mode = DesktopConstants.TOP_LEFT_CORNER_IMAGE;
-            } else if (selected.equals(LangResource.getString
-                ("DesktopBgPanel.top_Right_Corner"))) {
-                render_mode = DesktopConstants.TOP_RIGHT_CORNER_IMAGE;
-            } else if (selected.equals(LangResource.getString
-                ("DesktopBgPanel.bottom_Left_Corner"))) {
-                render_mode = DesktopConstants.BOTTOM_LEFT_CORNER_IMAGE;
-            } else if (selected.equals(LangResource.getString
-                ("DesktopBgPanel.bottom_Right_Corner"))) {
-                render_mode = DesktopConstants.BOTTOM_RIGHT_CORNER_IMAGE;
-            }
-            repaint();
-        } else if (command.equals(DesktopBackgroundPanel.TOGGLE_GRADIENT)) {
-            gradientFill = !gradientFill;
-            repaint();
-        } else if (command.equals(DesktopBackgroundPanel.TOGGLE_WALLPAPER)) {
-            coverVisible = !coverVisible;
-            repaint();
-        } else if (command.equals(DesktopBackgroundPanel.CHOOSE_GRADIENT_COLOR_1)) {
-            Color color = JColorChooser.showDialog
-                (Workspace.getUI().getFrame(),
+                File imf = fch.getSelectedFile();
+                if (imf != null) {
+                    String testPath = imf.getAbsolutePath();
+                    ImageIcon testCover;
+                    try {
+                        testCover = new ImageIcon(Imaging.getBufferedImage(imf));
+
+                        if (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1) {
+                            pathToImage = testPath;
+                            cover = testCover;
+                            pathField.setText(testPath);
+                            repaint();
+                        }
+                    } catch (ImageReadException | IOException ignored) {
+
+                    }
+                }
+                break;
+            case "comboBoxChanged":
+                Object selected = cbStyle.getSelectedItem();
+                if (selected != null) {
+                    if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_CENTER))) {
+                        renderMode = CENTER_IMAGE;
+                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_TILE))) {
+                        renderMode = TILE_IMAGE;
+                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_STRETCH))) {
+                        renderMode = STRETCH_IMAGE;
+                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER))) {
+                        renderMode = TOP_LEFT_CORNER_IMAGE;
+                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER))) {
+                        renderMode = TOP_RIGHT_CORNER_IMAGE;
+                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER))) {
+                        renderMode = BOTTOM_LEFT_CORNER_IMAGE;
+                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER))) {
+                        renderMode = BOTTOM_RIGHT_CORNER_IMAGE;
+                    }
+                }
+                repaint();
+                break;
+            case DesktopConstants.TOGGLE_GRADIENT:
+                gradientFill = !gradientFill;
+                repaint();
+                break;
+            case DesktopConstants.TOGGLE_WALLPAPER:
+                coverVisible = !coverVisible;
+                repaint();
+                break;
+            case DesktopConstants.CHOOSE_GRADIENT_COLOR_1: {
+                Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
                     LangResource.getString("DesktopBgPanel.chooseBg1"),
                     desktop.getBackground());
-            if (color != null) {
-                bg_color = color;
-                b_browse_top.setBackground(bg_color);
+                if (color != null) {
+                    bgColor = color;
+                    bBrowseTop.setBackground(bgColor);
+                }
+                repaint();
+                break;
             }
-            repaint();
-        } else if (command.equals(DesktopBackgroundPanel.CHOOSE_GRADIENT_COLOR_2)) {
-            Color color = JColorChooser.showDialog
-                (Workspace.getUI().getFrame(),
+            case DesktopConstants.CHOOSE_GRADIENT_COLOR_2: {
+                Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
                     LangResource.getString("DesktopBgPanel.chooseBg2"),
                     desktop.getSecondBackground());
-            if (color != null) {
-                bg_color_2 = color;
-                b_browse_bottom.setBackground(bg_color_2);
+                if (color != null) {
+                    bgColor2 = color;
+                    bBrowseBottom.setBackground(bgColor2);
+                }
+                repaint();
+                break;
             }
-            repaint();
+            default:
         }
     }
 
-    KPanel createControlsPanel() {
+    @SuppressWarnings({"CyclomaticComplexity", "MethodLength"})
+    private KPanel createControlsPanel() {
         KPanel controls = new KPanel();
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -343,13 +278,13 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         gbc.insets = KiwiUtils.FIRST_INSETS;
         controls.add(l, gbc);
 
-        t_name = new JTextField(20);
-        t_name.setPreferredSize(new Dimension(150, 20));
+        tName = new JTextField(20);
+        tName.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
-        t_name.setText(desktop.getName());
-        controls.add(t_name, gbc);
+        tName.setText(desktop.getName());
+        controls.add(tName, gbc);
 
         l = new JLabel(LangResource.getString("DesktopBgPanel.cover"));
         gbc.gridwidth = 1;
@@ -361,22 +296,22 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         p0.setLayout(new BorderLayout(5, 5));
         p0.setPreferredSize(new Dimension(150, 20));
 
-        JButton b_browse = new JButton("...");
-        b_browse.setDefaultCapable(false);
-        b_browse.setActionCommand(DesktopBackgroundPanel.CHOOSE_BACKGROUND_IMAGE);
-        b_browse.addActionListener(this);
+        JButton bBrowse = new JButton("...");
+        bBrowse.setDefaultCapable(false);
+        bBrowse.setActionCommand(DesktopConstants.CHOOSE_BACKGROUND_IMAGE);
+        bBrowse.addActionListener(this);
 
-        if (path_to_image != null) {
-            path_field.setText(path_to_image);
+        if (pathToImage != null) {
+            pathField.setText(pathToImage);
         } else {
-            path_field.setText(LangResource.getString("DesktopBgPanel.noCover"));
+            pathField.setText(LangResource.getString("DesktopBgPanel.noCover"));
         }
 
-        path_field.setPreferredSize(new Dimension(150, 20));
-        path_field.setEditable(false);
+        pathField.setPreferredSize(new Dimension(150, 20));
+        pathField.setEditable(false);
 
-        p0.add(path_field, BorderLayout.CENTER);
-        p0.add(b_browse, BorderLayout.EAST);
+        p0.add(pathField, BorderLayout.CENTER);
+        p0.add(bBrowse, BorderLayout.EAST);
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
@@ -388,54 +323,46 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         gbc.insets = KiwiUtils.FIRST_INSETS;
         controls.add(l, gbc);
 
-        cb_style = new JComboBox(new Object[]
-            {
-                LangResource.getString("DesktopBgPanel.center"),
-                LangResource.getString("DesktopBgPanel.stretch"),
-                LangResource.getString("DesktopBgPanel.tile"),
-                LangResource.getString("DesktopBgPanel.top_Left_Corner"),
-                LangResource.getString("DesktopBgPanel.top_Right_Corner"),
-                LangResource.getString("DesktopBgPanel.bottom_Left_Corner"),
-                LangResource.getString("DesktopBgPanel.bottom_Right_Corner")
+        cbStyle = new JComboBox<>(new String[] {
+                LangResource.getString(DESKTOP_BG_PANEL_CENTER),
+                LangResource.getString(DESKTOP_BG_PANEL_STRETCH),
+                LangResource.getString(DESKTOP_BG_PANEL_TILE),
+                LangResource.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER),
+                LangResource.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER),
+                LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER),
+                LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER)
             });
-        cb_style.setEditable(false);
+        cbStyle.setEditable(false);
         switch (desktop.getRenderMode()) {
             case TILE_IMAGE:
-                cb_style.setSelectedItem
-                    (LangResource.getString("DesktopBgPanel.tile"));
+                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_TILE));
                 break;
             case STRETCH_IMAGE:
-                cb_style.setSelectedItem
-                    (LangResource.getString("DesktopBgPanel.stretch"));
+                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_STRETCH));
                 break;
             case TOP_LEFT_CORNER_IMAGE:
-                cb_style.setSelectedItem
-                    (LangResource.getString("DesktopBgPanel.top_Left_Corner"));
+                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER));
                 break;
             case TOP_RIGHT_CORNER_IMAGE:
-                cb_style.setSelectedItem
-                    (LangResource.getString("DesktopBgPanel.top_Right_Corner"));
+                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER));
                 break;
             case BOTTOM_LEFT_CORNER_IMAGE:
-                cb_style.setSelectedItem
-                    (LangResource.getString("DesktopBgPanel.bottom_Left_Corner"));
+                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER));
                 break;
             case BOTTOM_RIGHT_CORNER_IMAGE:
-                cb_style.setSelectedItem
-                    (LangResource.getString("DesktopBgPanel.bottom_Right_Corner"));
+                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER));
                 break;
             case CENTER_IMAGE:
             default:
-                cb_style.setSelectedItem
-                    (LangResource.getString("DesktopBgPanel.center"));
+                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_CENTER));
                 break;
         }
-        cb_style.setPreferredSize(new Dimension(60, 20));
-        cb_style.addActionListener(this);
+        cbStyle.setPreferredSize(new Dimension(60, 20));
+        cbStyle.addActionListener(this);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
-        controls.add(cb_style, gbc);
+        controls.add(cbStyle, gbc);
 
         l = new JLabel("");
         gbc.gridwidth = 1;
@@ -443,20 +370,19 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         gbc.insets = KiwiUtils.FIRST_INSETS;
         controls.add(l, gbc);
 
-        cover_visible.setText
-            (LangResource.getString("DesktopBgPanel.coverVisible"));
-        cover_visible.addActionListener(this);
-        cover_visible.setOpaque(false);
-        cover_visible.setActionCommand(DesktopBackgroundPanel.TOGGLE_WALLPAPER);
-        cover_visible.setPreferredSize(new Dimension(60, 20));
+        coverVisibleCheckbox.setText(LangResource.getString("DesktopBgPanel.coverVisible"));
+        coverVisibleCheckbox.addActionListener(this);
+        coverVisibleCheckbox.setOpaque(false);
+        coverVisibleCheckbox.setActionCommand(DesktopConstants.TOGGLE_WALLPAPER);
+        coverVisibleCheckbox.setPreferredSize(new Dimension(60, 20));
         if (desktop.isCoverVisible()) {
-            cover_visible.setSelected(true);
+            coverVisibleCheckbox.setSelected(true);
         }
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
-        controls.add(cover_visible, gbc);
+        controls.add(coverVisibleCheckbox, gbc);
 
         l = new JLabel("");
         gbc.gridwidth = 1;
@@ -466,7 +392,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
 
         gradient.setText(LangResource.getString("DesktopBgPanel.gradient"));
         gradient.addActionListener(this);
-        gradient.setActionCommand(DesktopBackgroundPanel.TOGGLE_GRADIENT);
+        gradient.setActionCommand(DesktopConstants.TOGGLE_GRADIENT);
         gradient.setPreferredSize(new Dimension(60, 20));
         gradient.setOpaque(false);
         if (desktop.isGradientFill()) {
@@ -494,14 +420,13 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         l = new JLabel(LangResource.getString("DesktopBgPanel.gradTop"));
         kp1.add(l, BorderLayout.WEST);
 
-        b_browse_top = new JButton();
-        b_browse_top.setDefaultCapable(false);
-        b_browse_top.setActionCommand
-            (DesktopBackgroundPanel.CHOOSE_GRADIENT_COLOR_1);
-        b_browse_top.addActionListener(this);
-        b_browse_top.setBackground(bg_color);
-        b_browse_top.setPreferredSize(new Dimension(20, 20));
-        kp1.add(b_browse_top, BorderLayout.EAST);
+        bBrowseTop = new JButton();
+        bBrowseTop.setDefaultCapable(false);
+        bBrowseTop.setActionCommand(DesktopConstants.CHOOSE_GRADIENT_COLOR_1);
+        bBrowseTop.addActionListener(this);
+        bBrowseTop.setBackground(bgColor);
+        bBrowseTop.setPreferredSize(new Dimension(20, 20));
+        kp1.add(bBrowseTop, BorderLayout.EAST);
 
         KPanel kp2 = new KPanel();
         kp2.setLayout(new BorderLayout(5, 0));
@@ -510,14 +435,13 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         l = new JLabel(LangResource.getString("DesktopBgPanel.gradBottom"));
         kp2.add(l, BorderLayout.WEST);
 
-        b_browse_bottom = new JButton();
-        b_browse_bottom.setDefaultCapable(false);
-        b_browse_bottom.setActionCommand
-            (DesktopBackgroundPanel.CHOOSE_GRADIENT_COLOR_2);
-        b_browse_bottom.addActionListener(this);
-        b_browse_bottom.setBackground(bg_color_2);
-        b_browse_bottom.setPreferredSize(new Dimension(20, 20));
-        kp2.add(b_browse_bottom, BorderLayout.EAST);
+        bBrowseBottom = new JButton();
+        bBrowseBottom.setDefaultCapable(false);
+        bBrowseBottom.setActionCommand(DesktopConstants.CHOOSE_GRADIENT_COLOR_2);
+        bBrowseBottom.addActionListener(this);
+        bBrowseBottom.setBackground(bgColor2);
+        bBrowseBottom.setPreferredSize(new Dimension(20, 20));
+        kp2.add(bBrowseBottom, BorderLayout.EAST);
 
         //   chooser.setPreferredSize(new Dimension(150, 20));
         chooser.add(kp1, BorderLayout.WEST);
@@ -531,5 +455,78 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener {
         controls.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         return controls;
+    }
+
+    class ThisPanelImageRenderer extends ImageRenderer {
+
+        int picWidth = 156;
+        int picHeight = 111;
+        double picXScale = 1;
+        double picYScale = 1;
+
+        public void paintComponent(Graphics g) {
+            if (image != null) {
+                g.drawImage(image.getImage(), (getWidth() - image.getIconWidth()) / 2,
+                    (getHeight() - image.getIconHeight()) / 2, this);
+            }
+            g.translate(getWidth() / 2 - 80, 11);
+            g.setClip(0, 0, picWidth, picHeight);
+            picXScale = (double) picWidth / (double) desktop.getWidth();
+            picYScale = (double) picHeight / (double) desktop.getHeight();
+            render(g);
+        }
+
+        void render(Graphics g) {
+            g.setColor(bgColor);
+            g.fillRect(0, 0, picWidth, picHeight);
+            if (gradientFill) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setPaint(new GradientPaint(0, 0, bgColor, 0, picHeight, bgColor2));
+                g2.fill(new Rectangle(0, 0, picWidth, picHeight));
+            }
+            if (cover != null && coverVisible) {
+                if (renderMode == CENTER_IMAGE) {
+                    g.drawImage(cover.getImage(),
+                        (picWidth - (int) (cover.getIconWidth() * picXScale)) / 2,
+                        (picHeight - (int) (cover.getIconHeight() * picYScale)) / 2,
+                        (int) (cover.getIconWidth() * picXScale),
+                        (int) (cover.getIconHeight() * picYScale),
+                        this);
+                } else if (renderMode == STRETCH_IMAGE) {
+                    g.drawImage(cover.getImage(), 0, 0, picWidth, picHeight, this);
+                } else if (renderMode == TILE_IMAGE) {
+                    int x = 0, y = 0;
+                    while (x < picWidth) {
+                        while (y < picHeight) {
+                            g.drawImage(cover.getImage(), x, y,
+                                (int) (cover.getIconWidth() * picXScale),
+                                (int) (cover.getIconHeight() * picYScale), this);
+                            y += cover.getIconHeight() * picYScale;
+                        }
+                        x += cover.getIconWidth() * picXScale;
+                        y = 0;
+                    }
+                } else if (renderMode == TOP_LEFT_CORNER_IMAGE) {
+                    g.drawImage(cover.getImage(), 0, 0,
+                        (int) (cover.getIconWidth() * picXScale),
+                        (int) (cover.getIconHeight() * picYScale), this);
+                } else if (renderMode == TOP_RIGHT_CORNER_IMAGE) {
+                    g.drawImage(cover.getImage(),
+                        picWidth - (int) (cover.getIconWidth() * picXScale), 0,
+                        (int) (cover.getIconWidth() * picXScale),
+                        (int) (cover.getIconHeight() * picYScale), this);
+                } else if (renderMode == BOTTOM_LEFT_CORNER_IMAGE) {
+                    g.drawImage(cover.getImage(), 0,
+                        picHeight - (int) (cover.getIconHeight() * picYScale),
+                        (int) (cover.getIconWidth() * picXScale),
+                        (int) (cover.getIconHeight() * picYScale), this);
+                } else if (renderMode == BOTTOM_RIGHT_CORNER_IMAGE) {
+                    g.drawImage(cover.getImage(), picWidth - (int) (cover.getIconWidth() * picXScale),
+                        picHeight - (int) (cover.getIconHeight() * picYScale),
+                        (int) (cover.getIconWidth() * picXScale),
+                        (int) (cover.getIconHeight() * picYScale), this);
+                }
+            }
+        }
     }
 }

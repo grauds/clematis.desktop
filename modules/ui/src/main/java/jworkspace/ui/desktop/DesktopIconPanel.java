@@ -48,8 +48,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import jworkspace.LangResource;
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.kernel.Workspace;
@@ -58,167 +60,151 @@ import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 import jworkspace.ui.widgets.ImageRenderer;
 import jworkspace.ui.widgets.ResourceExplorerDialog;
-import kiwi.ui.KButton;
 
 /**
- * This panel gathers user input for desktop ICON properties.
- */
-
-/**
- * Change log:
- * 15.11.2001 - Added text field for working directory of
- * native process.
- * <p>
- * 24.05.02 - New panel for desktop ICON with repository
- * explorer.
+ * This panel gathers user input for desktop icon properties.
+ * @author Anton Troshin
  */
 public class DesktopIconPanel extends KPanel implements ActionListener {
-    private JTextField t_name, t_scripted_method, t_native_command,
-        t_source_script, t_java_app, t_working_dir;
-    private JTextArea t_desc;
-    private JButton b_icon_browse, b_script_browse, b_app_browse, b_wd_browse,
-        b_native_browse, b_lib_browser;
+
+    private JTextField tName, tScriptedMethod, tNativeCommand, tSourceScript, tJavaApp, field;
+
+    private JTextArea tDesc;
+
+    private JButton bIconBrowse, bScriptBrowse, bAppBrowse, bWdBrowse, bNativeBrowse, bLibBrowser;
+
     private DesktopIcon desktopIcon;
-    private ImageRenderer l_image;
-    private int mode = DesktopIcon.JAVA_APP_MODE;
+
+    private ImageRenderer lImage;
+
+    private int mode = DesktopConstants.JAVA_APP_MODE;
+
     private JRadioButton rb1, rb2, rb3, rb4;
-    /**
-     * Data holders
-     */
-    private File script_file;
 
     /**
      * Default constructor
      */
     DesktopIconPanel() {
-        JTabbedPane tabbed_pane = new JTabbedPane();
+        JTabbedPane tabbedPane = new JTabbedPane();
         setLayout(new BorderLayout());
 
-        tabbed_pane.add(LangResource.getString("DesktopIconPanel.imagePanel.title"),
+        tabbedPane.add(LangResource.getString("DesktopIconPanel.imagePanel.title"),
             createFirstPanel());
-        tabbed_pane.add(LangResource.getString("DesktopIconPanel.commandPanel.title"),
+        tabbedPane.add(LangResource.getString("DesktopIconPanel.commandPanel.title"),
             createModesPanel());
 
-        t_desc = new JTextArea(7, 1);
-        t_desc.setLineWrap(true);
-        t_desc.setWrapStyleWord(true);
+        tDesc = new JTextArea(7, 1);
+        tDesc.setLineWrap(true);
+        tDesc.setWrapStyleWord(true);
 
-        tabbed_pane.add(LangResource.getString("DesktopIconPanel.descPanel.title"),
-            new JScrollPane(t_desc));
-        tabbed_pane.setOpaque(false);
+        tabbedPane.add(LangResource.getString("DesktopIconPanel.descPanel.title"),
+            new JScrollPane(tDesc));
+        tabbedPane.setOpaque(false);
         disableAllOnModesPanel();
-        add(tabbed_pane, BorderLayout.CENTER);
+        add(tabbedPane, BorderLayout.CENTER);
     }
 
     public void actionPerformed(ActionEvent evt) {
         Object o = evt.getSource();
-        if (o == b_icon_browse) {
+        if (o == bIconBrowse) {
             Image im = ClassCache.chooseImage(this);
             if (im != null) {
-                l_image.setImage(im);
+                lImage.setImage(im);
             }
-        } else if (o == b_script_browse) {
-            JFileChooser chooser = ClassCache.getFileChooser
-                (jworkspace.LangResource.getString("DesktopIconPanel.chooseScript.title"),
+        } else if (o == bScriptBrowse) {
+            JFileChooser chooser
+                = ClassCache.getFileChooser(jworkspace.LangResource.getString("DesktopIconPanel.chooseScript.title"),
                     new String[]{"bsh"},
                     LangResource.getString("DesktopIconPanel.script")
                 );
+
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setMultiSelectionEnabled(false);
-            if (chooser.showOpenDialog(Workspace.getUI().getFrame())
-                == JFileChooser.APPROVE_OPTION) {
-                script_file = chooser.getSelectedFile();
-                t_source_script.setText(script_file.getAbsolutePath());
+
+            if (chooser.showOpenDialog(Workspace.getUi().getFrame()) == JFileChooser.APPROVE_OPTION) {
+                File scriptFile = chooser.getSelectedFile();
+                tSourceScript.setText(scriptFile.getAbsolutePath());
             }
-        } else if (o == b_app_browse) {
-            ApplicationChooserDialog chooser =
-                new ApplicationChooserDialog(Workspace.getUI().getFrame());
+        } else if (o == bAppBrowse) {
+            ApplicationChooserDialog chooser = new ApplicationChooserDialog(Workspace.getUi().getFrame());
             chooser.setVisible(true);
             if (chooser.isCancelled()) {
                 return;
             }
-            t_java_app.setText(chooser.getSelectedApplication().getLinkString().
+            tJavaApp.setText(chooser.getSelectedApplication().getLinkString().
                 substring(ApplicationDataSource.ROOT.length()
                 ));
-        } else if (o == b_wd_browse) {
-            File dir = ClassCache.chooseDirectory(Workspace.getUI().
-                getFrame());
+        } else if (o == bWdBrowse) {
+            File dir = ClassCache.chooseDirectory(Workspace.getUi(). getFrame());
             if (dir != null) {
-                t_working_dir.setText(dir.getAbsolutePath());
+                field.setText(dir.getAbsolutePath());
             }
-        } else if (o == b_native_browse) {
-            JFileChooser chooser = ClassCache.getFileChooser
-                (jworkspace.LangResource.getString
-                        ("DesktopIconPanel.native.command.browse"),
+        } else if (o == bNativeBrowse) {
+            JFileChooser chooser = ClassCache.getFileChooser(
+                jworkspace.LangResource.getString(DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE),
                     null, LangResource.getString("DesktopIconPanel.native.command")
                 );
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setMultiSelectionEnabled(false);
-            if (chooser.showOpenDialog(Workspace.getUI().getFrame())
-                == JFileChooser.APPROVE_OPTION) {
-                t_native_command.setText(chooser.getSelectedFile().getAbsolutePath());
+            if (chooser.showOpenDialog(Workspace.getUi().getFrame()) == JFileChooser.APPROVE_OPTION) {
+                tNativeCommand.setText(chooser.getSelectedFile().getAbsolutePath());
             }
-        } else if (o == b_lib_browser) {
-            ResourceExplorerDialog res_browser =
-                new ResourceExplorerDialog(Workspace.getUI().getFrame());
-            callResourceBrowser(res_browser);
-            /**
-             * Delete all trash after disposal of large number of
-             * graphic resources.
-             */
+        } else if (o == bLibBrowser) {
+            ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(Workspace.getUi().getFrame());
+            callResourceBrowser(resBrowser);
             Runtime rt = Runtime.getRuntime();
             rt.gc();
             rt.runFinalization();
         } else if (o == rb1) {
             disableAllOnModesPanel();
-            mode = DesktopIcon.SCRIPTED_METHOD_MODE;
-            t_scripted_method.setEnabled(true);
+            mode = DesktopConstants.SCRIPTED_METHOD_MODE;
+            tScriptedMethod.setEnabled(true);
         } else if (o == rb2) {
             disableAllOnModesPanel();
-            mode = DesktopIcon.SCRIPTED_FILE_MODE;
-            t_source_script.setEnabled(true);
-            b_script_browse.setEnabled(true);
+            mode = DesktopConstants.SCRIPTED_FILE_MODE;
+            tSourceScript.setEnabled(true);
+            bScriptBrowse.setEnabled(true);
         } else if (o == rb3) {
             disableAllOnModesPanel();
-            mode = DesktopIcon.JAVA_APP_MODE;
-            t_java_app.setEnabled(true);
-            b_app_browse.setEnabled(true);
+            mode = DesktopConstants.JAVA_APP_MODE;
+            tJavaApp.setEnabled(true);
+            bAppBrowse.setEnabled(true);
         } else if (o == rb4) {
             disableAllOnModesPanel();
-            mode = DesktopIcon.NATIVE_COMMAND_MODE;
-            t_native_command.setEnabled(true);
-            t_working_dir.setEnabled(true);
-            b_native_browse.setEnabled(true);
-            b_wd_browse.setEnabled(true);
+            mode = DesktopConstants.NATIVE_COMMAND_MODE;
+            tNativeCommand.setEnabled(true);
+            field.setEnabled(true);
+            bNativeBrowse.setEnabled(true);
+            bWdBrowse.setEnabled(true);
         }
     }
 
-    protected void callResourceBrowser(ResourceExplorerDialog res_browser) {
-        res_browser.setHint(false);
-        String path = Workspace.getProfilesEngine().getParameters().
-            getString("DESKTOP_ICONS_REPOSITORY");
-        if (path == null && Workspace.getUI() instanceof WorkspaceGUI) {
-            path = ((WorkspaceGUI) Workspace.getUI()).getDesktopIconsPath();
-            Workspace.getProfilesEngine().
-                getParameters().putString("DESKTOP_ICONS_REPOSITORY", path);
-        }
-        res_browser.setData(path);
-        res_browser.setVisible(true);
+    private void callResourceBrowser(ResourceExplorerDialog resBrowser) {
 
-        if (!res_browser.isCancelled()) {
-            ImageIcon[] icons = res_browser.getSelectedImages();
+        resBrowser.setHint(false);
+        String path = Workspace.getProfilesEngine().getParameters().getString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
+
+        if (path == null && Workspace.getUi() instanceof WorkspaceGUI) {
+            path = ((WorkspaceGUI) Workspace.getUi()).getDesktopIconsPath();
+            Workspace.getProfilesEngine().getParameters().putString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
+        }
+        resBrowser.setData(path);
+        resBrowser.setVisible(true);
+
+        if (!resBrowser.isCancelled()) {
+            ImageIcon[] icons = resBrowser.getSelectedImages();
             if (icons != null && icons.length != 0
                 && icons[0] != null) {
-                l_image.setImage(icons[0].getImage());
+                lImage.setImage(icons[0].getImage());
             }
         }
     }
 
-    protected KPanel createFirstPanel() {
-        KPanel first_panel = new KPanel();
+    private KPanel createFirstPanel() {
+        KPanel firstPanel = new KPanel();
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
-        first_panel.setLayout(gb);
+        firstPanel.setLayout(gb);
 
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -228,26 +214,26 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         l = new JLabel(LangResource.getString("DesktopIconPanel.icon.name"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
-        first_panel.add(l, gbc);
+        firstPanel.add(l, gbc);
 
-        t_name = new JTextField(20);
-        t_name.setPreferredSize(new Dimension(150, 20));
+        tName = new JTextField(20);
+        tName.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
-        first_panel.add(t_name, gbc);
-        /**
+        firstPanel.add(tName, gbc);
+        /*
          * Chooser panel
          */
         KPanel p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
         p1.setBorder(new EmptyBorder(0, 0, 5, 0));
 
-        l_image = new jworkspace.ui.widgets.ImageRenderer();
-        JScrollPane sp = new JScrollPane(l_image);
+        lImage = new jworkspace.ui.widgets.ImageRenderer();
+        JScrollPane sp = new JScrollPane(lImage);
         sp.setPreferredSize(new Dimension(200, 200));
-        p1.add("Center", sp);
-        /**
+        p1.add(DesktopConstants.CENTER, sp);
+        /*
          * Buttons panel
          */
         KPanel bp = new KPanel();
@@ -255,283 +241,267 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
         ImageIcon icon = new ImageIcon(Workspace.
             getResourceManager().getImage("folder.png"));
-        b_icon_browse = new JButton(icon);
-        b_icon_browse.setToolTipText
-            (LangResource.getString("DesktopIconPanel.browseImage.tooltip"));
-        b_icon_browse.addActionListener(this);
-        b_icon_browse.setDefaultCapable(false);
-        b_icon_browse.setOpaque(false);
-        bp.add(b_icon_browse);
+        bIconBrowse = new JButton(icon);
+        bIconBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.browseImage.tooltip"));
+        bIconBrowse.addActionListener(this);
+        bIconBrowse.setDefaultCapable(false);
+        bIconBrowse.setOpaque(false);
+        bp.add(bIconBrowse);
 
         icon = new ImageIcon(Workspace.
             getResourceManager().getImage("repository.png"));
-        b_lib_browser = new JButton(icon);
-        b_lib_browser.setToolTipText
-            (LangResource.getString("DesktopIconPanel.browseRepos.tooltip"));
-        b_lib_browser.addActionListener(this);
-        b_lib_browser.setDefaultCapable(false);
-        b_lib_browser.setOpaque(false);
-        bp.add(b_lib_browser);
+        bLibBrowser = new JButton(icon);
+        bLibBrowser.setToolTipText(LangResource.getString("DesktopIconPanel.browseRepos.tooltip"));
+        bLibBrowser.addActionListener(this);
+        bLibBrowser.setDefaultCapable(false);
+        bLibBrowser.setOpaque(false);
+        bp.add(bLibBrowser);
 
         KPanel p5 = new KPanel();
         p5.setLayout(new BorderLayout(5, 5));
-        p5.add("North", bp);
+        p5.add(DesktopConstants.NORTH, bp);
 
-        p1.add("East", p5);
+        p1.add(DesktopConstants.EAST, p5);
 
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        first_panel.add(p1, gbc);
+        firstPanel.add(p1, gbc);
 
-        first_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        firstPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        return first_panel;
+        return firstPanel;
     }
 
     protected KPanel createModesPanel() {
-        /**
-         * Modes panel configures execution mode
-         * for shortcut.
-         */
-        KPanel modes_panel = new KPanel();
-
+        KPanel modesPanel = new KPanel();
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
-        modes_panel.setLayout(gb);
+        modesPanel.setLayout(gb);
 
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 0;
 
         ButtonGroup bg = new ButtonGroup();
-        /**
-         * Execute installed java application.
-         */
-        rb3 = new JRadioButton
-            (LangResource.getString("DesktopIconPanel.categ.javaApp"));
+        rb3 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.javaApp"));
         rb3.addActionListener(this);
         rb3.setOpaque(false);
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb3);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(rb3, gbc);
-        /**
-         * Panel No.1.
-         */
+        modesPanel.add(rb3, gbc);
+
         KPanel p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
         p1.setPreferredSize(new Dimension(150, 20));
 
-        t_java_app = new JTextField(15);
-        t_java_app.setPreferredSize(new Dimension(150, 20));
-        t_java_app.setOpaque(false);
-        t_java_app.setEditable(false);
+        tJavaApp = new JTextField(15);
+        tJavaApp.setPreferredSize(new Dimension(150, 20));
+        tJavaApp.setOpaque(false);
+        tJavaApp.setEditable(false);
 
-        p1.add("Center", t_java_app);
+        p1.add(DesktopConstants.CENTER, tJavaApp);
 
-        b_app_browse = new KButton("...");
-        b_app_browse.setToolTipText
-            (LangResource.getString("DesktopIconPanel.browse.javaApp"));
-        b_app_browse.addActionListener(this);
-        b_app_browse.setDefaultCapable(false);
-        p1.add("East", b_app_browse);
+        bAppBrowse = new KButton(DesktopConstants.DOTS);
+        bAppBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.browse.javaApp"));
+        bAppBrowse.addActionListener(this);
+        bAppBrowse.setDefaultCapable(false);
+        p1.add(DesktopConstants.EAST, bAppBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(p1, gbc);
-        /**
-         * Execute function from bsh console.
-         */
-        rb1 = new JRadioButton
-            (LangResource.getString("DesktopIconPanel.categ.bshConsole"));
+        modesPanel.add(p1, gbc);
+
+        rb1 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.bshConsole"));
         rb1.addActionListener(this);
         rb1.setOpaque(false);
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb1);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(rb1, gbc);
+        modesPanel.add(rb1, gbc);
 
-        t_scripted_method = new JTextField(15);
-        t_scripted_method.setPreferredSize(new Dimension(150, 20));
+        tScriptedMethod = new JTextField(15);
+        tScriptedMethod.setPreferredSize(new Dimension(150, 20));
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(t_scripted_method, gbc);
-        /**
-         * Execute function from bsh console.
-         */
-        rb2 = new JRadioButton
-            (LangResource.getString("DesktopIconPanel.categ.bshFile"));
+        modesPanel.add(tScriptedMethod, gbc);
+
+        rb2 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.bshFile"));
         rb2.addActionListener(this);
         rb2.setOpaque(false);
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb2);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(rb2, gbc);
-        /**
-         * Panel No.2.
-         */
+        modesPanel.add(rb2, gbc);
+
         KPanel p0 = new KPanel();
         p0.setLayout(new BorderLayout(5, 5));
         p0.setPreferredSize(new Dimension(150, 20));
 
-        t_source_script = new JTextField(15);
-        t_source_script.setPreferredSize(new Dimension(150, 20));
-        t_source_script.setOpaque(false);
-        t_source_script.setEditable(false);
+        tSourceScript = new JTextField(15);
+        tSourceScript.setPreferredSize(new Dimension(150, 20));
+        tSourceScript.setOpaque(false);
+        tSourceScript.setEditable(false);
 
-        p0.add("Center", t_source_script);
+        p0.add(DesktopConstants.CENTER, tSourceScript);
 
-        b_script_browse = new KButton("...");
-        b_script_browse.setToolTipText
-            (LangResource.getString("DesktopIconPanel.browse.bshFile"));
-        b_script_browse.addActionListener(this);
-        b_script_browse.setDefaultCapable(false);
-        p0.add("East", b_script_browse);
+        bScriptBrowse = new KButton(DesktopConstants.DOTS);
+        bScriptBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.browse.bshFile"));
+        bScriptBrowse.addActionListener(this);
+        bScriptBrowse.setDefaultCapable(false);
+        p0.add(DesktopConstants.EAST, bScriptBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(p0, gbc);
-        /**
-         * Execute native command.
-         */
-        rb4 = new JRadioButton
-            (LangResource.getString("DesktopIconPanel.categ.native"));
+        modesPanel.add(p0, gbc);
+
+        rb4 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.native"));
         rb4.addActionListener(this);
         rb4.setOpaque(false);
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb4);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(rb4, gbc);
+        modesPanel.add(rb4, gbc);
 
-        /**
-         * Panel No.3.
-         */
         p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
         p1.setPreferredSize(new Dimension(150, 20));
 
-        t_native_command = new JTextField(15);
-        t_native_command.setPreferredSize(new Dimension(150, 20));
-        t_native_command.setOpaque(false);
-        t_native_command.setEditable(true);
+        tNativeCommand = new JTextField(15);
+        tNativeCommand.setPreferredSize(new Dimension(150, 20));
+        tNativeCommand.setOpaque(false);
+        tNativeCommand.setEditable(true);
 
-        p1.add("Center", t_native_command);
+        p1.add(DesktopConstants.CENTER, tNativeCommand);
 
-        b_native_browse = new KButton("...");
-        b_native_browse.setToolTipText
-            (LangResource.getString("DesktopIconPanel.native.command.browse"));
-        b_native_browse.addActionListener(this);
-        b_native_browse.setDefaultCapable(false);
-        p1.add("East", b_native_browse);
+        bNativeBrowse = new KButton(DesktopConstants.DOTS);
+        bNativeBrowse.setToolTipText(LangResource.getString(DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
+        bNativeBrowse.addActionListener(this);
+        bNativeBrowse.setDefaultCapable(false);
+        p1.add(DesktopConstants.EAST, bNativeBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(p1, gbc);
-        /**
-         * Label for working directory.
-         */
+        modesPanel.add(p1, gbc);
+
         JLabel l = new JLabel(LangResource.getString("DesktopIconPanel.native.wd"));
         l.setOpaque(false);
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(l, gbc);
-        /**
-         * Panel No.4.
-         */
+        modesPanel.add(l, gbc);
+
         p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
         p1.setPreferredSize(new Dimension(150, 20));
 
-        t_working_dir = new JTextField(15);
-        t_working_dir.setPreferredSize(new Dimension(150, 20));
-        t_working_dir.setOpaque(false);
-        t_working_dir.setEditable(true);
+        field = new JTextField(15);
+        field.setPreferredSize(new Dimension(150, 20));
+        field.setOpaque(false);
+        field.setEditable(true);
 
-        p1.add("Center", t_working_dir);
+        p1.add(DesktopConstants.CENTER, field);
 
-        b_wd_browse = new KButton("...");
-        b_wd_browse.setToolTipText
-            (LangResource.getString("DesktopIconPanel.native.wd.browse"));
-        b_wd_browse.addActionListener(this);
-        b_wd_browse.setDefaultCapable(false);
-        p1.add("East", b_wd_browse);
+        bWdBrowse = new KButton(DesktopConstants.DOTS);
+        bWdBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.native.wd.browse"));
+        bWdBrowse.addActionListener(this);
+        bWdBrowse.setDefaultCapable(false);
+        p1.add(DesktopConstants.EAST, bWdBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modes_panel.add(p1, gbc);
+        modesPanel.add(p1, gbc);
 
-        modes_panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        modesPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        return modes_panel;
+        return modesPanel;
     }
 
     public void setData(DesktopIcon data) {
+
         desktopIcon = data;
-        t_name.setText(data.getName());
-        l_image.setImage(data.getIcon().getImage());
-        t_desc.setText(data.getComments());
+        tName.setText(data.getName());
+        lImage.setImage(data.getIcon().getImage());
+        tDesc.setText(data.getComments());
         mode = desktopIcon.getMode();
-        if (mode == DesktopIcon.SCRIPTED_METHOD_MODE) {
-            t_scripted_method.setEnabled(true);
-            t_scripted_method.setText(desktopIcon.getCommandLine());
+
+        if (mode == DesktopConstants.SCRIPTED_METHOD_MODE) {
+
+            tScriptedMethod.setEnabled(true);
+            tScriptedMethod.setText(desktopIcon.getCommandLine());
             rb1.setSelected(true);
-        } else if (mode == DesktopIcon.SCRIPTED_FILE_MODE) {
-            t_source_script.setEnabled(true);
-            t_source_script.setText(desktopIcon.getCommandLine());
-            b_script_browse.setEnabled(true);
+
+        } else if (mode == DesktopConstants.SCRIPTED_FILE_MODE) {
+
+            tSourceScript.setEnabled(true);
+            tSourceScript.setText(desktopIcon.getCommandLine());
+            bScriptBrowse.setEnabled(true);
             rb2.setSelected(true);
-        } else if (mode == DesktopIcon.JAVA_APP_MODE) {
-            t_java_app.setEnabled(true);
-            t_java_app.setText(desktopIcon.getCommandLine());
-            b_app_browse.setEnabled(true);
+
+        } else if (mode == DesktopConstants.JAVA_APP_MODE) {
+
+            tJavaApp.setEnabled(true);
+            tJavaApp.setText(desktopIcon.getCommandLine());
+            bAppBrowse.setEnabled(true);
             rb3.setSelected(true);
-        } else if (mode == DesktopIcon.NATIVE_COMMAND_MODE) {
-            t_native_command.setEnabled(true);
-            t_native_command.setText(desktopIcon.getCommandLine());
-            t_working_dir.setText(desktopIcon.getWorkingDirectory());
-            t_working_dir.setEnabled(true);
-            b_native_browse.setEnabled(true);
-            b_wd_browse.setEnabled(true);
+
+        } else if (mode == DesktopConstants.NATIVE_COMMAND_MODE) {
+
+            tNativeCommand.setEnabled(true);
+            tNativeCommand.setText(desktopIcon.getCommandLine());
+            field.setText(desktopIcon.getWorkingDirectory());
+            field.setEnabled(true);
+            bNativeBrowse.setEnabled(true);
+            bWdBrowse.setEnabled(true);
             rb4.setSelected(true);
         }
     }
 
-    protected void disableAllOnModesPanel() {
-        b_app_browse.setEnabled(false);
-        b_script_browse.setEnabled(false);
-        t_scripted_method.setEnabled(false);
-        t_source_script.setEnabled(false);
-        t_java_app.setEnabled(false);
-        b_native_browse.setEnabled(false);
-        t_native_command.setEnabled(false);
-        t_working_dir.setEnabled(false);
-        b_wd_browse.setEnabled(false);
+    private void disableAllOnModesPanel() {
+        bAppBrowse.setEnabled(false);
+        bScriptBrowse.setEnabled(false);
+        tScriptedMethod.setEnabled(false);
+        tSourceScript.setEnabled(false);
+        tJavaApp.setEnabled(false);
+        bNativeBrowse.setEnabled(false);
+        tNativeCommand.setEnabled(false);
+        field.setEnabled(false);
+        bWdBrowse.setEnabled(false);
     }
 
-    public boolean syncData() {
-        desktopIcon.setName(t_name.getText());
-        desktopIcon.setIcon(new ImageIcon(l_image.getImage()));
-        desktopIcon.setComments(t_desc.getText());
+    boolean syncData() {
+
+        desktopIcon.setName(tName.getText());
+        desktopIcon.setIcon(new ImageIcon(lImage.getImage()));
+        desktopIcon.setComments(tDesc.getText());
         desktopIcon.setMode(this.mode);
-        if (mode == DesktopIcon.SCRIPTED_METHOD_MODE) {
-            desktopIcon.setCommandLine(t_scripted_method.getText());
-        } else if (mode == DesktopIcon.SCRIPTED_FILE_MODE) {
-            desktopIcon.setCommandLine(t_source_script.getText());
-        } else if (mode == DesktopIcon.JAVA_APP_MODE) {
-            desktopIcon.setCommandLine(t_java_app.getText());
-        } else if (mode == DesktopIcon.NATIVE_COMMAND_MODE) {
-            desktopIcon.setCommandLine(t_native_command.getText());
-            desktopIcon.setWorkingDirectory(t_working_dir.getText());
+
+        if (mode == DesktopConstants.SCRIPTED_METHOD_MODE) {
+
+            desktopIcon.setCommandLine(tScriptedMethod.getText());
+
+        } else if (mode == DesktopConstants.SCRIPTED_FILE_MODE) {
+
+            desktopIcon.setCommandLine(tSourceScript.getText());
+
+        } else if (mode == DesktopConstants.JAVA_APP_MODE) {
+
+            desktopIcon.setCommandLine(tJavaApp.getText());
+
+        } else if (mode == DesktopConstants.NATIVE_COMMAND_MODE) {
+
+            desktopIcon.setCommandLine(tNativeCommand.getText());
+            desktopIcon.setWorkingDirectory(field.getText());
+
         }
         return (true);
     }

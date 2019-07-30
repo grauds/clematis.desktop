@@ -24,12 +24,13 @@ package jworkspace.ui.desktop;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Point;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
@@ -100,52 +101,43 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
 
     void resizeDesktop() {
 
-        int x = 0;
-        int y = 0;
+        Point point = new Point(0, 0);
 
         JScrollPane scrollPane = getScrollPane();
         Insets scrollInsets = getScrollPaneInsets();
 
         if (scrollPane != null) {
-            JInternalFrame[] allFrames = desktop.getAllFrames();
 
-            {
-                int i = 0;
-                while (i < allFrames.length) {
-                    if (allFrames[i].getX() + allFrames[i].getWidth() > x) {
-                        x = allFrames[i].getX() + allFrames[i].getWidth();
-                    }
-                    if (allFrames[i].getY() + allFrames[i].getHeight() > y) {
-                        y = allFrames[i].getY() + allFrames[i].getHeight();
-                    }
-                    i++;
-                }
-            }
-            DesktopIcon[] allIcons = desktop.getDesktopIcons();
-            int i = 0;
-            while (i < allIcons.length) {
-                if (allIcons[i].getX() + allIcons[i].getWidth() > x) {
-                    x = allIcons[i].getX() + allIcons[i].getWidth();
-                }
-                if (allIcons[i].getY() + allIcons[i].getHeight() > y) {
-                    y = allIcons[i].getY() + allIcons[i].getHeight();
-                }
-                i++;
-            }
+            calculateArea(point, desktop.getAllFrames());
+            calculateArea(point, desktop.getDesktopIcons());
+
             Dimension d = scrollPane.getVisibleRect().getSize();
             if (scrollPane.getBorder() != null) {
                 d.setSize(d.getWidth() - scrollInsets.left - scrollInsets.right,
                     d.getHeight() - scrollInsets.top - scrollInsets.bottom);
             }
-            if (x <= d.getWidth()) {
-                x = ((int) d.getWidth()) - 20;
+            if (point.x <= d.getWidth()) {
+                point.x = ((int) d.getWidth()) - 20;
             }
-            if (y <= d.getHeight()) {
-                y = ((int) d.getHeight()) - 20;
+            if (point.y <= d.getHeight()) {
+                point.y = ((int) d.getHeight()) - 20;
             }
-            desktop.setAllSize(x, y);
+            desktop.setAllSize(point.x, point.y);
             scrollPane.invalidate();
             scrollPane.validate();
+        }
+    }
+
+    private static void calculateArea(Point point, Component... components) {
+        int i = 0;
+        while (i < components.length) {
+            if (components[i].getX() + components[i].getWidth() > point.x) {
+                point.x = components[i].getX() + components[i].getWidth();
+            }
+            if (components[i].getY() + components[i].getHeight() > point.y) {
+                point.y = components[i].getY() + components[i].getHeight();
+            }
+            i++;
         }
     }
 }

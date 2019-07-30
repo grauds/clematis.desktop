@@ -33,7 +33,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
 /**
- * Desktop ICON selection is necessary for group operations with icons.
+ * Desktop icon selection is necessary for group operations with icons.
  */
 class DesktopIconSelection implements ClipboardOwner, Transferable {
 
@@ -53,7 +53,7 @@ class DesktopIconSelection implements ClipboardOwner, Transferable {
     }
 
     /**
-     * Returns transfer data, that is actually a desktop ICON data.
+     * Returns transfer data, that is actually a desktop icon data.
      */
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (flavor.equals(desktopIconFlavor)) {

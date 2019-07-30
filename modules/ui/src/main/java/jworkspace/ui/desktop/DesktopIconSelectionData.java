@@ -29,8 +29,7 @@ package jworkspace.ui.desktop;
 import java.io.Serializable;
 
 /**
- * Desktop ICON selection data is necessary
- * for copy/paste of icons groups.
+ * Desktop icon selection data is necessary for copy/paste of icons groups.
  */
 class DesktopIconSelectionData implements Serializable {
     private Integer size;

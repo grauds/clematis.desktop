@@ -96,6 +96,22 @@ interface DesktopConstants {
     /**
      *
      */
+    String TOGGLE_WALLPAPER = "TOGGLE_WALLPAPER";
+    /**
+     *
+     */
+    String TOGGLE_GRADIENT = "TOGGLE_GRADIENT";
+    /**
+     *
+     */
+    String CHOOSE_GRADIENT_COLOR_1 = "CHOOSE_GRADIENT_COLOR_1";
+    /**
+     *
+     */
+    String CHOOSE_GRADIENT_COLOR_2 = "CHOOSE_GRADIENT_COLOR_2";
+    /**
+     *
+     */
     String DESKTOP_DAT = "desktop.dat";
     /**
      * Icon on NORTH
@@ -137,4 +153,48 @@ interface DesktopConstants {
      *
      */
     String DESKTOP_NAME_DEFAULT = LangResource.getString("Desktop.defaultName");
+    /**
+     *
+     */
+    int SCRIPTED_METHOD_MODE = 0;
+    /**
+     *
+     */
+    int SCRIPTED_FILE_MODE = 1;
+    /**
+     *
+     */
+    int NATIVE_COMMAND_MODE = 2;
+    /**
+     *
+     */
+    int JAVA_APP_MODE = 3;
+    /**
+     *
+     */
+    String DEFAULT_ICON = "desktop/default.png";
+    /**
+     *
+     */
+    String DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE = "DesktopIconPanel.native.command.browse";
+    /**
+     *
+     */
+    String DESKTOP_ICONS_REPOSITORY_PARAMETER = "DESKTOP_ICONS_REPOSITORY";
+    /**
+     *
+     */
+    String CENTER = "Center";
+    /**
+     *
+     */
+    String EAST = "East";
+    /**
+     *
+     */
+    String NORTH = "North";
+    /**
+     *
+     */
+    String DOTS = "...";
 }
