@@ -53,16 +53,19 @@ import javax.swing.UIManager;
  * @author Mark Lindner
  * @author PING Software Group
  */
-
 class DesktopIconLabel extends JLabel {
-    public final static int CENTER_ALIGNMENT = 0;
-    public final static int LEFT_ALIGNMENT = 1;
-    public final static int RIGHT_ALIGNMENT = 2;
+    static final int CENTER_ALIGNMENT = 0;
+    private static final int LEFT_ALIGNMENT = 1;
+    private static final int RIGHT_ALIGNMENT = 2;
 
-    private int cols, ph = -1, pw = -1, h, h0;
+    private int cols;
+    private int pw = -1;
+    private int h;
+    private int h0;
     private FontMetrics fm = null;
     private String text;
     private String[] lines;
+    @SuppressWarnings("checkstyle:MagicNumber")
     private Dimension dim = new Dimension(10, 10);
     private int alignment = DesktopIconLabel.LEFT_ALIGNMENT;
     private boolean selected = false;
@@ -76,13 +79,13 @@ class DesktopIconLabel extends JLabel {
      *             one "column" is the pixel width of the letter 'm' in the current font.
      */
 
-    public DesktopIconLabel(String text, int cols) {
+    DesktopIconLabel(String text, int cols) {
         super();
         this.cols = cols;
         this.text = text;
     }
 
-    public DesktopIconLabel(String text) {
+    DesktopIconLabel(String text) {
         super();
         this.cols = 1;
         this.text = text;
@@ -90,13 +93,14 @@ class DesktopIconLabel extends JLabel {
 
     /* format the text */
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private void format() {
         Font font = getFont();
         if (font == null) {
             font = new Font("Dialog", Font.PLAIN, 12);
         }
         fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
-        /**
+        /*
          * If supplied text is narrower than maximum
          * columns - cols, shrink label horizontally.
          */
@@ -144,7 +148,7 @@ class DesktopIconLabel extends JLabel {
 
         h = fm.getHeight() + fm.getLeading();
         h0 = fm.getAscent() + fm.getLeading();
-        ph = (lines.length * h);
+        int ph = (lines.length * h);
 
         Insets ins = getInsets();
 
@@ -191,42 +195,41 @@ class DesktopIconLabel extends JLabel {
         gc.setFont(getFont());
         gc.setColor(getForeground());
 
-        int line_length = 0;
+        int lineLength = 0;
 
         if (alignment == DesktopIconLabel.CENTER_ALIGNMENT) {
             for (int i = 0; i < lines.length; i++) {
                 for (int j = 0; j < lines[i].length(); j++) {
-                    line_length += fm.charWidth(lines[i].charAt(j));
+                    lineLength += fm.charWidth(lines[i].charAt(j));
                 }
 
                 gc.drawString(lines[i],
-                    ins.left +
-                        (getWidth() - line_length) / 2,
+                    ins.left + (getWidth() - lineLength) / 2,
                     ins.top + h0 + (i * h));
 
-                line_length = 0;
+                lineLength = 0;
             }
         } else if (alignment == DesktopIconLabel.LEFT_ALIGNMENT) {
             for (int i = 0; i < lines.length; i++) {
                 for (int j = 0; j < lines[i].length(); j++) {
-                    line_length += fm.charWidth(lines[i].charAt(j));
+                    lineLength += fm.charWidth(lines[i].charAt(j));
                 }
 
                 gc.drawString(lines[i],
-                    getWidth() - line_length - ins.right, ins.top + h0 + (i * h));
+                    getWidth() - lineLength - ins.right, ins.top + h0 + (i * h));
 
-                line_length = 0;
+                lineLength = 0;
             }
         } else {
             for (int i = 0; i < lines.length; i++) {
                 for (int j = 0; j < lines[i].length(); j++) {
-                    line_length += fm.charWidth(lines[i].charAt(j));
+                    lineLength += fm.charWidth(lines[i].charAt(j));
                 }
 
                 gc.drawString(lines[i],
                     ins.right, ins.top + h0 + (i * h));
 
-                line_length = 0;
+                lineLength = 0;
             }
         }
         paintBorder(gc);
@@ -266,9 +269,8 @@ class DesktopIconLabel extends JLabel {
      * @param alignment The new alignment
      */
     public void setAlignment(int alignment) {
-        if (alignment != DesktopIconLabel.CENTER_ALIGNMENT &&
-            alignment != DesktopIconLabel.LEFT_ALIGNMENT &&
-            alignment != DesktopIconLabel.RIGHT_ALIGNMENT) {
+        if (alignment != DesktopIconLabel.CENTER_ALIGNMENT && alignment != DesktopIconLabel.LEFT_ALIGNMENT
+            && alignment != DesktopIconLabel.RIGHT_ALIGNMENT) {
             throw new IllegalArgumentException("Invalid alignment");
         }
         this.alignment = alignment;

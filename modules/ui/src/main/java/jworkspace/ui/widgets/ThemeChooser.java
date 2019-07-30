@@ -36,7 +36,7 @@ import javax.swing.plaf.metal.MetalTheme;
  * Chooser for metal themes in look and feel
  * @author Anton Troshin
  */
-public class ThemeChooser extends JComboBox {
+public class ThemeChooser extends JComboBox<MetalTheme> {
     /**
      * Construct a new <code>ThemeChooser</code>.
      */

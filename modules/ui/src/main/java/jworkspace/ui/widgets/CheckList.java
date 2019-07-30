@@ -51,12 +51,14 @@ import jworkspace.ui.action.UISwitchListener;
  *
  * @author Anton Troshin
  */
+@SuppressWarnings("unused")
 public class CheckList extends JPanel {
 
     private JList<CheckBoxItem> listCheckBox;
 
     private JList<String> listDescription;
 
+    @SuppressWarnings("MagicNumber")
     public CheckList() {
         super();
         setLayout(new BorderLayout());
@@ -92,7 +94,7 @@ public class CheckList extends JPanel {
                 if (selectedIndex < 0) {
                     return;
                 }
-                CheckBoxItem item = (CheckBoxItem) listCheckBox.getModel().getElementAt(selectedIndex);
+                CheckBoxItem item = listCheckBox.getModel().getElementAt(selectedIndex);
                 item.setChecked(!item.isChecked());
                 listDescription.setSelectedIndex(selectedIndex);
                 listCheckBox.repaint();
@@ -193,7 +195,8 @@ public class CheckList extends JPanel {
     }
 
     /* Inner class to hold data for JList with checkboxes */
-    class CheckBoxItem {
+    static class CheckBoxItem {
+
         private boolean isChecked;
 
         CheckBoxItem() {
@@ -212,16 +215,35 @@ public class CheckList extends JPanel {
     /**
      * Inner class that renders JCheckBox to JList
      */
-    class CheckBoxRenderer extends JCheckBox implements ListCellRenderer {
+    static class CheckBoxRenderer extends JCheckBox implements ListCellRenderer<CheckBoxItem> {
 
         CheckBoxRenderer() {
             setBackground(UIManager.getColor("List.textBackground"));
             setForeground(UIManager.getColor("List.textForeground"));
         }
-
-        public Component getListCellRendererComponent(JList listBox, Object obj, int currentindex,
-                                                      boolean isChecked, boolean hasFocus) {
-            setSelected(((CheckBoxItem) obj).isChecked());
+        /**
+         * Return a component that has been configured to display the specified
+         * value. That component's <code>paint</code> method is then called to
+         * "render" the cell.  If it is necessary to compute the dimensions
+         * of a list because the list cells do not have a fixed size, this method
+         * is called to generate a component on which <code>getPreferredSize</code>
+         * can be invoked.
+         *
+         * @param list         The JList we're painting.
+         * @param value        The value returned by list.getModel().getElementAt(index).
+         * @param index        The cells index.
+         * @param isSelected   True if the specified cell was selected.
+         * @param cellHasFocus True if the specified cell has the focus.
+         * @return A component whose paint() method will render the specified value.
+         * @see JList
+         * @see ListSelectionModel
+         * @see ListModel
+         */
+        @Override
+        public Component getListCellRendererComponent(JList<? extends CheckBoxItem> list,
+                                                      CheckBoxItem value, int index, boolean isSelected,
+                                                      boolean cellHasFocus) {
+            setSelected(value.isChecked());
             return this;
         }
 

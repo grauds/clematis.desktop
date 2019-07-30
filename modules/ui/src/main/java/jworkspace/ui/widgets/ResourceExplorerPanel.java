@@ -427,7 +427,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
      * This is a representation of a single square thumbnail for
      * separate ICON.
      */
-    class Thumbnail extends JLabel implements MouseListener {
+    static class Thumbnail extends JLabel implements MouseListener {
 
         private boolean selected = false;
 

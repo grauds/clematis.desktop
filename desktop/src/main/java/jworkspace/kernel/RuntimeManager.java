@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,7 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
+import jworkspace.LangResource;
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.ui.WorkspacePluginContext;
 
@@ -86,6 +89,37 @@ public final class RuntimeManager {
      */
     RuntimeManager() {
         super();
+    }
+
+    /**
+     * Kill all processes.
+     */
+    static void killAllProcesses() {
+
+        boolean alive = false;
+        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("exit.png"));
+
+        for (JavaProcess jp : Workspace.getRuntimeManager().getAllProcesses()) {
+            if (jp.isAlive()) {
+                alive = true;
+                break;
+            }
+        }
+
+        if (!alive) {
+            return;
+        }
+
+        if (Workspace.getUi().showConfirmDialog(LangResource.getString("Workspace.killAll.question"),
+            LangResource.getString("Workspace.killAll.title"), icon)) {
+
+            for (JavaProcess jp : Workspace.getRuntimeManager().getAllProcesses()) {
+                if (jp != null) {
+                    jp.kill();
+                }
+            }
+        }
+
     }
 
     /**
@@ -153,7 +187,7 @@ public final class RuntimeManager {
             processes.addElement(process);
 
         } catch (IOException | Error e) {
-            Workspace.ui.showError(CANNOT_START_APPLICATION, e);
+            Workspace.getUi().showError(CANNOT_START_APPLICATION, e);
         }
 
         try {
@@ -161,11 +195,11 @@ public final class RuntimeManager {
              * Try to set old working directory
              */
             if (!NativeLib.setCurrentDir(oldWorkingDir)) {
-                Workspace.ui.showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                Workspace.getUi().showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
             }
 
         } catch (Error err) {
-            Workspace.ui.showError(CANNOT_START_APPLICATION, err);
+            Workspace.getUi().showError(CANNOT_START_APPLICATION, err);
         }
     }
 
@@ -182,19 +216,19 @@ public final class RuntimeManager {
              */
             if (workingDir != null) {
                 if (!NativeLib.setCurrentDir(workingDir)) {
-                    Workspace.ui.showMessage(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                    Workspace.getUi().showMessage(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
                 }
             }
             Runtime.getRuntime().exec(command);
         } catch (IOException ex) {
-            Workspace.ui.showError("Cannot execute native command", ex);
+            Workspace.getUi().showError("Cannot execute native command", ex);
         }
         if (workingDir != null) {
             /*
              * Try to set old working directory
              */
             if (!NativeLib.setCurrentDir(oldWorkingDir)) {
-                Workspace.ui.showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                Workspace.getUi().showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
             }
         }
     }

@@ -65,6 +65,7 @@ import jworkspace.ui.widgets.ResourceExplorerDialog;
  * This panel gathers user input for desktop icon properties.
  * @author Anton Troshin
  */
+@SuppressWarnings("MagicNumber")
 public class DesktopIconPanel extends KPanel implements ActionListener {
 
     private JTextField tName, tScriptedMethod, tNativeCommand, tSourceScript, tJavaApp, field;
@@ -135,7 +136,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
                 substring(ApplicationDataSource.ROOT.length()
                 ));
         } else if (o == bWdBrowse) {
-            File dir = ClassCache.chooseDirectory(Workspace.getUi(). getFrame());
+            File dir = ClassCache.chooseDirectory(Workspace.getUi().getFrame());
             if (dir != null) {
                 field.setText(dir.getAbsolutePath());
             }
@@ -182,11 +183,13 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
     private void callResourceBrowser(ResourceExplorerDialog resBrowser) {
 
         resBrowser.setHint(false);
-        String path = Workspace.getProfilesEngine().getParameters().getString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
+        String path = Workspace.getProfilesEngine().getParameters().
+            getString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
 
         if (path == null && Workspace.getUi() instanceof WorkspaceGUI) {
             path = ((WorkspaceGUI) Workspace.getUi()).getDesktopIconsPath();
-            Workspace.getProfilesEngine().getParameters().putString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
+            Workspace.getProfilesEngine().getParameters().
+                putString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
         }
         resBrowser.setData(path);
         resBrowser.setVisible(true);
@@ -272,7 +275,8 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         return firstPanel;
     }
 
-    protected KPanel createModesPanel() {
+    @SuppressWarnings("checkstyle:MethodLength")
+    private KPanel createModesPanel() {
         KPanel modesPanel = new KPanel();
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();

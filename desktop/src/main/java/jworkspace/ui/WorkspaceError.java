@@ -58,7 +58,7 @@ import jworkspace.kernel.WorkspaceException;
  *
  * @author Anton Troshin
  */
-class WorkspaceError {
+public class WorkspaceError {
 
     private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
 

@@ -58,6 +58,7 @@ public class PropertiesHolderDlg extends ComponentDialog {
      * @param parent        frame
      * @param optionPanels array of JPanels as an option panels for current view.
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
     public PropertiesHolderDlg(Frame parent, JPanel[] optionPanels) {
 
         super(parent, LangResource.getString("PropertiesHolder.title"), true);

@@ -48,7 +48,7 @@ class CSeparator extends JComponent implements PropertyChangeListener {
      * Empty constructor for compatibility
      * with beans standard.
      */
-    private CSeparator(int orientation) {
+    CSeparator(int orientation) {
         super();
         this.orientation = orientation;
     }

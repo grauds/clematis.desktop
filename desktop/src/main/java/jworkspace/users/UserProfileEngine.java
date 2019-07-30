@@ -227,11 +227,7 @@ public class UserProfileEngine implements IUserProfileEngine {
      * via serialization support.
      */
     public void load() {
-        UserProfileEngine.LOG.info("> Loading profile");
-        if (profilesManager != null) {
-            UserProfileEngine.LOG.info("> Profiles manager is null");
-            return;
-        }
+        UserProfileEngine.LOG.info("> Creating profiles manager");
         profilesManager = new ProfilesManager();
         UserProfileEngine.LOG.info("> Profiles manager is loaded");
     }

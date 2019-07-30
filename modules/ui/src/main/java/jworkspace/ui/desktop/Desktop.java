@@ -461,7 +461,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                     desktopMenu.addSeparator();
 
                     desktopMenu.add(desktopPopupMenu.getSelectAll());
-                    desktopMenu.add(desktopPopupMenu.getBackground());
+                    desktopMenu.add(desktopPopupMenu.getChangeBackgroundColour());
                     desktopMenu.add(desktopPopupMenu.getChooseBgImage());
                     desktopMenu.add(desktopPopupMenu.getSwitchCover());
 

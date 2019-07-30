@@ -29,22 +29,24 @@ package jworkspace.api;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.Icon;
 
 /**
- * Graphic User Interface systems of Java Workspace
- * should implement this interface as it provides minimum
- * services for Java Workspace Kernel and other engines.
+ * User interface for JVM. The default is the desktop metaphor
  *
  * @author Anton Troshin
  */
-public interface UI extends IEngine, IWorkspaceListener {
+public interface UI extends IEngine {
 
     /**
-     * Returns special clipboard for graphic interface..
+     * Register workspace listeners
+     */
+    void registerListeners();
+
+    /**
+     * Returns special clipboard for graphic interface.
      */
     Clipboard getClipboard();
 
@@ -54,8 +56,7 @@ public interface UI extends IEngine, IWorkspaceListener {
     Frame getFrame();
 
     /**
-     * Logo screen displays information
-     * about version of Java Workspace.
+     * Splash screen
      */
     Window getLogoScreen();
 
@@ -67,7 +68,7 @@ public interface UI extends IEngine, IWorkspaceListener {
     /**
      * Returns all registered components.
      */
-    HashMap<String, Object> getAllRegistered();
+    Map<String, Object> getAllRegistered();
 
     /**
      * Check whether if a component is registered
@@ -87,19 +88,19 @@ public interface UI extends IEngine, IWorkspaceListener {
     void unregister(String clazz);
 
     /**
-     * Updates all UI.
+     * Command to update the UI.
      */
     void update();
 
     /**
-     * Show error to user either way it capable of
+     * Show error to user either way UI is capable to
      *
      * @param question message
      */
     boolean showConfirmDialog(String question, String title, Icon icon);
 
     /**
-     * Show error to user either way it capable of
+     * Show error to user
      *
      * @param usermsg message
      * @param ex exception
@@ -107,7 +108,7 @@ public interface UI extends IEngine, IWorkspaceListener {
     void showError(String usermsg, Throwable ex);
 
     /**
-     * Show message to user either way it capable of
+     * Show message to user
      *
      * @param usermsg message
      */

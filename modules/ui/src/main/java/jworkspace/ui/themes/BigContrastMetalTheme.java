@@ -57,11 +57,12 @@ import javax.swing.plaf.metal.MetalIconFactory;
  */
 public class BigContrastMetalTheme extends ContrastMetalTheme {
 
-    private final FontUIResource controlFont = new FontUIResource("Dialog", Font.BOLD, 24);
-    private final FontUIResource systemFont = new FontUIResource("Dialog", Font.PLAIN, 24);
-    private final FontUIResource windowTitleFont = new FontUIResource("Dialog", Font.BOLD, 24);
+    private static final String DIALOG_FONT_FACE = "Dialog";
+    private final FontUIResource controlFont = new FontUIResource(DIALOG_FONT_FACE, Font.BOLD, 24);
+    private final FontUIResource systemFont = new FontUIResource(DIALOG_FONT_FACE, Font.PLAIN, 24);
+    private final FontUIResource windowTitleFont = new FontUIResource(DIALOG_FONT_FACE, Font.BOLD, 24);
     private final FontUIResource userFont = new FontUIResource("SansSerif", Font.PLAIN, 24);
-    private final FontUIResource smallFont = new FontUIResource("Dialog", Font.PLAIN, 20);
+    private final FontUIResource smallFont = new FontUIResource(DIALOG_FONT_FACE, Font.PLAIN, 20);
 
     public String getName() {
         return "Low Vision";
@@ -91,6 +92,7 @@ public class BigContrastMetalTheme extends ContrastMetalTheme {
         return smallFont;
     }
 
+    @SuppressWarnings("MagicNumber")
     public void addCustomEntriesToTable(UIDefaults table) {
         super.addCustomEntriesToTable(table);
 
@@ -98,7 +100,8 @@ public class BigContrastMetalTheme extends ContrastMetalTheme {
         table.put("InternalFrame.closeIcon", MetalIconFactory.getInternalFrameCloseIcon(internalFrameIconSize));
         table.put("InternalFrame.maximizeIcon", MetalIconFactory.getInternalFrameMaximizeIcon(internalFrameIconSize));
         table.put("InternalFrame.iconifyIcon", MetalIconFactory.getInternalFrameMinimizeIcon(internalFrameIconSize));
-        table.put("InternalFrame.minimizeIcon", MetalIconFactory.getInternalFrameAltMaximizeIcon(internalFrameIconSize));
+        table.put("InternalFrame.minimizeIcon",
+            MetalIconFactory.getInternalFrameAltMaximizeIcon(internalFrameIconSize));
 
 
         Border blackLineBorder = new BorderUIResource(new MatteBorder(2, 2, 2, 2, Color.black));
@@ -114,8 +117,7 @@ public class BigContrastMetalTheme extends ContrastMetalTheme {
         table.put("TextPane.font", textBorder);
 
         table.put("ScrollPane.border", blackLineBorder);
-
-        table.put("ScrollBar.width", new Integer(25));
+        table.put("ScrollBar.width", 25);
 
 
     }

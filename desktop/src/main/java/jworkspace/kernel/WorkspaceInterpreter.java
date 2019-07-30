@@ -96,7 +96,7 @@ public final class WorkspaceInterpreter {
         try {
             in = new PipedInputStream(outPipe);
         } catch (IOException e) {
-            Workspace.ui.showError("Cannot start Bean Shell Interpreter", e);
+            Workspace.getUi().showError("Cannot start Bean Shell Interpreter", e);
         }
         interpreter = new Interpreter(new InputStreamReader(in, StandardCharsets.UTF_8),
             System.out, System.out, false, null);
@@ -116,7 +116,7 @@ public final class WorkspaceInterpreter {
             }
             interpreter.source(fileName);
         } catch (EvalError | IOException ex) {
-            Workspace.ui.showError(CANNOT_INTERPRET + fileName, ex);
+            Workspace.getUi().showError(CANNOT_INTERPRET + fileName, ex);
         }
     }
 
@@ -135,11 +135,11 @@ public final class WorkspaceInterpreter {
             outPipe.write(commandLineInt.getBytes(StandardCharsets.UTF_8));
             outPipe.flush();
         } catch (IOException e) {
-            Workspace.ui.showError(CANNOT_INTERPRET + commandLineInt, e);
+            Workspace.getUi().showError(CANNOT_INTERPRET + commandLineInt, e);
         }
     }
 
-    public synchronized boolean isAlive() {
+    private synchronized boolean isAlive() {
         return interpreterThread.isAlive();
     }
 }

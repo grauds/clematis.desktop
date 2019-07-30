@@ -47,6 +47,9 @@ import java.util.StringTokenizer;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class allows you to load a theme from a file.
  * It uses the standard Java Properties file format.
@@ -66,6 +69,11 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
  * @version 1.8 06/13/02
  */
 public class PropertiesMetalTheme extends DefaultMetalTheme {
+
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesMetalTheme.class);
 
     private String name = "Custom Theme";
 
@@ -116,7 +124,7 @@ public class PropertiesMetalTheme extends DefaultMetalTheme {
         try {
             prop.load(stream);
         } catch (IOException e) {
-            System.out.println(e);
+            LOG.error("Can't load properties", e);
         }
 
         Object tempName = prop.get("name");
@@ -219,8 +227,7 @@ public class PropertiesMetalTheme extends DefaultMetalTheme {
             blue = Integer.parseInt(st.nextToken());
 
         } catch (Exception e) {
-            System.out.println(e);
-            System.out.println("Couldn't parse color :" + s);
+            LOG.error("Can't parse colour", e);
         }
 
         return new ColorUIResource(red, green, blue);

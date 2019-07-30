@@ -127,7 +127,7 @@ class ProfilesManager implements Comparator {
     /**
      * Returns current profile
      */
-    public Profile getCurrentProfile() {
+    Profile getCurrentProfile() {
         return currentProfile;
     }
 
@@ -177,7 +177,7 @@ class ProfilesManager implements Comparator {
     /**
      * Returns profile by its name.
      */
-    public Profile getProfile(String name) throws ProfileOperationException {
+    Profile getProfile(String name) throws ProfileOperationException {
         if (name == null) {
             throw new ProfileOperationException(LangResource.getString("ProfilesManager.name.null"));
         }
@@ -191,7 +191,7 @@ class ProfilesManager implements Comparator {
      * @param profileName java.lang.String
      * @return java.lang.String
      */
-    public String getProfileFolder(String profileName) {
+    String getProfileFolder(String profileName) {
         return USERS + File.separator + profileName;
     }
 
@@ -199,7 +199,7 @@ class ProfilesManager implements Comparator {
      * Returns sorted list of profiles.
      * This actually traverses /users directory.
      */
-    public Vector getProfilesList() {
+    Vector getProfilesList() {
 
         Vector<String> list = new Vector<>();
 

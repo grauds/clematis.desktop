@@ -41,7 +41,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -426,14 +425,11 @@ public class WorkspaceGUI implements UI {
             isKiwiTextureVisible = config.getBoolean(CK_KIWI, true);
             undecorated = config.getBoolean(CK_UNDECORATED, false);
 
-        } catch (FileNotFoundException ex) {
-
+        } catch (Exception ex) {
             laf = DEFAULT_LAF;
             isTextureVisible = false;
             isKiwiTextureVisible = false;
-
-        } catch (Exception ex) {
-            // silently ignore
+            LOG.warn("Error loading GUI", ex);
         }
         /*
          * Set undecorated

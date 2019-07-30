@@ -99,6 +99,7 @@ class CScrollButton extends KButton implements PropertyChangeListener {
      * color schemes. Should be replaced by <code>Color.darker()</code> and <code>Color.lighter</code>
      * methods.
      */
+    @SuppressWarnings("checkstyle:NestedIfDepth")
     private void paintArrow(Graphics g, int x, int y, int size, boolean isEnabled) {
         int mid, i, j;
         j = 0;

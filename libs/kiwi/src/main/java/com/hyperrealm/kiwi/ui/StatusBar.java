@@ -34,8 +34,8 @@ import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.SoftBevelBorder;
 
-import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.MAXIMUM;
+import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ProgressObserver;

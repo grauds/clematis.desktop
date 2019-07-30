@@ -40,11 +40,13 @@ import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.UISwitchListener;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Desktop menu
  * @author Anton Troshin
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 class DesktopMenu extends JPopupMenu {
 
@@ -58,7 +60,7 @@ class DesktopMenu extends JPopupMenu {
 
     private JMenuItem selectAll;
 
-    private JMenuItem background;
+    private JMenuItem changeBackgroundColour;
 
     private JMenuItem closeAllWindows;
 
@@ -85,7 +87,7 @@ class DesktopMenu extends JPopupMenu {
         gradientFill = add(Utils.createMenuItem(listener,
             LangResource.getString("Desktop.menu.gradientFill"), DesktopConstants.GRADIENT_FILL, null));
 
-        background = add(Utils.createMenuItem(listener,
+        changeBackgroundColour = add(Utils.createMenuItem(listener,
             LangResource.getString("Desktop.menu.background"), DesktopConstants.BACKGROUND, null));
 
         chooseBgImage = add(Utils.createMenuItem(listener,
@@ -111,7 +113,7 @@ class DesktopMenu extends JPopupMenu {
         this.addSeparator();
 
         add(selectAll);
-        add(background);
+        add(changeBackgroundColour);
         add(chooseBgImage);
         add(switchCover);
 

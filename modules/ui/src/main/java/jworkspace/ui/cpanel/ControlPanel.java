@@ -271,11 +271,9 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
      * Sets orientation of this component.
      */
     public void setOrientation(String orientation) {
-        if (orientation.equals(BorderLayout.NORTH) ||
-            orientation.equals(BorderLayout.SOUTH)) {
+        if (orientation.equals(BorderLayout.NORTH) || orientation.equals(BorderLayout.SOUTH)) {
             setOrientation(ControlPanel.X_AXIS);
-        } else if (orientation.equals(BorderLayout.EAST) ||
-            orientation.equals(BorderLayout.WEST)) {
+        } else if (orientation.equals(BorderLayout.EAST) || orientation.equals(BorderLayout.WEST)) {
             setOrientation(ControlPanel.Y_AXIS);
         }
 
@@ -285,6 +283,7 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
      * Layouts control panel with scroll buttons and
      * button's pane.
      */
+    @SuppressWarnings("MagicNumber")
     public void layoutContainer(Container parent) {
         if (orientation == ControlPanel.Y_AXIS) {
             upButton.setBounds(0, 0, getWidth(),
@@ -314,6 +313,7 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
      * @param parent the component to be laid out
      * @see #preferredLayoutSize
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
     public Dimension minimumLayoutSize(Container parent) {
         return new Dimension(40, 40);
     }

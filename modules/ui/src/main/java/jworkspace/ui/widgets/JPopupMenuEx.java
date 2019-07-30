@@ -204,7 +204,7 @@ public class JPopupMenuEx extends JPopupMenu {
     /**
      * Additional work needed to finalize and free up memory.
      */
-    public void finalize() {
+    protected void finalize() {
         // Placeholder
     }
     /*
@@ -512,7 +512,7 @@ public class JPopupMenuEx extends JPopupMenu {
      * associated manipulation routines.  In addition, the
      * getPreferredSize call doesn't seem to work properly
      * until the menu has been displayed at least once.
-     * If you don't believe, uncomment out the System.out.println
+     * If you don't believe, uncomment out the System.out
      * calls and watch what happens (left in for debugging later).
      * <p>
      * Most of this code is work-around of known problems in Swing
@@ -521,10 +521,11 @@ public class JPopupMenuEx extends JPopupMenu {
      * <p>
      * When making mods, proceed with MUCH CAUTION!.
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
     public void show(Component invoker, int x, int y) {
 
-        int localX = x;
-        int localY = y;
+        int localX;
+        int localY;
 
         pack(); // Desparation to find out why
         // getPreferredSize() is not  returning correct values

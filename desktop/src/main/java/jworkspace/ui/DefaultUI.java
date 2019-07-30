@@ -28,7 +28,7 @@ package jworkspace.ui;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
@@ -43,6 +43,14 @@ import jworkspace.api.UI;
  * @author Anton Troshin
  */
 public class DefaultUI implements UI {
+
+    /**
+     * Register workspace listeners
+     */
+    @Override
+    public void registerListeners() {
+
+    }
 
     /**
      * Returns own clipboard
@@ -79,9 +87,10 @@ public class DefaultUI implements UI {
 
     /**
      * Returns all registered components.
+     * @return
      */
     @Override
-    public Hashtable getAllRegistered() {
+    public HashMap<String, Object> getAllRegistered() {
         return null;
     }
 
@@ -177,17 +186,5 @@ public class DefaultUI implements UI {
     @Override
     public String getName() {
         return null;
-    }
-
-    /**
-     * Processes event. Such event is send to every subscribed event listener in synchronous manner.
-     *
-     * @param event to process
-     * @param lparam left parameter
-     * @param rparam right parameter
-     */
-    @Override
-    public void processEvent(Object event, Object lparam, Object rparam) {
-
     }
 }

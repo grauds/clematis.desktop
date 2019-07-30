@@ -17,6 +17,7 @@ processResources {
 ext {
     imagingVersion = '1.0'
     codecVersion = '1.11'
+    jdomVersion = '2.0.6'
 }
 
 dependencies {
@@ -26,4 +27,5 @@ dependencies {
 
     compile "org.apache.commons:commons-imaging:$imagingVersion"
     compile "commons-codec:commons-codec:$codecVersion"
+    compile "org.jdom:jdom2:$jdomVersion"
 }

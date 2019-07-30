@@ -62,8 +62,8 @@ ext {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
+//    apply plugin: 'findbugs'
     apply plugin: 'jacoco'
 
     sourceCompatibility = '1.8'
@@ -109,22 +109,22 @@ subprojects {
             )
         }
     }
-
-    findbugs {
-        toolVersion = findbugsVersion
-        sourceSets = [sourceSets.main]
-    }
-
-    findbugsMain {
-        reports {
-            html {
-                enabled = true
-            }
-            xml {
-                enabled = false
-            }
-        }
-    }
+//
+//    findbugs {
+//        toolVersion = findbugsVersion
+//        sourceSets = [sourceSets.main]
+//    }
+//
+//    findbugsMain {
+//        reports {
+//            html {
+//                enabled = true
+//            }
+//            xml {
+//                enabled = false
+//            }
+//        }
+//    }
 
     checkstyle {
         ignoreFailures = true

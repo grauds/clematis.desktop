@@ -63,6 +63,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 /**
  * @author Anton Troshin
  */
+@SuppressWarnings("unused")
 public class InternalToolBar extends KPanel implements MouseListener, MouseMotionListener {
 
     public static final int VERTICAL = 0;
@@ -265,7 +266,7 @@ public class InternalToolBar extends KPanel implements MouseListener, MouseMotio
         this.icon = icon;
     }
 
-    class Thumb extends JComponent {
+    static class Thumb extends JComponent {
 
         static final String CONTROL_COLOUR = "control";
 
@@ -341,7 +342,7 @@ public class InternalToolBar extends KPanel implements MouseListener, MouseMotio
         }
     }
 
-    class InternalFrame extends JInternalFrame {
+    static class InternalFrame extends JInternalFrame {
 
         private InternalToolBar tb;
 
@@ -364,7 +365,7 @@ public class InternalToolBar extends KPanel implements MouseListener, MouseMotio
         }
     }
 
-    class Separator extends JComponent {
+    static class Separator extends JComponent {
 
         private int size;
         private InternalToolBar parent;

@@ -54,6 +54,10 @@ import jworkspace.LangResource;
  */
 public class FontChooser extends ComponentDialog implements ActionListener, ListSelectionListener {
 
+    private static final String REGULAR_FONT_FACE = "Regular";
+    private static final String ITALIC_FONT_FACE = "Italic";
+    private static final String BOLD_FONT_FACE = "Bold";
+    private static final String BOLD_ITALIC_FONT_FACE = "BoldItalic";
     private Font font;
 
     private JList<String> fontNames, fontSizes, fontStyles;
@@ -77,13 +81,13 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
             fontSizes.setSelectedValue(fontSize, true);
             fontNames.setSelectedValue(font.getFamily(), true);
             if (font.getStyle() == Font.PLAIN) {
-                fontStyles.setSelectedValue("Regular", false);
+                fontStyles.setSelectedValue(REGULAR_FONT_FACE, false);
             } else if (font.getStyle() == Font.ITALIC) {
-                fontStyles.setSelectedValue("Italic", false);
+                fontStyles.setSelectedValue(ITALIC_FONT_FACE, false);
             } else if (font.getStyle() == Font.BOLD) {
-                fontStyles.setSelectedValue("Bold", false);
+                fontStyles.setSelectedValue(BOLD_FONT_FACE, false);
             } else if (font.getStyle() == (Font.BOLD | Font.ITALIC)) {
-                fontStyles.setSelectedValue("BoldItalic", false);
+                fontStyles.setSelectedValue(BOLD_ITALIC_FONT_FACE, false);
             }
         }
         setResizable(false);
@@ -143,13 +147,13 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
         if (e.getSource() == fontStyles) {
             int style = Font.PLAIN;
             String selection = fontStyles.getSelectedValue();
-            if (selection.equals("Bold")) {
+            if (selection.equals(BOLD_FONT_FACE)) {
                 style = Font.BOLD;
             }
-            if (selection.equals("Italic")) {
+            if (selection.equals(ITALIC_FONT_FACE)) {
                 style = Font.ITALIC;
             }
-            if (selection.equals("BoldItalic")) {
+            if (selection.equals(BOLD_ITALIC_FONT_FACE)) {
                 style = (Font.BOLD | Font.ITALIC);
             }
             updateFontStyle(style);
@@ -197,7 +201,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
         /*
          * Styles list
          */
-        String[] styles = {"Regular", "Bold", "Italic", "BoldItalic"};
+        String[] styles = {REGULAR_FONT_FACE, BOLD_FONT_FACE, ITALIC_FONT_FACE, BOLD_ITALIC_FONT_FACE};
         fontStyles = new JList<>(styles);
         fontStyles.setSelectedIndex(0);
         fontStyles.addListSelectionListener(this);

@@ -1,8 +1,7 @@
-package jworkspace.api;
-
+package jworkspace.ui;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2018 Anton Troshin
+   Copyright (C) 1999-2003 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -26,25 +25,21 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 
+import org.junit.Test;
 
+import jworkspace.kernel.Workspace;
 /**
- * Workspace listener dispatches events send to subscribers through workspace event mechanism.
- *
  * @author Anton Troshin
  */
-public interface IWorkspaceListener {
+public class WorkspaceGUITest {
 
-    String VIEW_PARAMETER = "view";
 
-    String DISPLAY_PARAMETER = "display";
+    @Test
+    public void testIsLoading() {
+        /*
+         * Test workspace is loading
+         */
+        Workspace.main(new String[]{});
 
-    String REGISTER_PARAMETER = "register";
-    /**
-     * Returns the integer this listener is bound to
-     */
-    int getCode();
-    /**
-     * Processes event. Such event is send to every subscribed event listener in synchronous manner.
-     */
-    void processEvent(Object event, Object lparam, Object rparam);
+    }
 }
