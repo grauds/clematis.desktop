@@ -45,31 +45,30 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import com.hyperrealm.kiwi.ui.KPanel;
-import com.hyperrealm.kiwi.util.KiwiUtils;
-import com.hyperrealm.kiwi.util.ResourceManager;
-import jworkspace.LangResource;
-import jworkspace.kernel.Workspace;
-import kiwi.ui.ImmutableCellEditor;
-import kiwi.ui.KButton;
-import kiwi.ui.dialog.ComponentDialog;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 
+import com.hyperrealm.kiwi.ui.KButton;
+import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
+import com.hyperrealm.kiwi.util.KiwiUtils;
+import com.hyperrealm.kiwi.util.ResourceManager;
+
+import jworkspace.LangResource;
+import jworkspace.kernel.Workspace;
+
 /**
  * Carrier class for <code>jworkspace.ui.UserDetailsPanel</code>
+ * @author Anton Troshin
  */
 public class UserDetailsDialog extends ComponentDialog implements ActionListener {
-    private static int maxPortraitWidth = 250;
-    private static int maxPortraitHeight = 250;
-    private UserDetailsPanel first_panel;
-    private JTabbedPane tabbed_pane = null;
-    private KButton b_new, b_delete;
+    private static final int MAX_PORTRAIT_WIDTH = 250;
+    private static final int MAX_PORTRAIT_HEIGHT = 250;
+    private UserDetailsPanel userDetailsPanel;
+    private KButton bNew, bDelete;
     private JTable table;
     private DefaultTableModel tmodel;
 
@@ -86,36 +85,33 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
             value = (String) table.getValueAt(i, 1);
             Workspace.getProfilesEngine().getParameters().put(name, value);
         }
-        return (first_panel.syncData());
+        return (userDetailsPanel.syncData());
     }
 
     public void actionPerformed(ActionEvent ev) {
         Object o = ev.getSource();
 
-        if (o == b_new) {
+        if (o == bNew) {
             ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
                 getImage("user_var.png"));
 
-            String name = (String) JOptionPane.showInputDialog
-                (this,
+            String name = (String) JOptionPane.showInputDialog(this,
                     LangResource.getString("UserDetailsDlg.addParam.question"),
                     LangResource.getString("UserDetailsDlg.addParam.title"),
                     JOptionPane.INFORMATION_MESSAGE,
                     icon,
                     null, null);
 
-            if (name != null) {
-                if (Workspace.getProfilesEngine().getParameters().get(name) != null) {
-                    JOptionPane.showMessageDialog(this,
-                        LangResource.getString("UserDetailsDlg.addParam.alreadyExists"));
-                } else {
-                    Object[] row = new Object[2];
-                    row[0] = name;
-                    row[1] = "";
-                    tmodel.addRow(row);
-                }
+            if (name != null && Workspace.getProfilesEngine().getParameters().get(name) != null) {
+                JOptionPane.showMessageDialog(this,
+                    LangResource.getString("UserDetailsDlg.addParam.alreadyExists"));
+            } else if (name != null){
+                Object[] row = new Object[2];
+                row[0] = name;
+                row[1] = "";
+                tmodel.addRow(row);
             }
-        } else if (o == b_delete) {
+        } else if (o == bDelete) {
             int[] rows = table.getSelectedRows();
             if (rows.length == 0) {
                 return;
@@ -153,79 +149,73 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
             setIcon(null);
         }
 
-        tabbed_pane = new JTabbedPane();
-        tabbed_pane.setOpaque(false);
-        first_panel = new UserDetailsPanel();
-        tabbed_pane.addTab(LangResource.getString("UserDetailsDlg.generalTab"),
-            first_panel);
-        tabbed_pane.addTab(LangResource.getString("UserDetailsDlg.variablesTab"),
-            buildPropertyEditor());
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setOpaque(false);
 
-        return (tabbed_pane);
+        userDetailsPanel = new UserDetailsPanel();
+        tabbedPane.addTab(LangResource.getString("UserDetailsDlg.generalTab"), userDetailsPanel);
+        tabbedPane.addTab(LangResource.getString("UserDetailsDlg.variablesTab"), buildPropertyEditor());
+
+        return (tabbedPane);
     }
 
     private void scaleImage(Image p, ImageIcon photo) {
 
-        if (photo.getIconHeight() > maxPortraitHeight) {
-            setIcon(new ImageIcon
-                (p.getScaledInstance(-1, maxPortraitHeight, Image.SCALE_SMOOTH)));
-        } else if (photo.getIconWidth() > maxPortraitWidth) {
-            setIcon(new ImageIcon
-                (p.getScaledInstance(maxPortraitWidth, -1, Image.SCALE_SMOOTH)));
+        if (photo.getIconHeight() > MAX_PORTRAIT_HEIGHT) {
+            setIcon(new ImageIcon(p.getScaledInstance(-1, MAX_PORTRAIT_HEIGHT, Image.SCALE_SMOOTH)));
+        } else if (photo.getIconWidth() > MAX_PORTRAIT_WIDTH) {
+            setIcon(new ImageIcon(p.getScaledInstance(MAX_PORTRAIT_WIDTH, -1, Image.SCALE_SMOOTH)));
         } else {
             setIcon(new ImageIcon(p));
         }
     }
 
+    @SuppressWarnings("MagicNumber")
     private KPanel buildPropertyEditor() {
-        KPanel property_editor = new KPanel();
-        property_editor.setLayout(new BorderLayout());
-        /**
+        KPanel propertyEditor = new KPanel();
+        propertyEditor.setLayout(new BorderLayout());
+        /*
          * Buttons panel.
          */
-        KPanel p_buttons = new KPanel();
-        KPanel p_but_carrier = new KPanel();
-        p_buttons.setLayout(new GridLayout(0, 1, 5, 5));
-        p_but_carrier.setLayout(new BorderLayout());
+        KPanel pButtons = new KPanel();
+        KPanel pButCarrier = new KPanel();
+        pButtons.setLayout(new GridLayout(0, 1, 5, 5));
+        pButCarrier.setLayout(new BorderLayout());
         ResourceManager kresmgr = KiwiUtils.getResourceManager();
 
-        b_new = new KButton(kresmgr.getIcon("plus.png"));
-        b_new.setToolTipText
-            (LangResource.getString("UserDetailsDlg.addParam.tooltip"));
-        b_new.addActionListener(this);
-        b_new.setDefaultCapable(false);
-        p_buttons.add(b_new);
+        bNew = new KButton(kresmgr.getIcon("plus.png"));
+        bNew.setToolTipText(LangResource.getString("UserDetailsDlg.addParam.tooltip"));
+        bNew.addActionListener(this);
+        bNew.setDefaultCapable(false);
+        pButtons.add(bNew);
 
-        b_delete = new KButton(kresmgr.getIcon("minus.png"));
-        b_delete.setToolTipText
-            (LangResource.getString("UserDetailsDlg.deleteParam.tooltip"));
-        b_delete.addActionListener(this);
-        b_delete.setDefaultCapable(false);
-        p_buttons.add(b_delete);
+        bDelete = new KButton(kresmgr.getIcon("minus.png"));
+        bDelete.setToolTipText(LangResource.getString("UserDetailsDlg.deleteParam.tooltip"));
+        bDelete.addActionListener(this);
+        bDelete.setDefaultCapable(false);
+        pButtons.add(bDelete);
 
         table = new JTable();
         table.setAutoCreateColumnsFromModel(false);
-
-        TableColumn col;
 
         tmodel = new DefaultTableModel();
         table.setModel(tmodel);
 
         tmodel.addColumn(LangResource.getString("UserDetailsDlg.variable"));
-        table.addColumn(col = new TableColumn(0, 20));
-        col.setCellEditor(new ImmutableCellEditor());
+        table.addColumn(new TableColumn(0, 20));
+        // todo col.setCellEditor(new ImmutableCellEditor());
 
         tmodel.addColumn(LangResource.getString("UserDetailsDlg.value"));
-        table.addColumn(col = new TableColumn(1, 20));
+        table.addColumn(new TableColumn(1, 20));
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setColumnSelectionAllowed(false);
 
         JScrollPane scrollpane = new JScrollPane(table);
 
-        property_editor.add(scrollpane, BorderLayout.CENTER);
-        p_but_carrier.add(p_buttons, BorderLayout.NORTH);
-        property_editor.add(p_but_carrier, BorderLayout.EAST);
+        propertyEditor.add(scrollpane, BorderLayout.CENTER);
+        pButCarrier.add(pButtons, BorderLayout.NORTH);
+        propertyEditor.add(pButCarrier, BorderLayout.EAST);
 
         setAcceptButtonText(LangResource.getString("UserDetailsDlg.var.save"));
 
@@ -233,14 +223,10 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         table.setSelectionModel(sel);
         sel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sel.addListSelectionListener(
-            new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent ev) {
-                    b_delete.setEnabled(!(table.getSelectionModel().isSelectionEmpty()));
-                }
-            }
+            ev -> bDelete.setEnabled(!(table.getSelectionModel().isSelectionEmpty()))
         );
-        property_editor.setPreferredSize(new Dimension(200, 200));
-        return property_editor;
+        propertyEditor.setPreferredSize(new Dimension(200, 200));
+        return propertyEditor;
     }
 
     private void refresh() {
@@ -275,6 +261,6 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
     }
 
     public void setData() {
-        first_panel.setData();
+        userDetailsPanel.setData();
     }
 }

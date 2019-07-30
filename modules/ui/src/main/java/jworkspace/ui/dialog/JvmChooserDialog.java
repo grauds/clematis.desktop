@@ -38,24 +38,30 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import com.hyperrealm.kiwi.ui.KTreeTable;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
+
 import jworkspace.LangResource;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.JVM;
 import jworkspace.kernel.Workspace;
-import kiwi.ui.dialog.ComponentDialog;
 
 /**
  * This dialog shows a tree of installed jvms in workspace.
+ * @author Anton Troshin
  */
 public class JvmChooserDialog extends ComponentDialog {
+
+    private static final String JVM_CHOOSER_DLG_TITLE = "JvmChooserDlg.title";
+
     private KTreeTable treeTable;
+
     private JVM vm = null;
 
-    public JvmChooserDialog(Frame parent) {
-        super(parent, LangResource.getString("JvmChooserDlg.title"), true);
+    JvmChooserDialog(Frame parent) {
+        super(parent, LangResource.getString(JVM_CHOOSER_DLG_TITLE), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        setTopIcon(new ImageIcon(Workspace.getResourceManager().
-            getImage("jvm_big.png")));
+        setComment(new ImageIcon(Workspace.getResourceManager().getImage("jvm_big.png")),
+            LangResource.getString(JVM_CHOOSER_DLG_TITLE));
     }
 
     protected boolean accept() {
@@ -79,6 +85,7 @@ public class JvmChooserDialog extends ComponentDialog {
         return scroller;
     }
 
+    @SuppressWarnings("MagicNumber")
     protected Border getCommentBorder() {
         return new EmptyBorder(0, 5, 0, 5);
     }

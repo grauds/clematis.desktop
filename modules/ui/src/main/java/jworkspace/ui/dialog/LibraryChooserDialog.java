@@ -37,33 +37,39 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import com.hyperrealm.kiwi.ui.KTreeTable;
+import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
+
 import jworkspace.LangResource;
+import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.Library;
 import jworkspace.kernel.Workspace;
-import kiwi.ui.dialog.ComponentDialog;
 
 /**
  * This dialog shows a tree of installed libraries in workspace.
+ * @author Anton Troshin
  */
 public class LibraryChooserDialog extends ComponentDialog {
+
+    private static final String LIBRARY_CHOOSER_DLG_TITLE = "LibraryChooserDlg.title";
     private KTreeTable treeTable;
     private Library[] lib = null;
 
     public LibraryChooserDialog(Frame parent) {
-        super(parent, LangResource.getString("LibraryChooserDlg.title"), true);
-        setTopIcon(new ImageIcon(Workspace.getResourceManager().
-            getImage("library_big.png")));
+        super(parent, LangResource.getString(LIBRARY_CHOOSER_DLG_TITLE), true);
+        setComment(new ImageIcon(Workspace.getResourceManager().getImage("library_big.png")),
+            LangResource.getString(LIBRARY_CHOOSER_DLG_TITLE));
     }
 
     protected boolean accept() {
-        Object[] obj_le = treeTable.getSelectedItems();
-        lib = new Library[obj_le.length];
-        for (int i = 0; i < obj_le.length; i++) {
-//            DefinitionNode n = (DefinitionNode) node.getObject();
-//            if ((n != null) && (n.getClass() == Library.class))
-//                lib[i] = (Library) n;
+        Object[] selectedItems = treeTable.getSelectedItems();
+        lib = new Library[selectedItems.length];
+        for (int i = 0; i < selectedItems.length; i++) {
+            DefinitionNode n = (DefinitionNode) selectedItems[i];
+            if ((n != null) && (n.getClass() == Library.class)) {
+                lib[i] = (Library) n;
+            }
         }
-        return (lib != null);
+        return true;
     }
 
     protected JComponent buildDialogUI() {
@@ -75,6 +81,7 @@ public class LibraryChooserDialog extends ComponentDialog {
         return scroller;
     }
 
+    @SuppressWarnings("MagicNumber")
     protected Border getCommentBorder() {
         return new EmptyBorder(0, 5, 0, 5);
     }
@@ -85,6 +92,6 @@ public class LibraryChooserDialog extends ComponentDialog {
     }
 
     public Library[] getSelectedLibraries() {
-        return (lib);
+        return lib;
     }
 }

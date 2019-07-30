@@ -34,8 +34,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 
 import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
@@ -46,7 +44,8 @@ import jworkspace.installer.DefinitionNode;
 import jworkspace.kernel.Workspace;
 
 /**
- * Application chooser.
+ * Application chooser
+ * @author Anton Troshin
  */
 @SuppressWarnings("MagicNumber")
 public class ApplicationChooserDialog extends ComponentDialog {
@@ -86,10 +85,6 @@ public class ApplicationChooserDialog extends ComponentDialog {
         JScrollPane scroller = new JScrollPane(treeTable);
         scroller.setOpaque(false);
         return scroller;
-    }
-
-    protected Border getCommentBorder() {
-        return new EmptyBorder(0, 5, 0, 5);
     }
 
     public void dispose() {

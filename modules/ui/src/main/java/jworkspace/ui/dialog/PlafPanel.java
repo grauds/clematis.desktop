@@ -43,6 +43,7 @@ import javax.swing.plaf.metal.MetalTheme;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.LookAndFeelChooser;
 import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import jworkspace.LangResource;
 import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.widgets.ThemeChooser;
@@ -50,6 +51,7 @@ import jworkspace.ui.widgets.ThemeChooser;
 /**
  * Panel for customizing look and feel of java workspace.
  */
+@SuppressWarnings("MagicNumber")
 class PlafPanel extends KPanel implements ActionListener {
     /**
      * Look and feel chooser
@@ -63,15 +65,11 @@ class PlafPanel extends KPanel implements ActionListener {
      * Look and feel comments field
      */
     private JTextArea comments = null;
-    /**
-     * Currently selected laf
-     */
-    private LookAndFeel selectedLaf = null;
 
     /**
      * Public constructor
      */
-    public PlafPanel() {
+    PlafPanel() {
         super();
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -111,7 +109,7 @@ class PlafPanel extends KPanel implements ActionListener {
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         add(kp, gbc);
-        /**
+        /*
          * Fetch info about currently selected laf.
          */
         fetchInfo();
@@ -148,22 +146,25 @@ class PlafPanel extends KPanel implements ActionListener {
      * Fetch information about currently selected LAF. This includes
      * its description, plus ability to install themes and so on.
      */
-    protected void fetchInfo() {
-        /**
+    private void fetchInfo() {
+        /*
          * Get laf name
          */
         String selectedLafName = getLfChooser().getLookAndFeel();
-        selectedLaf = PlafFactory.getInstance().getLookAndFeel(selectedLafName);
-        /**
+        /*
+         * Currently selected laf
+         */
+        LookAndFeel selectedLaf = PlafFactory.getInstance().getLookAndFeel(selectedLafName);
+        /*
          * Get description of selected laf
          */
         if (selectedLaf != null) {
             getTextArea().setText(selectedLaf.getDescription());
-            /**
+            /*
              * Get a list of themes for a current LAF
              */
             MetalTheme[] themes = PlafFactory.getInstance().listThemes(selectedLaf);
-            getThemeChooser().setModel(new DefaultComboBoxModel(themes));
+            getThemeChooser().setModel(new DefaultComboBoxModel<>(themes));
 
             MetalTheme currentTheme = PlafFactory.getInstance().getCurrentTheme(selectedLaf);
             getThemeChooser().setSelectedItem(currentTheme);
@@ -178,7 +179,7 @@ class PlafPanel extends KPanel implements ActionListener {
      *
      * @return text component for displaying description.
      */
-    public JTextArea getTextArea() {
+    private JTextArea getTextArea() {
         if (comments == null) {
             comments = new JTextArea();
             comments.setEditable(false);
@@ -194,14 +195,14 @@ class PlafPanel extends KPanel implements ActionListener {
      *
      * @return scroll pane
      */
-    protected JScrollPane getTextAreaScroll() {
+    private JScrollPane getTextAreaScroll() {
         JScrollPane scrollPane = new JScrollPane(getTextArea());
         scrollPane.setPreferredSize(new Dimension(150, 60));
         scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         return scrollPane;
     }
 
-    public boolean syncData() {
+    boolean syncData() {
         return PlafFactory.getInstance().setLookAndFeel(getLfChooser().getLookAndFeel());
     }
 }

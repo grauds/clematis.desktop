@@ -28,8 +28,6 @@ package jworkspace.ui.dialog;
 */
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.logging.LogManager;
@@ -41,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+
 import jworkspace.LangResource;
 import jworkspace.ui.logging.WindowHandler;
 
@@ -49,18 +48,17 @@ import jworkspace.ui.logging.WindowHandler;
  * This is taken from book of Gregory M. Travis "JDK 1.4 tutorial"
  *
  * @author <a href='mailto:anton.troshin@gmail.com'>Anton Troshin</a>
- * @version 1.0
  */
 class LoggingPanel extends KPanel {
     /**
      * List displaying the currently-instantiated loggers
      */
-    private JList loggerList;
+    private JList<String> loggerList;
 
     /**
      * Set up the interface and make visible
      */
-    public LoggingPanel() {
+    LoggingPanel() {
         super();
         setupGUI();
         populateList();
@@ -71,18 +69,16 @@ class LoggingPanel extends KPanel {
      * Set up the interface
      */
     private void setupGUI() {
-        loggerList = new JList();
+        loggerList = new JList<>();
         loggerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setLayout(new BorderLayout());
         add(new JScrollPane(loggerList), BorderLayout.CENTER);
         JButton showButton = new JButton(LangResource.getString("LoggingPanel.show"));
         add(showButton, BorderLayout.SOUTH);
-        showButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                String name = (String) loggerList.getSelectedValue();
-                if (name != null && !name.equals("")) {
-                    openWindow(name);
-                }
+        showButton.addActionListener(ae -> {
+            String name = loggerList.getSelectedValue();
+            if (name != null && !name.equals("")) {
+                openWindow(name);
             }
         });
     }
@@ -95,10 +91,10 @@ class LoggingPanel extends KPanel {
         LogManager logManager = LogManager.getLogManager();
         Enumeration e = logManager.getLoggerNames();
         // Build a Vector of the names
-        Vector names = new Vector();
+        Vector<String> names = new Vector<>();
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
-            names.addElement(name);
+            names.add(name);
         }
         // Display the names in the JList
         loggerList.setListData(names);
