@@ -249,7 +249,7 @@ public class UserProfileEngine implements IUserProfileEngine {
         UserProfileEngine.LOG.info("> You are logged as " + getUserName());
 
         System.setProperty(USER_HOME, System.getProperty("user.dir") + File.separator + getPath());
-        UserProfileEngine.LOG.info(">" + "Homepath" + " " + System.getProperty(USER_HOME));
+        UserProfileEngine.LOG.info(">" + " Homepath " + " " + System.getProperty(USER_HOME));
     }
 
     /**

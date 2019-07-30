@@ -237,7 +237,7 @@ public final class Workspace {
                     Workspace.ui.showError(LangResource.getString("Workspace.logout.failure"), e);
                 }
             }
-            Workspace.LOG.info("> 1999 - 2018 Copyright Anton Troshin");
+            Workspace.LOG.info("> 1999 - 2019 Copyright Anton Troshin");
             System.exit(0);
         }
     }
@@ -568,23 +568,18 @@ public final class Workspace {
         if (!profilesEngine.userLogged()) {
             return;
         }
-        /*
-         * User logged past this line - show splash screen and start loading user components
-         */
-        Window logo = ui.getLogoScreen();
-        if (logo != null) {
-            logo.setVisible(true);
-        }
 
         Config cfg = new Config(getConfigHeader().toString());
 
-        try (InputStream in = new FileInputStream(System.getProperty(USER_DIR)
-            + File.separator + CONFIG_JWCONF_CFG)) {
+        try (InputStream in = new FileInputStream(System.getProperty(USER_DIR) + File.separator
+            + profilesEngine.getPath() + File.separator + CONFIG_JWCONF_CFG)) {
+
             cfg.load(in);
         } catch (IOException e) {
             // just use defaults, don't panic
-            Workspace.LOG.info("Couldn't find custom configuration file: " + CONFIG_JWCONF_CFG
-                + ". Continuing with defaults");
+            Workspace.LOG.error("Couldn't find custom configuration file: "
+                + CONFIG_JWCONF_CFG
+                + ". Continuing with defaults", e.getMessage());
         }
         /*
          * Either read from configuration or go with default
@@ -600,6 +595,14 @@ public final class Workspace {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             Workspace.ui.showError(LangResource.getString("Workspace.load.abort"), e);
             System.exit(-1);
+        }
+
+        /*
+         * User logged past this line - show splash screen and start loading user components
+         */
+        Window logo = ui.getLogoScreen();
+        if (logo != null) {
+            logo.setVisible(true);
         }
 
         loadEngines();

@@ -402,6 +402,7 @@ public class WorkspaceGUI implements UI {
      */
     public void load() {
 
+
         ClassCache.createFileChoosers();
         /*
          * Workspace plugin ICON

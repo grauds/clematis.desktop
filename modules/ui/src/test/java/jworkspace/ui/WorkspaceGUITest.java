@@ -33,7 +33,6 @@ import jworkspace.kernel.Workspace;
  */
 public class WorkspaceGUITest {
 
-
     @Test
     public void testIsLoading() {
         /*
