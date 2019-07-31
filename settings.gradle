@@ -1,6 +1,6 @@
 rootProject.name = 'clematis'
 
-include 'desktop'
+include 'app'
 
 include 'kiwi'
 project(':kiwi').projectDir = file('libs/kiwi')

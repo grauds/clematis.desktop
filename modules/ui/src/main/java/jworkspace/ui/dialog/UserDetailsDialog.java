@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -47,9 +48,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
 
 import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KPanel;
@@ -134,8 +132,8 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         String fileName = Workspace.getUserHome() + "portrait.jpg";
         Image p = null;
         try {
-            p = Imaging.getBufferedImage(new File(fileName));
-        } catch (ImageReadException | IOException e) {
+            p = ImageIO.read(new File(fileName));
+        } catch (IOException e) {
             // do not pay attention
         }
 

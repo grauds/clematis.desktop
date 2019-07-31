@@ -34,13 +34,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KFileChooser;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
@@ -50,12 +51,14 @@ import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.widgets.FilePreviewer;
 import jworkspace.ui.widgets.WorkspaceFileFilter;
 import jworkspace.ui.widgets.WorkspaceFileView;
-
 /**
  * Workspace cache for heavy UI components
  * @author Anton Troshin
  */
 public final class ClassCache {
+
+
+    private static final Logger LOG = LoggerFactory.getLogger(ClassCache.class);
 
     private static final String JAR_EXTENTION = "jar";
     private static final String ZIP_EXTENTION = "zip";
@@ -78,7 +81,6 @@ public final class ClassCache {
     private static JFileChooser fileChooser = null;
     private static FilePreviewer previewer = null;
     private static JFileChooser iconChooser = null;
-    private static KFileChooserDialog dirChooser = null;
 
     /**
      * Default public constructor
@@ -149,9 +151,9 @@ public final class ClassCache {
      * This method allows to choose directory inside of specified root.
      */
     public static File chooseDirectory(Frame parent, File root) {
-        dirChooser = new KFileChooserDialog(parent,
-                LangResource.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
-                KFileChooser.OPEN_DIALOG);
+        KFileChooserDialog dirChooser = new KFileChooserDialog(parent,
+            LangResource.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
+            KFileChooser.OPEN_DIALOG);
 
         UIManager.addPropertyChangeListener(new UISwitchListener(dirChooser));
         dirChooser.setFileSelectionMode(KFileChooser.DIRECTORIES_ONLY);
@@ -226,11 +228,11 @@ public final class ClassCache {
             if (imf != null) {
                 ImageIcon testCover;
                 try {
-                    testCover = new ImageIcon(Imaging.getBufferedImage(imf));
+                    testCover = new ImageIcon(ImageIO.read(imf));
                     return (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1)
                         ? testCover.getImage() : null;
-                } catch (ImageReadException | IOException e) {
-                    //
+                } catch (IOException e) {
+                    LOG.error(e.getLocalizedMessage(), e);
                 }
             }
         }

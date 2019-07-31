@@ -34,12 +34,10 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
 
 /**
  * File previewer works with graphic files, allowing thumbnails in JFileDialog.
@@ -61,7 +59,7 @@ public class FilePreviewer extends JComponent implements PropertyChangeListener 
         if (f != null) {
             Image image;
             try {
-                image = Imaging.getBufferedImage(f);
+                image = ImageIO.read(f);
                 ImageIcon tmpIcon = new ImageIcon(image);
                 if (tmpIcon.getIconWidth() > 90) {
                     thumbnail = new ImageIcon(tmpIcon.getImage().getScaledInstance(180, -1,
@@ -69,7 +67,7 @@ public class FilePreviewer extends JComponent implements PropertyChangeListener 
                 } else {
                     thumbnail = tmpIcon;
                 }
-            } catch (ImageReadException | IOException e) {
+            } catch (IOException e) {
                 thumbnail = null;
             }
         }

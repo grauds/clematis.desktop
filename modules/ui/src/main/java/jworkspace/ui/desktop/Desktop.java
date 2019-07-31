@@ -56,6 +56,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JDesktopPane;
@@ -63,20 +64,16 @@ import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KDesktopPane;
-import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
@@ -86,6 +83,7 @@ import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.views.PropertiesPanel;
 import jworkspace.ui.widgets.GlassDragPane;
 
 /**
@@ -305,14 +303,14 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                     String testPath = imf.getAbsolutePath();
                     ImageIcon testCover;
                     try {
-                        testCover = new ImageIcon(Imaging.getBufferedImage(imf));
+                        testCover = new ImageIcon(ImageIO.read(imf));
 
                         if (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1) {
                             pathToImage = testPath;
                             cover = testCover;
                             repaint();
                         }
-                    } catch (ImageReadException | IOException e1) {
+                    } catch (IOException e1) {
                         LOG.error(e1.getMessage());
                     }
                 }
@@ -482,8 +480,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Get option panel for desktop
      */
-    public JPanel[] getOptionPanels() {
-        return new KPanel[]{new DesktopBackgroundPanel(this),
+    public PropertiesPanel[] getOptionPanels() {
+        return new PropertiesPanel[]{new DesktopBackgroundPanel(this),
             new DesktopOptionsPanel(this)};
     }
 

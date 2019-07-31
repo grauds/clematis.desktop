@@ -38,12 +38,13 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.LangResource;
+import jworkspace.ui.views.PropertiesPanel;
 
 /**
  * Class to set desktop options.
  * @author Anton Troshin
  */
-class DesktopOptionsPanel extends KPanel implements ActionListener {
+class DesktopOptionsPanel extends KPanel implements ActionListener, PropertiesPanel {
     /**
      * Toggle drag mode
      */
@@ -105,11 +106,17 @@ class DesktopOptionsPanel extends KPanel implements ActionListener {
         add(transparent, gbc);
     }
 
+    @Override
     public boolean setData() {
         if (desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE) {
             dragMode.setSelected(true);
         }
         transparent.setSelected(!desktop.isOpaque());
+        return true;
+    }
+
+    @Override
+    public boolean syncData() {
         return true;
     }
 

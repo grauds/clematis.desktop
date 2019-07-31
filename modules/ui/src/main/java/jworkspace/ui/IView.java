@@ -29,7 +29,8 @@ package jworkspace.ui;
 import java.io.IOException;
 
 import javax.swing.JMenu;
-import javax.swing.JPanel;
+
+import jworkspace.ui.views.PropertiesPanel;
 
 /**
  * User gui view. Such shell have to load itself, restore state
@@ -63,7 +64,7 @@ public interface IView {
     /**
      * Get all option panels for this shell
      */
-    JPanel[] getOptionPanels();
+    PropertiesPanel[] getOptionPanels();
 
     /**
      * Get menu set for this View.

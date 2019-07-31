@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -62,10 +63,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalTheme;
 
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.Imaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -448,13 +445,13 @@ public class WorkspaceGUI implements UI {
             /*
              * Read texture
              */
-            texture = Imaging.getBufferedImage(new File(fileName));
+            texture = ImageIO.read(new File(fileName));
             /*
              * Finally set texture on frame
              */
             ((MainFrame) getFrame()).setTexture(texture);
 
-        } catch (ImageReadException | IOException e) {
+        } catch (IOException e) {
 
             WorkspaceGUI.LOG.warn("Cannot set texture", e);
 
@@ -599,10 +596,10 @@ public class WorkspaceGUI implements UI {
                 g.dispose();
 
                 if (textureIcon.getIconHeight() > 0 && textureIcon.getIconWidth() > 0) {
-                    Imaging.writeImage(bi, os, ImageFormats.JPEG, null);
+                    ImageIO.write(bi, "JPEG", os);
                 }
 
-            } catch (ImageWriteException | IOException e) {
+            } catch (IOException e) {
                 WorkspaceError.exception(LangResource.getString("WorkspaceGUI.saveTexture.failed"), e);
             }
         }

@@ -21,8 +21,12 @@ $RECYCLE.BIN/
 ## Idea
 #################
 
+.gradle
 bin
-users
+build
+/users
+/plugins
+out
 
 #################
 ## Idea

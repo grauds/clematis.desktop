@@ -40,6 +40,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -50,8 +51,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
@@ -67,13 +68,19 @@ import static jworkspace.ui.desktop.DesktopConstants.TOP_RIGHT_CORNER_IMAGE;
 import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
+import jworkspace.ui.views.PropertiesPanel;
 import jworkspace.ui.widgets.ImageRenderer;
 
 /**
  * Desktop property panel
  */
 @SuppressWarnings("MagicNumber")
-class DesktopBackgroundPanel extends KPanel implements ActionListener {
+class DesktopBackgroundPanel extends KPanel implements ActionListener, PropertiesPanel {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DesktopBackgroundPanel.class);
+
     private static final String DESKTOP_BG_PANEL_CENTER = "DesktopBgPanel.center";
     private static final String DESKTOP_BG_PANEL_TILE = "DesktopBgPanel.tile";
     private static final String DESKTOP_BG_PANEL_STRETCH = "DesktopBgPanel.stretch";
@@ -166,6 +173,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener {
         this.add(createControlsPanel(), BorderLayout.SOUTH);
     }
 
+    @Override
     public boolean syncData() {
         desktop.setRenderMode(renderMode);
         desktop.setName(tName.getText());
@@ -174,6 +182,11 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener {
         desktop.setCoverVisible(coverVisibleCheckbox.isSelected());
         desktop.setBackground(bgColor);
         desktop.setSecondBackground(bgColor2);
+        return true;
+    }
+
+    @Override
+    public boolean setData() {
         return true;
     }
 
@@ -192,7 +205,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener {
                     String testPath = imf.getAbsolutePath();
                     ImageIcon testCover;
                     try {
-                        testCover = new ImageIcon(Imaging.getBufferedImage(imf));
+                        testCover = new ImageIcon(ImageIO.read(imf));
 
                         if (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1) {
                             pathToImage = testPath;
@@ -200,8 +213,8 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener {
                             pathField.setText(testPath);
                             repaint();
                         }
-                    } catch (ImageReadException | IOException ignored) {
-
+                    } catch (IOException e) {
+                        LOG.error("Can't load desktop wallpaper", e);
                     }
                 }
                 break;

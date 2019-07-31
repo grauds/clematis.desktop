@@ -243,7 +243,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
      * Clock
      */
     @SuppressWarnings("MagicNumber")
-    class ClockLabel extends JLabel {
+    static class ClockLabel extends JLabel {
 
         static final String LEADING_ZERO = "0";
 

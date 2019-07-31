@@ -1,8 +1,6 @@
-
-  
 # jWorkspace (Clematis Desktop), version 2.0.0  
   
-What's new in Clematis 2.0?  
+What's new in jWorkspace 2.0?  
   
 |\[           Legend:         \]|  
 |\[ + Added feature            \]|  
@@ -11,10 +9,13 @@ What's new in Clematis 2.0?
   
 ## 2.0.0  
   
-\[\+\] Gradle project, checkstyle, findbugs   
-\[\+\] The latest Kiwi 2.4.1 library as a separate module  
+\[\+\] Gradle project, checkstyle, findbugs
+\[\+\] The latest Kiwi 2 library as a separate module. It is now being maintained by Java Workspace project developers   
 \[\+\] The deprecated Jimi library is replaced with Apache Imaging  
-\[\*\] Re-factoring to support Java 8 and remove deprecated code  
+\[\*\] Re-factoring to support Java 8 and remove deprecated code
+\[\*\] Added unit tests
+\[\*\] Gradle project, checkstyle, findbugs
+\[\*\] Improved workspace startup logic and introduced user workspace
   
 ## 1.0.3  
   

@@ -26,7 +26,6 @@ package jworkspace.ui.views;
 */
 
 import javax.swing.JMenu;
-import javax.swing.JPanel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
@@ -42,15 +41,6 @@ public class DefaultView extends KPanel implements IView {
      */
     static final String SHOW = "SHOW";
     /**
-     * Modified flag is open to all descendants
-     * of this class.
-     */
-    private boolean modified = false;
-    /**
-     * If this view active?
-     */
-    private boolean active = false;
-    /**
      * Save path. Relative to user.home
      */
     private String path = "";
@@ -58,7 +48,7 @@ public class DefaultView extends KPanel implements IView {
     /**
      * Default public constructor
      */
-    public DefaultView() {
+    DefaultView() {
         super();
         setOpaque(false);
     }
@@ -67,7 +57,6 @@ public class DefaultView extends KPanel implements IView {
      * View activated or deactivated
      */
     public void activated(boolean flag) {
-        active = flag;
     }
 
     /**
@@ -94,7 +83,7 @@ public class DefaultView extends KPanel implements IView {
     /**
      * Get all option panels for this shell
      */
-    public JPanel[] getOptionPanels() {
+    public PropertiesPanel[] getOptionPanels() {
         return null;
     }
 
@@ -111,7 +100,7 @@ public class DefaultView extends KPanel implements IView {
      * Returns modified flag for the view
      */
     public boolean isModified() {
-        return modified;
+        return false;
     }
 
     /**

@@ -52,14 +52,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.Scrollable;
 import javax.swing.border.Border;
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
@@ -82,6 +83,10 @@ import jworkspace.ui.WorkspaceGUI;
 public class ResourceExplorerPanel extends KPanel implements Scrollable, ComponentListener {
 
     private static final String LOAD_FAILED_MESSAGE = LangResource.getString("ResourceExplorerPanel.load.failed");
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceExplorerPanel.class);
 
     private static Dimension thumbnailDimension;
 
@@ -250,9 +255,9 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
     private void enumLibTextures() throws IOException {
         InputStream is;
         try {
-            is = ResourceManager.getKiwiResourceManager().
-                getStream("textures/_index.txt");
+            is = ResourceManager.getKiwiResourceManager().getStream("textures/_index.txt");
         } catch (ResourceNotFoundException ex) {
+            LOG.warn("Resource library is not found", ex);
             return;
         }
         String s;
@@ -273,8 +278,8 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
                     this.add(thumb);
                     revalidate();
                 }
-            } catch (ResourceNotFoundException ignored) {
-
+            } catch (ResourceNotFoundException e) {
+                LOG.warn("Resource is not found", e);
             }
         }
         reader.close();
@@ -372,29 +377,26 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         }
 
         private void loadZipImage(ZipEntry ze, InputStream zip) throws IOException {
-            try {
-                Image image = Imaging.getBufferedImage(zip);
-                ImageIcon imageIcon = new ImageIcon(image);
 
-                if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
+            Image image = ImageIO.read(zip);
+            ImageIcon imageIcon = new ImageIcon(image);
 
-                    Thumbnail thumb = new Thumbnail();
-                    thumb.doSetIcon(imageIcon);
-                    int index = ze.getName().lastIndexOf('/');
-                    if (index != -1) {
-                        thumb.setText(ze.getName().substring(index + 1));
-                    }
-                    list.add(thumb);
-                    add(thumb);
+            if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
+
+                Thumbnail thumb = new Thumbnail();
+                thumb.doSetIcon(imageIcon);
+                int index = ze.getName().lastIndexOf('/');
+                if (index != -1) {
+                    thumb.setText(ze.getName().substring(index + 1));
                 }
-            } catch (ImageReadException ignored) {
-
+                list.add(thumb);
+                add(thumb);
             }
         }
 
         private float loadImage(float step, float progress, File value) {
             try {
-                Image image = Imaging.getBufferedImage(value);
+                Image image = ImageIO.read(value);
                 ImageIcon imageIcon = new ImageIcon(image);
 
                 if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
@@ -406,7 +408,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
                     add(thumb);
                 }
                 pr.setProgress(Math.round(progress + step));
-            } catch (IOException | ImageReadException ignored) {
+            } catch (IOException ignored) {
 
             }
             return progress + step;

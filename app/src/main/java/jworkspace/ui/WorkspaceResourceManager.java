@@ -30,8 +30,8 @@ import java.awt.Image;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
+import javax.imageio.ImageIO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,17 +85,19 @@ public class WorkspaceResourceManager extends ResourceManager {
              * May also occur if base class does
              * not support image format
              */
-            LOG.warn("Can't find the image", ex);
+            LOG.warn("Can't find the image " + name, ex);
         }
 
-        try {
+        if (image == null) {
+            try {
 
-            image = Imaging.getBufferedImage(getClass().getResourceAsStream(imagePath + name));
-        } catch (ImageReadException | IOException ex) {
-            /*
-             * May also occur if Apache Advanced Imaging does not support image format
-             */
-            LOG.warn("Can't load or read the image", ex);
+                image = ImageIO.read(getClass().getResourceAsStream(imagePath + name));
+            } catch (IOException ex) {
+                /*
+                 * May also occur if Apache Advanced Imaging does not support image format
+                 */
+                LOG.warn("Can't load or read the image " + name, ex);
+            }
         }
 
         if (image != null) {

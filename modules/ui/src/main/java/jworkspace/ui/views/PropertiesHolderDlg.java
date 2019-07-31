@@ -27,20 +27,26 @@ package jworkspace.ui.views;
 */
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.LangResource;
+
 /**
  * This dialog holds a properties panel for a view. Each panel is placed as a component to a tab view.
  * After user selects to close dialog, this class invokes <code>syncData</code> method on every panel
@@ -49,9 +55,14 @@ import jworkspace.LangResource;
  * @author Anton Troshin
  */
 public class PropertiesHolderDlg extends ComponentDialog {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesHolderDlg.class);
 
     private JTabbedPane tabbedPane;
 
+    private List<PropertiesPanel> propertiesPanelList = new ArrayList<>();
     /**
      * Constructor for property viewer panel.
      *
@@ -59,7 +70,7 @@ public class PropertiesHolderDlg extends ComponentDialog {
      * @param optionPanels array of JPanels as an option panels for current view.
      */
     @SuppressWarnings("checkstyle:MagicNumber")
-    public PropertiesHolderDlg(Frame parent, JPanel[] optionPanels) {
+    PropertiesHolderDlg(Frame parent, PropertiesPanel[] optionPanels) {
 
         super(parent, LangResource.getString("PropertiesHolder.title"), true);
 
@@ -75,11 +86,18 @@ public class PropertiesHolderDlg extends ComponentDialog {
 
             tabbedPane.addTab(LangResource.getString("PropertiesHolder.empty.tab"), emptyPanel);
         } else {
-            for (JPanel optionPanel : optionPanels) {
+            for (PropertiesPanel optionPanel : optionPanels) {
+                if (!(optionPanel instanceof Component)) {
+                    continue;
+                }
+                propertiesPanelList.add(optionPanel);
+
+                // add to layout
                 if (optionPanel.getName() != null) {
-                    tabbedPane.addTab(optionPanel.getName(), optionPanel);
+                    tabbedPane.addTab(optionPanel.getName(), (Component) optionPanel);
                 } else {
-                    tabbedPane.addTab(LangResource.getString("PropertiesHolder.empty.tab.header"), optionPanel);
+                    tabbedPane.addTab(LangResource.getString("PropertiesHolder.empty.tab.header"),
+                        (Component) optionPanel);
                 }
             }
         }
@@ -93,34 +111,19 @@ public class PropertiesHolderDlg extends ComponentDialog {
     }
 
     protected boolean accept() {
-        if (tabbedPane == null) {
-            return true;
+        boolean result = true;
+        for (PropertiesPanel propertiesPanel : propertiesPanelList) {
+            result &= propertiesPanel.syncData();
         }
-        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-            try {
-                Method syncData = tabbedPane.getComponentAt(i).getClass().
-                    getMethod("syncData");
-                syncData.invoke(tabbedPane.getComponentAt(i));
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
-
-            }
-        }
-        return true;
+        return result;
     }
 
     protected boolean setData() {
-        if (tabbedPane == null) {
-            return true;
+        boolean result = true;
+        for (PropertiesPanel propertiesPanel : propertiesPanelList) {
+            result &= propertiesPanel.setData();
         }
-        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-            try {
-                Method syncData = tabbedPane.getComponentAt(i).getClass().
-                    getMethod("setData");
-                syncData.invoke(tabbedPane.getComponentAt(i));
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
-            }
-        }
-        return true;
+        return result;
     }
 
     protected JComponent buildDialogUI() {
