@@ -27,7 +27,6 @@ package jworkspace.ui;
 
 import org.junit.Test;
 
-import jworkspace.kernel.Workspace;
 /**
  * @author Anton Troshin
  */
@@ -35,10 +34,10 @@ public class WorkspaceGUITest {
 
     @Test
     public void testIsLoading() {
-        /*
-         * Test workspace is loading
-         */
-        Workspace.main(new String[]{});
+//        /*
+//         * Test workspace is loading
+//         */
+//        Workspace.main(new String[]{});
 
     }
 }

@@ -81,10 +81,10 @@ public class ConfigFile extends Config {
      */
 
     public void load() throws FileNotFoundException, IOException {
-        FileInputStream fin = new FileInputStream(file);
-        super.load(fin);
-        fin.close();
-        support.fireChangeEvent();
+        try (FileInputStream fin = new FileInputStream(file)) {
+            super.load(fin);
+            support.fireChangeEvent();
+        }
     }
 
     /**
@@ -95,9 +95,9 @@ public class ConfigFile extends Config {
      */
 
     public void store() throws IOException {
-        FileOutputStream fout = new FileOutputStream(file);
-        super.store(fout, description);
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(file)) {
+            super.store(fout, description);
+        }
     }
 
     /**

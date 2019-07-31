@@ -23,12 +23,16 @@ import java.util.Date;
 
 import com.hyperrealm.kiwi.text.FormatConstants;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * A mutable holder for a <code>Date</code> value.
  *
  * @author Mark Lindner
  */
-
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class DateHolder extends ValueHolder {
     /**
      * The current value.

@@ -19,12 +19,16 @@
 
 package com.hyperrealm.kiwi.util;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * A mutable holder for a <code>double</code> value.
  *
  * @author Mark Lindner
  */
-
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class DoubleHolder extends ValueHolder {
     /**
      * The current value.

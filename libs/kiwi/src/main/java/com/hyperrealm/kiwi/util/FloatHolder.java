@@ -19,12 +19,16 @@
 
 package com.hyperrealm.kiwi.util;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * A mutable holder for a <code>float</code> value.
  *
  * @author Mark Lindner
  */
-
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class FloatHolder extends ValueHolder {
     /**
      * The current value.
