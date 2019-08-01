@@ -92,7 +92,7 @@ public class DateField extends DataField<Date> {
     public Date getDate() {
         checkInput();
 
-        return (date);
+        return date != null ? new Date(date.getTime()) : null;
     }
 
     /**
@@ -102,7 +102,7 @@ public class DateField extends DataField<Date> {
      */
 
     public void setDate(Date date) {
-        this.date = date;
+        this.date = date == null ? null : new Date(date.getTime());
 
         setText((date == null) ? "" : dateFormat.format(date));
 

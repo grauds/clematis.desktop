@@ -201,21 +201,7 @@ public class JPopupMenuEx extends JPopupMenu {
         }
     }
 
-    /**
-     * Additional work needed to finalize and free up memory.
-     */
-    protected void finalize() {
-        // Placeholder
-    }
-    /*
-     *  Added functionality - dynamically restucture the menu to allow menus to
-     *  be a maximum height or by number on the screen.  Provided for convenience
-     *  only.  Height algorithms are more desireable but tend to be quite
-     *  tempermental and unpredictable requiring testing out the yin-yang to get
-     *  right.
-     */
-
-    /**
+   /**
      * Get all Components **MINUS THE MORE BUTTONS**
      * Use vectors, they are easier to work with when working with
      * heavily dynamic stuff.

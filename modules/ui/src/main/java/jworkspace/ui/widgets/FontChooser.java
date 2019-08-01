@@ -48,10 +48,12 @@ import javax.swing.event.ListSelectionListener;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.LangResource;
 /**
  * @author Anton Troshin
  */
+@SuppressFBWarnings("UR_UNINIT_READ")
 public class FontChooser extends ComponentDialog implements ActionListener, ListSelectionListener {
 
     private static final String REGULAR_FONT_FACE = "Regular";
@@ -69,8 +71,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
     private FontPreviewPanel preview;
 
     /**
-     * Constructs a new JFontChooser component initialized
-     * to the supplied font object.
+     * Constructs a new JFontChooser component initialized to the supplied font object.
      */
     public FontChooser(Frame parent, Font font) {
         super(parent, LangResource.getString("FontChooserDialog.title"), true);

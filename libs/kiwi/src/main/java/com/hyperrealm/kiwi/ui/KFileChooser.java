@@ -214,7 +214,7 @@ public class KFileChooser extends JFileChooser {
         returnValue = CANCEL_OPTION;
     }
 
-    private class Dialog extends KDialog {
+    private static class Dialog extends KDialog {
 
         Dialog(Frame parent, String title, boolean modal,
                KFileChooser chooser) {

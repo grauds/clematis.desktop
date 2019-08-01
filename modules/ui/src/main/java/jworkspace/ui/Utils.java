@@ -371,14 +371,14 @@ public final class Utils implements IConstants {
      * Finds maximum of two values
      */
     public static int max(int i, int j) {
-        return (i < j) ? j : i;
+        return Math.max(i, j);
     }
 
     /**
      * Finds minimum of two values
      */
     public static int min(int i, int j) {
-        return (i < j) ? i : j;
+        return Math.min(i, j);
     }
 
     /**

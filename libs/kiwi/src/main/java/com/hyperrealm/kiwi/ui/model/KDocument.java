@@ -83,7 +83,7 @@ public class KDocument extends PlainDocument {
      */
 
     public void setMaximumLength(int length) {
-        maxLength = ((length < 0) ? 0 : length);
+        maxLength = Math.max(length, 0);
 
         if (maxLength != NO_LIMIT) {
             truncate();

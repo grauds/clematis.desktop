@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.LangResource;
 
 /**
@@ -52,6 +53,7 @@ import jworkspace.LangResource;
  * ignores the situation.
  * @author Anton Troshin
  */
+@SuppressFBWarnings("UR_UNINIT_READ")
 public class PropertiesHolderDlg extends ComponentDialog {
     /**
      * Default logger

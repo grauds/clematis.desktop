@@ -314,8 +314,7 @@ public final class Workspace {
         String home = System.getProperty("user.home");
 
         if (!home.startsWith(System.getProperty(USER_DIR))) {
-            home = System.getProperty(USER_DIR)
-                + File.separator + Workspace.getProfilesEngine().getPath();
+            home = System.getProperty(USER_DIR) + File.separator + Workspace.getProfilesEngine().getPath();
         }
 
         return home + File.separator;

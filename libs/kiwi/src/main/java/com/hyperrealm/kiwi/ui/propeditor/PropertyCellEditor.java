@@ -99,7 +99,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
         editorLabel.addMouseListener(mouseListener);
         editorPanel.add(WEST_POSITION, editorLabel);
 
-        editors = new HashMap<PropertyType, PropertyValueEditor>();
+        editors = new HashMap<>();
 
         label = new KLabel();
         label.setBorder(noborder);
@@ -138,7 +138,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
                                                              boolean leaf,
                                                              int row) {
         JComponent c;
-        Property prop = null;
+        Property prop;
 
         if (editor != null) {
             c = editor.getEditorComponent();
@@ -237,12 +237,9 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
     /*
      */
 
-    public boolean shouldSelectCell(EventObject evt) {
-        if (editor != null) {
-            editor.startFocus();
-        }
-
-        return (true);
+    public synchronized boolean shouldSelectCell(EventObject evt) {
+        startFocus();
+        return true;
     }
 
     /*
@@ -262,7 +259,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
     /*
      */
 
-    protected void fireEditingStopped() {
+    private void fireEditingStopped() {
         // Guaranteed to return a non-null array
 
         Object[] listeners = listenerList.getListenerList();
@@ -282,7 +279,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
     /*
      */
 
-    protected void fireEditingCanceled() {
+    private void fireEditingCanceled() {
         // Guaranteed to return a non-null array
         Object[] listeners = listenerList.getListenerList();
         // Process the listeners last to first, notifying
@@ -308,7 +305,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
     /*
      */
 
-    public boolean stopCellEditing() {
+    public synchronized boolean stopCellEditing() {
         if (editor == null) {
             return (true);
         }
@@ -326,7 +323,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
     /*
      */
 
-    public Object getCellEditorValue() {
+    public synchronized Object getCellEditorValue() {
         return ((editor == null) ? null : editor.getProperty().getValue());
     }
 
@@ -337,10 +334,17 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
         stopCellEditing();
     }
 
+
+    private void startFocus() {
+        if (editor != null) {
+            editor.startFocus();
+        }
+    }
+
     /*
      */
 
-    private class UnderlineBorder extends AbstractBorder {
+    private static class UnderlineBorder extends AbstractBorder {
         private Insets insets = new Insets(0, 0, 1, 0);
 
         UnderlineBorder() {
@@ -368,7 +372,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
             insets.right = 0;
             insets.bottom = 1;
 
-            return (insets);
+            return insets;
         }
     }
 
@@ -377,9 +381,7 @@ class PropertyCellEditor implements TreeCellEditor, TreeCellRenderer,
 
     private class MouseListener extends MouseAdapter {
         public void mouseClicked(MouseEvent evt) {
-            if (editor != null) {
-                editor.startFocus();
-            }
+            startFocus();
         }
     }
 }

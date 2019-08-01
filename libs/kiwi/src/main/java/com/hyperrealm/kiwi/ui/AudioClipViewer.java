@@ -42,7 +42,7 @@ public class AudioClipViewer extends KPanel implements UIElementViewer, ActionLi
 
     private KButton bPlay, bStop;
 
-    private AudioClip clip = null;
+    private KiwiAudioClip clip = null;
 
     /**
      * Construct a new <code>AudioClipViewer</code>.
@@ -82,12 +82,12 @@ public class AudioClipViewer extends KPanel implements UIElementViewer, ActionLi
     public void showElement(UIElement element) {
         Object obj = element.getObject();
 
-        if (obj instanceof AudioClip) {
+        if (obj instanceof KiwiAudioClip) {
             if (clip != null) {
                 clip.stop();
             }
 
-            clip = (AudioClip) obj;
+            clip = (KiwiAudioClip) obj;
         }
     }
 

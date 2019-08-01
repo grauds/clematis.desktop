@@ -210,16 +210,14 @@ public abstract class DomainObject {
 , 
      */
 
-    public String ensureNotNull(String value, String desc)
-        throws MutatorException {
+    public String ensureNotNull(String value, String desc) throws MutatorException {
+
         if (value == null) {
             nullWarning(desc);
-        }
-
-        if (value != null && value.trim().length() == 0) {
+        } else if (value.trim().length() == 0) {
             nullWarning(desc);
         }
 
-        return (value);
+        return value;
     }
 }

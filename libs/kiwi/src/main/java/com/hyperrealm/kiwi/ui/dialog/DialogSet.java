@@ -214,7 +214,7 @@ public class DialogSet implements PropertyChangeListener {
      * if the dialog was cancelled.
      */
 
-    public synchronized String showInputDialog(String title, Icon icon,
+    public String showInputDialog(String title, Icon icon,
                                                String prompt,
                                                String defaultValue) {
         return doShowInputDialog(owner, title, icon, prompt, defaultValue);
@@ -234,7 +234,7 @@ public class DialogSet implements PropertyChangeListener {
      * @since Kiwi 2.0
      */
 
-    public synchronized String showInputDialog(Window parent, String title,
+    public String showInputDialog(Window parent, String title,
                                                Icon icon, String prompt,
                                                String defaultValue) {
         return doShowInputDialog(parent, title, icon, prompt, defaultValue);
@@ -242,7 +242,7 @@ public class DialogSet implements PropertyChangeListener {
 
     /* show an input dialog */
 
-    private String doShowInputDialog(Window owner, String title, Icon icon,
+    private synchronized String doShowInputDialog(Window owner, String title, Icon icon,
                                      String prompt, String defaultValue) {
         dInput.setTitle((title == null) ? sInput : title);
         dInput.setPrompt(prompt);
@@ -254,9 +254,9 @@ public class DialogSet implements PropertyChangeListener {
         doPositionDialog(owner, dInput);
         dInput.setVisible(true);
         if (dInput.isCancelled()) {
-            return (null);
+            return null;
         }
-        return (dInput.getText());
+        return dInput.getText();
     }
 
     /**

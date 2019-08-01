@@ -21,6 +21,7 @@ package com.hyperrealm.kiwi.io.xdr;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * An object for encoding XDR-encoded data directly to a byte buffer. See
@@ -113,11 +114,7 @@ public class XDRBufferWriter implements XDRDataOutput {
      */
 
     public void setLength(int pos) {
-        if (pos > buffer.length) {
-            this.pos = buffer.length;
-        } else {
-            this.pos = pos;
-        }
+        this.pos = Math.min(pos, buffer.length);
     }
 
     /**
@@ -264,7 +261,7 @@ public class XDRBufferWriter implements XDRDataOutput {
         // There isn't a more efficient way to get to the bytes in the string;
         // we have to duplicate them.
 
-        byte[] ascii = stringInt.getBytes();
+        byte[] ascii = stringInt.getBytes(StandardCharsets.UTF_8);
         writeByteArray(ascii);
     }
 

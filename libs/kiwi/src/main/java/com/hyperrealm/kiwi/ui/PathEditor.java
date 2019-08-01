@@ -327,17 +327,20 @@ public class PathEditor extends KPanel implements ActionListener, ListSelectionL
                 return (true);
             }
 
-            MouseEvent mev = (MouseEvent) ev;
-            int newrow = ((JTable) mev.getSource())
-                .rowAtPoint(new Point(mev.getX(), mev.getY()));
+            if (ev instanceof MouseEvent) {
 
-            if (newrow == row) {
-                text.requestFocus();
-                ok = true;
-            } else {
-                row = newrow;
+                MouseEvent mev = (MouseEvent) ev;
+                int newrow = ((JTable) mev.getSource())
+                    .rowAtPoint(new Point(mev.getX(), mev.getY()));
+
+                if (newrow == row) {
+                    text.requestFocus();
+                    ok = true;
+                } else {
+                    row = newrow;
+                }
+
             }
-
             return (ok);
         }
 

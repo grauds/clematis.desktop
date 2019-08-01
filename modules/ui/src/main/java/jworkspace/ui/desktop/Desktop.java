@@ -1289,7 +1289,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         File file = new File(Workspace.getUserHome() + getPath());
 
         if (!file.exists()) {
-            file.mkdirs();
+            if (!file.mkdirs()) {
+                LOG.error("Can't create directories, not saving: " + file.getAbsolutePath());
+                return;
+            }
         }
 
         try {

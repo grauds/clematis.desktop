@@ -19,6 +19,8 @@
 
 package com.hyperrealm.kiwi.ui;
 
+import java.util.Arrays;
+
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -62,7 +64,7 @@ public class StatusIconCellRenderer extends AbstractCellRenderer
             throw (new IllegalArgumentException("Cannot be null or an empty array."));
         }
 
-        this.icons = icons;
+        this.icons = Arrays.copyOf(icons, icons.length);
     }
 
     /**

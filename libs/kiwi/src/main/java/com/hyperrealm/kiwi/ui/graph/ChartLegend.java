@@ -70,7 +70,7 @@ public class ChartLegend extends JList<ChartValue> {
     /* The list renderer.
      */
 
-    private class ChartLegendRenderer extends JLabel implements ListCellRenderer<ChartValue> {
+    private static class ChartLegendRenderer extends JLabel implements ListCellRenderer<ChartValue> {
 
         private final ColorSwatch swatch = new ColorSwatch(Color.gray, 10, 10);
 

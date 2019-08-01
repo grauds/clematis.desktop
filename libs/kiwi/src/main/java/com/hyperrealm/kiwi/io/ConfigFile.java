@@ -27,6 +27,8 @@ import java.io.IOException;
 
 import com.hyperrealm.kiwi.util.Config;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * Persistent configuration object. This class extends
  * <code>com.hyperrealm.kiwi.util.Config</code>, adding convenience methods
@@ -37,7 +39,7 @@ import com.hyperrealm.kiwi.util.Config;
  * @see java.util.Properties
  * @see com.hyperrealm.kiwi.util.Config
  */
-
+@EqualsAndHashCode(callSuper = true)
 public class ConfigFile extends Config {
 
     private File file;
@@ -105,7 +107,7 @@ public class ConfigFile extends Config {
      */
 
     public String getPath() {
-        return (file.getAbsolutePath());
+        return file.getAbsolutePath();
     }
 
 }

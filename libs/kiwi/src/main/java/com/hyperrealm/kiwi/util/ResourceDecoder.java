@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
-import com.hyperrealm.kiwi.ui.AudioClip;
+import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
 /**
  * A class that decodes various types of resources from input streams. This
@@ -43,7 +43,7 @@ import com.hyperrealm.kiwi.ui.AudioClip;
 
 public class ResourceDecoder implements ImageObserver {
 
-    private static boolean imageLoaded = false;
+    private boolean imageLoaded = false;
 
     /**
      * Construct a new <code>ResourceDecoder</code>.
@@ -63,7 +63,7 @@ public class ResourceDecoder implements ImageObserver {
      */
 
     public String decodeString(InputStream stream) throws IOException {
-        return (StreamUtils.readStreamToString(stream));
+        return StreamUtils.readStreamToString(stream);
     }
 
     /**
@@ -77,8 +77,8 @@ public class ResourceDecoder implements ImageObserver {
      *                             stream.
      */
 
-    public AudioClip decodeAudioClip(InputStream stream) throws IOException {
-        return (new AudioClip(stream));
+    public KiwiAudioClip decodeAudioClip(InputStream stream) throws IOException {
+        return new KiwiAudioClip(stream);
     }
 
     /**
@@ -105,7 +105,7 @@ public class ResourceDecoder implements ImageObserver {
             }
         }
 
-        return (im);
+        return im;
     }
 
     /**
@@ -122,8 +122,7 @@ public class ResourceDecoder implements ImageObserver {
     public Properties decodeProperties(InputStream stream) throws IOException {
         Properties prop = new Properties();
         prop.load(stream);
-
-        return (prop);
+        return prop;
     }
 
     /**

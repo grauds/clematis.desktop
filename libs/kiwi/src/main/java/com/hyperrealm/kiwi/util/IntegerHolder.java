@@ -66,7 +66,7 @@ public class IntegerHolder extends ValueHolder {
     public IntegerHolder(int value, int subtype) {
         super(subtype);
 
-        this.value = value;
+        setValue(value);
     }
 
     /**
@@ -75,8 +75,8 @@ public class IntegerHolder extends ValueHolder {
      * @return The current value.
      */
 
-    public final int getValue() {
-        return (value);
+    public final synchronized int getValue() {
+        return value;
     }
 
     /**
@@ -85,7 +85,7 @@ public class IntegerHolder extends ValueHolder {
      * @param value The new value.
      */
 
-    public final void setValue(int value) {
+    public final synchronized void setValue(int value) {
         this.value = value;
     }
 
@@ -94,7 +94,7 @@ public class IntegerHolder extends ValueHolder {
      */
 
     public String toString() {
-        return (String.valueOf(value));
+        return (String.valueOf(getValue()));
     }
 
     /**
@@ -104,7 +104,7 @@ public class IntegerHolder extends ValueHolder {
     public int compareTo(Object other) {
         int v = ((IntegerHolder) other).getValue();
 
-        return Integer.compare(value, v);
+        return Integer.compare(getValue(), v);
     }
 
     /**
@@ -112,7 +112,7 @@ public class IntegerHolder extends ValueHolder {
      */
 
     public Object copy() {
-        return (new IntegerHolder(value, subtype));
+        return (new IntegerHolder(getValue(), subtype));
     }
 
 }

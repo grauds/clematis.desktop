@@ -23,6 +23,7 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 /**
  * An implementation of <code>LoggingEndpoint</code> for ordinary files.
@@ -49,7 +50,7 @@ public class FileLoggingEndpoint implements LoggingEndpoint {
 
     public FileLoggingEndpoint(String filename) throws IOException {
         FileOutputStream f = new FileOutputStream(filename, true);
-        out = new BufferedWriter(new OutputStreamWriter(f));
+        out = new BufferedWriter(new OutputStreamWriter(f, StandardCharsets.UTF_8));
     }
 
     /**

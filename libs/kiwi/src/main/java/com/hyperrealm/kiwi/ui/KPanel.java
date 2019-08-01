@@ -258,13 +258,13 @@ public class KPanel extends JPanel {
      * @since Kiwi 2.2
      */
 
-    public void fadeIn() {
-        synchronized (timer) {
-            alphaStep = DEFAULT_ALPHA_STEP;
-            if (!timer.isRunning()) {
-                timer.start();
-            }
+    private synchronized void fadeIn() {
+        //synchronized (timer) {
+        alphaStep = DEFAULT_ALPHA_STEP;
+        if (!timer.isRunning()) {
+            timer.start();
         }
+       // }
     }
 
     /**
@@ -273,13 +273,13 @@ public class KPanel extends JPanel {
      * @since Kiwi 2.2
      */
 
-    private void fadeOut() {
-        synchronized (timer) {
-            alphaStep = -DEFAULT_ALPHA_STEP;
-            if (!timer.isRunning()) {
-                timer.start();
-            }
+    private synchronized void fadeOut() {
+        //synchronized (timer) {
+        alphaStep = -DEFAULT_ALPHA_STEP;
+        if (!timer.isRunning()) {
+            timer.start();
         }
+      //  }
     }
 
     /*
@@ -389,7 +389,7 @@ public class KPanel extends JPanel {
     /*
      */
 
-    private class KFocusTraversalPolicy extends FocusTraversalPolicy {
+    private static class KFocusTraversalPolicy extends FocusTraversalPolicy {
         private JComponent[] order;
 
         /*

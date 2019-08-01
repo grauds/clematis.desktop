@@ -404,7 +404,7 @@ public class WorkspaceGUI implements UI {
         /*
          * Workspace plugin ICON
          */
-        ImageIcon shellIcon = new ImageIcon(Workspace.getResourceManager().getImage("shell_big.png"));
+        //ImageIcon shellIcon = new ImageIcon(Workspace.getResourceManager().getImage("shell_big.png"));
         /*
          * Create new registry.
          */

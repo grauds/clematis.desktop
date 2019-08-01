@@ -39,9 +39,7 @@ import java.net.URL;
  * @see com.hyperrealm.kiwi.util.ResourceLoader#getResourceAsURL
  */
 @SuppressWarnings("sunapi")
-public class AudioClip implements java.applet.AudioClip {
-
-    static int length;
+public class KiwiAudioClip implements java.applet.AudioClip {
 
     private sun.audio.AudioData audioData;
 
@@ -59,8 +57,10 @@ public class AudioClip implements java.applet.AudioClip {
      *                             specified URL.
      */
 
-    public AudioClip(URL url) throws IOException {
-        audioData = new sun.audio.AudioStream(url.openStream()).getData();
+    public KiwiAudioClip(URL url) throws IOException {
+        try (sun.audio.AudioStream as = new sun.audio.AudioStream(url.openStream())) {
+            audioData = as.getData();
+        }
     }
 
     /**
@@ -71,7 +71,7 @@ public class AudioClip implements java.applet.AudioClip {
      *                             specified file.
      */
 
-    public AudioClip(String file) throws IOException {
+    public KiwiAudioClip(String file) throws IOException {
         this(new FileInputStream(file));
     }
 
@@ -83,7 +83,7 @@ public class AudioClip implements java.applet.AudioClip {
      *                             specified stream.
      */
 
-    public AudioClip(InputStream stream) throws IOException {
+    public KiwiAudioClip(InputStream stream) throws IOException {
         audioData = new sun.audio.AudioStream(stream).getData();
     }
 

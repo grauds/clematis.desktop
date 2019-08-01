@@ -33,7 +33,7 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hyperrealm.kiwi.ui.AudioClip;
+import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
 /**
  * A basic implementation of an applet context. The
@@ -112,11 +112,11 @@ public abstract class KiwiAppletContext implements AppletContext {
      * @return The audio clip on success, or <code>null</code> on failure.
      */
 
-    public AudioClip getAudioClip(URL url) {
-        AudioClip ac = null;
+    public KiwiAudioClip getAudioClip(URL url) {
+        KiwiAudioClip ac = null;
 
         try {
-            ac = new com.hyperrealm.kiwi.ui.AudioClip(url);
+            ac = new KiwiAudioClip(url);
 
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);

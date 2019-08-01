@@ -22,6 +22,7 @@ package com.hyperrealm.kiwi.ui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import com.hyperrealm.kiwi.io.OutputLoop;
 import com.hyperrealm.kiwi.util.LoggingEndpoint;
@@ -74,7 +75,7 @@ public class ConsoleAdapter {
         OutputLoop pipe = new OutputLoop();
         pipe.setActive(true);
 
-        reader = new BufferedReader(new InputStreamReader(pipe.getInputStream()));
+        reader = new BufferedReader(new InputStreamReader(pipe.getInputStream(), StandardCharsets.UTF_8));
 
         Runnable r = this::run;
 

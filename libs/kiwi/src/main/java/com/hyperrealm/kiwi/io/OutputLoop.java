@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A class for redirecting a program's standard output stream back into
@@ -54,7 +55,7 @@ public class OutputLoop {
         pipein = new PipedInputStream(pipeout);
 
         oldout = System.out;
-        newout = new PrintStream(pipeout); // un-deprecated in JDK 1.2
+        newout = new PrintStream(pipeout, false, StandardCharsets.UTF_8.name()); // un-deprecated in JDK 1.2
     }
 
     /**

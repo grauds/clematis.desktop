@@ -67,7 +67,6 @@ public class KListModelEvent extends EventObject {
         super(source);
 
         this.startIndex = startIndex;
-        this.endIndex = 0;
         this.endIndex = endIndex;
         this.field = field;
     }
@@ -115,7 +114,7 @@ public class KListModelEvent extends EventObject {
      */
 
     public int getEndIndex() {
-        return (endIndex);
+        return endIndex;
     }
 
     /**
@@ -125,7 +124,7 @@ public class KListModelEvent extends EventObject {
      */
 
     public int getField() {
-        return (field);
+        return field;
     }
 
 }

@@ -75,7 +75,7 @@ public class DateHolder extends ValueHolder {
     public DateHolder(Date value, int subtype) {
         super(subtype);
 
-        this.value = value;
+        setValue(value);
     }
 
     /**
@@ -85,7 +85,7 @@ public class DateHolder extends ValueHolder {
      */
 
     public final Date getValue() {
-        return (value);
+        return value != null ? new Date(value.getTime()) : null;
     }
 
     /**
@@ -95,7 +95,7 @@ public class DateHolder extends ValueHolder {
      */
 
     public final void setValue(Date value) {
-        this.value = value;
+        this.value = value != null ? new Date(value.getTime()) : null;
     }
 
     /**
@@ -103,7 +103,7 @@ public class DateHolder extends ValueHolder {
      */
 
     public String toString() {
-        return (value == null ? null : String.valueOf(value));
+        return (value == null ? super.toString() : String.valueOf(value));
     }
 
     /**

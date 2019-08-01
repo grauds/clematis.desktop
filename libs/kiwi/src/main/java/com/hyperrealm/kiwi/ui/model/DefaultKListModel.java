@@ -129,9 +129,7 @@ public class DefaultKListModel<T> implements KListModel<T> {
             return;
         }
 
-        T item = data.get(index);
         data.remove(index);
-
         support.fireItemRemoved(index);
     }
 

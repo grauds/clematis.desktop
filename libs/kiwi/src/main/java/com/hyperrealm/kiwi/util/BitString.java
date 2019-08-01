@@ -19,6 +19,8 @@
 
 package com.hyperrealm.kiwi.util;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * A class representing a string of bits, useful for maintaining a set of flags
  * in compact form.
@@ -27,7 +29,8 @@ package com.hyperrealm.kiwi.util;
  * @since Kiwi 2.0
  * @deprecated ?
  */
-@SuppressWarnings({"LocalVariableName", "EqualsHashCode"})
+@EqualsAndHashCode
+@SuppressWarnings({"LocalVariableName"})
 public final class BitString {
 
     private static final int WORD_LENGTH = 8;
@@ -46,7 +49,7 @@ public final class BitString {
      * @param length The length.
      */
 
-    public BitString(int length) {
+    private BitString(int length) {
         if (length < 0) {
             throw (new IllegalArgumentException());
         }
@@ -217,30 +220,6 @@ public final class BitString {
         }
 
         return (r);
-    }
-
-    /**
-     * Determine if this object is identical to another object.
-     */
-
-    public boolean equals(Object other) {
-        if (!(other instanceof BitString)) {
-            return (false);
-        }
-
-        BitString otherbs = (BitString) other;
-
-        if (otherbs.length != length) {
-            return (false);
-        }
-
-        for (int i = 0; i < length; i++) {
-            if (otherbs.array[i] != array[i]) {
-                return (false);
-            }
-        }
-
-        return (true);
     }
 
     /**

@@ -274,7 +274,7 @@ public class NumericField extends DataField<Number> {
      * @return The decimal count.
      */
 
-    public int getDecimals() {
+    public synchronized int getDecimals() {
         return (decimals);
     }
 
@@ -285,12 +285,8 @@ public class NumericField extends DataField<Number> {
      * @param decimals The new decimal count.
      */
 
-    public void setDecimals(int decimals) {
-        if (decimals < 0) {
-            this.decimals = 0;
-        } else {
-            this.decimals = decimals;
-        }
+    public synchronized void setDecimals(int decimals) {
+        this.decimals = Math.max(decimals, 0);
     }
 
     /**
@@ -300,7 +296,7 @@ public class NumericField extends DataField<Number> {
      * @param value The new maximum value.
      */
 
-    public void setMaxValue(double value) {
+    public synchronized void setMaxValue(double value) {
         maxValue = value;
         hasMaxValue = true;
     }
@@ -321,7 +317,7 @@ public class NumericField extends DataField<Number> {
      * Clear the maximum value constraint.
      */
 
-    public void clearMaxValue() {
+    public synchronized void clearMaxValue() {
         hasMaxValue = false;
     }
 
@@ -332,7 +328,7 @@ public class NumericField extends DataField<Number> {
      * @param value The new minimum value.
      */
 
-    public void setMinValue(double value) {
+    public synchronized void setMinValue(double value) {
         minValue = value;
         hasMinValue = true;
     }
@@ -353,7 +349,7 @@ public class NumericField extends DataField<Number> {
      * Clear the minimum value constraint.
      */
 
-    public void clearMinValue() {
+    public synchronized void clearMinValue() {
         hasMinValue = false;
     }
 
@@ -363,8 +359,8 @@ public class NumericField extends DataField<Number> {
      * @return The current grouping mode.
      */
 
-    public boolean getGrouping() {
-        return (grouping);
+    public synchronized boolean getGrouping() {
+        return grouping;
     }
 
     /**
@@ -376,7 +372,7 @@ public class NumericField extends DataField<Number> {
      *                 (<code>true</code>) or off (<code>false</code>).
      */
 
-    public void setGrouping(boolean grouping) {
+    public synchronized void setGrouping(boolean grouping) {
         this.grouping = grouping;
     }
 

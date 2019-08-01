@@ -22,6 +22,7 @@ package com.hyperrealm.kiwi.io.xdr;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * An output stream for encoding data in the XDR encoding format. See
@@ -149,7 +150,7 @@ public class XDROutputStream extends FilterOutputStream
      */
 
     public void writeString(String string) throws IOException {
-        byte[] ascii = string.getBytes();
+        byte[] ascii = string.getBytes(StandardCharsets.UTF_8);
         writeByteArray(ascii);
     }
 

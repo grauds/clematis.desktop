@@ -27,6 +27,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Dictionary;
 
 import javax.swing.JApplet;
@@ -75,7 +77,7 @@ public class AppletPanel extends KPanel {
 
     private static final int VGAP = 5;
 
-    private KiwiAppletContext ctx;
+    private transient KiwiAppletContext ctx;
 
     private JApplet applet;
 
@@ -205,9 +207,10 @@ public class AppletPanel extends KPanel {
             throw new AppletException(ex);
         }
 
-        ClassLoader classLoader = new URLClassLoader(new URL[]{url});
+        ClassLoader classLoader = AccessController.doPrivileged((PrivilegedAction<ClassLoader>) ()
+            -> new URLClassLoader(new URL[]{url}));
 
-        Class clazz = null;
+        Class clazz;
 
         try {
             clazz = classLoader.loadClass(className);
@@ -224,6 +227,7 @@ public class AppletPanel extends KPanel {
         } catch (Exception ex) {
             throw new AppletException(ex);
         }
+
     }
 
     /**

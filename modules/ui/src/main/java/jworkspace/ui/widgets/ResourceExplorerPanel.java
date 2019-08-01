@@ -334,9 +334,9 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         }
 
         private void scanArchive(File file) {
-            try {
-                ZipInputStream is = new ZipInputStream(new FileInputStream(file));
-                ZipFile zfile = new ZipFile(file);
+            try (ZipInputStream is = new ZipInputStream(new FileInputStream(file));
+                 ZipFile zfile = new ZipFile(file)) {
+                
                 ZipEntry ze;
                 /*
                  * Get through all entries

@@ -809,9 +809,9 @@ public class ViewsManager extends AbstractViewsManager {
          */
         String fileName = Workspace.getUserHome() + getPath() + File.separator + DESKTOP_CONFIG;
         LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
-        try {
-            FileInputStream inputFile = new FileInputStream(fileName);
-            DataInputStream dataStream = new DataInputStream(inputFile);
+
+        try (FileInputStream inputFile = new FileInputStream(fileName);
+             DataInputStream dataStream = new DataInputStream(inputFile)) {
 
             boolean visible = dataStream.readBoolean();
             String orientation = dataStream.readUTF();
@@ -835,65 +835,69 @@ public class ViewsManager extends AbstractViewsManager {
                     desktop.load();
                     addDesktop(desktop, false);
                 }
+
             } else {
                 throw new IOException();
             }
+
+            /*
+             * Add header panel
+             */
+            setCurrentView(0);
+            add(getHeaderPanel(), getHeaderPanel().getOrientation());
+            update();
+
         } catch (IOException e) {
             /*
              * Assemble default configuration.
              */
             create();
             update();
-            return;
         }
-        /*
-         * Add header panel
-         */
-        setCurrentView(0);
-        add(getHeaderPanel(), getHeaderPanel().getOrientation());
-        update();
     }
 
     /**
      * Writes down configuration on disk.
      */
     public void save() throws IOException {
+
         String fileName = Workspace.getUserHome() + getPath() + File.separator + DESKTOP_CONFIG;
         LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
 
         File file = new File(Workspace.getUserHome() + getPath());
-
-        /*
-         * Create or delete directory "multidesktop"
-         */
         if (!file.exists()) {
-            file.mkdirs();
+            if (!file.mkdirs()) {
+                LOG.error("Can't create directories, not saving: " + file.getAbsolutePath());
+                return;
+            }
         } else {
             KiwiUtils.deleteTree(file);
         }
 
-        FileOutputStream outputFile = new FileOutputStream(fileName);
-        DataOutputStream outputStream = new DataOutputStream(outputFile);
+        try (FileOutputStream outputFile = new FileOutputStream(fileName);
+            DataOutputStream outputStream = new DataOutputStream(outputFile)) {
 
-        outputStream.writeBoolean(getHeaderPanel().isVisible());
-        outputStream.writeUTF(getHeaderPanel().getOrientation());
+            outputStream.writeBoolean(getHeaderPanel().isVisible());
+            outputStream.writeUTF(getHeaderPanel().getOrientation());
 
-        int counter = 0;
+            int counter = 0;
 
-        for (IView view : views) {
-            if (view instanceof Desktop) {
-                String viewSavePath = getPath() + File.separator + VIEW + counter;
-                File file1 = new File(Workspace.getUserHome() + getPath() + File.separator + VIEW + counter);
-                if (!file1.exists()) {
-                    file1.mkdirs();
+            for (IView view : views) {
+                if (view instanceof Desktop) {
+                    String viewSavePath = getPath() + File.separator + VIEW + counter;
+                    File file1 = new File(Workspace.getUserHome() + getPath() + File.separator + VIEW + counter);
+                    if (!file1.exists() && !file1.mkdirs()) {
+                        LOG.error("Couldn't create directories for view: " + file1.getAbsolutePath());
+                        continue;
+                    }
+
+                    view.setPath(viewSavePath);
+                    counter++;
                 }
-
-                view.setPath(viewSavePath);
-                counter++;
+                view.save();
             }
-            view.save();
+            outputStream.writeInt(counter);
         }
-        outputStream.writeInt(counter);
     }
 
     /**

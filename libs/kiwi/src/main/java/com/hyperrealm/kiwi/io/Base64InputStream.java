@@ -116,7 +116,7 @@ public class Base64InputStream extends FilterInputStream {
             c = -1;
         }
 
-        return ((int) r);
+        return r;
     }
 
     /**

@@ -36,6 +36,8 @@ import com.hyperrealm.kiwi.text.ColorFormatter;
 import com.hyperrealm.kiwi.text.FontFormatter;
 import com.hyperrealm.kiwi.text.ParsingException;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * Configuration object. This class extends <code>Properties</code>,
  * adding convenience methods for storing and retrieving properties
@@ -55,8 +57,12 @@ import com.hyperrealm.kiwi.text.ParsingException;
  * @see javax.swing.event.ChangeEvent
  * @see java.beans.PropertyChangeEvent
  */
-
+@EqualsAndHashCode(callSuper = true)
 public class Config extends Properties implements PropertyChangeSource {
+    /**
+     * use serialVersionUID from JDK 1.1.X for interoperability
+     */
+    private static final long serialVersionUID = 4112578634029874841L;
 
     private static final String DEFAULT_DESCRIPTION = "Configuration Parameters";
 
@@ -69,7 +75,7 @@ public class Config extends Properties implements PropertyChangeSource {
      * The support object for firing <code>ChangeEvent</code>s when the object
      * changes.
      */
-    protected ChangeSupport support;
+    protected transient ChangeSupport support;
     /**
      * The support object for firing <coode>PropertyChangeEvent</code>s when
      * a property changes.

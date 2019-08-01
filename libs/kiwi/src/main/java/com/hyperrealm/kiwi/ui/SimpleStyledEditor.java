@@ -318,6 +318,8 @@ public class SimpleStyledEditor extends JTextPane {
                 if (lastString != null) {
                     insertString();
                 }
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception ignored) {
             }
         }

@@ -85,19 +85,17 @@ public final class UIChangeManager implements PropertyChangeSource {
 
     private static final String METAL_PLAF = "javax.swing.plaf.metal.MetalLookAndFeel";
 
-    private static UIChangeManager instance = new UIChangeManager();
+    private static UIChangeManager instance = null;
 
     private static final ArrayList<JComponent> COMPONENTS = new ArrayList<>();
 
-    private static Properties props;
+    private static Properties props = new Config();
 
     private static PropertyChangeSupport support;
 
     /* constructor -- singleton pattern  */
 
     private UIChangeManager() {
-        props = new Config();
-        support = new PropertyChangeSupport(this);
 
         props.put(BUTTON_OPACITY_PROPERTY, Boolean.FALSE);
         Image texture = KiwiUtils.getResourceManager().getTexture(DEFAULT_TEXTURE);
@@ -109,9 +107,12 @@ public final class UIChangeManager implements PropertyChangeSource {
     /**
      * Get a reference to the <code>UIChangeManager</code> singleton.
      */
-
-    public static UIChangeManager getInstance() {
-        return (instance);
+    public static synchronized UIChangeManager getInstance() {
+        if (instance == null) {
+            instance = new UIChangeManager();
+            support = new PropertyChangeSupport(instance);
+        }
+        return instance;
     }
 
     /**

@@ -52,10 +52,13 @@ public class OrderedListModel<T extends Comparable<? super T>> extends MutableLi
      *             elements are inserted in sorted order.
      */
 
-    public OrderedListModel(Collection<T> data) {
+    public OrderedListModel(Collection<T> data, Comparator<T> comparator) {
         super(data);
 
-        this.data.sort(comparator);
+        if (comparator != null) {
+            this.comparator = comparator;
+            this.data.sort(comparator);
+        }
     }
 
     /**

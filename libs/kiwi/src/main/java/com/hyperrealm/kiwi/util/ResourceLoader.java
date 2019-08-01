@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import com.hyperrealm.kiwi.ui.AudioClip;
+import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
 /**
  * A utility class containing methods for retrieving application resources;
@@ -119,8 +119,8 @@ public class ResourceLoader {
      * @param path The location of the resource.
      */
 
-    public final AudioClip getResourceAsAudioClip(String path) {
-        AudioClip clip = null;
+    public final KiwiAudioClip getResourceAsAudioClip(String path) {
+        KiwiAudioClip clip = null;
 
         try {
             InputStream is = getResourceAsStream(path);

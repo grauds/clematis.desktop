@@ -40,6 +40,7 @@ import javax.swing.border.EmptyBorder;
 import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.LangResource;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.JVM;
@@ -49,6 +50,7 @@ import jworkspace.kernel.Workspace;
  * This dialog shows a tree of installed jvms in workspace.
  * @author Anton Troshin
  */
+@SuppressFBWarnings("UR_UNINIT_READ")
 public class JvmChooserDialog extends ComponentDialog {
 
     private static final String JVM_CHOOSER_DLG_TITLE = "JvmChooserDlg.title";

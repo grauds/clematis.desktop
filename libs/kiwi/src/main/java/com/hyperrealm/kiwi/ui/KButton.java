@@ -154,11 +154,7 @@ public class KButton extends JButton {
      */
 
     public void setInitialDelay(int delay) {
-        if (delay < 0) {
-            this.initialDelay = 0;
-        } else {
-            this.initialDelay = delay;
-        }
+        this.initialDelay = Math.max(delay, 0);
     }
 
     /**
@@ -182,11 +178,7 @@ public class KButton extends JButton {
      */
 
     public void setRepeatDelay(int delay) {
-        if (delay < 0) {
-            this.repeatDelay = 0;
-        } else {
-            this.repeatDelay = delay;
-        }
+        this.repeatDelay = Math.max(delay, 0);
     }
 
     /*

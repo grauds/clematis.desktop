@@ -55,7 +55,7 @@ public class ValueFormatter {
         byte v;
 
         try {
-            v = Byte.valueOf(s);
+            v = Byte.parseByte(s);
         } catch (NumberFormatException ex) {
             throw (new ParsingException(ex.getMessage()));
         }
@@ -117,7 +117,7 @@ public class ValueFormatter {
         long v;
 
         try {
-            v = new Long(s);
+            v = Long.parseLong(s);
         } catch (NumberFormatException ex) {
             throw (new ParsingException(ex.getMessage()));
         }

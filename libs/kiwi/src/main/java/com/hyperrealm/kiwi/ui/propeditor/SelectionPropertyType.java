@@ -19,6 +19,8 @@
 
 package com.hyperrealm.kiwi.ui.propeditor;
 
+import java.util.Arrays;
+
 /**
  * A property type representing properties which may have one of a fixed set
  * of possible values.
@@ -50,7 +52,7 @@ public class SelectionPropertyType extends PropertyType {
      */
 
     public SelectionPropertyType(Object[] items) {
-        this.items = items;
+        setItems(items);
     }
 
     /**
@@ -60,7 +62,7 @@ public class SelectionPropertyType extends PropertyType {
      */
 
     public Object[] getItems() {
-        return (items);
+        return items != null ? Arrays.copyOf(items, items.length) : null;
     }
 
     /**
@@ -70,7 +72,7 @@ public class SelectionPropertyType extends PropertyType {
      */
 
     public void setItems(Object[] items) {
-        this.items = items;
+        this.items = items != null ? Arrays.copyOf(items, items.length) : null;
     }
 
 }

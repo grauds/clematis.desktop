@@ -76,13 +76,16 @@ public class LocaleManager implements FormatConstants {
 
     private static LocaleManager defaultLocaleManager = new LocaleManager();
 
-    private static Collator collator;
-
     private static ParsePosition pos = new ParsePosition(0);
+
+    private Collator collator;
 
     private final ArrayList<ResourceManager> resourceManagers;
 
-    private NumberFormat currencyFormat, percentFormat, decimalFormat, integerFormat;
+    private NumberFormat currencyFormat;
+    private NumberFormat percentFormat;
+    private NumberFormat decimalFormat;
+    private NumberFormat integerFormat;
 
     private DateFormat[] dateFormat = new DateFormat[DATE_PLACEHOLDERS];
 
@@ -164,12 +167,12 @@ public class LocaleManager implements FormatConstants {
         }
 
         currencyFormat = NumberFormat.getCurrencyInstance();
-        percentFormat = NumberFormat.getPercentInstance();
-        decimalFormat = NumberFormat.getNumberInstance();
+        setPercentFormat(NumberFormat.getPercentInstance());
+        setDecimalFormat(NumberFormat.getNumberInstance());
 
-        integerFormat = NumberFormat.getNumberInstance();
-        integerFormat.setParseIntegerOnly(true);
-        integerFormat.setMaximumFractionDigits(0);
+        setIntegerFormat(NumberFormat.getNumberInstance());
+        getIntegerFormat().setParseIntegerOnly(true);
+        getIntegerFormat().setMaximumFractionDigits(0);
 
         dateFormatSymbols = new DateFormatSymbols(locale);
 
@@ -229,7 +232,6 @@ public class LocaleManager implements FormatConstants {
         LocaleData ld = null;
 
         synchronized (resourceManagers) {
-            int l = resourceManagers.size();
             for (ResourceManager rm : resourceManagers) {
                 try {
                     ld = rm.getResourceBundle(name);
@@ -491,14 +493,13 @@ public class LocaleManager implements FormatConstants {
      * @return A string representation of the value.
      */
 
-    public synchronized String formatCurrency(double value, int decimals,
+    public synchronized String formatCurrency(double value,
+                                              int decimals,
                                               boolean grouping) {
-        synchronized (currencyFormat) {
-            currencyFormat.setMaximumFractionDigits(decimals);
-            currencyFormat.setMinimumFractionDigits(decimals);
-            currencyFormat.setGroupingUsed(grouping);
-            return (currencyFormat.format(value));
-        }
+        currencyFormat.setMaximumFractionDigits(decimals);
+        currencyFormat.setMinimumFractionDigits(decimals);
+        currencyFormat.setGroupingUsed(grouping);
+        return currencyFormat.format(value);
     }
 
     /**
@@ -613,10 +614,10 @@ public class LocaleManager implements FormatConstants {
 
     public synchronized String formatPercentage(double value, int decimals,
                                                 boolean grouping) {
-        percentFormat.setMinimumFractionDigits(decimals);
-        percentFormat.setMaximumFractionDigits(decimals);
-        percentFormat.setGroupingUsed(grouping);
-        return (percentFormat.format(value));
+        getPercentFormat().setMinimumFractionDigits(decimals);
+        getPercentFormat().setMaximumFractionDigits(decimals);
+        getPercentFormat().setGroupingUsed(grouping);
+        return (getPercentFormat().format(value));
     }
 
     /**
@@ -659,10 +660,10 @@ public class LocaleManager implements FormatConstants {
 
     public synchronized String formatPercentage(float value, int decimals,
                                                 boolean grouping) {
-        percentFormat.setMinimumFractionDigits(decimals);
-        percentFormat.setMaximumFractionDigits(decimals);
-        percentFormat.setGroupingUsed(grouping);
-        return (percentFormat.format(value));
+        getPercentFormat().setMinimumFractionDigits(decimals);
+        getPercentFormat().setMaximumFractionDigits(decimals);
+        getPercentFormat().setGroupingUsed(grouping);
+        return (getPercentFormat().format(value));
     }
 
     /**
@@ -676,7 +677,7 @@ public class LocaleManager implements FormatConstants {
 
     public synchronized double parsePercentage(String s) throws ParseException {
         try {
-            return parseCurrency(s.trim(), percentFormat);
+            return parseCurrency(s.trim(), getPercentFormat());
         } catch (ParseException ex) {
             return (parseDecimal(s) / PERCENT);
         }
@@ -727,8 +728,8 @@ public class LocaleManager implements FormatConstants {
      */
 
     public synchronized String formatInteger(long value, boolean grouping) {
-        integerFormat.setGroupingUsed(grouping);
-        return (integerFormat.format(value));
+        getIntegerFormat().setGroupingUsed(grouping);
+        return (getIntegerFormat().format(value));
     }
 
     /**
@@ -742,9 +743,9 @@ public class LocaleManager implements FormatConstants {
 
     public synchronized long parseInteger(String s) throws ParseException {
         String str = s.trim();
-        integerFormat.setGroupingUsed(true);
+        getIntegerFormat().setGroupingUsed(true);
         pos.setIndex(0);
-        Number n = integerFormat.parse(str, pos);
+        Number n = getIntegerFormat().parse(str, pos);
         trapGarbage(str);
         return ((n == null) ? 0 : n.longValue());
     }
@@ -789,10 +790,10 @@ public class LocaleManager implements FormatConstants {
 
     public synchronized String formatDecimal(double value, int decimals,
                                              boolean grouping) {
-        decimalFormat.setMinimumFractionDigits(decimals);
-        decimalFormat.setMaximumFractionDigits(decimals);
-        decimalFormat.setGroupingUsed(grouping);
-        return (decimalFormat.format(value));
+        getDecimalFormat().setMinimumFractionDigits(decimals);
+        getDecimalFormat().setMaximumFractionDigits(decimals);
+        getDecimalFormat().setGroupingUsed(grouping);
+        return getDecimalFormat().format(value);
     }
 
     /**
@@ -847,7 +848,7 @@ public class LocaleManager implements FormatConstants {
      */
 
     public synchronized double parseDecimal(String s) throws ParseException {
-        return parseCurrency(s.trim(), decimalFormat);
+        return parseCurrency(s.trim(), getDecimalFormat());
     }
 
     /**
@@ -869,7 +870,7 @@ public class LocaleManager implements FormatConstants {
      */
 
     public Collator getCollator() {
-        return (collator);
+        return collator;
     }
 
     /**
@@ -892,4 +893,27 @@ public class LocaleManager implements FormatConstants {
         }
     }
 
+    public NumberFormat getPercentFormat() {
+        return percentFormat;
+    }
+
+    public void setPercentFormat(NumberFormat percentFormat) {
+        this.percentFormat = percentFormat;
+    }
+
+    public NumberFormat getDecimalFormat() {
+        return decimalFormat;
+    }
+
+    public void setDecimalFormat(NumberFormat decimalFormat) {
+        this.decimalFormat = decimalFormat;
+    }
+
+    public NumberFormat getIntegerFormat() {
+        return integerFormat;
+    }
+
+    public void setIntegerFormat(NumberFormat integerFormat) {
+        this.integerFormat = integerFormat;
+    }
 }

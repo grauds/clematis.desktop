@@ -113,7 +113,7 @@ public abstract class DataField<T> extends JTextField implements FormatConstants
             public void keyTyped(KeyEvent evt) {
 
                 char c = evt.getKeyChar();
-                if (!allowedMap.get((int) c)) {
+                if (!allowedMap.get(c)) {
                     getToolkit().beep();
                     evt.consume();
                     return;
@@ -384,7 +384,7 @@ public abstract class DataField<T> extends JTextField implements FormatConstants
      */
 
     public void disableChar(char c) {
-        allowedMap.clear((int) c);
+        allowedMap.clear(c);
     }
 
     /**
@@ -398,7 +398,7 @@ public abstract class DataField<T> extends JTextField implements FormatConstants
     public void disableChars(char lo, char hi) {
         if (hi > lo) {
             for (char c = lo; c <= hi; c++) {
-                allowedMap.clear((int) c);
+                allowedMap.clear(c);
             }
         }
     }
@@ -411,7 +411,7 @@ public abstract class DataField<T> extends JTextField implements FormatConstants
      */
 
     public void enableChar(char c) {
-        allowedMap.set((int) c);
+        allowedMap.set(c);
     }
 
     /**
@@ -425,7 +425,7 @@ public abstract class DataField<T> extends JTextField implements FormatConstants
     public void enableChars(char lo, char hi) {
         if (hi > lo) {
             for (char c = lo; c <= hi; c++) {
-                allowedMap.set((int) c);
+                allowedMap.set(c);
             }
         }
     }

@@ -221,7 +221,7 @@ public class IDMap<T> {
         int high = length - 1;
 
         while (low <= high) {
-            int mid = (low + high) / 2;
+            int mid = (low + high) >>> 1;
             long midVal = keys[mid];
 
             if (midVal < key) {

@@ -146,7 +146,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
                 + WorkspaceGUI.LOG_SPACE + MainFrame.CONTENT_MANAGER);
         } catch (Exception e) {
             WorkspaceError.exception(LangResource.getString("MainFrame.load.CM.failed"), e);
-            System.exit(-1);
+            return;
         }
         /*
          * Ask for buttons and fill control panel.
@@ -378,9 +378,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     public void load(DataInputStream inputStream) {
         LOG.info(WorkspaceGUI.PROMPT + "Loading workspace frame");
-        /*
-         * Try to load content manager
-         */
         try {
             Class clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
@@ -392,7 +389,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             content = (AbstractViewsManager) object;
         } catch (Exception e) {
             WorkspaceError.exception(LangResource.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
-            System.exit(-1);
+            return;
         }
         boolean visible = false;
         int x = 0;

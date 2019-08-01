@@ -34,12 +34,14 @@ import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hyperrealm.kiwi.ui.model.MutableListModel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;
 import com.hyperrealm.kiwi.util.ResourceManager;
-
 /**
  * A simple editor for entering a list of text items. The editor consists of
  * an input field for entry of new items and a scrollable list for the display
@@ -58,6 +60,10 @@ import com.hyperrealm.kiwi.util.ResourceManager;
  */
 
 public class ListEditor extends KPanel implements ActionListener {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ListEditor.class);
 
     private static final Insets DEFAULT_INSETS = new Insets(3, 3, 3, 3);
 
@@ -120,7 +126,7 @@ public class ListEditor extends KPanel implements ActionListener {
 
             method.invoke(editComponent, this);
         } catch (Exception ignored) {
-
+            LOG.warn("Action listener will not be added to: " + editComponent, ignored);
         }
 
 

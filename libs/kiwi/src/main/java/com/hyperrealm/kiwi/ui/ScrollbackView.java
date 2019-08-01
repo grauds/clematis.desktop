@@ -133,7 +133,7 @@ public class ScrollbackView extends JList implements ListConsumer {
      *
      */
 
-    private class FastListModel extends AbstractListModel {
+    private static class FastListModel extends AbstractListModel {
         private ArrayList data = new ArrayList();
 
         public int getSize() {

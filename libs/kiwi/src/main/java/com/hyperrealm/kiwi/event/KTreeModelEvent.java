@@ -53,9 +53,7 @@ public class KTreeModelEvent extends EventObject {
         super(source);
 
         this.node = node;
-        this.startIndex = 0;
         this.startIndex = startIndex;
-        this.endIndex = 0;
         this.endIndex = endIndex;
     }
 

@@ -463,7 +463,11 @@ public class TableSorter extends ProxyTableModel {
             return;
         }
 
-        int middle = (low + high) / 2;
+        //If the values being averaged are very large, this can overflow
+        // (resulting in the computation of a negative average). Assuming
+        // that the result is intended to be nonnegative, you can use an
+        // unsigned right shift instead
+        int middle = (low + high) >>> 1;
         shuttlesort(to, from, low, middle);
         shuttlesort(to, from, middle, high);
 

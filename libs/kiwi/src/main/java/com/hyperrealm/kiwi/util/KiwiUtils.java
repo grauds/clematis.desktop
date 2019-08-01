@@ -489,12 +489,12 @@ public final class KiwiUtils {
      * and HTML files.
      */
 
-    public static ResourceManager getResourceManager() {
+    public static synchronized ResourceManager getResourceManager() {
         if (resourceManager == null) {
             resourceManager = new ResourceManager(com.hyperrealm.kiwi.ResourceAnchor.class);
         }
 
-        return (resourceManager);
+        return resourceManager;
     }
 
     /**

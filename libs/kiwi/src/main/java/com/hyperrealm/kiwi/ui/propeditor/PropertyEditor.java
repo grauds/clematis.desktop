@@ -23,8 +23,6 @@ import java.awt.BorderLayout;
 import java.util.ArrayList;
 
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -88,13 +86,9 @@ public class PropertyEditor extends KPanel {
         adapter = new KTreeModelTreeAdapter(tree);
         tree.setModel(adapter);
 
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent evt) {
-                Property prop = getSelectedProperty();
-
-                for (PropertySelectionListener listener : listeners) {
-                    listener.selectedPropertyChanged(PropertyEditor.this);
-                }
+        tree.addTreeSelectionListener(evt -> {
+            for (PropertySelectionListener listener : listeners) {
+                listener.selectedPropertyChanged(PropertyEditor.this);
             }
         });
         tree.getSelectionModel().setSelectionMode(

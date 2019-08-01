@@ -30,8 +30,8 @@ import java.util.Properties;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import com.hyperrealm.kiwi.ui.AudioClip;
 import com.hyperrealm.kiwi.ui.ColorTheme;
+import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
 /**
  * This class provides base functionality for a resource manager; it includes
@@ -140,7 +140,7 @@ public class ResourceManager {
 
     private HashMap<String, Icon> icons;
 
-    private HashMap<String, AudioClip> sounds;
+    private HashMap<String, KiwiAudioClip> sounds;
 
     private HashMap<String, Image> textures;
 
@@ -422,10 +422,10 @@ public class ResourceManager {
      *                                                            resource was not found.
      */
 
-    public AudioClip getSound(String name) {
+    public KiwiAudioClip getSound(String name) {
         checkResourceName(name);
 
-        AudioClip clip = sounds.get(name);
+        KiwiAudioClip clip = sounds.get(name);
         if (clip != null) {
             return (clip);
         }

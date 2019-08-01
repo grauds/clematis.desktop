@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -175,7 +176,8 @@ public class DocumentDataSource implements TreeDataSource<DocumentDataSource.Doc
         ArrayList<DocumentNode> children = new ArrayList<DocumentNode>();
 
         try (InputStream is = node.getURL().openStream();
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is,
+                 StandardCharsets.UTF_8))) {
 
             String s;
             DocumentNode sect;
@@ -271,7 +273,7 @@ public class DocumentDataSource implements TreeDataSource<DocumentDataSource.Doc
      *  Internal class for managing help nodes.
      * @author Anton Troshin
      */
-    public class DocumentNode {
+    public static class DocumentNode {
 
         private String label, file;
 
@@ -294,7 +296,11 @@ public class DocumentDataSource implements TreeDataSource<DocumentDataSource.Doc
         }
 
         public DocumentNode getParent() {
-            return (parent);
+            return parent;
+        }
+
+        public void setParent(DocumentNode parent) {
+            this.parent = parent;
         }
 
         public String getFile() {

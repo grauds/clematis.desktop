@@ -187,9 +187,7 @@ public final class KCollections {
 
     public static Collection add(Collection c1, Collection c2) {
         if (!((c2 == null) || (c2.size() == 0) || (c1 == null))) {
-            for (Object o : c2) {
-                c1.add(o);
-            }
+            c1.addAll(c2);
         }
 
         return (c1);

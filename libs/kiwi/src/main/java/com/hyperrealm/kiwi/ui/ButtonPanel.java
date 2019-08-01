@@ -194,7 +194,7 @@ public class ButtonPanel extends KPanel {
      * enough. Otherwise, the child's size is set to the size of the parent.
      */
 
-    private class AnchorLayout implements LayoutManager2 {
+    private static class AnchorLayout implements LayoutManager2 {
 
         static final float DEFAULT_LAYOUT_ALIGNMENT = 0.5f;
 

@@ -38,6 +38,7 @@ import javax.swing.ListSelectionModel;
 import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.LangResource;
 import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionNode;
@@ -47,7 +48,7 @@ import jworkspace.kernel.Workspace;
  * Application chooser
  * @author Anton Troshin
  */
-@SuppressWarnings("MagicNumber")
+@SuppressFBWarnings("UR_UNINIT_READ")
 public class ApplicationChooserDialog extends ComponentDialog {
 
     private KTreeTable treeTable;

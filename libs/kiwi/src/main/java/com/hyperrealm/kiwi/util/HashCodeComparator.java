@@ -19,6 +19,7 @@
 
 package com.hyperrealm.kiwi.util;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -28,8 +29,15 @@ import java.util.Comparator;
  * @author Mark Lindner
  */
 
-public class HashCodeComparator<T> implements Comparator<T> {
-
+public class HashCodeComparator<T> implements Comparator<T>, Serializable {
+    /**
+     * This class implements the Comparator interface. You should consider whether
+     * or not it should also implement the Serializable interface. If a comparator
+     * is used to construct an ordered collection such as a TreeMap, then the TreeMap
+     * will be serializable only if the comparator is also serializable. As most comparators
+     * have little or no state, making them serializable is generally easy and good defensive programming.
+     */
+    private static final long serialVersionUID = 4112578634029874841L;
     /**
      * Construct a new <code>HashCodeComparator</code>.
      */
@@ -72,6 +80,9 @@ public class HashCodeComparator<T> implements Comparator<T> {
 
     @Override
     public boolean equals(Object obj) {
-        return obj.getClass() == HashCodeComparator.class;
+        if (obj == null) {
+            return false;
+        }
+        return obj.getClass() == this.getClass();
     }
 }

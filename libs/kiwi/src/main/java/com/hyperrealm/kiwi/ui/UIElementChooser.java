@@ -131,13 +131,6 @@ public class UIElementChooser extends KPanel {
         if (model.getSize() > 0) {
             jlist.setSelectedIndex(0);
         }
-
-        if (elementViewer != null) {
-            Object elem = null;
-            if (model.getSize() > 0) {
-                elem = model.getElementAt(0);
-            }
-        }
     }
 
     /**

@@ -20,6 +20,8 @@
 package com.hyperrealm.kiwi.util.plugin;
 
 import java.io.File;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 
 import com.hyperrealm.kiwi.util.ResourceDecoder;
@@ -85,8 +87,8 @@ public class PluginLocator<T> {
 
         this.context = context;
 
-        restrictedPackages = new ArrayList<String>();
-        forbiddenPackages = new ArrayList<String>();
+        restrictedPackages = new ArrayList<>();
+        forbiddenPackages = new ArrayList<>();
 
         addRestrictedPackage("java.*");
         addRestrictedPackage("javax.*");
@@ -136,7 +138,7 @@ public class PluginLocator<T> {
     private Plugin<T> loadPlugin(String jarFile, String type)
         throws PluginException {
 
-        return new Plugin<T>(this, jarFile, type);
+        return new Plugin<>(this, jarFile, type);
     }
 
     /**
@@ -169,7 +171,8 @@ public class PluginLocator<T> {
      */
 
     PluginClassLoader createClassLoader() {
-        return new PluginClassLoader(forbiddenPackages, restrictedPackages);
+        return AccessController.doPrivileged((PrivilegedAction<PluginClassLoader>) ()
+            -> new PluginClassLoader(forbiddenPackages, restrictedPackages));
     }
 
 }

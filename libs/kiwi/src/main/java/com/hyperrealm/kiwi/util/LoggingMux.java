@@ -52,7 +52,6 @@ public class LoggingMux implements LoggingEndpoint {
      */
 
     public void logMessage(int type, String message) {
-        int l = v.size();
         for (LoggingEndpoint loggingEndpoint : v) {
             loggingEndpoint.logMessage(type, message);
         }
@@ -77,7 +76,6 @@ public class LoggingMux implements LoggingEndpoint {
 
     public void close(boolean closeEndpoints) {
         if (closeEndpoints) {
-            int l = v.size();
             for (LoggingEndpoint loggingEndpoint : v) {
                 loggingEndpoint.close();
             }

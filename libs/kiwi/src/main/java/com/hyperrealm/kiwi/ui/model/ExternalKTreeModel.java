@@ -65,7 +65,7 @@ public class ExternalKTreeModel<T> extends DefaultKTreeModel<T> {
      *             reload the entire tree.
      */
 
-    public void reload(T node) {
+    public synchronized void reload(T node) {
 
         if (node == null) {
             // load metadata
@@ -189,7 +189,7 @@ public class ExternalKTreeModel<T> extends DefaultKTreeModel<T> {
      *
      */
 
-    public Class getFieldType(int index) {
+    public synchronized Class getFieldType(int index) {
         return columnTypes[index];
     }
 

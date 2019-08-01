@@ -349,7 +349,6 @@ public class JMoreMenu extends JMenu {
         // Actions do not have a getPreferred size call, so we have
         // to forcibly insert it, then ask the result JMenuItem
         // what size it wanted.
-        int itemCount = getMenuComponentCount();
         JMenuItem tempItem = super.add(a);
         super.remove(tempItem);
         insert((Component) tempItem, index);

@@ -462,7 +462,7 @@ public class KTable extends JTable {
         }
     }
 
-    private class TableHeader extends JTableHeader {
+    private static class TableHeader extends JTableHeader {
 
         TableHeader(TableColumnModel model) {
             super(model);

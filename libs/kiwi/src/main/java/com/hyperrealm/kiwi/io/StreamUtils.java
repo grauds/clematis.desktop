@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This class consists of several convenience routines for reading and
@@ -82,7 +83,7 @@ public final class StreamUtils {
 
     public static String readStreamToString(InputStream input)
             throws IOException {
-        return (readStream(input).toString());
+        return (readStream(input).toString(StandardCharsets.UTF_8.name()));
     }
 
     /**
@@ -96,7 +97,7 @@ public final class StreamUtils {
 
     public static void writeStringToStream(String s, OutputStream output)
             throws IOException {
-        InputStream input = new ByteArrayInputStream(s.getBytes());
+        InputStream input = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
 
         readStreamToStream(input, output);
     }
