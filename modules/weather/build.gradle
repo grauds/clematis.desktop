@@ -7,18 +7,18 @@ plugins {
 apply plugin: "org.flywaydb.flyway"
 
 ext {
-    flywayVersion = '4.0.3'
-    hsqldbVersion = '2.5.0'
-    hibernateVersion = '5.0.12.Final'
+    flywayVersion = "4.0.3"
+    hsqldbVersion = "2.5.0"
+    hibernateVersion = "5.0.12.Final"
 
-    groovyVersion = '2.4.11'
-    spockVersion = '1.1-groovy-2.4'
-    ivyVersion = '2.1.0'
-    poiOoxmlVersion = '4.0.0'
-    commonsCsvVersion = '1.5'
-    guavaVersion = '19.0'
+    groovyVersion = "2.4.11"
+    spockVersion = "1.1-groovy-2.4"
+    ivyVersion = "2.1.0"
+    poiOoxmlVersion = "4.0.0"
+    commonsCsvVersion = "1.5"
+    guavaVersion = "19.0"
 
-    h2Version = '1.4.192'
+    h2Version = "1.4.192"
 }
 
 dependencies {

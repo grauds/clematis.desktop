@@ -153,9 +153,6 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         } else if (o == bLibBrowser) {
             ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(Workspace.getUi().getFrame());
             callResourceBrowser(resBrowser);
-            Runtime rt = Runtime.getRuntime();
-            rt.gc();
-            rt.runFinalization();
         } else if (o == rb1) {
             disableAllOnModesPanel();
             mode = DesktopConstants.SCRIPTED_METHOD_MODE;

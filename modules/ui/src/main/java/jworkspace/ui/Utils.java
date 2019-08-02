@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
 
-import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
@@ -392,7 +391,7 @@ public final class Utils implements IConstants {
         b.setToolTipText((String) a.getValue(Action.SHORT_DESCRIPTION));
         b.setAction(a);
         b.setText(null);
-        createActionChangeListener(b);
+        b.addPropertyChangeListener(createActionChangeListener(b));
         return b;
     }
 
@@ -404,20 +403,16 @@ public final class Utils implements IConstants {
         JMenuItem menuItem = new JMenuItem(name, icon);
         menuItem.addActionListener(listener);
         menuItem.setActionCommand(actionCommand);
-        createActionChangeListener(menuItem);
+        menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
         return menuItem;
     }
 
-    private static void createActionChangeListener(JMenuItem b) {
-        new ActionChangedListener(b);
+    private static ActionChangedListener createActionChangeListener(JMenuItem b) {
+        return new ActionChangedListener(b);
     }
 
-    private static void menuItem(AbstractButton b) {
-        new ActionChangedListener(b);
-    }
-
-    private static void createActionChangeListener(CButton b) {
-        new ActionChangedListener(b);
+    private static ActionChangedListener createActionChangeListener(CButton b) {
+        return new ActionChangedListener(b);
     }
 
     /**
@@ -429,7 +424,7 @@ public final class Utils implements IConstants {
         menuItem.setEnabled(a.isEnabled());
         Icon icon = (Icon) a.getValue(MENU_ICON);
         menuItem.setIcon(icon);
-        createActionChangeListener(menuItem);
+        menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
         return menuItem;
     }
 
@@ -439,7 +434,7 @@ public final class Utils implements IConstants {
     public static JCheckBoxMenuItem createCheckboxMenuItem(Action a) {
         JCheckBoxMenuItem boxMenuItem = new JCheckBoxMenuItem(a);
         boxMenuItem.setEnabled(a.isEnabled());
-        createActionChangeListener(boxMenuItem);
+        boxMenuItem.addPropertyChangeListener(createActionChangeListener(boxMenuItem));
         return boxMenuItem;
     }
 
@@ -449,7 +444,7 @@ public final class Utils implements IConstants {
     public static JRadioButtonMenuItem createRadioMenuItem(Action a) {
         JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(a);
         menuItem.setEnabled(a.isEnabled());
-        createActionChangeListener(menuItem);
+        menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
         return menuItem;
     }
 }

@@ -28,6 +28,7 @@ package jworkspace.ui.logging;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.swing.JTextArea;
 
@@ -127,7 +128,7 @@ public class StreamWindow extends KFrame {
          */
         public void write(byte[] b) {
             // Convert the bytes to a string and append
-            String s = new String(b);
+            String s = new String(b, StandardCharsets.UTF_8);
             appendText(s);
         }
 
@@ -136,7 +137,7 @@ public class StreamWindow extends KFrame {
          */
         public void write(byte[] b, int off, int len) {
             // Convert the bytes to a string and append
-            String s = new String(b, off, len);
+            String s = new String(b, off, len, StandardCharsets.UTF_8);
             appendText(s);
         }
     }

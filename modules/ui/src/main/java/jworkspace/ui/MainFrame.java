@@ -79,11 +79,11 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     /**
      * Content.
      */
-    private static AbstractViewsManager content = null;
+    private AbstractViewsManager content = null;
     /**
      * A reference to Workspace GUI
      */
-    protected WorkspaceGUI gui;
+    private WorkspaceGUI gui;
     /**
      * Control panel.
      */
@@ -514,7 +514,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         systemMenu = null;
 
         update();
-        System.gc();
         setVisible(false);
     }
 

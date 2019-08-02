@@ -82,7 +82,7 @@ public class FontPreviewPanel extends KPanel {
             0,
             font.getFontName().length(),
             new FontRenderContext(null, true, false));
-        int height = (new Double(bounds.getHeight())).intValue();
+        int height = (int) bounds.getHeight();
         osg.drawString(font.getFontName(), 5, (((getSize().height - height) / 2) + height));
         g.drawImage(osi, 0, 0, this);
     }

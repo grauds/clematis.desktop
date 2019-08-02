@@ -848,6 +848,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 if (result instanceof Boolean && (Boolean) result) {
                     return true;
                 }
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception ex) {
                 // no method found
             }

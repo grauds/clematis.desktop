@@ -261,7 +261,7 @@ public class UIActions implements IConstants {
         dlg.setVisible(true);
     }
 
-    protected class LogoffAction extends AbstractAction {
+    protected static class LogoffAction extends AbstractAction {
         LogoffAction() {
             super(LOGOFF_ACTION_NAME);
         }
@@ -275,7 +275,7 @@ public class UIActions implements IConstants {
         }
     }
 
-    protected class ExitAction extends AbstractAction {
+    protected static class ExitAction extends AbstractAction {
         ExitAction() {
             super(EXIT_ACTION_NAME);
         }
@@ -329,7 +329,7 @@ public class UIActions implements IConstants {
         }
     }
 
-    protected class NewUserAction extends AbstractAction {
+    protected static class NewUserAction extends AbstractAction {
         NewUserAction() {
             super(NEW_USER_ACTION_NAME);
         }

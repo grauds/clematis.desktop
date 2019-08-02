@@ -28,7 +28,9 @@ package jworkspace.ui.dialog;
 */
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -53,8 +55,11 @@ class LoggingPanel extends KPanel {
     /**
      * List displaying the currently-instantiated loggers
      */
-    private JList<String> loggerList;
-
+    private JList<String> loggerNamesList;
+    /**
+     * List displaying the currently-instantiated loggers
+     */
+    private List<Logger> loggerList;
     /**
      * Set up the interface and make visible
      */
@@ -69,16 +74,17 @@ class LoggingPanel extends KPanel {
      * Set up the interface
      */
     private void setupGUI() {
-        loggerList = new JList<>();
-        loggerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        loggerList = new ArrayList<>();
+        loggerNamesList = new JList<>();
+        loggerNamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setLayout(new BorderLayout());
-        add(new JScrollPane(loggerList), BorderLayout.CENTER);
+        add(new JScrollPane(loggerNamesList), BorderLayout.CENTER);
         JButton showButton = new JButton(LangResource.getString("LoggingPanel.show"));
         add(showButton, BorderLayout.SOUTH);
         showButton.addActionListener(ae -> {
-            String name = loggerList.getSelectedValue();
+            String name = loggerNamesList.getSelectedValue();
             if (name != null && !name.equals("")) {
-                openWindow(name);
+                loggerList.add(openWindow(name));
             }
         });
     }
@@ -97,15 +103,41 @@ class LoggingPanel extends KPanel {
             names.add(name);
         }
         // Display the names in the JList
-        loggerList.setListData(names);
+        loggerNamesList.setListData(names);
     }
 
-    private void openWindow(String loggerName) {
+    /**
+     * OpenJDK introduces a potential incompatibility. In particular, the java.util.logging.Logger behavior has changed.
+     * Instead of using strong references, it now uses weak references internally. That's a reasonable change, but
+     * unfortunately some code relies on the old behavior - when changing logger configuration, it simply drops the
+     * logger reference. That means that the garbage collector is free to reclaim that memory, which means that the
+     * logger configuration is lost. For example, consider:
+     *
+     * public static void initLogging() throws Exception {
+     *  Logger logger = Logger.getLogger("edu.umd.cs");
+     *  logger.addHandler(new FileHandler()); // call to change logger configuration
+     *  logger.setUseParentHandlers(false); // another call to change logger configuration
+     * }
+     * The logger reference is lost at the end of the method (it doesn't escape the method), so if you have a garbage
+     * collection cycle just after the call to initLogging, the logger configuration is lost (because Logger only
+     * keeps weak references).
+     *
+     * public static void main(String[] args) throws Exception {
+     *  initLogging(); // adds a file handler to the logger
+     *  System.gc(); // logger configuration lost
+     *  Logger.getLogger("edu.umd.cs").info("Some message"); // this isn't logged to the file as expected
+     *
+     * @param loggerName of logger to follow
+     */
+    private Logger openWindow(String loggerName) {
+
         Logger logger = Logger.getLogger(loggerName);
         // Create a WindowHandler
         WindowHandler windowHandler = new WindowHandler(loggerName);
         // Install it as a handler for the logger
         logger.addHandler(windowHandler);
+
+        return logger;
     }
 }
 

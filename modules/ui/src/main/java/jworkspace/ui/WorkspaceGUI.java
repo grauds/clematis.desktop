@@ -141,13 +141,13 @@ public class WorkspaceGUI implements UI {
     private static final String FRAME_PARAMETER = "frame";
 
     /**
-     * Workspace main frame
-     */
-    private static MainFrame frame = null;
-    /**
      * Workspace UI logo.
      */
     private static SplashScreen logo = null;
+    /**
+     * Workspace main frame
+     */
+    private MainFrame frame = null;
     /**
      * Workspace background texture
      */
@@ -526,14 +526,13 @@ public class WorkspaceGUI implements UI {
     /**
      * Reset workspace gui to its initial state
      */
-    public void reset() {
+    public synchronized void reset() {
         ((MainFrame) getFrame()).reset();
         frame = null;
         components = new HashMap<>();
         shells = new HashSet<>();
         getFrame().setTitle(Workspace.getVersion());
         ClassCache.resetFileChoosers();
-        System.gc();
     }
 
     /**
@@ -581,11 +580,11 @@ public class WorkspaceGUI implements UI {
          */
         if (texture != null) {
 
-            try {
-                fileName = Workspace.getUserHome() + TEXTURE_FILE_NAME;
-                OutputStream os = new FileOutputStream(fileName);
-                ImageIcon textureIcon = new ImageIcon(texture);
+            fileName = Workspace.getUserHome() + TEXTURE_FILE_NAME;
 
+            try (OutputStream os = new FileOutputStream(fileName)) {
+
+                ImageIcon textureIcon = new ImageIcon(texture);
                 BufferedImage bi = new BufferedImage(
                     textureIcon.getIconWidth(),
                     textureIcon.getIconHeight(),

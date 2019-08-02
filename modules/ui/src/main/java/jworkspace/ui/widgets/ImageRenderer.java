@@ -52,7 +52,7 @@ public class ImageRenderer extends JComponent implements ImageObserver, UIElemen
         setPreferredSize(new Dimension(60, 60));
     }
 
-    public Image getImage() {
+    public synchronized Image getImage() {
         if (image != null) {
             return image.getImage();
         }

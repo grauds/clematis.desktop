@@ -43,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
@@ -261,7 +262,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
             return;
         }
         String s;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         /*
          * Read next line - this is a texture file name
          */
@@ -363,7 +364,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
             if (files == null) {
                 return true;
             }
-            float step = 100 / files.length;
+            float step = 100 / (float) files.length;
             float progress = 0;
             /*
              * Resource explorer does not iterate through subdirectories.

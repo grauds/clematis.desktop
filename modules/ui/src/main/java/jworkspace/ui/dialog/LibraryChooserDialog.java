@@ -29,6 +29,7 @@ package jworkspace.ui.dialog;
 */
 
 import java.awt.Frame;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -92,6 +93,6 @@ public class LibraryChooserDialog extends ComponentDialog {
     }
 
     public Library[] getSelectedLibraries() {
-        return lib;
+        return lib != null ? Arrays.copyOf(lib, lib.length) : null;
     }
 }

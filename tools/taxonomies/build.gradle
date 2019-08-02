@@ -1,0 +1,23 @@
+plugins {
+    id "groovy"
+}
+
+ext {
+    groovyVersion = "2.4.11"
+    spockVersion = "1.1-groovy-2.4"
+    ivyVersion = "2.1.0"
+    poiOoxmlVersion = "4.0.0"
+    commonsCsvVersion = "1.5"
+    guavaVersion = "19.0"
+}
+
+dependencies {
+    // for groovy
+    compile "org.codehaus.groovy:groovy-all:$groovyVersion"
+    compile "org.spockframework:spock-core:$spockVersion"
+    compile "org.apache.ivy:ivy:$ivyVersion"
+    compile "org.apache.poi:poi-ooxml:$poiOoxmlVersion"
+    compile "org.apache.commons:commons-csv:$commonsCsvVersion"
+    compile "com.google.guava:guava:$guavaVersion"
+
+}

@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,22 +126,23 @@ public class PlafFactory {
     public void save() {
         String fileName = CONFIG_FILE_PATH + File.separator + sysConfig;
         LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
-        try {
+        File file = new File(fileName);
+
+        try (StringWriter sw = new StringWriter();
+             FileOutputStream os = new FileOutputStream(file)) {
+
             Element plafs = new Element("plafs");
             for (XPlafConnector connector : connectors) {
                 plafs.addContent(connector.serialize());
             }
 
             XMLOutputter serializer = new XMLOutputter();
-            StringWriter sw = new StringWriter();
             serializer.setFormat(Format.getPrettyFormat());
             serializer.output(plafs, sw);
 
-            File file = new File(fileName);
-            FileOutputStream os = new FileOutputStream(file);
-            os.write(sw.toString().getBytes());
+            os.write(sw.toString().getBytes(StandardCharsets.UTF_8));
             os.flush();
-            os.close();
+
         } catch (IOException e) {
             LOG.warn("Cannot save plaf factory", e);
         }

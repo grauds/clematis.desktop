@@ -77,7 +77,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
         super(parent, LangResource.getString("FontChooserDialog.title"), true);
         this.font = font;
         if (font != null) {
-            String fontSize = (new Integer(font.getSize())).toString();
+            String fontSize = Integer.toString(font.getSize());
             currentSize.setText(fontSize);
             fontSizes.setSelectedValue(fontSize, true);
             fontNames.setSelectedValue(font.getFamily(), true);
@@ -105,7 +105,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
     }
 
     private void updateFontSize(int size) {
-        updateFont(font.deriveFont((new Integer(size)).floatValue()));
+        updateFont(font.deriveFont((float) size));
     }
 
     private void updateFontStyle(int style) {
@@ -143,7 +143,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
         }
         if (e.getSource() == fontSizes) {
             currentSize.setText(fontSizes.getSelectedValue());
-            updateFontSize(new Integer(currentSize.getText()));
+            updateFontSize(Integer.parseInt(currentSize.getText()));
         }
         if (e.getSource() == fontStyles) {
             int style = Font.PLAIN;
@@ -211,7 +211,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
          */
         String[] sizes = new String[69];
         for (int i = 3; i < 72; i++) {
-            sizes[i - 3] = (new Integer(i + 1)).toString();
+            sizes[i - 3] = Integer.toString(i + 1);
         }
         fontSizes = new JList<>(sizes);
         fontSizes.addListSelectionListener(this);
