@@ -2,19 +2,27 @@ apply from: file("${project.rootDir}/libraries.gradle")
 
 dependencies {
 
-    compile(
-            libraries.guava,
-            libraries.findbugsAnotations,
-            libraries.slf4j,
-            libraries.logback,
-            libraries.commonsIo,
-            libraries.commonsLang3
-    )
+    compile libs.slf4j
+    compile libs.log4j
 
-    testCompile(
-            libraries.junit,
-            libraries.springTest
-    )
+    compile libs.commonsLang3
+    compile libs.commonsIO
+    compile libs.commonsLogging
+    compile libs.beanshell
+
+    annotationProcessor libs.lombok
+    compileOnly libs.lombok
+    compileOnly libs.findbugs
+
+    testCompileOnly libs.lombok
+    checkstyle libs.checkstyle
+
+    testCompile libs.lombok
+    testCompile libs.assertJCore
+    testCompile libs.mustache
+    testCompile libs.mockito
+    testCompile libs.junit4
+
 
     // drop-in replacement for commons-logging, jul and log4j, so logs will be handled by slf4j
     compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}@jar"

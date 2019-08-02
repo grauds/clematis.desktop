@@ -1,40 +1,52 @@
 ext {
 
-    httpClientVersion = '4.5.2'
-    slf4jVersion = '1.7.5'
+    log4jVersion = '1.2.16'
+    slf4jVersion = '1.7.12'
 
-    libraries = [
+    lombokVersion = '1.18.4'
 
-            // logging
+    apacheCommonsVersion = '3.0.1'
+    commonsLang3Version = '3.5'
+    commonsIoVersion = '2.6'
+    commonsLoggingVersion = '1.1.1'
+
+    bshVersion = '2.0b6'
+
+    checkstyleVersion = '7.6'
+    findbugsVersion = '3.0.1'
+
+    junitVersion = '4.12'
+    junitParamsVersion = '1.0.4'
+    assertjCoreVersion = '3.6.1'
+    mustacheJavaVersion = '0.9.4'
+    mockitoVersion = '1.6.4'
+    mockitoJunit4Version = '1.6.6'
+
+    libs = [
+
+// loggers
             slf4j                 : "org.slf4j:slf4j-api:$slf4jVersion",
-            logback               : 'ch.qos.logback:logback-classic:1.1.7',
-            commonsLogging        : 'commons-logging:commons-logging:1.1.1',
+            log4j                 : "log4j:log4j:$log4jVersion",
 
-            // testing
-            mockitoCore           : "org.mockito:mockito-core:1.9.5",
-            //use previous version of powermock until v2.0 with fixed vararg argument captor required for tests will be released
-            //https://github.com/mockito/mockito/pull/211
-            powerMock             : "org.powermock:powermock-module-junit4:1.6.1",
-            powerMockMockitoApi   : "org.powermock:powermock-api-mockito:1.6.1",
+// code patterns
+            commonsLang3          : "org.apache.commons:commons-lang3:$commonsLang3Version",
+            commonsIO             : "commons-io:commons-io:$commonsIoVersion",
+            commonsLogging        : "commons-logging:commons-logging:$commonsLoggingVersion",
 
-            hamcrest              : 'org.hamcrest:hamcrest-library:1.3',
-            junit                 : 'junit:junit:4.11',
+// code interpreter
+            beanshell             : "org.apache-extras.beanshell:bsh:$bshVersion",
 
-            // another
-            aspectjWeaver         : 'org.aspectj:aspectjweaver:1.7.2',
-            args4j                : 'args4j:args4j:2.0.16',
-            gson                  : 'com.google.code.gson:gson:2.3.1',
-            ehcacheCore           : 'net.sf.ehcache:ehcache-core:2.6.11',
-            findbugsAnotations    : 'com.google.code.findbugs:annotations:3.0.0',
-            guava                 : 'com.google.guava:guava:14.0.1',
-            janino                : 'org.codehaus.janino:janino:2.6.1',
-            jdom                  : 'jdom:jdom:1.1',
-            jenaCore              : 'org.apache.jena:jena-core:2.11.0',
-            jettison              : 'org.codehaus.jettison:jettison:1.1',
-            jodaTime              : 'joda-time:joda-time:2.3',
-            mysqlConnector        : 'mysql:mysql-connector-java:5.1.21',
+// code generation
+            lombok                : "org.projectlombok:lombok:${lombokVersion}",
 
-            //plugins
-            gradleCargoPlugin     : 'org.gradle.api.plugins:gradle-cargo-plugin:1.5.1'
+// code quality
+            checkstyle            : "com.puppycrawl.tools:checkstyle:$checkstyleVersion",
+            findbugs              : "com.google.code.findbugs:findbugs-annotations:$findbugsVersion",
+
+// tests
+            assertJCore           : "org.assertj:assertj-core:$assertjCoreVersion",
+            mustache              : "com.github.spullara.mustache.java:mustache.java:$mustacheJavaVersion",
+            mockito               : "org.powermock:powermock-mockito-release-full:$mockitoVersion",
+            junit4                : "org.powermock:powermock-module-junit4-rule-agent:$mockitoJunit4Version"
     ]
 }
