@@ -1,4 +1,4 @@
-# jWorkspace (Clematis Desktop), version 2.0.0  
+# jWorkspace, version 2.0.0  
   
 What's new in jWorkspace 2.0?  
   
@@ -9,13 +9,12 @@ What's new in jWorkspace 2.0?
   
 ## 2.0.0  
   
-\[\+\] Gradle project, checkstyle, findbugs
-\[\+\] The latest Kiwi 2 library as a separate module. It is now being maintained by Java Workspace project developers   
-\[\+\] The deprecated Jimi library is replaced with Apache Imaging  
-\[\*\] Re-factoring to support Java 8 and remove deprecated code
-\[\*\] Added unit tests
-\[\*\] Gradle project, checkstyle, findbugs
-\[\*\] Improved workspace startup logic and introduced user workspace
+\[\+\] Gradle based project management  
+\[\+\] The latest Kiwi library as a separate project module with source code  
+\[\+\] Added weather module   
+\[\*\] Re-factoring to support Java 8, removed deprecated code, cleared dodgy and suspicious code constructs to satisfy Checkstyle and Find Bugs standards       
+\[\*\] Added unit tests      
+\[\*\] Improved workspace startup logic, clearer separation of user profiles data    
   
 ## 1.0.3  
   

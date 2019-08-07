@@ -32,11 +32,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -107,13 +105,6 @@ public final class Workspace {
      * Each one is executed in its own thread and has its own security manager
      */
     private static final Set<Plugin> USER_PLUGINS = new HashSet<>();
-    /**
-     * LOADED COMPONENTS. These components are not managed as
-     * services, but are stored under Object keys to gain access
-     * every time user needs a reference.
-     * @deprecated
-     */
-    private static final Map<String, Object> LOADED_COMPONENTS = new HashMap<>();
     /**
      * Workspace ENGINES in a synchronized list
      */
@@ -274,29 +265,6 @@ public final class Workspace {
      */
     public static InstallEngine getInstallEngine() {
         return installEngine;
-    }
-
-    /**
-     * Register component in kernel.
-     */
-    public static void register(String key, Object component) {
-        if (key != null && component != null) {
-            LOADED_COMPONENTS.put(key, component);
-        }
-    }
-
-    /**
-     * Get registered component
-     */
-    public static Object getRegisteredComponent(String key) {
-        return LOADED_COMPONENTS.get(key);
-    }
-
-    /**
-     * Empty all components
-     */
-    private static void removeAllRegisteredComponents() {
-        LOADED_COMPONENTS.clear();
     }
 
     /**
@@ -637,7 +605,6 @@ public final class Workspace {
             saveAndResetUI();
             saveEngines();
             USER_PLUGINS.clear();
-            removeAllRegisteredComponents();
 
             getRuntimeManager().resetPluginsCache();
 

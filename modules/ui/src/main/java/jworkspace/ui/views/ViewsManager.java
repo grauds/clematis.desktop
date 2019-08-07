@@ -730,16 +730,15 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Adds view to collection.
      */
-    public void addView(IView view, boolean displayImmediately,
-                        boolean register) {
+    public void addView(IView view, boolean displayImmediately, boolean register) {
+
         if (!(view instanceof JComponent)) {
             throw new IllegalArgumentException(LangResource.getString("View should be a JComponent"));
         }
 
         if (register) {
             /*
-             * Check if there is a registered but not nesesarily displayed
-             * component.
+             * Check if there is a registered but not necessarily displayed component.
              */
             Object existing = Workspace.getUi().isRegistered(view.getClass().getName());
 

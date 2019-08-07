@@ -4,10 +4,10 @@ dependencies {
 
     compile libs.slf4j
     compile libs.log4j
+    compile libs.commonsLogging
 
     compile libs.commonsLang3
     compile libs.commonsIO
-    compile libs.commonsLogging
     compile libs.beanshell
 
     annotationProcessor libs.lombok
@@ -17,7 +17,6 @@ dependencies {
     testCompileOnly libs.lombok
     checkstyle libs.checkstyle
 
-    testCompile libs.lombok
     testCompile libs.assertJCore
     testCompile libs.mustache
     testCompile libs.mockito
