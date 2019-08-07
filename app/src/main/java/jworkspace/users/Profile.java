@@ -33,8 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
 //
@@ -73,6 +71,10 @@ public class Profile {
      */
     private static final Logger LOG = LoggerFactory.getLogger(Profile.class);
     /**
+     * Algorithm name to cipher passwords
+     */
+    private static final String ALGORITHM = "MD5";
+    /**
      * User name
      */
     private String userName = "";
@@ -100,6 +102,14 @@ public class Profile {
      */
     public Profile() {
         super();
+
+        try {
+            this.messageDigest = MessageDigest.getInstance(ALGORITHM);
+            this.cipherpass = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            this.messageDigest = null;
+            LOG.error(e.getMessage(), e);
+        }
     }
 
     /**
@@ -117,14 +127,20 @@ public class Profile {
             this.userFirstName = userFirstName;
             this.userLastName = userLastName;
             this.email = email;
-            this.messageDigest = MessageDigest.getInstance("MD5");
+            this.messageDigest = MessageDigest.getInstance(ALGORITHM);
             if (password != null) {
                 this.cipherpass = this.messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
+            } else {
+                this.cipherpass = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
             }
         } catch (Exception e) {
             this.messageDigest = null;
             LOG.error("Can't set password to profile", e);
         }
+    }
+
+    public Profile(String name) {
+        this(name, "", "", "", "");
     }
 
     /**
@@ -151,14 +167,8 @@ public class Profile {
             secondName, email);
     }
 
-    String getProfileFolder() throws IOException {
-        String path = Workspace.getBasePath() + USERS + File.separator + userName + File.separator;
-
-        if (!Files.exists(Paths.get(path))) {
-            Files.createDirectories(Paths.get(path));
-        }
-
-        return path;
+    String getProfileFolder() {
+        return Workspace.getBasePath() + USERS + File.separator + userName + File.separator;
     }
 
     /**

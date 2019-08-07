@@ -66,14 +66,10 @@ public class LangResource {
             message = resources.getString(id);
         } catch (MissingResourceException ex) {
 
-            LangResource.LOG.warn(ex.toString());
-            LangResource.LOG.warn("Cannot find resource" + " " + id);
+            LangResource.LOG.warn("Cannot find resource:" + id, ex);
         }
 
-        if (message == null) {
-            LangResource.LOG.warn("Cannot find string > " + id + " <");
-            return id;
-        }
+
         return message;
     }
 }

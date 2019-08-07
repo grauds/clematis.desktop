@@ -26,8 +26,6 @@ package jworkspace.users;
   ----------------------------------------------------------------------------
 */
 
-import java.awt.Font;
-import java.awt.Frame;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -41,18 +39,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.LangResource;
-import jworkspace.kernel.Workspace;
 
 /**
  * This class can add, rename, delete or list user profiles.
@@ -115,16 +107,18 @@ class ProfilesManager implements Comparator {
             throw new ProfileOperationException(LangResource.getString("ProfilesManager.passwd.check.failed"));
         }
 
-        File file = new File(getProfileFolder(profile.getUserName()));
-        KiwiUtils.deleteTree(file);
+        File file = new File(profile.getProfileFolder());
+        if (KiwiUtils.deleteTree(file) == 0) {
+            LOG.warn("No files were deleted for " + profile.getUserName());
+        }
     }
 
     /**
      * Returns admin profile
      */
-    public Profile getAdminProfile() throws ProfileOperationException {
+    public Profile loadAdminProfile() throws ProfileOperationException {
         try {
-            return loadProfile(DEFAULT_USER_NAME);
+            return readProfile(DEFAULT_USER_NAME);
         } catch (IOException e) {
             throw new ProfileOperationException(e.getMessage());
         }
@@ -140,7 +134,7 @@ class ProfilesManager implements Comparator {
     /**
      * Sets current profile by its name.
      */
-    public void setCurrentProfile(String name) throws ProfileOperationException {
+    public void setCurrentProfile(String name) throws ProfileOperationException, IOException {
 
         if (name == null || currentProfile != null && currentProfile.getUserName().equals(name)) {
             return;
@@ -151,13 +145,13 @@ class ProfilesManager implements Comparator {
 
         }
 
-        currentProfile = getProfile(name);
+        currentProfile = loadProfile(name);
     }
 
     /**
      * Sets current profile.
      */
-    void setCurrentProfile(Profile profile) {
+    void setCurrentProfile(Profile profile) throws IOException {
 
         if (profile == null || currentProfile != null && currentProfile.equals(profile)) {
             return;
@@ -176,32 +170,34 @@ class ProfilesManager implements Comparator {
      * @return java.lang.String
      */
     String getCurrentProfileRelativePath() throws IOException {
-        return currentProfile.getProfileFolder();
+        return getProfileRelativePath(currentProfile);
+    }
+
+    String getProfileRelativePath(Profile profile) throws IOException {
+        if (profile != null) {
+            String path = profile.getProfileFolder();
+
+            if (!Files.exists(Paths.get(path))) {
+                Files.createDirectories(Paths.get(path));
+            }
+
+            return path;
+        }
+        throw new IOException("Profile is null");
     }
 
     /**
      * Returns profile by its name.
      */
-    Profile getProfile(String name) throws ProfileOperationException {
+    Profile loadProfile(String name) throws ProfileOperationException {
         if (name == null) {
             throw new ProfileOperationException(LangResource.getString("ProfilesManager.name.null"));
         }
         try {
-            return loadProfile(name);
+            return readProfile(name);
         } catch (IOException e) {
             throw new ProfileOperationException(e.getMessage());
         }
-    }
-
-    /**
-     * Returns profiles folder path relative to
-     * "user.dir" system property.
-     *
-     * @param profileName java.lang.String
-     * @return java.lang.String
-     */
-    String getProfileFolder(String profileName) {
-        return USERS + File.separator + profileName;
     }
 
     /**
@@ -233,10 +229,11 @@ class ProfilesManager implements Comparator {
      * @param userName java.lang.String
      * @return jworkspace.users.Profile
      */
-    private Profile loadProfile(String userName) throws IOException {
+    private Profile readProfile(String userName) throws IOException {
 
         Profile profile = new Profile();
-        String path = Workspace.getBasePath() + getProfileFolder(userName);
+        profile.setUserName(userName);
+        String path = getProfileRelativePath(profile);
 
         if (!Files.exists(Paths.get(path))) {
             Files.createDirectories(Paths.get(path));
@@ -247,32 +244,6 @@ class ProfilesManager implements Comparator {
 
             profile.load(di);
 
-        } catch (FileNotFoundException e) {
-            /*
-             * It seems that we have loaded profile for the first time.
-             */
-            ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
-
-            StringBuilder message = new StringBuilder();
-
-            message.append("<html><font color=\"black\" >");
-            message.append(LangResource.getString("ProfileEngine.newProfileAdded.message1"));
-            message.append(" <b>").append(userName).append("</b>.<br>");
-            message.append(LangResource.getString("ProfileEngine.newProfileAdded.message2"));
-            message.append(".<br><i>");
-            message.append(LangResource.getString("ProfileEngine.newProfileAdded.message3"));
-            message.append(" ");
-            message.append("<b>").append(userName).append("</b>");
-            message.append(".");
-            message.append("</i></font></html>");
-
-            JLabel lmess = new JLabel(message.toString());
-            lmess.setFont(lmess.getFont().deriveFont(Font.PLAIN));
-
-            JOptionPane.showMessageDialog(new Frame(),
-                lmess,
-                LangResource.getString("ProfileEngine.newProfileAdded.title"),
-                JOptionPane.INFORMATION_MESSAGE, icon);
         } catch (IOException e) {
             LOG.error(LangResource.getString("ProfilesManager.profile.load.failed"), e);
         }
@@ -286,20 +257,8 @@ class ProfilesManager implements Comparator {
     /**
      * Saves current profile on disk.
      */
-    void saveCurrentProfile() {
-
-        String fileName = getProfileFolder(currentProfile.getUserName());
-
-        File file = new File(fileName);
-
-        try {
-            if (!file.exists()) {
-                FileUtils.forceMkdir(file);
-            }
-            saveProfile(fileName);
-        } catch (IOException e) {
-            LOG.error(LangResource.getString("ProfilesManager.profile.save.failed"), e);
-        }
+    void saveCurrentProfile() throws IOException {
+        writeProfile(getCurrentProfileRelativePath(), currentProfile);
     }
 
     /**
@@ -307,24 +266,19 @@ class ProfilesManager implements Comparator {
      *
      * @param profile to save
      */
-    private void saveProfile(Profile profile) throws IOException {
-
-        String fileName = getProfileFolder(profile.getUserName());
-
-        File file = new File(fileName);
-
-        if (!file.exists()) {
-            FileUtils.forceMkdir(file);
-        }
-
-        saveProfile(fileName);
+    void saveProfile(Profile profile) throws IOException {
+        writeProfile(getProfileRelativePath(profile), profile);
     }
 
-    private void saveProfile(String fileName) throws IOException {
+    private void writeProfile(String fileName, Profile profile) throws IOException {
 
-        FileOutputStream ofile = new FileOutputStream(fileName + File.separator + PROFILE_DAT);
-        DataOutputStream os = new DataOutputStream(ofile);
-        currentProfile.save(os);
-        ofile.close();
+        if (profile == null) {
+            return;
+        }
+
+        try (FileOutputStream ofile = new FileOutputStream(fileName + File.separator + PROFILE_DAT);
+             DataOutputStream os = new DataOutputStream(ofile)) {
+            profile.save(os);
+        }
     }
 }

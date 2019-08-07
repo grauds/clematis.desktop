@@ -105,7 +105,7 @@ public interface IUserProfileEngine extends IEngine {
      *
      * @return java.lang.String
      */
-    String getCurrentProfileRelativePath(String name);
+    String getProfileRelativePath(String name) throws IOException;
 
     /**
      * Get users list.

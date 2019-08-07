@@ -91,7 +91,7 @@ public class UserProfileEngine implements IUserProfileEngine {
      * Get human readable name for installer
      */
     public String getName() {
-        return "Java Workspace User Management Engine (R) v2.00";
+        return "Java Workspace User Management v2.00";
     }
 
     /**
@@ -153,9 +153,9 @@ public class UserProfileEngine implements IUserProfileEngine {
                 Profile profile = Profile.create(name, "", "", "", "");
                 profilesManager.add(profile);
             } catch (IOException ex) {
-                UserProfileEngine.LOG.warn(LangResource.getString("message#290") + name);
+                UserProfileEngine.LOG.warn(LangResource.getString("message#290") + name, ex);
             } catch (ProfileOperationException ex) {
-                UserProfileEngine.LOG.warn(LangResource.getString("message#288") + name);
+                UserProfileEngine.LOG.warn(LangResource.getString("message#288") + name, ex);
             }
         }
     }
@@ -165,10 +165,10 @@ public class UserProfileEngine implements IUserProfileEngine {
      */
     public void removeProfile(String name, String password) {
         try {
-            Profile profile = profilesManager.getProfile(name);
+            Profile profile = profilesManager.loadProfile(name);
             profilesManager.delete(profile, password);
         } catch (ProfileOperationException ex) {
-            UserProfileEngine.LOG.warn(LangResource.getString("message#275") + name);
+            UserProfileEngine.LOG.warn(LangResource.getString("message#275") + name, ex);
         }
     }
 
@@ -181,8 +181,8 @@ public class UserProfileEngine implements IUserProfileEngine {
     /**
      * Get path to specified user folder.
      */
-    public String getCurrentProfileRelativePath(String name) {
-        return profilesManager.getProfileFolder(name);
+    public String getProfileRelativePath(String name) throws IOException {
+        return profilesManager.getProfileRelativePath(new Profile(name));
     }
 
     /*** Returns all users in system
@@ -232,9 +232,9 @@ public class UserProfileEngine implements IUserProfileEngine {
     /**
      * User login procedure.
      */
-    public void login(String name, String password) throws ProfileOperationException {
+    public void login(String name, String password) throws ProfileOperationException, IOException {
 
-        Profile profile = profilesManager.getProfile(name);
+        Profile profile = profilesManager.loadProfile(name);
 
         if (!profile.checkPassword(password)) {
             throw new ProfileOperationException(LangResource.getString("UserProfileEngine.passwd.check.failed"));
@@ -250,7 +250,11 @@ public class UserProfileEngine implements IUserProfileEngine {
      * User logout procedure.
      */
     public void logout() {
-        profilesManager.saveCurrentProfile();
+        try {
+            profilesManager.saveCurrentProfile();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
         userLogged = false;
     }
 
@@ -258,7 +262,7 @@ public class UserProfileEngine implements IUserProfileEngine {
      * Saves profiles manager and profiles on disk
      * via serialization support.
      */
-    public void save() {
+    public void save() throws IOException {
         profilesManager.saveCurrentProfile();
     }
 

@@ -26,19 +26,9 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
-import org.junit.Test;
-
 /**
  * @author Anton Troshin
  */
 public class WorkspaceTests {
 
-    @Test
-    public void testIsLoading() {
-        /*
-//         * Test workspace is loading
-//         */
-//        Workspace.start(new String[]{});
-
-    }
 }
