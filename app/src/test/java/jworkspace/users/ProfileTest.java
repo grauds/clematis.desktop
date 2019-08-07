@@ -32,6 +32,6 @@ public class ProfileTest {
         Profile anotherCopy = new Profile();
         anotherCopy.load(new DataInputStream(new ByteArrayInputStream(inMemoryStream.toByteArray())));
 
-      // todo  assert anotherCopy.equals(profile);
+        assert anotherCopy.equals(profile);
     }
 }

@@ -29,11 +29,11 @@ package jworkspace.installer;
 */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +152,11 @@ public class WorkspaceInstaller implements InstallEngine {
         v.addElement(jvmProg.getPath());
 
         if (!application.isSystemUserFolder()) {
-            v.addElement("-Duser.home=" + Workspace.getUserHomePath());
+            try {
+                v.addElement("-Duser.home=" + Workspace.getUserHomePath());
+            } catch (IOException e) {
+                LOG.warn("Cannot set process user home, will go without", e);
+            }
         }
         // next, construct the classpath
 
@@ -327,7 +331,6 @@ public class WorkspaceInstaller implements InstallEngine {
      * @param path java.lang.String
      * @return java.lang.String
      */
-    // todo: provide security manager if set to false and the sandbox is enabled for a third party application
     @Override
     public boolean isSeparateProcess(String path) {
         DefinitionNode node = applicationData.findNode(path);
@@ -346,24 +349,10 @@ public class WorkspaceInstaller implements InstallEngine {
     public void load() {
 
         WorkspaceInstaller.LOG.info("> Loading installer");
-        /*
-         * Current data root - this is defined by user path.
-         * <p>
-         * BUG: If user path is changed, for example as a result of changing user nick
-         * in User Details dialog, Installer loses connection to installation database.
-         * This is of course happens because data root does not follow user home path.
-         * <p>
-         * WORKAROUND: none.
-         * HINT: re-login user.
-         */
-        File dataRoot = new File(Workspace.getUserHomePath());
+
 
         try {
-
-            if (!dataRoot.exists()) {
-                FileUtils.forceMkdir(dataRoot);
-            }
-
+            File dataRoot = new File(Workspace.getUserHomePath());
             // create global data models
             applicationData = new ApplicationDataSource(new File(dataRoot,
                 ApplicationDataSource.ROOT));

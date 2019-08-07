@@ -33,6 +33,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
 //
@@ -46,6 +48,7 @@ import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 /**
@@ -54,22 +57,17 @@ import lombok.Setter;
  * @author Anton Troshin
  */
 @Data
+@EqualsAndHashCode(doNotUseGetters = true, exclude = {"cipherpass", "messageDigest"})
 @SuppressWarnings("unused")
 public class Profile {
 
-    public static final String USERS = "users";
+    private static final String VAR_CFG = "var.cfg";
 
-    public static final String PROFILE_PASSWD_CHECK_FAILED = "Profile.passwd.check.failed";
+    private static final String PWD_DAT = "pwd.dat";
 
-    public static final String USER_DIR = "user.dir";
+    private static final String USERS = "users";
 
-    public static final String VAR_CFG = "var.cfg";
-
-    public static final String PWD_DAT = "pwd.dat";
-
-    public static final String USER_HOME = "user.home";
-
-    public static final String CHANGING_USER_HOME_PATH_TO = "> Changing user home path to ";
+    private static final String PROFILE_PASSWD_CHECK_FAILED = "Profile.passwd.check.failed";
     /**
      * Default logger
      */
@@ -153,8 +151,14 @@ public class Profile {
             secondName, email);
     }
 
-    private String getProfileFolder() {
-        return USERS + File.separator + userName;
+    String getProfileFolder() throws IOException {
+        String path = Workspace.getBasePath() + USERS + File.separator + userName + File.separator;
+
+        if (!Files.exists(Paths.get(path))) {
+            Files.createDirectories(Paths.get(path));
+        }
+
+        return path;
     }
 
     /**
@@ -237,13 +241,13 @@ public class Profile {
         /*
          * Read user variables
          */
-        try (FileInputStream inputFile = new FileInputStream(Workspace.getUserHomePath() + VAR_CFG)) {
+        try (FileInputStream inputFile = new FileInputStream(getProfileFolder() + VAR_CFG)) {
             getParameters().load(inputFile);
         }
         /*
          * Read password
          */
-        try (FileInputStream inputFile = new FileInputStream(Workspace.getUserHomePath() + PWD_DAT)) {
+        try (FileInputStream inputFile = new FileInputStream(getProfileFolder() + PWD_DAT)) {
 
             DataInputStream dis = new DataInputStream(inputFile);
             cipherpass = StreamUtils.readStreamToByteArray(dis);
@@ -257,7 +261,7 @@ public class Profile {
         /*
          * Write user variables
          */
-        try (FileOutputStream outputFile = new FileOutputStream(Workspace.getUserHomePath() + VAR_CFG)) {
+        try (FileOutputStream outputFile = new FileOutputStream(getProfileFolder() + VAR_CFG)) {
             getParameters().store(outputFile, "USER VARIABLES");
         }
         /*
@@ -271,7 +275,7 @@ public class Profile {
         /*
          * Write password
          */
-        try (FileOutputStream outputFile = new FileOutputStream(Workspace.getUserHomePath() + PWD_DAT);
+        try (FileOutputStream outputFile = new FileOutputStream(getProfileFolder() + PWD_DAT);
              DataOutputStream dos = new DataOutputStream(outputFile)) {
 
             dos.write(cipherpass);

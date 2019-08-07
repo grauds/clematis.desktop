@@ -408,11 +408,14 @@ public class WorkspaceGUI implements UI {
         /*
          * Create new registry.
          */
-        components = new HashMap<>();
-        String fileName = Workspace.getUserHomePath() + CONFIG_FILE;
-        WorkspaceGUI.LOG.info(PROMPT + READING_FILE + fileName + LOG_FINISH);
         boolean undecorated = false;
+        components = new HashMap<>();
+        String fileName;
+
         try {
+            fileName = Workspace.getUserHomePath() + CONFIG_FILE;
+            WorkspaceGUI.LOG.info(PROMPT + READING_FILE + fileName + LOG_FINISH);
+
             config = new ConfigFile(new File(fileName), "GUI Definition");
             config.load();
 
@@ -476,20 +479,16 @@ public class WorkspaceGUI implements UI {
         }
 
         // LOAD PROFILE DATA
+        try (FileInputStream inputFile = new FileInputStream(Workspace.getUserHomePath() + DATA_FILE);
+            DataInputStream inputStream = new DataInputStream(inputFile)) {
 
-        fileName = Workspace.getUserHomePath() + DATA_FILE;
-        WorkspaceGUI.LOG.info(PROMPT + READING_FILE + fileName + LOG_FINISH);
-        try {
-            FileInputStream inputFile = new FileInputStream(fileName);
-            DataInputStream inputStream = new DataInputStream(inputFile);
+            WorkspaceGUI.LOG.info(PROMPT + READING_FILE + Workspace.getUserHomePath() + DATA_FILE + LOG_FINISH);
             /*
              * Delegates loading of UI components to workspace frame
              */
             ((MainFrame) getFrame()).load(inputStream);
         } catch (IOException e) {
-
             ((MainFrame) getFrame()).create();
-
         }
 
         update();
@@ -546,20 +545,12 @@ public class WorkspaceGUI implements UI {
      * Saves profile data of Workspace GUI on disk.
      */
     public void save() {
-        String fileName = Workspace.getUserHomePath() + CONFIG_FILE;
-        WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + fileName + LOG_FINISH);
-
-        File file = new File(Workspace.getUserHomePath());
-
-        if (!file.exists()) {
-            if (!file.mkdirs()) {
-                return;
-            }
-        }
-
-        file = new File(fileName);
 
         try {
+            String fileName = Workspace.getUserHomePath() + CONFIG_FILE;
+            WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + fileName + LOG_FINISH);
+            File file = new File(fileName);
+
             if (config == null) {
                 config = new ConfigFile(file, "GUI Configuration");
             }
@@ -580,9 +571,7 @@ public class WorkspaceGUI implements UI {
          */
         if (texture != null) {
 
-            fileName = Workspace.getUserHomePath() + TEXTURE_FILE_NAME;
-
-            try (OutputStream os = new FileOutputStream(fileName)) {
+            try (OutputStream os = new FileOutputStream(Workspace.getUserHomePath() + TEXTURE_FILE_NAME)) {
 
                 ImageIcon textureIcon = new ImageIcon(texture);
                 BufferedImage bi = new BufferedImage(
@@ -621,12 +610,11 @@ public class WorkspaceGUI implements UI {
          */
         displayedFrames = new ArrayList<>();
 
-        fileName = Workspace.getUserHomePath() + DATA_FILE;
-        WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + fileName + LOG_FINISH);
+        try (FileOutputStream outputFile = new FileOutputStream(Workspace.getUserHomePath() + DATA_FILE);
+             DataOutputStream outputStream = new DataOutputStream(outputFile)) {
 
-        try {
-            FileOutputStream outputFile = new FileOutputStream(fileName);
-            DataOutputStream outputStream = new DataOutputStream(outputFile);
+            WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + Workspace.getUserHomePath() + DATA_FILE + LOG_FINISH);
+
             ((MainFrame) getFrame()).save(outputStream);
         } catch (IOException e) {
             WorkspaceError.exception(LangResource.getString("WorkspaceGUI.saveFrame.failed"), e);
@@ -714,13 +702,19 @@ public class WorkspaceGUI implements UI {
         }
 
         public void run() {
-            String fileName = Workspace.getUserHomePath() + "shells";
+
+            String fileName;
+            try {
+                fileName = Workspace.getUserHomePath() + "shells";
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+                return;
+            }
             Plugin[] plugins = Workspace.getRuntimeManager().loadPlugins(fileName);
 
             if (plugins == null || plugins.length == 0) {
                 pr.setMessage(LangResource.getString("WorkspaceGUI.shells.notFound"));
                 pr.setProgress(PROGRESS_COMPLETED);
-                return;
             } else {
 
                 for (int i = 0; i < plugins.length; i++) {
@@ -740,8 +734,8 @@ public class WorkspaceGUI implements UI {
                     pr.setProgress(i * PROGRESS_COMPLETED / plugins.length);
                 }
                 pr.setProgress(PROGRESS_COMPLETED);
+                update();
             }
-            update();
         }
     }
 

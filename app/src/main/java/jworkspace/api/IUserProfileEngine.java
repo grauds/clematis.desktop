@@ -27,6 +27,7 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.JDialog;
@@ -57,7 +58,7 @@ public interface IUserProfileEngine extends IEngine {
      *
      * @return java.lang.String
      */
-    String getPath();
+    String getCurrentProfileRelativePath() throws IOException;
 
     /**
      * Get user first name
@@ -104,7 +105,7 @@ public interface IUserProfileEngine extends IEngine {
      *
      * @return java.lang.String
      */
-    String getPath(String name);
+    String getCurrentProfileRelativePath(String name);
 
     /**
      * Get users list.

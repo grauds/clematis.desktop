@@ -57,7 +57,7 @@ import lombok.EqualsAndHashCode;
  * @see javax.swing.event.ChangeEvent
  * @see java.beans.PropertyChangeEvent
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"support", "psupport"})
 public class Config extends Properties implements PropertyChangeSource {
     /**
      * use serialVersionUID from JDK 1.1.X for interoperability

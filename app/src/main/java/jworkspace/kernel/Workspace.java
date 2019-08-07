@@ -285,8 +285,8 @@ public final class Workspace {
         return home + File.separator + ".jworkspace" + File.separator;
     }
 
-    public static String getUserHomePath() {
-        return getBasePath() + Workspace.getProfilesEngine().getPath();
+    public static String getUserHomePath() throws IOException {
+        return getBasePath() + Workspace.getProfilesEngine().getCurrentProfileRelativePath();
     }
 
     /**
@@ -393,7 +393,7 @@ public final class Workspace {
         }
     }
 
-    private static void loadUserPlugins() {
+    private static void loadUserPlugins() throws IOException {
 
         String fileName = Workspace.getUserHomePath() + PLUGINS;
         addUserPlugins(Workspace.getRuntimeManager().loadPlugins(fileName));
@@ -575,10 +575,9 @@ public final class Workspace {
             logo.setVisible(true);
         }
 
-        loadEngines();
-        loadUserPlugins();
-
         try {
+            loadEngines();
+            loadUserPlugins();
             ui.load();
         } catch (IOException ex) {
             Workspace.ui.showError(ui.getName() + WHITESPACE
@@ -618,11 +617,9 @@ public final class Workspace {
                 Workspace.ui.showError(LangResource.getString(WORKSPACE_LOGIN_FAILURE), e);
                 return;
             }
-
-            loadEngines();
-            loadUserPlugins();
-
             try {
+                loadEngines();
+                loadUserPlugins();
                 ui.load();
             } catch (IOException ex) {
                 Workspace.ui.showError(ui.getName() + WHITESPACE

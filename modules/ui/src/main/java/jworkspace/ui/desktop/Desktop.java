@@ -877,12 +877,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Loads desktop data.
      */
-    public void load() {
+    public void load() throws IOException {
+
         String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DesktopConstants.DESKTOP_DAT;
         LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
-        try {
-            FileInputStream inputFile = new FileInputStream(fileName);
-            ObjectInputStream dataStream = new ObjectInputStream(inputFile);
+
+        try (FileInputStream inputFile = new FileInputStream(fileName);
+             ObjectInputStream dataStream = new ObjectInputStream(inputFile)) {
 
             this.setName(dataStream.readUTF());
 
@@ -924,8 +925,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             } else {
                 setDragMode(JDesktopPane.LIVE_DRAG_MODE);
             }
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception ex) {
-            WorkspaceError.exception(LangResource.getString("Desktop.load.failed"), ex);
+            throw new IOException(ex.getMessage());
         }
     }
 
@@ -1279,7 +1282,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         closeAllFrames();
     }
 
-    public void save() {
+    public void save() throws IOException {
 
         if (getName() == null) {
             setName(DesktopConstants.DESKTOP_NAME_DEFAULT);

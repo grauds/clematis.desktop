@@ -171,13 +171,12 @@ class ProfilesManager implements Comparator {
     }
 
     /**
-     * Returns current profiles folder path relative to
-     * "user.dir" system property.
+     * Returns current profiles folder path relative to "user.home" system property.
      *
      * @return java.lang.String
      */
-    String getCurrentProfileFolder() {
-        return USERS + File.separator + currentProfile.getUserName();
+    String getCurrentProfileRelativePath() throws IOException {
+        return currentProfile.getProfileFolder();
     }
 
     /**

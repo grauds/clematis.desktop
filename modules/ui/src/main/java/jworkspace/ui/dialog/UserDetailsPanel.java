@@ -32,7 +32,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -166,12 +165,8 @@ class UserDetailsPanel extends KPanel {
         Workspace.getProfilesEngine().setUserLastName(tSurname.getText());
         Workspace.getProfilesEngine().setEmail(tMail.getText());
         Workspace.getProfilesEngine().setDescription(tDescription.getText());
-        if (!Workspace.getProfilesEngine().setUserName(tNick.getText())) {
-            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
-                LangResource.getString("UserDetailsPanel.cannotApply.message"),
-                LangResource.getString("UserDetailsPanel.cannotApply.title"),
-                JOptionPane.WARNING_MESSAGE);
-        }
+        Workspace.getProfilesEngine().setUserName(tNick.getText());
+
         return true;
     }
 }

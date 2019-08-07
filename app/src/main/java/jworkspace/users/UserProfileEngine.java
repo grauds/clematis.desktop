@@ -57,7 +57,7 @@ public class UserProfileEngine implements IUserProfileEngine {
 
     private static final String USER_HOME = "user.home";
 
-    private ProfilesManager profilesManager = null;
+    private ProfilesManager profilesManager = new ProfilesManager();
 
     private boolean userLogged = false;
 
@@ -139,8 +139,8 @@ public class UserProfileEngine implements IUserProfileEngine {
     /**
      * Returns path to user folder from current user profile.
      */
-    public String getPath() {
-        return profilesManager.getCurrentProfileFolder();
+    public String getCurrentProfileRelativePath() throws IOException {
+        return profilesManager.getCurrentProfileRelativePath();
     }
 
     /**
@@ -181,7 +181,7 @@ public class UserProfileEngine implements IUserProfileEngine {
     /**
      * Get path to specified user folder.
      */
-    public String getPath(String name) {
+    public String getCurrentProfileRelativePath(String name) {
         return profilesManager.getProfileFolder(name);
     }
 
@@ -226,8 +226,6 @@ public class UserProfileEngine implements IUserProfileEngine {
      * via serialization support.
      */
     public void load() {
-        UserProfileEngine.LOG.info("> Creating profiles manager");
-        profilesManager = new ProfilesManager();
         UserProfileEngine.LOG.info("> Profiles manager is loaded");
     }
 

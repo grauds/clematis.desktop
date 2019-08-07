@@ -802,7 +802,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Loads profile data from desktop.dat.
      */
-    public void load() {
+    public void load() throws IOException {
         /*
          * Read header panel orientation and visibility.
          */
