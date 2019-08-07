@@ -152,8 +152,7 @@ public class WorkspaceInstaller implements InstallEngine {
         v.addElement(jvmProg.getPath());
 
         if (!application.isSystemUserFolder()) {
-            v.addElement("-Duser.home=" + System.getProperty("user.dir") + File.separator
-                + Workspace.getProfilesEngine().getPath());
+            v.addElement("-Duser.home=" + Workspace.getUserHomePath());
         }
         // next, construct the classpath
 
@@ -357,7 +356,7 @@ public class WorkspaceInstaller implements InstallEngine {
          * WORKAROUND: none.
          * HINT: re-login user.
          */
-        File dataRoot = new File(Workspace.getUserHome());
+        File dataRoot = new File(Workspace.getUserHomePath());
 
         try {
 

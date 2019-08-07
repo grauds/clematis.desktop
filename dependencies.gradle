@@ -3,6 +3,7 @@ apply from: file("${project.rootDir}/libraries.gradle")
 dependencies {
 
     compile libs.slf4j
+    compile libs.slf4jSimple
     compile libs.log4j
     compile libs.commonsLogging
 

@@ -43,6 +43,7 @@ import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.Config;
 
 import jworkspace.LangResource;
+import jworkspace.kernel.Workspace;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -236,23 +237,13 @@ public class Profile {
         /*
          * Read user variables
          */
-        try (FileInputStream inputFile = new FileInputStream(
-            System.getProperty(USER_DIR)
-                + File.separator
-                + getProfileFolder()
-                + File.separator
-                + VAR_CFG)) {
+        try (FileInputStream inputFile = new FileInputStream(Workspace.getUserHomePath() + VAR_CFG)) {
             getParameters().load(inputFile);
         }
         /*
          * Read password
          */
-        try (FileInputStream inputFile = new FileInputStream(
-            System.getProperty(USER_DIR)
-                + File.separator
-                + getProfileFolder()
-                + File.separator
-                + PWD_DAT)) {
+        try (FileInputStream inputFile = new FileInputStream(Workspace.getUserHomePath() + PWD_DAT)) {
 
             DataInputStream dis = new DataInputStream(inputFile);
             cipherpass = StreamUtils.readStreamToByteArray(dis);
@@ -266,12 +257,7 @@ public class Profile {
         /*
          * Write user variables
          */
-        try (FileOutputStream outputFile = new FileOutputStream(
-            System.getProperty(USER_DIR)
-                + File.separator
-                + getProfileFolder()
-                + File.separator
-                + VAR_CFG)) {
+        try (FileOutputStream outputFile = new FileOutputStream(Workspace.getUserHomePath() + VAR_CFG)) {
             getParameters().store(outputFile, "USER VARIABLES");
         }
         /*
@@ -285,12 +271,7 @@ public class Profile {
         /*
          * Write password
          */
-        try (FileOutputStream outputFile = new FileOutputStream(
-            System.getProperty(USER_DIR)
-                + File.separator
-                + getProfileFolder()
-                + File.separator
-                + PWD_DAT);
+        try (FileOutputStream outputFile = new FileOutputStream(Workspace.getUserHomePath() + PWD_DAT);
              DataOutputStream dos = new DataOutputStream(outputFile)) {
 
             dos.write(cipherpass);
@@ -300,96 +281,21 @@ public class Profile {
     /**
      * Set new user name. We have to rename existing directory.
      */
-    @SuppressWarnings({"ReturnCount"})
-    public boolean setUserName(String password, String userName)
+    public void setUserName(String password, String userName)
         throws ProfileOperationException {
 
         if (!checkPassword(password)) {
             throw new ProfileOperationException(LangResource.getString(PROFILE_PASSWD_CHECK_FAILED));
         }
 
-        if (this.userName.equals(userName)) {
-            return true;
-        }
-        /*
-         * Rename before
-         */
-        String oldPath = System.getProperty(USER_DIR)
-            + File.separator
-            + USERS
-            + File.separator
-            + this.userName;
-        String newPath = System.getProperty(USER_DIR)
-            + File.separator
-            + USERS
-            + File.separator
-            + userName;
-
-        if (new File(oldPath).renameTo(new File(newPath))) {
-            this.userName = userName;
-            /*
-             * Change system user path
-             */
-            System.setProperty(USER_HOME, newPath);
-            Profile.LOG.info(CHANGING_USER_HOME_PATH_TO + System.getProperty(USER_HOME));
-            return true;
-        } else {
-            return false;
-        }
+        setUserName(userName);
     }
 
     /**
      * Set user name.
      */
-    @SuppressWarnings({"ReturnCount"})
-    boolean setUserName(String userName) {
-
-        /*
-         * Do not make any changes if names are equal
-         */
-        if (this.userName.equals(userName)) {
-            return true;
-        } else if (!getUserName().trim().equals("")) {
-            String oldPath = System.getProperty(USER_DIR)
-                + File.separator
-                + USERS
-                + File.separator
-                + this.userName;
-            String newPath = System.getProperty(USER_DIR)
-                + File.separator
-                + USERS
-                + File.separator
-                + userName;
-            if (!(new File(oldPath).renameTo(new File(newPath)))) {
-                return false;
-            }
-        } else if (getUserName().trim().equals("")) {
-            String newPath = System.getProperty(USER_DIR)
-                + File.separator
-                + USERS
-                + File.separator
-                + userName;
-            File userDir = new File(newPath);
-            if (!userDir.mkdirs()) {
-                return false;
-            }
-        }
-        /*
-         * Finally set user name
-         */
+    void setUserName(String userName) {
         this.userName = userName;
-        /*
-         * Change system user path
-         */
-        System.setProperty(USER_HOME, System.getProperty(USER_DIR)
-            + File.separator
-            + USERS
-            + File.separator
-            + this.userName);
-
-        Profile.LOG.info(CHANGING_USER_HOME_PATH_TO + System.getProperty(USER_HOME));
-
-        return true;
     }
 
     /**

@@ -92,13 +92,13 @@ public final class WorkspaceInterpreter {
     private synchronized void startInterpreter() {
 
         WorkspaceInterpreter.LOG.info("> Starting Bean Shell Interpreter");
-        outPipe = new PipedOutputStream();
-        try {
-            in = new PipedInputStream(outPipe);
-        } catch (IOException e) {
-            Workspace.getUi().showError("Cannot start Bean Shell Interpreter", e);
-        }
-        interpreter = new Interpreter(new InputStreamReader(in, StandardCharsets.UTF_8),
+//        outPipe = new PipedOutputStream();
+//        try {
+//            in = new PipedInputStream(outPipe);
+//        } catch (IOException e) {
+//            Workspace.getUi().showError("Cannot start Bean Shell Interpreter", e);
+//        }
+        interpreter = new Interpreter(new InputStreamReader(System.in, StandardCharsets.UTF_8),
             System.out, System.out, false, null);
 
         interpreterThread = new Thread(interpreter);

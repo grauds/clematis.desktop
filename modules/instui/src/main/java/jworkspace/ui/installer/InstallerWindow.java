@@ -70,8 +70,7 @@ public class InstallerWindow extends DefaultCompoundView
     /**
      * Save root.
      */
-    String saveRoot = System.getProperty("user.dir") + File.separator +
-            Workspace.getProfilesEngine().getPath();
+    String saveRoot = Workspace.getUserHome();
     /**
      * Progress bar for lengthy background operations,
      * like images of source files load.

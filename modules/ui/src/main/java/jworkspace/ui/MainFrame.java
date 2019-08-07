@@ -619,8 +619,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Updates controls for the component.
      */
     public void update() {
-        setTitle(Workspace.getVersion() + WorkspaceGUI.LOG_SPACE
-            + Workspace.getProfilesEngine().getUserName());
+        setTitle(Workspace.getVersion() + WorkspaceGUI.LOG_SPACE + Workspace.getProfilesEngine().getUserName());
         invalidate();
         validate();
         repaint();

@@ -27,7 +27,6 @@ package jworkspace.users;
 */
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JDialog;
@@ -247,9 +246,6 @@ public class UserProfileEngine implements IUserProfileEngine {
         userLogged = true;
 
         UserProfileEngine.LOG.info("> You are logged as " + getUserName());
-
-        System.setProperty(USER_HOME, System.getProperty("user.dir") + File.separator + getPath());
-        UserProfileEngine.LOG.info(">" + " Homepath " + " " + System.getProperty(USER_HOME));
     }
 
     /**
@@ -278,13 +274,9 @@ public class UserProfileEngine implements IUserProfileEngine {
     /**
      * Set user name
      */
-    public boolean setUserName(String name) {
-        if (profilesManager.getCurrentProfile().setUserName(name)) {
-            Workspace.getUi().update();
-            return true;
-        } else {
-            return false;
-        }
+    public void setUserName(String name) {
+        profilesManager.getCurrentProfile().setUserName(name);
+        Workspace.getUi().update();
     }
 
     /**

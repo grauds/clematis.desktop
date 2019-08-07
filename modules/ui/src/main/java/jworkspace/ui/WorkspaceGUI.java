@@ -409,7 +409,7 @@ public class WorkspaceGUI implements UI {
          * Create new registry.
          */
         components = new HashMap<>();
-        String fileName = Workspace.getUserHome() + CONFIG_FILE;
+        String fileName = Workspace.getUserHomePath() + CONFIG_FILE;
         WorkspaceGUI.LOG.info(PROMPT + READING_FILE + fileName + LOG_FINISH);
         boolean undecorated = false;
         try {
@@ -441,7 +441,7 @@ public class WorkspaceGUI implements UI {
          */
         try {
 
-            fileName = Workspace.getUserHome() + TEXTURE_FILE_NAME;
+            fileName = Workspace.getUserHomePath() + TEXTURE_FILE_NAME;
             /*
              * Read texture
              */
@@ -477,7 +477,7 @@ public class WorkspaceGUI implements UI {
 
         // LOAD PROFILE DATA
 
-        fileName = Workspace.getUserHome() + DATA_FILE;
+        fileName = Workspace.getUserHomePath() + DATA_FILE;
         WorkspaceGUI.LOG.info(PROMPT + READING_FILE + fileName + LOG_FINISH);
         try {
             FileInputStream inputFile = new FileInputStream(fileName);
@@ -546,10 +546,10 @@ public class WorkspaceGUI implements UI {
      * Saves profile data of Workspace GUI on disk.
      */
     public void save() {
-        String fileName = Workspace.getUserHome() + CONFIG_FILE;
+        String fileName = Workspace.getUserHomePath() + CONFIG_FILE;
         WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + fileName + LOG_FINISH);
 
-        File file = new File(Workspace.getUserHome());
+        File file = new File(Workspace.getUserHomePath());
 
         if (!file.exists()) {
             if (!file.mkdirs()) {
@@ -580,7 +580,7 @@ public class WorkspaceGUI implements UI {
          */
         if (texture != null) {
 
-            fileName = Workspace.getUserHome() + TEXTURE_FILE_NAME;
+            fileName = Workspace.getUserHomePath() + TEXTURE_FILE_NAME;
 
             try (OutputStream os = new FileOutputStream(fileName)) {
 
@@ -621,7 +621,7 @@ public class WorkspaceGUI implements UI {
          */
         displayedFrames = new ArrayList<>();
 
-        fileName = Workspace.getUserHome() + DATA_FILE;
+        fileName = Workspace.getUserHomePath() + DATA_FILE;
         WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + fileName + LOG_FINISH);
 
         try {
@@ -714,7 +714,7 @@ public class WorkspaceGUI implements UI {
         }
 
         public void run() {
-            String fileName = Workspace.getUserHome() + "shells";
+            String fileName = Workspace.getUserHomePath() + "shells";
             Plugin[] plugins = Workspace.getRuntimeManager().loadPlugins(fileName);
 
             if (plugins == null || plugins.length == 0) {

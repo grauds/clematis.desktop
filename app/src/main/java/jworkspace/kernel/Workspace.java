@@ -120,8 +120,6 @@ public final class Workspace {
 
     private static final String WORKSPACE_LOGIN_LOAD_FAILED = "Workspace.login.loadFailed";
 
-    private static final String USER_DIR = "user.dir";
-
     private static final String WHITESPACE = " ";
 
     private static final String PLUGINS = "plugins";
@@ -131,6 +129,11 @@ public final class Workspace {
     private static final String WORKSPACE_ENGINE_SAVE_FAILED = "Workspace.engine.saveFailed";
 
     private static final String EMPTY_STRING = "#\n";
+
+    /**
+     * Workspace Bean Shell interpreter instance
+     */
+    private static WorkspaceInterpreter workspaceInterpreter;
 
     /**
      * User profile engine interface
@@ -210,9 +213,9 @@ public final class Workspace {
 
         ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_exit.png"));
 
-        if ((isModified() && ui.showConfirmDialog(LangResource.getString("Workspace.exit.question"),
+        if (ui.showConfirmDialog(LangResource.getString("Workspace.exit.question"),
             LangResource.getString("Workspace.exit.title"),
-            icon)) || !isModified()) {
+            icon)) {
 
             RuntimeManager.killAllProcesses();
 
@@ -275,17 +278,15 @@ public final class Workspace {
     }
 
     /**
-     * Get home directory for current user.
+     * Get base path for workspace properties. It is commonly an operating system's user's directory
      */
-    public static String getUserHome() {
-
+    public static String getBasePath() {
         String home = System.getProperty("user.home");
+        return home + File.separator + ".jworkspace" + File.separator;
+    }
 
-        if (!home.startsWith(System.getProperty(USER_DIR))) {
-            home = System.getProperty(USER_DIR) + File.separator + Workspace.getProfilesEngine().getPath();
-        }
-
-        return home + File.separator;
+    public static String getUserHomePath() {
+        return getBasePath() + Workspace.getProfilesEngine().getPath();
     }
 
     /**
@@ -394,7 +395,7 @@ public final class Workspace {
 
     private static void loadUserPlugins() {
 
-        String fileName = Workspace.getUserHome() + File.separator + PLUGINS;
+        String fileName = Workspace.getUserHomePath() + PLUGINS;
         addUserPlugins(Workspace.getRuntimeManager().loadPlugins(fileName));
     }
 
@@ -478,6 +479,10 @@ public final class Workspace {
          */
         Workspace.ENGINES.add(Workspace.getInstallEngine());
         /*
+         * Start interpreter
+         */
+        workspaceInterpreter = WorkspaceInterpreter.getInstance();
+        /*
          * Add system plugins indifferent to users data
          */
         addSystemPlugins(Workspace.getRuntimeManager().loadPlugins(PLUGINS));
@@ -538,15 +543,13 @@ public final class Workspace {
 
         Config cfg = new Config(getConfigHeader().toString());
 
-        try (InputStream in = new FileInputStream(System.getProperty(USER_DIR) + File.separator
-            + profilesEngine.getPath() + File.separator + CONFIG_JWCONF_CFG)) {
+        try (InputStream in = new FileInputStream(getUserHomePath() + CONFIG_JWCONF_CFG)) {
 
             cfg.load(in);
         } catch (IOException e) {
             // just use defaults, don't panic
             Workspace.LOG.error("Couldn't find custom configuration file: "
-                + CONFIG_JWCONF_CFG
-                + ". Continuing with defaults", e.getMessage());
+                + CONFIG_JWCONF_CFG + ". Continuing with defaults", e);
         }
         /*
          * Either read from configuration or go with default
@@ -617,7 +620,6 @@ public final class Workspace {
             }
 
             loadEngines();
-            USER_PLUGINS.clear();
             loadUserPlugins();
 
             try {

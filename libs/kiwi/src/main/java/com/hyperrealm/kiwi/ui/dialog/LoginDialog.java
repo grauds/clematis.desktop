@@ -168,8 +168,7 @@ public class LoginDialog extends ComponentDialog {
      */
 
     protected boolean accept() {
-        boolean ok = validate(tUser.getText(),
-            new String(tPasswd.getPassword()));
+        boolean ok = validate(tUser.getText(), new String(tPasswd.getPassword()));
         if (ok) {
             return (true);
         }

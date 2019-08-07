@@ -806,7 +806,7 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Read header panel orientation and visibility.
          */
-        String fileName = Workspace.getUserHome() + getPath() + File.separator + DESKTOP_CONFIG;
+        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DESKTOP_CONFIG;
         LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
 
         try (FileInputStream inputFile = new FileInputStream(fileName);
@@ -860,10 +860,10 @@ public class ViewsManager extends AbstractViewsManager {
      */
     public void save() throws IOException {
 
-        String fileName = Workspace.getUserHome() + getPath() + File.separator + DESKTOP_CONFIG;
+        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DESKTOP_CONFIG;
         LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
 
-        File file = new File(Workspace.getUserHome() + getPath());
+        File file = new File(Workspace.getUserHomePath() + getPath());
         if (!file.exists()) {
             if (!file.mkdirs()) {
                 LOG.error("Can't create directories, not saving: " + file.getAbsolutePath());
@@ -884,7 +884,7 @@ public class ViewsManager extends AbstractViewsManager {
             for (IView view : views) {
                 if (view instanceof Desktop) {
                     String viewSavePath = getPath() + File.separator + VIEW + counter;
-                    File file1 = new File(Workspace.getUserHome() + getPath() + File.separator + VIEW + counter);
+                    File file1 = new File(Workspace.getUserHomePath() + getPath() + File.separator + VIEW + counter);
                     if (!file1.exists() && !file1.mkdirs()) {
                         LOG.error("Couldn't create directories for view: " + file1.getAbsolutePath());
                         continue;

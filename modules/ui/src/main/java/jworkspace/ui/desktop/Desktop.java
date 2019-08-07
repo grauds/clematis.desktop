@@ -878,7 +878,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      * Loads desktop data.
      */
     public void load() {
-        String fileName = Workspace.getUserHome() + getPath() + File.separator + DesktopConstants.DESKTOP_DAT;
+        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DesktopConstants.DESKTOP_DAT;
         LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
         try {
             FileInputStream inputFile = new FileInputStream(fileName);
@@ -1285,10 +1285,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             setName(DesktopConstants.DESKTOP_NAME_DEFAULT);
         }
 
-        String fileName = Workspace.getUserHome() + getPath() + File.separator + DesktopConstants.DESKTOP_DAT;
+        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DesktopConstants.DESKTOP_DAT;
         LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
 
-        File file = new File(Workspace.getUserHome() + getPath());
+        File file = new File(Workspace.getUserHomePath() + getPath());
 
         if (!file.exists()) {
             if (!file.mkdirs()) {

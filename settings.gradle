@@ -8,9 +8,6 @@ project(':kiwi').projectDir = file('libs/kiwi')
 include 'ui'
 project(':ui').projectDir = file('modules/ui')
 
-include 'taxonomies'
-project(':taxonomies').projectDir = file('modules/taxonomies')
-
 include 'weather'
 project(':weather').projectDir = file('modules/weather')
 

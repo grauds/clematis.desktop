@@ -35,6 +35,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -120,8 +122,12 @@ class ProfilesManager implements Comparator {
     /**
      * Returns admin profile
      */
-    public Profile getAdminProfile() {
-        return loadProfile(DEFAULT_USER_NAME);
+    public Profile getAdminProfile() throws ProfileOperationException {
+        try {
+            return loadProfile(DEFAULT_USER_NAME);
+        } catch (IOException e) {
+            throw new ProfileOperationException(e.getMessage());
+        }
     }
 
     /**
@@ -181,7 +187,11 @@ class ProfilesManager implements Comparator {
         if (name == null) {
             throw new ProfileOperationException(LangResource.getString("ProfilesManager.name.null"));
         }
-        return loadProfile(name);
+        try {
+            return loadProfile(name);
+        } catch (IOException e) {
+            throw new ProfileOperationException(e.getMessage());
+        }
     }
 
     /**
@@ -224,11 +234,16 @@ class ProfilesManager implements Comparator {
      * @param userName java.lang.String
      * @return jworkspace.users.Profile
      */
-    private Profile loadProfile(String userName) {
+    private Profile loadProfile(String userName) throws IOException {
 
         Profile profile = new Profile();
-        try (FileInputStream ifile =
-                 new FileInputStream(getProfileFolder(userName) + File.separator + PROFILE_DAT);
+        String path = Workspace.getBasePath() + getProfileFolder(userName);
+
+        if (!Files.exists(Paths.get(path))) {
+            Files.createDirectories(Paths.get(path));
+        }
+
+        try (FileInputStream ifile = new FileInputStream(path + File.separator + PROFILE_DAT);
              DataInputStream di = new DataInputStream(ifile)) {
 
             profile.load(di);

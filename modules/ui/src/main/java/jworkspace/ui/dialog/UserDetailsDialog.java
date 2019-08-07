@@ -129,7 +129,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
     protected JComponent buildDialogUI() {
         setComment(null);
 
-        String fileName = Workspace.getUserHome() + "portrait.jpg";
+        String fileName = Workspace.getUserHomePath() + "portrait.jpg";
         Image p = null;
         try {
             p = ImageIO.read(new File(fileName));

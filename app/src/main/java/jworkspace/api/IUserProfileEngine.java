@@ -151,7 +151,7 @@ public interface IUserProfileEngine extends IEngine {
     /**
      * Set user name
      */
-    boolean setUserName(String name);
+    void setUserName(String name);
 
     /**
      * Set password
