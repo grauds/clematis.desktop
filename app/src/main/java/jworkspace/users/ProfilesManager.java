@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.LangResource;
-
+import jworkspace.kernel.Workspace;
 /**
  * This class can add, rename, delete or list user profiles.
  * There can be only one instance of manager in workspace.
@@ -122,10 +122,14 @@ class ProfilesManager implements Comparator {
         return currentProfile;
     }
 
+    void clearCurrentProfile() {
+        currentProfile = null;
+    }
+
     /**
      * Sets current profile by its name.
      */
-    public void setCurrentProfile(String name) throws ProfileOperationException, IOException {
+    void setCurrentProfile(String name) throws ProfileOperationException, IOException {
 
         if (name == null || currentProfile != null && currentProfile.getUserName().equals(name)) {
             return;
@@ -137,22 +141,6 @@ class ProfilesManager implements Comparator {
         }
 
         currentProfile = loadProfile(name);
-    }
-
-    /**
-     * Sets current profile.
-     */
-    void setCurrentProfile(Profile profile) throws IOException {
-
-        if (profile == null || currentProfile != null && currentProfile.equals(profile)) {
-            return;
-        }
-
-        if (currentProfile != null && !currentProfile.equals(profile)) {
-            saveCurrentProfile();
-        }
-
-        currentProfile = profile;
     }
 
     /**
@@ -190,7 +178,7 @@ class ProfilesManager implements Comparator {
 
         Vector<String> list = new Vector<>();
 
-        File file = new File(System.getProperty("user.dir") + File.separator + USERS);
+        File file = new File(Workspace.getBasePath() + USERS + File.separator);
         File[] dirs = file.listFiles();
 
         if (dirs != null) {

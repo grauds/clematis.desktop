@@ -260,7 +260,7 @@ public class UserProfileEngine implements IUserProfileEngine {
             throw new ProfileOperationException(LangResource.getString("UserProfileEngine.passwd.check.failed"));
         }
 
-        profilesManager.setCurrentProfile(profile);
+        profilesManager.setCurrentProfile(profile.getUserName());
         userLogged = true;
 
         UserProfileEngine.LOG.info("> You are logged as " + getUserName());
@@ -275,6 +275,7 @@ public class UserProfileEngine implements IUserProfileEngine {
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }
+        profilesManager.clearCurrentProfile();
         userLogged = false;
     }
 
