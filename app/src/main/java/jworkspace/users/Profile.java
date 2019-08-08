@@ -30,9 +30,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
 //
@@ -57,11 +60,13 @@ import lombok.Setter;
 @Data
 @EqualsAndHashCode(doNotUseGetters = true, exclude = {"cipherpass", "messageDigest"})
 @SuppressWarnings("unused")
-public class Profile {
+class Profile {
 
     private static final String VAR_CFG = "var.cfg";
 
     private static final String PWD_DAT = "pwd.dat";
+
+    private static final String PROFILE_DAT = "profile.dat";
 
     private static final String USERS = "users";
 
@@ -100,16 +105,9 @@ public class Profile {
     /**
      * Empty constructor
      */
-    public Profile() {
+    Profile() {
         super();
-
-        try {
-            this.messageDigest = MessageDigest.getInstance(ALGORITHM);
-            this.cipherpass = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            this.messageDigest = null;
-            LOG.error(e.getMessage(), e);
-        }
+        setPasswordAndDigest("");
     }
 
     /**
@@ -122,24 +120,14 @@ public class Profile {
                       String email) {
 
         this.userName = userName;
+        this.userFirstName = userFirstName;
+        this.userLastName = userLastName;
+        this.email = email;
 
-        try {
-            this.userFirstName = userFirstName;
-            this.userLastName = userLastName;
-            this.email = email;
-            this.messageDigest = MessageDigest.getInstance(ALGORITHM);
-            if (password != null) {
-                this.cipherpass = this.messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
-            } else {
-                this.cipherpass = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
-            }
-        } catch (Exception e) {
-            this.messageDigest = null;
-            LOG.error("Can't set password to profile", e);
-        }
+        setPasswordAndDigest(password);
     }
 
-    public Profile(String name) {
+    Profile(String name) {
         this(name, "", "", "", "");
     }
 
@@ -163,11 +151,21 @@ public class Profile {
             throw new ProfileOperationException(LangResource.getString("Profile.passwd.null"));
         }
 
-        return new Profile(userName, password, firstName,
-            secondName, email);
+        return new Profile(userName, password, firstName, secondName, email);
     }
 
-    String getProfileFolder() {
+    String getProfileRelativeFolder() throws IOException {
+
+        String path = getProfilePath();
+
+        if (!Files.exists(Paths.get(path))) {
+            Files.createDirectories(Paths.get(path));
+        }
+
+        return path;
+    }
+
+    String getProfilePath() {
         return Workspace.getBasePath() + USERS + File.separator + userName + File.separator;
     }
 
@@ -186,17 +184,9 @@ public class Profile {
     }
 
     /**
-     * Sets description
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
      * Set user password (secure public version)
      */
-    void setPassword(String oldPassword, String newPassword,
-                     String confirmPassword)
+    void setPassword(String oldPassword, String newPassword, String confirmPassword)
         throws ProfileOperationException {
 
         if (!checkPassword(oldPassword)) {
@@ -205,8 +195,26 @@ public class Profile {
         if (!newPassword.equals(confirmPassword)) {
             throw new ProfileOperationException(LangResource.getString("Profile.passwd.confirm.failed"));
         }
+        setPassword(newPassword);
+    }
+
+    void setPassword(String newPassword) {
         if (this.messageDigest != null) {
-            this.cipherpass = this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8));
+            if (newPassword != null) {
+                this.cipherpass = this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8));
+            } else {
+                this.cipherpass = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
+            }
+        }
+    }
+
+    private void setPasswordAndDigest(String password) {
+        try {
+            this.messageDigest = MessageDigest.getInstance(ALGORITHM);
+            setPassword(password);
+        } catch (Exception e) {
+            this.messageDigest = null;
+            LOG.error(e.getMessage(), e);
         }
     }
 
@@ -239,55 +247,59 @@ public class Profile {
     /**
      * Load profile from disk
      */
-    public void load(DataInputStream is) throws IOException {
-        /*
-         * Read all data
-         */
-        userName = is.readUTF();
-        userFirstName = is.readUTF();
-        userLastName = is.readUTF();
-        email = is.readUTF();
-        description = is.readUTF();
+    public void load() throws IOException {
+
         /*
          * Read user variables
          */
-        try (FileInputStream inputFile = new FileInputStream(getProfileFolder() + VAR_CFG)) {
+        try (FileInputStream inputFile = new FileInputStream(getProfilePath() + VAR_CFG)) {
             getParameters().load(inputFile);
+        } catch (FileNotFoundException ex) {
+            LOG.warn("Configuration is not found for " + userName);
         }
         /*
          * Read password
          */
-        try (FileInputStream inputFile = new FileInputStream(getProfileFolder() + PWD_DAT)) {
-
-            DataInputStream dis = new DataInputStream(inputFile);
+        try (FileInputStream inputFile = new FileInputStream(getProfilePath() + PROFILE_DAT);
+             DataInputStream dis = new DataInputStream(inputFile)) {
+            /*
+             * Read all data
+             */
+            userName = dis.readUTF();
+            userFirstName = dis.readUTF();
+            userLastName = dis.readUTF();
+            email = dis.readUTF();
+            description = dis.readUTF();
             cipherpass = StreamUtils.readStreamToByteArray(dis);
+        } catch (FileNotFoundException ex) {
+            LOG.warn("Saved data is not found for " + userName);
         }
     }
 
     /**
      * Save profile on disk
      */
-    public void save(DataOutputStream os) throws IOException {
+    protected void save() throws IOException {
         /*
          * Write user variables
          */
-        try (FileOutputStream outputFile = new FileOutputStream(getProfileFolder() + VAR_CFG)) {
+        try (FileOutputStream outputFile = new FileOutputStream(getProfileRelativeFolder() + VAR_CFG)) {
             getParameters().store(outputFile, "USER VARIABLES");
         }
         /*
-         * Write all other data
-         */
-        os.writeUTF(userName);
-        os.writeUTF(userFirstName);
-        os.writeUTF(userLastName);
-        os.writeUTF(email);
-        os.writeUTF(description);
-        /*
          * Write password
          */
-        try (FileOutputStream outputFile = new FileOutputStream(getProfileFolder() + PWD_DAT);
+        try (FileOutputStream outputFile = new FileOutputStream(getProfileRelativeFolder() + PROFILE_DAT);
              DataOutputStream dos = new DataOutputStream(outputFile)) {
 
+            /*
+             * Write all other data
+             */
+            dos.writeUTF(userName);
+            dos.writeUTF(userFirstName);
+            dos.writeUTF(userLastName);
+            dos.writeUTF(email);
+            dos.writeUTF(description);
             dos.write(cipherpass);
         }
     }

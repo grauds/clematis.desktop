@@ -63,7 +63,7 @@ import jworkspace.users.UserProfileEngine;
  * @author Anton Troshin
  */
 @SuppressWarnings("unused")
-public final class Workspace {
+public class Workspace {
 
     /**
      * Version
@@ -219,7 +219,7 @@ public final class Workspace {
 
             RuntimeManager.killAllProcesses();
 
-            if (Workspace.getProfilesEngine().userLogged()) {
+            if (Workspace.getProfiles().userLogged()) {
 
                 saveAndResetUI();
                 saveEngines();
@@ -273,7 +273,7 @@ public final class Workspace {
     /**
      * Returns class, implemented interface <code>jworkspace.api.IUserProfileEngine</code>
      */
-    public static IUserProfileEngine getProfilesEngine() {
+    public static IUserProfileEngine getProfiles() {
         return profilesEngine;
     }
 
@@ -286,7 +286,7 @@ public final class Workspace {
     }
 
     public static String getUserHomePath() throws IOException {
-        return getBasePath() + Workspace.getProfilesEngine().getCurrentProfileRelativePath();
+        return getBasePath() + Workspace.getProfiles().getCurrentProfileRelativePath();
     }
 
     /**
@@ -599,7 +599,7 @@ public final class Workspace {
         ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
 
         if ((isModified() && ui.showConfirmDialog(LangResource.getString("Workspace.logOff.question")
-                + WHITESPACE + getProfilesEngine().getUserName() + " ?",
+                + WHITESPACE + getProfiles().getUserName() + " ?",
             LangResource.getString("Workspace.logOff.title"), icon)) || !isModified()) {
 
             RuntimeManager.killAllProcesses();

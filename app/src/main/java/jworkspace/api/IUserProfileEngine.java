@@ -93,7 +93,7 @@ public interface IUserProfileEngine extends IEngine {
     /**
      * Add new Profile
      */
-    void addProfile(String name);
+    void addProfile(String name, String... fields);
 
     /**
      * Remove Profile
@@ -133,8 +133,7 @@ public interface IUserProfileEngine extends IEngine {
     void logout() throws Exception;
 
     /**
-     * Returns true, if there is user, logged in workspace. There can be situation,
-     * there will be no logged users, for example during startup login.
+     * Returns true, if there is user, logged in workspace.
      *
      * @return boolean
      */

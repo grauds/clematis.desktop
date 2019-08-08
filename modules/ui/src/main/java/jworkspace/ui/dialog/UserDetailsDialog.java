@@ -81,7 +81,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         for (int i = 0; i < rows; i++) {
             name = (String) table.getValueAt(i, 0);
             value = (String) table.getValueAt(i, 1);
-            Workspace.getProfilesEngine().getParameters().put(name, value);
+            Workspace.getProfiles().getParameters().put(name, value);
         }
         return (userDetailsPanel.syncData());
     }
@@ -100,7 +100,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
                     icon,
                     null, null);
 
-            if (name != null && Workspace.getProfilesEngine().getParameters().get(name) != null) {
+            if (name != null && Workspace.getProfiles().getParameters().get(name) != null) {
                 JOptionPane.showMessageDialog(this,
                     LangResource.getString("UserDetailsDlg.addParam.alreadyExists"));
             } else if (name != null){
@@ -121,7 +121,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
                 LangResource.getString("UserDetailsDlg.deleteParam.title"),
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 tmodel.removeRow(rows[0]);
-                Workspace.getProfilesEngine().getParameters().remove(name);
+                Workspace.getProfiles().getParameters().remove(name);
             }
         }
     }
@@ -230,11 +230,11 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
     private void refresh() {
         tmodel.setNumRows(0);
         Object[] row = new Object[2];
-        Enumeration e = Workspace.getProfilesEngine().getParameters().keys();
+        Enumeration e = Workspace.getProfiles().getParameters().keys();
 
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
-            String value = Workspace.getProfilesEngine().getParameters().getString(name);
+            String value = Workspace.getProfiles().getParameters().getString(name);
 
             row[0] = name;
             row[1] = value;

@@ -56,7 +56,7 @@ public class WorkspaceLoginValidator extends LoginDialog {
             try {
                 File file = File.createTempFile(name + "_check", "tmp");
                 if (file.delete()) {
-                    Workspace.getProfilesEngine().login(name, password);
+                    Workspace.getProfiles().login(name, password);
                 }
             } catch (Exception ex) {
                 return false;

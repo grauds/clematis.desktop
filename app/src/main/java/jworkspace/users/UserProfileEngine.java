@@ -28,6 +28,8 @@ package jworkspace.users;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.swing.JDialog;
 
@@ -146,17 +148,35 @@ public class UserProfileEngine implements IUserProfileEngine {
     /**
      * Add new profile
      */
-    public void addProfile(String name) {
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public void addProfile(String name, String... fields) {
 
-        if (name != null) {
-            try {
-                Profile profile = Profile.create(name, "", "", "", "");
-                profilesManager.add(profile);
-            } catch (IOException ex) {
-                UserProfileEngine.LOG.warn(LangResource.getString("message#290") + name, ex);
-            } catch (ProfileOperationException ex) {
-                UserProfileEngine.LOG.warn(LangResource.getString("message#288") + name, ex);
+        if (name == null) {
+            return;
+        }
+
+        try {
+            Profile profile = new Profile(name);
+            if (fields != null) {
+                Iterator<String> it = Arrays.asList(fields).iterator();
+                if (it.hasNext()) {
+                    profile.setPassword(it.next());
+                }
+                if (it.hasNext()) {
+                    profile.setUserFirstName(it.next());
+                }
+                if (it.hasNext()) {
+                    profile.setUserLastName(it.next());
+                }
+                if (it.hasNext()) {
+                    profile.setEmail(it.next());
+                }
             }
+            profilesManager.add(profile);
+        } catch (IOException ex) {
+            UserProfileEngine.LOG.warn(LangResource.getString("message#290") + name, ex);
+        } catch (ProfileOperationException ex) {
+            UserProfileEngine.LOG.warn(LangResource.getString("message#288") + name, ex);
         }
     }
 
@@ -182,7 +202,7 @@ public class UserProfileEngine implements IUserProfileEngine {
      * Get path to specified user folder.
      */
     public String getProfileRelativePath(String name) throws IOException {
-        return profilesManager.getProfileRelativePath(new Profile(name));
+        return new Profile(name).getProfileRelativeFolder();
     }
 
     /*** Returns all users in system

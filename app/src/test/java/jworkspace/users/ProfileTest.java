@@ -1,21 +1,29 @@
 package jworkspace.users;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import jworkspace.kernel.Workspace;
 
 /**
  * @author Anton Troshin
  */
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Workspace.class)
 public class ProfileTest {
 
     @Rule
@@ -23,9 +31,14 @@ public class ProfileTest {
 
     private ProfilesManager profilesManager = new ProfilesManager();
 
-    @Before
-    public void before() {
+    private final TemporaryFolder testFolder = new TemporaryFolder();
 
+    @Before
+    public void before() throws IOException {
+        testFolder.create();
+
+        mockStatic(Workspace.class);
+        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().getPath() + File.separator);
     }
 
     @Test
@@ -41,12 +54,11 @@ public class ProfileTest {
 
         String newPassword = "password";
         profile.setPassword("", newPassword, newPassword);
-
-        ByteArrayOutputStream inMemoryStream = new ByteArrayOutputStream();
-        profile.save(new DataOutputStream(inMemoryStream));
+        profile.save();
 
         Profile anotherCopy = new Profile();
-        anotherCopy.load(new DataInputStream(new ByteArrayInputStream(inMemoryStream.toByteArray())));
+        anotherCopy.setUserName("test");
+        anotherCopy.load();
 
         assert anotherCopy.equals(profile);
 
@@ -70,6 +82,9 @@ public class ProfileTest {
         thrown.expect(ProfileOperationException.class);
         profilesManager.add(anotherCopy);
 
+        profilesManager.delete(profile, "password");
+        profilesManager.delete(anotherCopy, "password");
+
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
@@ -79,14 +94,30 @@ public class ProfileTest {
         Profile profile = new Profile("test", "password", "First Name", "Second Name", "test@test.com");
 
         UserProfileEngine userProfileEngine = new UserProfileEngine();
+        // this adds incomplete profile
         userProfileEngine.addProfile(profile.getUserName());
         userProfileEngine.login(profile.getUserName(), "");
 
         assert userProfileEngine.getUserName().equals(profile.getUserName());
+        assert !userProfileEngine.getEmail().equals(profile.getEmail());
+        assert !userProfileEngine.getUserFirstName().equals(profile.getUserFirstName());
+        assert !userProfileEngine.getUserLastName().equals(profile.getUserLastName());
+
+        profile.save();
+        userProfileEngine.login(profile.getUserName(), "password");
+
+        assert userProfileEngine.getUserName().equals(profile.getUserName());
+        assert userProfileEngine.getDescription().equals(profile.getDescription());
+        assert userProfileEngine.getCurrentProfileRelativePath().equals(profile.getProfilePath());
+        assert userProfileEngine.getEmail().equals(profile.getEmail());
+        assert userProfileEngine.getParameters().equals(profile.getParameters());
+        assert userProfileEngine.getUserFirstName().equals(profile.getUserFirstName());
+        assert userProfileEngine.getUserLastName().equals(profile.getUserLastName());
+
     }
 
     @After
     public void after() {
-
+        testFolder.delete();
     }
 }

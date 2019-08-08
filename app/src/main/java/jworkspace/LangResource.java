@@ -66,7 +66,7 @@ public class LangResource {
             message = resources.getString(id);
         } catch (MissingResourceException ex) {
 
-            LangResource.LOG.warn("Cannot find resource:" + id, ex);
+            LangResource.LOG.warn("Cannot find resource:" + id);
         }
 
 

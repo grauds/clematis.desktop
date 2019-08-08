@@ -26,15 +26,8 @@ package jworkspace.users;
   ----------------------------------------------------------------------------
 */
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -60,8 +53,6 @@ class ProfilesManager implements Comparator {
     private static final String PROFILES_MANAGER_PROFILE_NULL = "ProfilesManager.profile.null";
 
     private static final String USERS = "users";
-
-    private static final String PROFILE_DAT = "profile.dat";
 
     private Profile currentProfile = null;
 
@@ -107,7 +98,7 @@ class ProfilesManager implements Comparator {
             throw new ProfileOperationException(LangResource.getString("ProfilesManager.passwd.check.failed"));
         }
 
-        File file = new File(profile.getProfileFolder());
+        File file = new File(profile.getProfilePath());
         if (KiwiUtils.deleteTree(file) == 0) {
             LOG.warn("No files were deleted for " + profile.getUserName());
         }
@@ -170,20 +161,11 @@ class ProfilesManager implements Comparator {
      * @return java.lang.String
      */
     String getCurrentProfileRelativePath() throws IOException {
-        return getProfileRelativePath(currentProfile);
-    }
-
-    String getProfileRelativePath(Profile profile) throws IOException {
-        if (profile != null) {
-            String path = profile.getProfileFolder();
-
-            if (!Files.exists(Paths.get(path))) {
-                Files.createDirectories(Paths.get(path));
-            }
-
-            return path;
+        if (currentProfile != null) {
+            return currentProfile.getProfileRelativeFolder();
+        } else {
+            throw new IOException("Current profile is null");
         }
-        throw new IOException("Profile is null");
     }
 
     /**
@@ -229,28 +211,11 @@ class ProfilesManager implements Comparator {
      * @param userName java.lang.String
      * @return jworkspace.users.Profile
      */
-    private Profile readProfile(String userName) throws IOException {
+    private static Profile readProfile(String userName) throws IOException {
 
         Profile profile = new Profile();
         profile.setUserName(userName);
-        String path = getProfileRelativePath(profile);
-
-        if (!Files.exists(Paths.get(path))) {
-            Files.createDirectories(Paths.get(path));
-        }
-
-        try (FileInputStream ifile = new FileInputStream(path + File.separator + PROFILE_DAT);
-             DataInputStream di = new DataInputStream(ifile)) {
-
-            profile.load(di);
-
-        } catch (IOException e) {
-            LOG.error(LangResource.getString("ProfilesManager.profile.load.failed"), e);
-        }
-
-        if (profile.getUserName() == null || profile.getUserName().trim().equals("")) {
-            profile.setUserName(userName);
-        }
+        profile.load();
         return profile;
     }
 
@@ -258,7 +223,7 @@ class ProfilesManager implements Comparator {
      * Saves current profile on disk.
      */
     void saveCurrentProfile() throws IOException {
-        writeProfile(getCurrentProfileRelativePath(), currentProfile);
+        saveProfile(currentProfile);
     }
 
     /**
@@ -267,18 +232,11 @@ class ProfilesManager implements Comparator {
      * @param profile to save
      */
     void saveProfile(Profile profile) throws IOException {
-        writeProfile(getProfileRelativePath(profile), profile);
-    }
-
-    private void writeProfile(String fileName, Profile profile) throws IOException {
 
         if (profile == null) {
             return;
         }
 
-        try (FileOutputStream ofile = new FileOutputStream(fileName + File.separator + PROFILE_DAT);
-             DataOutputStream os = new DataOutputStream(ofile)) {
-            profile.save(os);
-        }
+        profile.save();
     }
 }
