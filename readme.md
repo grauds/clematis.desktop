@@ -15,7 +15,7 @@ and some prototypes too.
 
 jWorkspace is licensed under GNU GENERAL PUBLIC LICENSE, v2.
 
-Starting with future version 2.0.0, Java Workspace will be licensed under the
+Starting with future version 2.0.0, jWorkspace will be licensed under the
 [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
 
 ## Build
