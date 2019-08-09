@@ -1,26 +1,4 @@
-processResources {
-
-    def expandedFiles = ['config/application.properties']
-
-    from ('src/main/resources') {
-        include expandedFiles
-        expand(project.properties)
-    }
-    from ('src/main/resources') {
-        exclude expandedFiles
-    }
-
-    into 'build/main/resources'
-
-}
-
-ext {
-    codecVersion = '1.11'
-}
-
 dependencies {
 
     compile project(':kiwi')
-
-    compile "commons-codec:commons-codec:$codecVersion"
 }

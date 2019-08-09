@@ -16,13 +16,22 @@ plugins {
 group 'name.troshin.anton.clematis'
 version '2.0.0 - DEV'
 
-
-subprojects {
-
+allprojects {
     apply plugin: 'java'
     apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
     apply plugin: 'jacoco'
+}
+
+test {
+    jacoco {
+        append = false
+        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+        classDumpDir = file("$buildDir/jacoco/classpathdumps")
+    }
+}
+
+subprojects {
 
     apply from: file("${project.rootDir}/dependencies.gradle")
     apply from: file("${project.rootDir}/libraries.gradle")
@@ -42,13 +51,33 @@ subprojects {
         jcenter()
     }
 
+    task codeCoverageReport(type: JacocoReport) {
+        executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+        allprojects.each {
+            sourceSets it.sourceSets.main
+        }
+
+        reports {
+            xml.enabled true
+            xml.destination file("${buildDir}/reports/jacoco/report.xml")
+            html.enabled true
+            csv.enabled false
+        }
+    }
+
+// always run the tests before generating the report
+    codeCoverageReport.dependsOn {
+        subprojects.test
+    }
+
     jar {
-        archiveName = "${baseName}.${extension}"
+        archiveFileName = "${archiveBaseName}.${archiveExtension}"
 
         manifest {
             attributes(
                     "Implementation-Title": project.name,
-                    "Implementation-Version": version
+                    "Implementation-Version": archiveVersion
             )
         }
     }
@@ -60,12 +89,8 @@ subprojects {
 
     findbugsMain {
         reports {
-            html {
-                enabled = true
-            }
-            xml {
-                enabled = false
-            }
+            html.enabled = true
+            xml.enabled = false
         }
     }
 
@@ -92,24 +117,7 @@ subprojects {
         exclude '**/*Test*'
     }
 
-    test.useTestNG()
-}
-
-task codeCoverageReport(type: JacocoReport) {
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-    subprojects.each {
-        sourceSets it.sourceSets.main
+    build {
+        dependsOn tasks.codeCoverageReport
     }
-
-    reports {
-        xml.enabled true
-        xml.destination file("${buildDir}/reports/jacoco/report.xml")
-        html.enabled false
-        csv.enabled false
-    }
-}
-
-codeCoverageReport.dependsOn {
-    subprojects*.test
 }
