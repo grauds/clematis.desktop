@@ -92,7 +92,7 @@ public class WorkspaceResourceManager extends ResourceManager {
             try {
 
                 image = ImageIO.read(getClass().getResourceAsStream(imagePath + name));
-            } catch (IOException ex) {
+            } catch (IllegalArgumentException | IOException ex) {
                 /*
                  * May also occur if Apache Advanced Imaging does not support image format
                  */

@@ -43,6 +43,8 @@ import com.hyperrealm.kiwi.util.DomainObject;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceManager;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 /**
  * Definition node is a base class for application, library and jvm definition nodes.
  * It provides data with hierarchical support, which includes adding, deleting and editing of node,
@@ -51,6 +53,8 @@ import com.hyperrealm.kiwi.util.ResourceManager;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class DefinitionNode extends DomainObject {
 
     private static final Icon OPEN_ICON, CLOSED_ICON, LOCKED_ICON, ROOT_ICON;
@@ -158,13 +162,6 @@ public class DefinitionNode extends DomainObject {
     }
 
     /**
-     * Returns file which is encapsulated by this node
-     */
-    public File getFile() {
-        return file;
-    }
-
-    /**
      * Returns a number of this node in array of children
      * nodes.
      */
@@ -238,13 +235,6 @@ public class DefinitionNode extends DomainObject {
             return ROOT_ICON;
         }
         return isExpandable() ? OPEN_ICON : LOCKED_ICON;
-    }
-
-    /**
-     * Returns parent node for this node if any.
-     */
-    public DefinitionNode getParent() {
-        return parent;
     }
 
     /**

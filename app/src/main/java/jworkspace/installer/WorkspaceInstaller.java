@@ -44,12 +44,13 @@ import com.hyperrealm.kiwi.util.StringUtils;
 import jworkspace.api.InstallEngine;
 import jworkspace.kernel.Workspace;
 import jworkspace.kernel.WorkspaceException;
-
+import lombok.Data;
 /**
  * Install engine is one of required by kernel.
  *
  * @author Anton Troshin
  */
+@Data
 public class WorkspaceInstaller implements InstallEngine {
 
     /**
@@ -86,24 +87,6 @@ public class WorkspaceInstaller implements InstallEngine {
     }
 
     /**
-     * Returns application data.
-     *
-     * @return jworkspace.installer.DefinitionDataSource
-     */
-    public DefinitionDataSource getApplicationData() {
-        return applicationData;
-    }
-
-    /**
-     * Returns tree model for application data.
-     *
-     * @return kiwi.ui.model.DynamicTreeModel
-     */
-    public DefaultKTreeModel getApplicationModel() {
-        return applicationModel;
-    }
-
-    /**
      * Returns command line for application, found by its path. Path should be
      * divided by "/" delimiters in UNIX style, from current user's installation directories.
      * <p>
@@ -135,8 +118,8 @@ public class WorkspaceInstaller implements InstallEngine {
     }
 
     /**
-     * Returns command line configured
-     * to launch application.
+     * Returns command line configured to launch application.
+     *
      * @param application application
      */
     private String[] getInvocationArgs(Application application) {
@@ -145,7 +128,7 @@ public class WorkspaceInstaller implements InstallEngine {
 
         // first get the VM information
 
-        JVM jvmProg = (JVM) jvmData.findNode(application.getJVM());
+        JVM jvmProg = (JVM) jvmData.findNode(application.getJvm());
         if (jvmProg == null) {
             return null;
         }
@@ -226,42 +209,6 @@ public class WorkspaceInstaller implements InstallEngine {
     }
 
     /**
-     * Returns jvm data.
-     *
-     * @return jworkspace.installer.DefinitionDataSource
-     */
-    public DefinitionDataSource getJvmData() {
-        return jvmData;
-    }
-
-    /**
-     * Returns tree model for jvm data.
-     *
-     * @return kiwi.ui.model.DynamicTreeModel
-     */
-    public DefaultKTreeModel getJvmModel() {
-        return jvmModel;
-    }
-
-    /**
-     * Returns library data.
-     *
-     * @return jworkspace.installer.DefinitionDataSource
-     */
-    public DefinitionDataSource getLibraryData() {
-        return libraryData;
-    }
-
-    /**
-     * Returns tree model for library data.
-     *
-     * @return kiwi.ui.model.DynamicTreeModel
-     */
-    public DefaultKTreeModel getLibraryModel() {
-        return libraryModel;
-    }
-
-    /**
      * Returns main class for installation.
      *
      * @param path java.lang.String
@@ -288,7 +235,7 @@ public class WorkspaceInstaller implements InstallEngine {
      * Get human readable name for installer
      */
     public String getName() {
-        return "Java Workspace Installer Engine (R) v0.83";
+        return "Java Workspace Installer v1.0.0";
     }
 
     /**

@@ -36,6 +36,8 @@ import javax.swing.Icon;
 import com.hyperrealm.kiwi.io.ConfigFile;
 //
 import jworkspace.kernel.Workspace;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Library entry is a definition node, that stores
@@ -46,12 +48,14 @@ import jworkspace.kernel.Workspace;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class Library extends DefinitionNode {
 
     public static final Icon ICON = Workspace.getResourceManager()
         .getIcon("installer/library.gif");
 
-    private static final String CK_NAME = "library.name",
+    public static final String CK_NAME = "library.name",
         CK_VERSION = "library.version",
         CK_PATH = "library.path",
         CK_SOURCE = "library.source",
@@ -100,44 +104,6 @@ public class Library extends DefinitionNode {
     }
 
     /**
-     * Returns library description
-     */
-    public String getDescription() {
-        return (description);
-    }
-
-    /**
-     * Sets description of library. This is optional,
-     * as installer does not recognize this.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Returns directory or jar file, containing
-     * library documentation.
-     */
-    public java.lang.String getDocs() {
-        return docs;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * library documentation.
-     */
-    public void setDocs(java.lang.String docs) {
-        this.docs = docs;
-    }
-
-    /**
-     * Returns library name
-     */
-    public String getName() {
-        return (name);
-    }
-
-    /**
      * Sets human readable name of library.
      */
     public void setName(String name) throws InstallationException {
@@ -156,13 +122,6 @@ public class Library extends DefinitionNode {
     }
 
     /**
-     * Returns path to library jar or directory.
-     */
-    public String getPath() {
-        return (path);
-    }
-
-    /**
      * Sets path to library jar file or directory.
      * This will be a part of classpath for application
      * that will choose to use this library.
@@ -172,29 +131,6 @@ public class Library extends DefinitionNode {
             throw new InstallationException("Path is null");
         }
         this.path = path;
-    }
-
-    /**
-     * Returns directory or jar file, containing
-     * library source.
-     */
-    public java.lang.String getSource() {
-        return source;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * library source code.
-     */
-    public void setSource(java.lang.String source) {
-        this.source = source;
-    }
-
-    /**
-     * Returns version of this library.
-     */
-    public String getVersion() {
-        return (version);
     }
 
     /**

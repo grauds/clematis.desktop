@@ -36,6 +36,8 @@ import javax.swing.Icon;
 import com.hyperrealm.kiwi.io.ConfigFile;
 //
 import jworkspace.kernel.Workspace;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * JVM entry is a definition node, that stores
@@ -45,10 +47,11 @@ import jworkspace.kernel.Workspace;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class JVM extends DefinitionNode {
 
-    private static final Icon ICON = Workspace.getResourceManager()
-        .getIcon("installer/jvm.gif");
+    private static final Icon ICON = Workspace.getResourceManager().getIcon("installer/jvm.gif");
 
     private static final String CK_NAME = "jvm.name",
         CK_VERSION = "jvm.version",
@@ -94,13 +97,6 @@ public class JVM extends DefinitionNode {
     }
 
     /**
-     * Returns arguments for current jvm.
-     */
-    public String getArguments() {
-        return arguments;
-    }
-
-    /**
      * Sets java virtual mechine arguments. This can
      * be everything supported by VM.
      * Note, that next parameters are required by
@@ -129,44 +125,6 @@ public class JVM extends DefinitionNode {
     }
 
     /**
-     * Returns jvm description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets description of jvm. This is optional,
-     * as installer does not recognize this.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Returns directory or jar file, containing
-     * jvm documentation.
-     */
-    public java.lang.String getDocs() {
-        return docs;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * jvm documentation.
-     */
-    public void setDocs(java.lang.String docs) {
-        this.docs = docs;
-    }
-
-    /**
-     * Returns jvm nickname.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
      * Sets human readable name of jvm.
      */
     public void setName(String name) throws InstallationException {
@@ -185,13 +143,6 @@ public class JVM extends DefinitionNode {
     }
 
     /**
-     * Returns path to jvm executable.
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
      * Sets path to jvm executable file.
      * This will be a part of command line for application
      * that will choose to use this jvm.
@@ -201,13 +152,6 @@ public class JVM extends DefinitionNode {
             throw new InstallationException("Path is null");
         }
         this.path = path;
-    }
-
-    /**
-     * Returns version of this JVM.
-     */
-    public String getVersion() {
-        return version;
     }
 
     /**
@@ -271,21 +215,5 @@ public class JVM extends DefinitionNode {
      */
     public String toString() {
         return name + " " + version;
-    }
-
-    /**
-     * Returns directory or jar file, containing
-     * jvm source.
-     */
-    public java.lang.String getSource() {
-        return source;
-    }
-
-    /**
-     * Sets directory or jar file, containing
-     * jvm source.
-     */
-    public void setSource(java.lang.String source) {
-        this.source = source;
     }
 }

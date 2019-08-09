@@ -42,7 +42,7 @@ class JVMDataSource extends DefinitionDataSource {
 
     static final String ROOT = "jmachines";
 
-    private String rootName = JVMDataSource.ROOT;
+    private String rootName;
 
     /**
      * Construct new jvm data source
@@ -66,8 +66,7 @@ class JVMDataSource extends DefinitionDataSource {
      * Make node with hierarchical support, the node
      * itself is a jvm.
      */
-    protected DefinitionNode makeNode(DefinitionNode parent, File file)
-        throws IOException {
-        return (new JVM(parent, file));
+    protected DefinitionNode makeNode(DefinitionNode parent, File file) throws IOException {
+        return new JVM(parent, file);
     }
 }
