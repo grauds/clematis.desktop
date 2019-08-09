@@ -24,7 +24,6 @@ dependencies {
     testCompile libs.junit4
     testCompile libs.assertJCore
 
-
     // drop-in replacement for commons-logging, jul and log4j, so logs will be handled by slf4j
     compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}@jar"
     compile "org.slf4j:jul-to-slf4j:${slf4jVersion}@jar"

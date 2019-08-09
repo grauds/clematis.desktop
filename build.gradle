@@ -9,14 +9,20 @@ buildscript {
     }
 }
 
+plugins {
+    id 'jacoco'
+}
+
 group 'name.troshin.anton.clematis'
 version '2.0.0 - DEV'
+
 
 subprojects {
 
     apply plugin: 'java'
     apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
 
     apply from: file("${project.rootDir}/dependencies.gradle")
     apply from: file("${project.rootDir}/libraries.gradle")
@@ -86,4 +92,31 @@ subprojects {
         exclude '**/*Test*'
     }
 
+    test.useTestNG()
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+        html.enabled false
+        csv.enabled false
+    }
+}
+
+codeCoverageReport.dependsOn {
+    subprojects*.test
 }
