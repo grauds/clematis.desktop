@@ -1,5 +1,8 @@
 # jWorkspace, version 2.0.0  
   
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Build Status](https://travis-ci.com/grauds/clematis.desktop.svg?token=TexcHfhzFr21pQNJbxcm&branch=master)](https://travis-ci.com/grauds/clematis.desktop)
+   
 What's new in jWorkspace 2.0?  
   
 |\[           Legend:         \]|  
