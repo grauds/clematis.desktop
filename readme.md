@@ -15,7 +15,7 @@ and some prototypes too.
 
 jWorkspace is licensed under GNU GENERAL PUBLIC LICENSE, v2.
 
-Inpependent modules and plugins of jWorkspace will be licensed under the
+Independent modules and plugins of jWorkspace will be licensed under the
 [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
 
 ## Build
