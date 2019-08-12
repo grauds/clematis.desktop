@@ -30,7 +30,7 @@ package jworkspace.installer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.Icon;
 
@@ -50,7 +50,7 @@ import lombok.EqualsAndHashCode;
  * @author Anton Troshin
  * @author Mark Lindner
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class Application extends DefinitionNode {
 
@@ -70,8 +70,9 @@ public class Application extends DefinitionNode {
         CK_WORKINGDIR = "application.working_dir",
         CK_DOCDIR = "application.documentation_dir",
         CK_LAUNCH_AT_STARTUP = "application.launchAtStartup",
-        CK_SEPARATE_PROCESS = "application.separateProcess",
-        CK_SYSTEM_USER_FOLDER = "application.systemUserFolder";
+        CK_SEPARATE_PROCESS = "application.separateProcess";
+
+    private static final String APPLICATION_DEFINITION_CONFIG_HEADER = "Application Definition";
 
     private String name;
     private String version;
@@ -80,19 +81,13 @@ public class Application extends DefinitionNode {
     private String mainClass;
     private String arguments;
     private String workingDirectory;
-    private String libList = "";
+    private String libraryList = "";
     private String description;
     private String source;
     private String docs;
 
     private boolean launchAtStartup = false;
     private boolean separateProcess = true;
-    /**
-     * Set this flag to true to allow to spawn new process with virtual machine which has "user.home" property
-     * set to which Java Workspace uses, rather than OS. In this case all user data of spawned application
-     * will be stored in workspace user folder.
-     */
-    private boolean systemUserFolder = false;
 
     private ConfigFile config;
 
@@ -236,7 +231,7 @@ public class Application extends DefinitionNode {
     @SuppressWarnings("Duplicates")
     public void load() throws IOException {
 
-        config = new ConfigFile(file, "Application Definition");
+        config = new ConfigFile(file, APPLICATION_DEFINITION_CONFIG_HEADER);
         config.load();
         name = config.getString(CK_NAME, "");
         version = config.getString(CK_VERSION, "");
@@ -245,13 +240,12 @@ public class Application extends DefinitionNode {
         jvm = config.getString(CK_JVM, "");
         mainClass = config.getString(CK_MAINCLASS, "");
         arguments = config.getString(CK_ARGS, "");
-        libList = config.getString(CK_LIBS, "");
+        libraryList = config.getString(CK_LIBS, "");
         docs = config.getString(CK_DOCDIR, "");
         description = config.getString(CK_DESCRIPTION, "");
         workingDirectory = config.getString(CK_WORKINGDIR, ".");
         launchAtStartup = config.getBoolean(CK_LAUNCH_AT_STARTUP, false);
         separateProcess = config.getBoolean(CK_SEPARATE_PROCESS, false);
-        systemUserFolder = config.getBoolean(CK_SYSTEM_USER_FOLDER, false);
     }
 
     /**
@@ -260,7 +254,7 @@ public class Application extends DefinitionNode {
     @SuppressWarnings("Duplicates")
     public void save() throws IOException {
         if (config == null) {
-            config = new ConfigFile(file, "Application definition");
+            config = new ConfigFile(file, APPLICATION_DEFINITION_CONFIG_HEADER);
         }
         config.putString(CK_NAME, name);
         config.putString(CK_VERSION, version);
@@ -269,13 +263,12 @@ public class Application extends DefinitionNode {
         config.putString(CK_JVM, jvm);
         config.putString(CK_MAINCLASS, mainClass);
         config.putString(CK_ARGS, arguments);
-        config.putString(CK_LIBS, libList);
+        config.putString(CK_LIBS, libraryList);
         config.putString(CK_DOCDIR, docs);
         config.putString(CK_DESCRIPTION, description);
         config.putString(CK_WORKINGDIR, workingDirectory);
         config.putBoolean(CK_LAUNCH_AT_STARTUP, launchAtStartup);
         config.putBoolean(CK_SEPARATE_PROCESS, separateProcess);
-        config.putBoolean(CK_SYSTEM_USER_FOLDER, systemUserFolder);
         config.store();
     }
 
@@ -284,18 +277,17 @@ public class Application extends DefinitionNode {
      *
      * @param libs to set to the resulting string
      */
-    public void setLibraryList(Enumeration libs) {
+    public void setLibraryList(List<Library> libs) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        while (libs.hasMoreElements()) {
-            Library l = (Library) libs.nextElement();
+        for (Library l : libs) {
             if (!first) {
                 sb.append(',');
             }
             first = false;
             sb.append(l.getLinkString());
         }
-        libList = sb.toString();
+        libraryList = sb.toString();
     }
 
     /**

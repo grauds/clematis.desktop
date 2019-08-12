@@ -40,6 +40,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.hyperrealm.kiwi.ui.model.TreeDataSource;
 
+import lombok.EqualsAndHashCode;
 /**
  * This is a "smart" DefinitionDataSource, since it can traverse itself
  * looking for a node that matches a given link path.
@@ -47,6 +48,7 @@ import com.hyperrealm.kiwi.ui.model.TreeDataSource;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@EqualsAndHashCode
 public abstract class DefinitionDataSource implements TreeDataSource<DefinitionNode> {
 
     private static final String EXPANDABLE_PROPERTY = "EXPANDABLE";

@@ -29,7 +29,6 @@ package jworkspace.installer;
 */
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -80,6 +79,11 @@ public class WorkspaceInstaller implements InstallEngine {
      */
     private DefaultKTreeModel jvmModel, libraryModel, applicationModel;
     /**
+     * Root folder for the data
+     */
+    private File dataRoot;
+
+    /**
      * Default public constructor
      */
     public WorkspaceInstaller() {
@@ -92,8 +96,8 @@ public class WorkspaceInstaller implements InstallEngine {
      * <p>
      * For example, path can be as follows "/programs/My apps/My app"
      *
-     * @param path java.lang.String
-     * @return java.lang.String
+     * @param path String
+     * @return String
      */
     public String[] getInvocationArgs(String path) throws WorkspaceException {
 
@@ -107,7 +111,7 @@ public class WorkspaceInstaller implements InstallEngine {
     private Enumeration loadLibraries(Application application) {
 
         Vector<DefinitionNode> libs = new Vector<>();
-        String[] linkPaths = StringUtils.split(application.getLibList(), ",");
+        String[] linkPaths = StringUtils.split(application.getLibraryList(), ",");
         for (String linkPath : linkPaths) {
             DefinitionNode node = libraryData.findNode(linkPath);
             if (node != null) {
@@ -134,15 +138,7 @@ public class WorkspaceInstaller implements InstallEngine {
         }
         v.addElement(jvmProg.getPath());
 
-        if (!application.isSystemUserFolder()) {
-            try {
-                v.addElement("-Duser.home=" + Workspace.getUserHomePath());
-            } catch (IOException e) {
-                LOG.warn("Cannot set process user home, will go without", e);
-            }
-        }
         // next, construct the classpath
-
         String pathSeparator = System.getProperty("path.separator");
         StringBuilder sb = new StringBuilder();
         sb.append('"');
@@ -199,10 +195,10 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Returns jar file for installation.
      *
-     * @param path java.lang.String
-     * @return java.lang.String
+     * @param path String
+     * @return String
      */
-    public String getJarFile(java.lang.String path) throws WorkspaceException {
+    public String getJarFile(String path) throws WorkspaceException {
 
         DefinitionNode node = findApplicationNode(path);
         return ((Application) node).getArchive();
@@ -211,10 +207,10 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Returns main class for installation.
      *
-     * @param path java.lang.String
-     * @return java.lang.String
+     * @param path String
+     * @return String
      */
-    public String getMainClass(java.lang.String path) throws WorkspaceException {
+    public String getMainClass(String path) throws WorkspaceException {
 
         DefinitionNode node = findApplicationNode(path);
         return ((Application) node).getMainClass();
@@ -241,8 +237,8 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Returns working directory for new process.
      *
-     * @param path java.lang.String
-     * @return java.lang.String
+     * @param path String
+     * @return String
      */
     public String getWorkingDir(String path) throws WorkspaceException {
 
@@ -254,8 +250,8 @@ public class WorkspaceInstaller implements InstallEngine {
      * Returns flag, that tells Workspace to launch this application on startup.
      * Usually, this flag should set to "true" for services like network connection or system clocks.
      *
-     * @param path java.lang.String
-     * @return java.lang.String
+     * @param path String
+     * @return String
      */
     @Override
     public boolean isLoadedAtStartup(String path) {
@@ -275,8 +271,8 @@ public class WorkspaceInstaller implements InstallEngine {
      * <p>
      *
      *
-     * @param path java.lang.String
-     * @return java.lang.String
+     * @param path String
+     * @return String
      */
     @Override
     public boolean isSeparateProcess(String path) {
@@ -295,20 +291,19 @@ public class WorkspaceInstaller implements InstallEngine {
     @Override
     public void load() {
 
-        WorkspaceInstaller.LOG.info("> Loading installer");
-
-
         try {
-            File dataRoot = new File(Workspace.getUserHomePath());
+            WorkspaceInstaller.LOG.info("> Loading installer");
+
+            dataRoot = new File(Workspace.getUserHomePath());
             // create global data models
-            applicationData = new ApplicationDataSource(new File(dataRoot,
-                ApplicationDataSource.ROOT));
+            applicationData = new ApplicationDataSource(new File(dataRoot, ApplicationDataSource.ROOT));
             applicationModel = new ExternalKTreeModel<>(applicationData);
 
             libraryData = new LibraryDataSource(new File(dataRoot, LibraryDataSource.ROOT));
             libraryModel = new ExternalKTreeModel<>(libraryData);
 
             jvmData = new JVMDataSource(new File(dataRoot, JVMDataSource.ROOT));
+            jvmModel = new ExternalKTreeModel<>(jvmData);
             /*
              * Install default virtual machine
              */
@@ -320,20 +315,18 @@ public class WorkspaceInstaller implements InstallEngine {
             jvm.setVersion(System.getProperty("java.version"));
             jvm.setArguments("-cp %c %m %a");
             jvm.save();
+
             jvmData.getRoot().add(jvm);
+            /*
+             * Load applications
+             */
+            DefinitionNode root = applicationData.getRoot();
+            startupLaunch(applicationData.getChildren(root));
+            WorkspaceInstaller.LOG.info("> Installer is loaded");
 
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
         }
-        jvmModel = new ExternalKTreeModel<>(jvmData);
-        /*
-         * Load applications
-         */
-        DefinitionNode root = applicationData.getRoot();
-
-        startupLaunch(applicationData.getChildren(root));
-
-        WorkspaceInstaller.LOG.info("> Installer is loaded");
     }
 
     /**
@@ -347,8 +340,7 @@ public class WorkspaceInstaller implements InstallEngine {
             if (node instanceof Application) {
                 if (((Application) node).isLoadedAtStartup()) {
                     if (((Application) node).isSeparateProcess()) {
-                        Workspace.getRuntimeManager().
-                            executeExternalProcess(
+                        Workspace.getRuntimeManager().executeExternalProcess(
                                 getInvocationArgs((Application) node),
                                 ((Application) node).getWorkingDirectory(),
                                 ((Application) node).getName());

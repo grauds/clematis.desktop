@@ -47,7 +47,7 @@ import lombok.EqualsAndHashCode;
  * @author Anton Troshin
  * @author Mark Lindner
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class JVM extends DefinitionNode {
 

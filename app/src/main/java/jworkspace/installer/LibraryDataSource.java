@@ -31,13 +31,18 @@ package jworkspace.installer;
 import java.io.File;
 import java.io.IOException;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 /**
  * Data source for library.
  */
+@EqualsAndHashCode(callSuper = true)
 class LibraryDataSource extends DefinitionDataSource {
 
     static final String ROOT = "libraries";
 
+    @Getter
     private String rootName;
 
     /**
@@ -49,13 +54,6 @@ class LibraryDataSource extends DefinitionDataSource {
     LibraryDataSource(File root) throws IOException {
         super(root);
         rootName = root != null ? root.getName() : LibraryDataSource.ROOT;
-    }
-
-    /**
-     * Returns root name for libraries hierarchy.
-     */
-    public String getRootName() {
-        return rootName;
     }
 
     /**

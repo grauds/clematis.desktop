@@ -48,12 +48,11 @@ import lombok.EqualsAndHashCode;
  * @author Anton Troshin
  * @author Mark Lindner
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class Library extends DefinitionNode {
 
-    public static final Icon ICON = Workspace.getResourceManager()
-        .getIcon("installer/library.gif");
+    public static final Icon ICON = Workspace.getResourceManager().getIcon("installer/library.gif");
 
     public static final String CK_NAME = "library.name",
         CK_VERSION = "library.version",

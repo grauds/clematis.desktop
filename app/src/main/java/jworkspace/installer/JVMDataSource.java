@@ -31,6 +31,8 @@ package jworkspace.installer;
 import java.io.File;
 import java.io.IOException;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * Data source for jvm.
  *
@@ -38,6 +40,7 @@ import java.io.IOException;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@EqualsAndHashCode(callSuper = true)
 class JVMDataSource extends DefinitionDataSource {
 
     static final String ROOT = "jmachines";
@@ -63,8 +66,7 @@ class JVMDataSource extends DefinitionDataSource {
     }
 
     /**
-     * Make node with hierarchical support, the node
-     * itself is a jvm.
+     * Make node with hierarchical support, the node itself is a jvm.
      */
     protected DefinitionNode makeNode(DefinitionNode parent, File file) throws IOException {
         return new JVM(parent, file);

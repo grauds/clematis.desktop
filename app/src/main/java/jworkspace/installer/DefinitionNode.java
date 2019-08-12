@@ -53,7 +53,7 @@ import lombok.EqualsAndHashCode;
  * @author Anton Troshin
  * @author Mark Lindner
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"hsupport"})
 @Data
 public class DefinitionNode extends DomainObject {
 
@@ -103,11 +103,10 @@ public class DefinitionNode extends DomainObject {
 
     /**
      * Add child node
+     *  @param name  of child node java.lang.String
      *
-     * @param name  of child node java.lang.String
-     * @param index is a number in array of children int
      */
-    public void add(String name, int index) throws IOException {
+    public void add(String name) throws IOException {
         DefinitionNode newNode = new DefinitionNode(this, name);
         FileUtils.forceMkdir(newNode.getFile());
         add(newNode);

@@ -31,12 +31,15 @@ package jworkspace.installer;
 import java.io.File;
 import java.io.IOException;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * Data source for application.
  *
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@EqualsAndHashCode(callSuper = true)
 public class ApplicationDataSource extends DefinitionDataSource {
 
     public static final String ROOT = "programs";

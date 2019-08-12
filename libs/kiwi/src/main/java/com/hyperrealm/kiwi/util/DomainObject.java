@@ -20,6 +20,8 @@
 package com.hyperrealm.kiwi.util;
 
 
+import lombok.EqualsAndHashCode;
+
 /**
  * A base class for problem domain objects; the class provides some
  * rudimentary data validation methods that are intended for use by
@@ -36,7 +38,7 @@ package com.hyperrealm.kiwi.util;
  *
  * @author Mark Lindner
  */
-
+@EqualsAndHashCode
 public abstract class DomainObject {
 
     private static final String KIWI_DB = "KiwiDB";
