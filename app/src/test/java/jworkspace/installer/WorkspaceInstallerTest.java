@@ -24,7 +24,7 @@ import jworkspace.ui.WorkspaceResourceManager;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Workspace.class)
-public class InstallerGeneralTest {
+public class WorkspaceInstallerTest {
 
     private static final String ARGUMENT_TEST = "--argument test";
     private final TemporaryFolder testFolder = new TemporaryFolder();
@@ -136,6 +136,9 @@ public class InstallerGeneralTest {
         assert Arrays.stream(args).anyMatch(t -> t.contains("--argument"));
         assert Arrays.stream(args).anyMatch(t -> t.contains("-cp")
             || t.contains("application.jar"));
+
+        workspaceInstaller.save();
+        workspaceInstaller.load();
     }
 
     @After

@@ -68,9 +68,7 @@ public class Application extends DefinitionNode {
         CK_LIBS = "application.libraries",
         CK_DESCRIPTION = "application.description",
         CK_WORKINGDIR = "application.working_dir",
-        CK_DOCDIR = "application.documentation_dir",
-        CK_LAUNCH_AT_STARTUP = "application.launchAtStartup",
-        CK_SEPARATE_PROCESS = "application.separateProcess";
+        CK_DOCDIR = "application.documentation_dir";
 
     private static final String APPLICATION_DEFINITION_CONFIG_HEADER = "Application Definition";
 
@@ -85,9 +83,6 @@ public class Application extends DefinitionNode {
     private String description;
     private String source;
     private String docs;
-
-    private boolean launchAtStartup = false;
-    private boolean separateProcess = true;
 
     private ConfigFile config;
 
@@ -209,23 +204,6 @@ public class Application extends DefinitionNode {
     }
 
     /**
-     * Returns whether if this application should be launched
-     * at user login.
-     */
-    public boolean isLoadedAtStartup() {
-        return launchAtStartup;
-    }
-
-    /**
-     * Set this flag to true to allow workspace
-     * to launch this application everytime
-     * current user log into the system.
-     */
-    public void setLoadedAtStartup(boolean launchAtStartup) {
-        this.launchAtStartup = launchAtStartup;
-    }
-
-    /**
      * Loads class data from configuration file
      */
     @SuppressWarnings("Duplicates")
@@ -244,8 +222,6 @@ public class Application extends DefinitionNode {
         docs = config.getString(CK_DOCDIR, "");
         description = config.getString(CK_DESCRIPTION, "");
         workingDirectory = config.getString(CK_WORKINGDIR, ".");
-        launchAtStartup = config.getBoolean(CK_LAUNCH_AT_STARTUP, false);
-        separateProcess = config.getBoolean(CK_SEPARATE_PROCESS, false);
     }
 
     /**
@@ -267,8 +243,6 @@ public class Application extends DefinitionNode {
         config.putString(CK_DOCDIR, docs);
         config.putString(CK_DESCRIPTION, description);
         config.putString(CK_WORKINGDIR, workingDirectory);
-        config.putBoolean(CK_LAUNCH_AT_STARTUP, launchAtStartup);
-        config.putBoolean(CK_SEPARATE_PROCESS, separateProcess);
         config.store();
     }
 

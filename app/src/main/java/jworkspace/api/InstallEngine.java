@@ -95,12 +95,4 @@ public interface InstallEngine extends IEngine {
      */
     String getApplicationWorkingDir(String path) throws WorkspaceException;
 
-    /**
-     * Returns flag, that tells Workspace to launch this application in separate process. Usually,
-     * this flag should set to "true" for external java applications.
-     *
-     * @param path String
-     * @return String
-     */
-    boolean isSeparateProcess(String path);
 }

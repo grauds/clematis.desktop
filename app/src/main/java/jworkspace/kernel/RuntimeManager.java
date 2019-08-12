@@ -45,7 +45,6 @@ import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.installer.ApplicationDataSource;
 import jworkspace.ui.WorkspacePluginContext;
 
 /**
@@ -238,22 +237,7 @@ public final class RuntimeManager {
      * of application configuration file, relative to /programs/ folder.
      */
     public void run(String path) throws WorkspaceException {
-        /*
-         * If application is launched from console, it has not root element prepended, that is
-         * necessary for correct installation engine navigation.
-         */
-        String pathInt = path;
-
-        if (!pathInt.startsWith(ApplicationDataSource.ROOT)) {
-            if (!pathInt.startsWith(SLASH)) {
-                pathInt = ApplicationDataSource.ROOT + SLASH + pathInt;
-            } else {
-                pathInt = ApplicationDataSource.ROOT + pathInt;
-            }
-        }
-        if (Workspace.getInstallEngine().isSeparateProcess(pathInt)) {
-            executeExternalProcess(path);
-        }
+        executeExternalProcess(path);
     }
 
     /**

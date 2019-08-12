@@ -288,24 +288,4 @@ public class WorkspaceInstaller implements InstallEngine {
         return ((Application) node).getWorkingDirectory();
     }
 
-    /**
-     * Returns flag, that tells Workspace to launch this application
-     * in separate process. Usually, this flag should set to "true" for external java applications.
-     * <p>
-     *
-     *
-     * @param path String
-     * @return String
-     */
-    @Override
-    public boolean isSeparateProcess(String path) {
-        DefinitionNode node = applicationData.findNode(path);
-
-        if (!(node instanceof Application)) {
-            return true;
-        }
-
-        return ((Application) node).isSeparateProcess();
-    }
-
 }
