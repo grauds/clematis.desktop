@@ -37,7 +37,7 @@ import javax.swing.JDesktopPane;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.views.PropertiesPanel;
 
 /**
@@ -74,16 +74,16 @@ class DesktopOptionsPanel extends KPanel implements ActionListener, PropertiesPa
         super();
         this.desktop = desktop;
 
-        setName(LangResource.getString("DesktopOptionsPanel.title"));
+        setName(WorkspaceResourceAnchor.getString("DesktopOptionsPanel.title"));
 
         outline = desktop.getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE;
 
-        dragMode.setText(LangResource.getString("DesktopOptionsPanel.outlineDrag"));
+        dragMode.setText(WorkspaceResourceAnchor.getString("DesktopOptionsPanel.outlineDrag"));
         dragMode.addActionListener(this);
         dragMode.setActionCommand(DesktopOptionsPanel.TOGGLE_DRAG_MODE);
         dragMode.setOpaque(false);
 
-        transparent.setText(LangResource.getString("DesktopOptionsPanel.transparency"));
+        transparent.setText(WorkspaceResourceAnchor.getString("DesktopOptionsPanel.transparency"));
         transparent.addActionListener(this);
         transparent.setActionCommand(DesktopOptionsPanel.TOGGLE_TRANSPARENCY);
         transparent.setOpaque(false);

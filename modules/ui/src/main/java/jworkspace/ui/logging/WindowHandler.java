@@ -34,7 +34,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceGUI;
 
@@ -99,7 +99,7 @@ public class WindowHandler extends StreamHandler {
     class WindowHandlerWindow extends StreamWindow {
         @SuppressWarnings("MagicNumber")
         WindowHandlerWindow(String name) {
-            super(LangResource.getString("LoggingPanel.loggerFor") + " " + name);
+            super(WorkspaceResourceAnchor.getString("LoggingPanel.loggerFor") + " " + name);
             // Assume the defaults, initially
             int width = DEFAULT_WIDTH;
             int height = DEFAULT_HEIGHT;

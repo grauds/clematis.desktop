@@ -54,7 +54,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.kernel.WorkspaceException;
 import jworkspace.kernel.WorkspaceInterpreter;
@@ -226,7 +226,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     private JMenuItem getCopy() {
         if (copy == null) {
-            copy = new JMenuItem(LangResource.getString("DesktopIcon.Copy"));
+            copy = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Copy"));
             copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
             copy.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
@@ -242,7 +242,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     private JMenuItem getCut() {
         if (cut == null) {
-            cut = new JMenuItem(LangResource.getString("DesktopIcon.Cut"));
+            cut = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Cut"));
             cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_MASK));
             cut.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
@@ -258,7 +258,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     private JMenuItem getDelete() {
         if (delete == null) {
-            delete = new JMenuItem(LangResource.getString("DesktopIcon.Delete"));
+            delete = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Delete"));
             delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
             delete.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
@@ -274,7 +274,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     private JMenuItem getExecute() {
         if (execute == null) {
-            execute = new JMenuItem(LangResource.getString("DesktopIcon.Launch"));
+            execute = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Launch"));
             execute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
             execute.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
@@ -396,7 +396,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     private JMenuItem getProperties() {
         if (properties == null) {
-            properties = new JMenuItem(LangResource.getString("DesktopIcon.Properties") + "...");
+            properties = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Properties") + "...");
             properties.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK));
             properties.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
@@ -490,7 +490,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
             try {
                 Workspace.getRuntimeManager().run(command);
             } catch (WorkspaceException ex) {
-                WorkspaceError.exception(LangResource.getString("Desktop.cannotLaunch"), ex);
+                WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.cannotLaunch"), ex);
             }
         } else if (mode == DesktopConstants.NATIVE_COMMAND_MODE) {
             Workspace.getRuntimeManager().executeNativeCommand(command, workingDir);
@@ -714,7 +714,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     public void setName(String name) {
         if (name == null) {
-            super.setName(LangResource.getString("DesktopIcon.defaultName"));
+            super.setName(WorkspaceResourceAnchor.getString("DesktopIcon.defaultName"));
         } else {
             super.setName(name);
         }

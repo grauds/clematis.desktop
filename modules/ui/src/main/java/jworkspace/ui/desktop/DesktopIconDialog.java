@@ -34,7 +34,8 @@ import javax.swing.JComponent;
 
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
+
 /**
  * Carrier class for <code>jworkspace.ui.desktop.DesktopIconPanel</code>
  * @author Anton Troshin
@@ -44,7 +45,7 @@ class DesktopIconDialog extends ComponentDialog {
     private DesktopIconPanel panel;
 
     DesktopIconDialog(Frame parent) {
-        super(parent, LangResource.getString("DesktopIconDlg.title"), true);
+        super(parent, WorkspaceResourceAnchor.getString("DesktopIconDlg.title"), true);
         setResizable(false);
     }
 

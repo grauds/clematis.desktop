@@ -41,7 +41,7 @@ import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.JVM;
 import jworkspace.kernel.Workspace;
@@ -60,10 +60,10 @@ public class JvmChooserDialog extends ComponentDialog {
     private JVM vm = null;
 
     JvmChooserDialog(Frame parent) {
-        super(parent, LangResource.getString(JVM_CHOOSER_DLG_TITLE), true);
+        super(parent, WorkspaceResourceAnchor.getString(JVM_CHOOSER_DLG_TITLE), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setComment(new ImageIcon(Workspace.getResourceManager().getImage("jvm_big.png")),
-            LangResource.getString(JVM_CHOOSER_DLG_TITLE));
+            WorkspaceResourceAnchor.getString(JVM_CHOOSER_DLG_TITLE));
     }
 
     protected boolean accept() {
@@ -79,9 +79,9 @@ public class JvmChooserDialog extends ComponentDialog {
     }
 
     protected JComponent buildDialogUI() {
-        setComment(LangResource.getString("JvmChooserDlg.comment"));
+        setComment(WorkspaceResourceAnchor.getString("JvmChooserDlg.comment"));
         treeTable = new KTreeTable();
-        treeTable.setTreeModel(Workspace.getInstallEngine().getJvmModel());
+     // todo   treeTable.setTreeModel(Workspace.getInstallEngine().getJvmModel());
         JScrollPane scroller = new JScrollPane(treeTable);
         scroller.setOpaque(false);
         return scroller;

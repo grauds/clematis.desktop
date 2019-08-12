@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
@@ -145,7 +145,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             LOG.info(WorkspaceGUI.PROMPT + "Loaded content manager" 
                 + WorkspaceGUI.LOG_SPACE + MainFrame.CONTENT_MANAGER);
         } catch (Exception e) {
-            WorkspaceError.exception(LangResource.getString("MainFrame.load.CM.failed"), e);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.load.CM.failed"), e);
             return;
         }
         /*
@@ -315,8 +315,8 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     private void createMenuBar() {
         systemMenu = new JMenuBar();
 
-        JMenu wmenu = new JMenu(LangResource.getString("WorkspaceFrame.menu.workspace"));
-        wmenu.setMnemonic(LangResource.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
+        JMenu wmenu = new JMenu(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
+        wmenu.setMnemonic(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
         /*
          *  My details
          */
@@ -388,7 +388,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
             content = (AbstractViewsManager) object;
         } catch (Exception e) {
-            WorkspaceError.exception(LangResource.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
             return;
         }
         boolean visible = false;
@@ -416,7 +416,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             width = inputStream.readInt();
             height = inputStream.readInt();
         } catch (IOException e) {
-            WorkspaceError.exception(LangResource.getString("WorkspaceFrame.load.failed"), e);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
         }
         /*
          * Control panel
@@ -456,7 +456,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             content.load();
         } catch (IOException e) {
-            WorkspaceError.exception(LangResource.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
         }
         /*
          * End of Main Frame config.
@@ -573,7 +573,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             content.reset();
         } catch (IOException e) {
-            WorkspaceError.exception(LangResource.getString("MainFrame.save.failed"), e);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.save.failed"), e);
         }
         LOG.info(WorkspaceGUI.PROMPT + "Saved workspace frame");
     }

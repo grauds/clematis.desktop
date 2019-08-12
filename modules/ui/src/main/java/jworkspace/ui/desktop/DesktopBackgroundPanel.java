@@ -65,7 +65,7 @@ import static jworkspace.ui.desktop.DesktopConstants.TILE_IMAGE;
 import static jworkspace.ui.desktop.DesktopConstants.TOP_LEFT_CORNER_IMAGE;
 import static jworkspace.ui.desktop.DesktopConstants.TOP_RIGHT_CORNER_IMAGE;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.views.PropertiesPanel;
@@ -152,7 +152,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
     DesktopBackgroundPanel(Desktop desktop) {
         super();
         setLayout(new BorderLayout());
-        setName(LangResource.getString("DesktopBgPanel.title"));
+        setName(WorkspaceResourceAnchor.getString("DesktopBgPanel.title"));
 
         bgColor = desktop.getBackground();
         bgColor2 = desktop.getSecondBackground();
@@ -221,19 +221,21 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
             case "comboBoxChanged":
                 Object selected = cbStyle.getSelectedItem();
                 if (selected != null) {
-                    if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_CENTER))) {
+                    if (selected.equals(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_CENTER))) {
                         renderMode = CENTER_IMAGE;
-                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_TILE))) {
+                    } else if (selected.equals(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TILE))) {
                         renderMode = TILE_IMAGE;
-                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_STRETCH))) {
+                    } else if (selected.equals(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_STRETCH))) {
                         renderMode = STRETCH_IMAGE;
-                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER))) {
+                    } else if (selected.equals(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER))) {
                         renderMode = TOP_LEFT_CORNER_IMAGE;
-                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER))) {
+                    } else if (selected.equals(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER))) {
                         renderMode = TOP_RIGHT_CORNER_IMAGE;
-                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER))) {
+                    } else if (selected.equals(WorkspaceResourceAnchor.getString(
+                        DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER))) {
                         renderMode = BOTTOM_LEFT_CORNER_IMAGE;
-                    } else if (selected.equals(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER))) {
+                    } else if (selected.equals(WorkspaceResourceAnchor.getString(
+                        DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER))) {
                         renderMode = BOTTOM_RIGHT_CORNER_IMAGE;
                     }
                 }
@@ -249,7 +251,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
                 break;
             case DesktopConstants.CHOOSE_GRADIENT_COLOR_1: {
                 Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
-                    LangResource.getString("DesktopBgPanel.chooseBg1"),
+                    WorkspaceResourceAnchor.getString("DesktopBgPanel.chooseBg1"),
                     desktop.getBackground());
                 if (color != null) {
                     bgColor = color;
@@ -260,7 +262,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
             }
             case DesktopConstants.CHOOSE_GRADIENT_COLOR_2: {
                 Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
-                    LangResource.getString("DesktopBgPanel.chooseBg2"),
+                    WorkspaceResourceAnchor.getString("DesktopBgPanel.chooseBg2"),
                     desktop.getSecondBackground());
                 if (color != null) {
                     bgColor2 = color;
@@ -286,7 +288,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
 
         JLabel l;
 
-        l = new JLabel(LangResource.getString("DesktopBgPanel.name"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("DesktopBgPanel.name"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         controls.add(l, gbc);
@@ -299,7 +301,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         tName.setText(desktop.getName());
         controls.add(tName, gbc);
 
-        l = new JLabel(LangResource.getString("DesktopBgPanel.cover"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("DesktopBgPanel.cover"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -317,7 +319,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         if (pathToImage != null) {
             pathField.setText(pathToImage);
         } else {
-            pathField.setText(LangResource.getString("DesktopBgPanel.noCover"));
+            pathField.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.noCover"));
         }
 
         pathField.setPreferredSize(new Dimension(150, 20));
@@ -331,43 +333,43 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         gbc.insets = KiwiUtils.LAST_INSETS;
         controls.add(p0, gbc);
 
-        l = new JLabel(LangResource.getString("DesktopBgPanel.coverPosition"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("DesktopBgPanel.coverPosition"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         controls.add(l, gbc);
 
         cbStyle = new JComboBox<>(new String[] {
-                LangResource.getString(DESKTOP_BG_PANEL_CENTER),
-                LangResource.getString(DESKTOP_BG_PANEL_STRETCH),
-                LangResource.getString(DESKTOP_BG_PANEL_TILE),
-                LangResource.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER),
-                LangResource.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER),
-                LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER),
-                LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER)
+                WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_CENTER),
+                WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_STRETCH),
+                WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TILE),
+                WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER),
+                WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER),
+                WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER),
+                WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER)
             });
         cbStyle.setEditable(false);
         switch (desktop.getRenderMode()) {
             case TILE_IMAGE:
-                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_TILE));
+                cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TILE));
                 break;
             case STRETCH_IMAGE:
-                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_STRETCH));
+                cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_STRETCH));
                 break;
             case TOP_LEFT_CORNER_IMAGE:
-                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER));
+                cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TOP_LEFT_CORNER));
                 break;
             case TOP_RIGHT_CORNER_IMAGE:
-                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER));
+                cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TOP_RIGHT_CORNER));
                 break;
             case BOTTOM_LEFT_CORNER_IMAGE:
-                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER));
+                cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_BOTTOM_LEFT_CORNER));
                 break;
             case BOTTOM_RIGHT_CORNER_IMAGE:
-                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER));
+                cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER));
                 break;
             case CENTER_IMAGE:
             default:
-                cbStyle.setSelectedItem(LangResource.getString(DESKTOP_BG_PANEL_CENTER));
+                cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_CENTER));
                 break;
         }
         cbStyle.setPreferredSize(new Dimension(60, 20));
@@ -383,7 +385,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         gbc.insets = KiwiUtils.FIRST_INSETS;
         controls.add(l, gbc);
 
-        coverVisibleCheckbox.setText(LangResource.getString("DesktopBgPanel.coverVisible"));
+        coverVisibleCheckbox.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.coverVisible"));
         coverVisibleCheckbox.addActionListener(this);
         coverVisibleCheckbox.setOpaque(false);
         coverVisibleCheckbox.setActionCommand(DesktopConstants.TOGGLE_WALLPAPER);
@@ -403,7 +405,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         gbc.insets = KiwiUtils.FIRST_INSETS;
         controls.add(l, gbc);
 
-        gradient.setText(LangResource.getString("DesktopBgPanel.gradient"));
+        gradient.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.gradient"));
         gradient.addActionListener(this);
         gradient.setActionCommand(DesktopConstants.TOGGLE_GRADIENT);
         gradient.setPreferredSize(new Dimension(60, 20));
@@ -417,7 +419,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         gbc.insets = KiwiUtils.LAST_INSETS;
         controls.add(gradient, gbc);
 
-        l = new JLabel(LangResource.getString("DesktopBgPanel.gradColors"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("DesktopBgPanel.gradColors"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -430,7 +432,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         kp1.setLayout(new BorderLayout(5, 0));
         kp1.setBorder(new EmptyBorder(0, 2, 0, 2));
 
-        l = new JLabel(LangResource.getString("DesktopBgPanel.gradTop"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("DesktopBgPanel.gradTop"));
         kp1.add(l, BorderLayout.WEST);
 
         bBrowseTop = new JButton();
@@ -445,7 +447,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         kp2.setLayout(new BorderLayout(5, 0));
         kp2.setBorder(new EmptyBorder(0, 2, 0, 2));
 
-        l = new JLabel(LangResource.getString("DesktopBgPanel.gradBottom"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("DesktopBgPanel.gradBottom"));
         kp2.add(l, BorderLayout.WEST);
 
         bBrowseBottom = new JButton();

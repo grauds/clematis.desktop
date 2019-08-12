@@ -48,7 +48,6 @@ import com.hyperrealm.kiwi.ui.model.DocumentDataSource;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
-import jworkspace.LangResource;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
@@ -68,37 +67,37 @@ public class UIActions implements IConstants {
      * Logoff action name
      */
     static final String LOGOFF_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.logoff") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.logoff") + WorkspaceGUI.LOG_FINISH;
     /**
      * Exit action name
      */
     static final String EXIT_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.exit") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.exit") + WorkspaceGUI.LOG_FINISH;
     /**
      * About action name
      */
     static final String ABOUT_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.about");
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.about");
     /**
      * Help action name
      */
     static final String HELP_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.help") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.help") + WorkspaceGUI.LOG_FINISH;
     /**
      * Settings action name
      */
     static final String SETTINGS_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.settings") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.settings") + WorkspaceGUI.LOG_FINISH;
     /**
      * My details action name
      */
     static final String MY_DETAILS_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.mydetails") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.mydetails") + WorkspaceGUI.LOG_FINISH;
     /**
      * Show control panel action name
      */
     static final String SHOW_PANEL_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.cp");
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.cp");
 
     private static final Logger LOG = LoggerFactory.getLogger(UIActions.class);
 
@@ -106,13 +105,13 @@ public class UIActions implements IConstants {
      * New user action name
      */
     private static final String NEW_USER_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.newuser") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.newuser") + WorkspaceGUI.LOG_FINISH;
 
     /**
      * Full screen action name
      */
     private static final String FULL_SCREEN_ACTION_NAME =
-        LangResource.getString("WorkspaceFrame.menu.fullscr");
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.fullscr");
 
     private static final int MARGIN = 10;
 
@@ -217,7 +216,7 @@ public class UIActions implements IConstants {
 
         aboutFrame.setResizable(false);
         aboutFrame.setModal(true);
-        aboutFrame.setTitle(LangResource.getString("Workspace.about.title"));
+        aboutFrame.setTitle(WorkspaceResourceAnchor.getString("Workspace.about.title"));
         aboutFrame.setVisible(true);
     }
 
@@ -229,7 +228,7 @@ public class UIActions implements IConstants {
 
             DocumentDataSource helpSource = new DocumentDataSource(Workspace.getResourceManager());
             DocumentBrowserFrame dbf = new DocumentBrowserFrame(Workspace.getVersion()
-                + WorkspaceGUI.LOG_SPACE + LangResource.getString("message#184"),
+                + WorkspaceGUI.LOG_SPACE + WorkspaceResourceAnchor.getString("message#184"),
                 "", helpSource);
 
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -238,7 +237,7 @@ public class UIActions implements IConstants {
             dbf.setVisible(true);
         } catch (ResourceNotFoundException ex) {
             JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
-                LangResource.getString("UIActions.resource.notFound")
+                WorkspaceResourceAnchor.getString("UIActions.resource.notFound")
                     + " " + ex.getMessage());
         }
     }

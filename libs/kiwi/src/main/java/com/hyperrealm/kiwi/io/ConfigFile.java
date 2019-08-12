@@ -24,6 +24,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.hyperrealm.kiwi.util.Config;
 
@@ -97,8 +100,14 @@ public class ConfigFile extends Config {
      */
 
     public void store() throws IOException {
-        try (FileOutputStream fout = new FileOutputStream(file)) {
-            super.store(fout, description);
+        if (file != null && file.getParentFile() != null) {
+            Path path = Paths.get(file.getParentFile().getAbsolutePath());
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+            try (FileOutputStream fout = new FileOutputStream(file)) {
+                super.store(fout, description);
+            }
         }
     }
 

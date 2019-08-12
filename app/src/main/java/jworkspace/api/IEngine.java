@@ -35,6 +35,7 @@ import java.io.IOException;
  * @author Anton Troshin
  */
 public interface IEngine {
+
     /**
      * Save engine
      */

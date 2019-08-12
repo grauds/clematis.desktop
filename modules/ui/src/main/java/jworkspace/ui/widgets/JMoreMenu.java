@@ -35,7 +35,7 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 
 /**
  * SubClass JMenu to provide the same "more" functionality as sizeable JPopupMenu
@@ -45,7 +45,7 @@ public class JMoreMenu extends JMenu {
     /**
      * More Menu Text - makes changing text easier later
      */
-    private static final String MORE = LangResource.getString("JMoreMenu.more");
+    private static final String MORE = WorkspaceResourceAnchor.getString("JMoreMenu.more");
     /**
      * Take into account most window managers have a task or system
      * bar always on top on the bottom of the screen.  Empirically

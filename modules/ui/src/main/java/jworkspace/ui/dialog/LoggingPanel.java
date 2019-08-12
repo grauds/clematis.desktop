@@ -42,7 +42,7 @@ import javax.swing.ListSelectionModel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.logging.WindowHandler;
 
 /**
@@ -79,7 +79,7 @@ class LoggingPanel extends KPanel {
         loggerNamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setLayout(new BorderLayout());
         add(new JScrollPane(loggerNamesList), BorderLayout.CENTER);
-        JButton showButton = new JButton(LangResource.getString("LoggingPanel.show"));
+        JButton showButton = new JButton(WorkspaceResourceAnchor.getString("LoggingPanel.show"));
         add(showButton, BorderLayout.SOUTH);
         showButton.addActionListener(ae -> {
             String name = loggerNamesList.getSelectedValue();

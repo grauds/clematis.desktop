@@ -44,7 +44,7 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.ui.WorkspacePluginContext;
 
@@ -110,8 +110,8 @@ public final class RuntimeManager {
             return;
         }
 
-        if (Workspace.getUi().showConfirmDialog(LangResource.getString("Workspace.killAll.question"),
-            LangResource.getString("Workspace.killAll.title"), icon)) {
+        if (Workspace.getUi().showConfirmDialog(WorkspaceResourceAnchor.getString("Workspace.killAll.question"),
+            WorkspaceResourceAnchor.getString("Workspace.killAll.title"), icon)) {
 
             for (JavaProcess jp : Workspace.getRuntimeManager().getAllProcesses()) {
                 if (jp != null) {
@@ -130,7 +130,7 @@ public final class RuntimeManager {
     private synchronized void executeExternalProcess(String path) throws WorkspaceException {
 
         String[] args = Workspace.getInstallEngine().getInvocationArgs(path);
-        String workingDir = Workspace.getInstallEngine().getWorkingDir(path);
+        String workingDir = Workspace.getInstallEngine().getApplicationWorkingDir(path);
 
         executeExternalProcess(args, workingDir, trimPath(path));
     }

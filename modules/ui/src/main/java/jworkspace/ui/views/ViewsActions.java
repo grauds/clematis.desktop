@@ -38,7 +38,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceError;
@@ -54,43 +54,43 @@ public class ViewsActions implements IConstants {
      * Browse back action name
      */
     static final String BROWSE_BACK_ACTION_NAME =
-        LangResource.getString("ViewsManager.back.name");
+        WorkspaceResourceAnchor.getString("ViewsManager.back.name");
     /**
      * Browse forward action name
      */
     static final String BROWSE_FORWARD_ACTION_NAME =
-        LangResource.getString("ViewsManager.forward.name");
+        WorkspaceResourceAnchor.getString("ViewsManager.forward.name");
     /**
      * Add desktop action name
      */
     static final String ADD_DESKTOP_ACTION_NAME =
-        LangResource.getString("ViewsManager.adesktop.name");
+        WorkspaceResourceAnchor.getString("ViewsManager.adesktop.name");
     /**
      * Remove view action name
      */
     static final String REMOVE_VIEW_ACTION_NAME =
-        LangResource.getString("ViewsManager.ddesktop.name");
+        WorkspaceResourceAnchor.getString("ViewsManager.ddesktop.name");
     /**
      * Reload current view action name
      */
 
     static final String RELOAD_VIEW_ACTION_NAME =
-        LangResource.getString("ViewsManager.reload.name");
+        WorkspaceResourceAnchor.getString("ViewsManager.reload.name");
     /**
      * Save current view action name
      */
     static final String SAVE_VIEW_ACTION_NAME =
-        LangResource.getString("ViewsManager.saveview.name");
+        WorkspaceResourceAnchor.getString("ViewsManager.saveview.name");
     /**
      * Properties action name
      */
     static final String PROPERTIES_ACTION_NAME =
-        LangResource.getString("ViewsManager.vprefs.name") + "...";
+        WorkspaceResourceAnchor.getString("ViewsManager.vprefs.name") + "...";
     /**
      * Switch view header
      */
     static final String SWITCH_HEADER_ACTION_NAME =
-        LangResource.getString("ViewsManager.swheader.name");
+        WorkspaceResourceAnchor.getString("ViewsManager.swheader.name");
     /**
      * Switch view
      */
@@ -179,7 +179,7 @@ public class ViewsActions implements IConstants {
 
         Image normal = Workspace.getResourceManager().getImage("cpanel/normal/back.png");
         Image hover = Workspace.getResourceManager().getImage("cpanel/hover/back.png");
-        String description = LangResource.getString("ViewsManager.back.tooltip");
+        String description = WorkspaceResourceAnchor.getString("ViewsManager.back.tooltip");
 
         BrowseBackAction() {
             super(BROWSE_BACK_ACTION_NAME);
@@ -199,7 +199,7 @@ public class ViewsActions implements IConstants {
 
         Image normal = Workspace.getResourceManager().getImage("cpanel/normal/forward.png");
         Image hover = Workspace.getResourceManager().getImage("cpanel/hover/forward.png");
-        String description = LangResource.getString("ViewsManager.forward.tooltip");
+        String description = WorkspaceResourceAnchor.getString("ViewsManager.forward.tooltip");
 
         BrowseForwardAction() {
             super(BROWSE_FORWARD_ACTION_NAME);
@@ -219,7 +219,7 @@ public class ViewsActions implements IConstants {
 
         Image normal = Workspace.getResourceManager().getImage("cpanel/normal/adesktop.png");
         Image hover = Workspace.getResourceManager().getImage("cpanel/hover/adesktop.png");
-        String description = LangResource.getString("ViewsManager.adesktop.tooltip");
+        String description = WorkspaceResourceAnchor.getString("ViewsManager.adesktop.tooltip");
 
         AddDesktopAction() {
             super(ADD_DESKTOP_ACTION_NAME);
@@ -239,7 +239,7 @@ public class ViewsActions implements IConstants {
 
         Image normal = Workspace.getResourceManager().getImage("cpanel/normal/ddesktop.png");
         Image hover = Workspace.getResourceManager().getImage("cpanel/hover/ddesktop.png");
-        String description = LangResource.getString("ViewsManager.ddesktop.tooltip");
+        String description = WorkspaceResourceAnchor.getString("ViewsManager.ddesktop.tooltip");
 
         RemoveViewAction() {
             super(REMOVE_VIEW_ACTION_NAME);
@@ -254,8 +254,8 @@ public class ViewsActions implements IConstants {
                 ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
                     getImage("desktop/remove.png"));
                 result = JOptionPane.showConfirmDialog(parent,
-                    LangResource.getString("ViewsManager.deleteView.question") + "?",
-                    LangResource.getString("ViewsManager.deleteView.title"),
+                    WorkspaceResourceAnchor.getString("ViewsManager.deleteView.question") + "?",
+                    WorkspaceResourceAnchor.getString("ViewsManager.deleteView.title"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
 
                 if (result == JOptionPane.YES_OPTION) {
@@ -269,7 +269,7 @@ public class ViewsActions implements IConstants {
      * @author Anton Troshin
      */
     public class ReloadViewAction extends AbstractAction {
-        String description = LangResource.
+        String description = WorkspaceResourceAnchor.
             getString("ViewsManager.reload.tooltip");
 
         ReloadViewAction() {
@@ -290,7 +290,7 @@ public class ViewsActions implements IConstants {
             getImage("cpanel/normal/vprefs.png");
         Image hover = Workspace.getResourceManager().
             getImage("cpanel/hover/vprefs.png");
-        String description = LangResource.
+        String description = WorkspaceResourceAnchor.
             getString("ViewsManager.vprefs.tooltip");
 
         PropertiesAction() {
@@ -308,7 +308,7 @@ public class ViewsActions implements IConstants {
      * @author Anton Troshin
      */
     public class SaveViewAction extends AbstractAction {
-        String description = LangResource.
+        String description = WorkspaceResourceAnchor.
             getString("ViewsManager.vsave.tooltip");
 
         SaveViewAction() {
@@ -320,7 +320,7 @@ public class ViewsActions implements IConstants {
             try {
                 manager.save();
             } catch (IOException ex) {
-                WorkspaceError.exception(LangResource.getString("ViewsManager.viewSave.failed"), ex);
+                WorkspaceError.exception(WorkspaceResourceAnchor.getString("ViewsManager.viewSave.failed"), ex);
             }
         }
     }
@@ -346,7 +346,7 @@ public class ViewsActions implements IConstants {
      * @author Anton Troshin
      */
     public class SwitchHeaderAction extends AbstractStateAction {
-        String description = LangResource.getString("ViewsManager.swheader.tooltip");
+        String description = WorkspaceResourceAnchor.getString("ViewsManager.swheader.tooltip");
 
         SwitchHeaderAction() {
             super(SWITCH_HEADER_ACTION_NAME);

@@ -44,7 +44,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceError;
 
@@ -57,7 +57,7 @@ class ChangePasswordDlg extends ComponentDialog {
     private JPasswordField oldPass, newPass, confirmPass;
 
     ChangePasswordDlg(Frame parent) {
-        super(parent, LangResource.getString("ChangePasswordDlg.title"), true);
+        super(parent, WorkspaceResourceAnchor.getString("ChangePasswordDlg.title"), true);
         setResizable(false);
     }
 
@@ -73,7 +73,7 @@ class ChangePasswordDlg extends ComponentDialog {
                 new String(newPass.getPassword()),
                 new String(confirmPass.getPassword()));
         } catch (Exception ex) {
-            WorkspaceError.exception(LangResource.
+            WorkspaceError.exception(WorkspaceResourceAnchor.
                 getString("ChangePasswordDlg.pwdChange.failed"), ex);
         }
         return true;
@@ -94,7 +94,7 @@ class ChangePasswordDlg extends ComponentDialog {
         gbc.weightx = 0;
         JLabel l;
 
-        l = new JLabel(LangResource.getString("ChangePasswordDlg.oldPwd"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("ChangePasswordDlg.oldPwd"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         carrier.add(l, gbc);
@@ -106,7 +106,7 @@ class ChangePasswordDlg extends ComponentDialog {
         gbc.insets = KiwiUtils.LAST_INSETS;
         carrier.add(oldPass, gbc);
 
-        l = new JLabel(LangResource.getString("ChangePasswordDlg.newPwd"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("ChangePasswordDlg.newPwd"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         carrier.add(l, gbc);
@@ -118,7 +118,7 @@ class ChangePasswordDlg extends ComponentDialog {
         gbc.insets = KiwiUtils.LAST_INSETS;
         carrier.add(newPass, gbc);
 
-        l = new JLabel(LangResource.getString("ChangePasswordDlg.confirmPwd"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("ChangePasswordDlg.confirmPwd"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         carrier.add(l, gbc);

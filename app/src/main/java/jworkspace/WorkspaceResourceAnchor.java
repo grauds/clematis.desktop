@@ -26,14 +26,55 @@ package jworkspace;
   ----------------------------------------------------------------------------
 */
 
+import java.text.DateFormat;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Anton Troshin
  */
 public class WorkspaceResourceAnchor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceResourceAnchor.class);
+
+    private static ResourceBundle resources = null;
+
     /**
      * This class is never supposed to be instantiated.
      * Therefore, it has a private constructor.
      */
     private WorkspaceResourceAnchor() {
+    }
+
+    public static void printAvailableLocales() {
+
+        LOG.info("Available locales:");
+        Locale[] list = DateFormat.getAvailableLocales();
+        for (Locale locale : list) {
+            LOG.info(locale.getLanguage() + "   " + locale.getCountry());
+        }
+    }
+
+    public static String getString(String id) {
+
+        if (resources == null) {
+            resources = ResourceBundle.getBundle("i18n/strings");
+        }
+
+        String message = null;
+        try {
+
+            message = resources.getString(id);
+        } catch (MissingResourceException ex) {
+
+            LOG.warn("Cannot find resource:" + id);
+        }
+
+
+        return message;
     }
 }

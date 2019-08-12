@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.ApplicationDataSource;
 
 /**
@@ -111,8 +111,8 @@ public final class JavaProcess {
         Thread waitThread = new Thread(this::waitForLogs);
         waitThread.start();
 
-        LOG.info(LangResource.getString(JAVA_PROCESS_MESSAGE) + WHITESPACE + processName);
-        LOG.info(LangResource.getString(JAVA_PROCESS_STARTED_AT) + WHITESPACE
+        LOG.info(WorkspaceResourceAnchor.getString(JAVA_PROCESS_MESSAGE) + WHITESPACE + processName);
+        LOG.info(WorkspaceResourceAnchor.getString(JAVA_PROCESS_STARTED_AT) + WHITESPACE
             + DateFormat.getInstance().format(startTime));
 
         alive = true;
@@ -122,11 +122,11 @@ public final class JavaProcess {
         try {
             int x = process.waitFor();
             LOG.info(LEFT_BR + DateFormat.getInstance().format(startTime)
-                + WHITESPACE + LangResource.getString(JAVA_PROCESS_EXIT_VALUE)
+                + WHITESPACE + WorkspaceResourceAnchor.getString(JAVA_PROCESS_EXIT_VALUE)
                 + WHITESPACE + x);
             alive = false;
         } catch (InterruptedException ex) {
-            LOG.error(LangResource.getString("JavaProcess.CannotWait"), ex);
+            LOG.error(WorkspaceResourceAnchor.getString("JavaProcess.CannotWait"), ex);
         }
     }
 

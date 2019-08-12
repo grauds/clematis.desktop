@@ -41,7 +41,7 @@ import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 
 /**
@@ -64,7 +64,7 @@ class UserDetailsPanel extends KPanel {
         gbc.weightx = 0;
         JLabel l;
 
-        l = new JLabel(LangResource.getString("UserDetailsPanel.nick"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("UserDetailsPanel.nick"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         add(l, gbc);
@@ -76,7 +76,7 @@ class UserDetailsPanel extends KPanel {
         gbc.insets = KiwiUtils.LAST_INSETS;
         add(tNick, gbc);
 
-        l = new JLabel(LangResource.getString("UserDetailsPanel.name"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("UserDetailsPanel.name"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -89,7 +89,7 @@ class UserDetailsPanel extends KPanel {
         gbc.insets = KiwiUtils.LAST_INSETS;
         add(tName, gbc);
 
-        l = new JLabel(LangResource.getString("UserDetailsPanel.surname"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("UserDetailsPanel.surname"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -102,7 +102,7 @@ class UserDetailsPanel extends KPanel {
         gbc.insets = KiwiUtils.LAST_INSETS;
         add(tSurname, gbc);
 
-        l = new JLabel(LangResource.getString("UserDetailsPanel.mail"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("UserDetailsPanel.mail"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -115,7 +115,7 @@ class UserDetailsPanel extends KPanel {
         gbc.insets = KiwiUtils.LAST_INSETS;
         add(tMail, gbc);
 
-        l = new JLabel(LangResource.getString("UserDetailsPanel.desc"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("UserDetailsPanel.desc"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -129,7 +129,7 @@ class UserDetailsPanel extends KPanel {
         gbc.insets = KiwiUtils.LAST_INSETS;
         add(new JScrollPane(tDescription), gbc);
 
-        l = new JLabel(LangResource.getString("UserDetailsPanel.security"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("UserDetailsPanel.security"));
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -137,7 +137,7 @@ class UserDetailsPanel extends KPanel {
 
         KPanel buttonHolder = new KPanel();
         buttonHolder.setLayout(new BorderLayout());
-        KButton tChangePassword = new KButton(LangResource.getString("UserDetailsPanel.chpasswd"));
+        KButton tChangePassword = new KButton(WorkspaceResourceAnchor.getString("UserDetailsPanel.chpasswd"));
         tChangePassword.setDefaultCapable(false);
         tChangePassword.addActionListener(evt -> {
             ChangePasswordDlg dlg =

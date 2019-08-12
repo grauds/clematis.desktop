@@ -40,7 +40,7 @@ import javax.swing.border.EmptyBorder;
 import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.Library;
 import jworkspace.kernel.Workspace;
@@ -56,9 +56,9 @@ public class LibraryChooserDialog extends ComponentDialog {
     private Library[] lib = null;
 
     public LibraryChooserDialog(Frame parent) {
-        super(parent, LangResource.getString(LIBRARY_CHOOSER_DLG_TITLE), true);
+        super(parent, WorkspaceResourceAnchor.getString(LIBRARY_CHOOSER_DLG_TITLE), true);
         setComment(new ImageIcon(Workspace.getResourceManager().getImage("library_big.png")),
-            LangResource.getString(LIBRARY_CHOOSER_DLG_TITLE));
+            WorkspaceResourceAnchor.getString(LIBRARY_CHOOSER_DLG_TITLE));
     }
 
     protected boolean accept() {
@@ -74,9 +74,9 @@ public class LibraryChooserDialog extends ComponentDialog {
     }
 
     protected JComponent buildDialogUI() {
-        setComment(LangResource.getString("LibraryChooserDlg.comment"));
+        setComment(WorkspaceResourceAnchor.getString("LibraryChooserDlg.comment"));
         treeTable = new KTreeTable();
-        treeTable.setTreeModel(Workspace.getInstallEngine().getLibraryModel());
+       // todo treeTable.setTreeModel(Workspace.getInstallEngine().getLibraryModel());
         JScrollPane scroller = new JScrollPane(treeTable);
         scroller.setOpaque(false);
         return scroller;

@@ -69,7 +69,7 @@ import com.hyperrealm.kiwi.util.ResourceManager;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 import com.hyperrealm.kiwi.util.Task;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
@@ -83,7 +83,8 @@ import jworkspace.ui.WorkspaceGUI;
 @SuppressWarnings("MagicNumber")
 public class ResourceExplorerPanel extends KPanel implements Scrollable, ComponentListener {
 
-    private static final String LOAD_FAILED_MESSAGE = LangResource.getString("ResourceExplorerPanel.load.failed");
+    private static final String LOAD_FAILED_MESSAGE =
+        WorkspaceResourceAnchor.getString("ResourceExplorerPanel.load.failed");
     /**
      * Default logger
      */
@@ -244,7 +245,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
 
         revalidate();
         pr = new ProgressDialog(Workspace.getUi().getFrame(),
-            LangResource.getString("ResourceExplorerPanel.loadingRep"), true);
+            WorkspaceResourceAnchor.getString("ResourceExplorerPanel.loadingRep"), true);
         Loader loader = new Loader();
         pr.track(loader);
         setPreferredDimension();

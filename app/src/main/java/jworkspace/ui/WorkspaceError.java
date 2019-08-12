@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
 import jworkspace.kernel.Workspace;
 import jworkspace.kernel.WorkspaceException;
 
@@ -60,7 +59,7 @@ import jworkspace.kernel.WorkspaceException;
  */
 public class WorkspaceError {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceError.class);
 
     private static final double DEFAULT_SCALE = 0.9;
 

@@ -49,7 +49,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.ui.action.ActionChangedListener;
 import jworkspace.ui.cpanel.CButton;
@@ -97,7 +97,7 @@ public final class Utils implements IConstants {
 
                     StreamUtils.readStreamToStream(input, output);
                 } catch (IOException e) {
-                    WorkspaceError.exception(LangResource.getString("Utils.cannotCopyDir"), e);
+                    WorkspaceError.exception(WorkspaceResourceAnchor.getString("Utils.cannotCopyDir"), e);
                 }
             }
         }

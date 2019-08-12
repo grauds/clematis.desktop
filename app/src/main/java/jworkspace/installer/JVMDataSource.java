@@ -53,7 +53,7 @@ class JVMDataSource extends DefinitionDataSource {
      *
      * @param root java.io.File
      */
-    JVMDataSource(File root) throws IOException {
+    JVMDataSource(File root) {
         super(root);
         rootName = root != null ? root.getName() : JVMDataSource.ROOT;
     }

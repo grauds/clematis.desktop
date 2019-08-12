@@ -26,7 +26,7 @@ import jworkspace.ui.WorkspaceResourceManager;
 @PrepareForTest(Workspace.class)
 public class InstallerGeneralTest {
 
-    public static final String ARGUMENT_TEST = "--argument test";
+    private static final String ARGUMENT_TEST = "--argument test";
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @Before
@@ -122,7 +122,7 @@ public class InstallerGeneralTest {
         libraryDataCopy.getRoot().load();
         assert jvmDataCopy.equals(jvmData);
 
-        WorkspaceInstaller workspaceInstaller = new WorkspaceInstaller();
+        WorkspaceInstaller workspaceInstaller = new WorkspaceInstaller(dataRoot);
 
         workspaceInstaller.setApplicationData(applicationData);
         workspaceInstaller.setLibraryData(libraryData);

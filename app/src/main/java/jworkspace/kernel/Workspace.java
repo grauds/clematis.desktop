@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.Config;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IEngine;
 import jworkspace.api.IUserProfileEngine;
 import jworkspace.api.IWorkspaceListener;
@@ -131,11 +131,6 @@ public class Workspace {
     private static final String EMPTY_STRING = "#\n";
 
     /**
-     * Workspace Bean Shell interpreter instance
-     */
-    private static WorkspaceInterpreter workspaceInterpreter;
-
-    /**
      * User profile engine interface
      */
     private static IUserProfileEngine profilesEngine = new UserProfileEngine();
@@ -143,7 +138,7 @@ public class Workspace {
     /**
      * Installer
      */
-    private static InstallEngine installEngine = new WorkspaceInstaller();
+    private static InstallEngine installEngine;
 
     /**
      * Java Workspace UI, selectable by users
@@ -202,7 +197,7 @@ public class Workspace {
             ui.reset();
         } catch (IOException ex) {
             Workspace.ui.showError(ui.getName() + WHITESPACE
-                + LangResource.getString("Workspace.logOff.saveFailed"), ex);
+                + WorkspaceResourceAnchor.getString("Workspace.logOff.saveFailed"), ex);
         }
     }
 
@@ -213,8 +208,8 @@ public class Workspace {
 
         ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_exit.png"));
 
-        if (ui.showConfirmDialog(LangResource.getString("Workspace.exit.question"),
-            LangResource.getString("Workspace.exit.title"),
+        if (ui.showConfirmDialog(WorkspaceResourceAnchor.getString("Workspace.exit.question"),
+            WorkspaceResourceAnchor.getString("Workspace.exit.title"),
             icon)) {
 
             RuntimeManager.killAllProcesses();
@@ -228,7 +223,7 @@ public class Workspace {
                     profilesEngine.logout();
                     profilesEngine.save();
                 } catch (Exception e) {
-                    Workspace.ui.showError(LangResource.getString("Workspace.logout.failure"), e);
+                    Workspace.ui.showError(WorkspaceResourceAnchor.getString("Workspace.logout.failure"), e);
                 }
             }
             Workspace.LOG.info("> 1999 - 2019 Copyright Anton Troshin");
@@ -367,9 +362,9 @@ public class Workspace {
             } catch (IOException ex) {
                 String name = engine.getName();
                 Workspace.ui.showError(name
-                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_LOAD_FAILED), ex);
+                    + WHITESPACE + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_LOAD_FAILED), ex);
                 Workspace.LOG.error(name
-                    + WHITESPACE + LangResource.getString(WORKSPACE_ENGINE_LOAD_FAILED
+                    + WHITESPACE + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_LOAD_FAILED
                     + ex.toString()));
             }
         }
@@ -384,11 +379,11 @@ public class Workspace {
                 String name = engine.getName();
                 Workspace.LOG.error(name
                     + WHITESPACE
-                    + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED
+                    + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_SAVE_FAILED
                     + ex.toString()));
                 throw new WorkspaceException(name
                     + WHITESPACE
-                    + LangResource.getString(WORKSPACE_ENGINE_SAVE_FAILED), ex);
+                    + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_SAVE_FAILED), ex);
             }
         }
     }
@@ -418,7 +413,7 @@ public class Workspace {
         for (String par : args) {
 
             if (par.equalsIgnoreCase("-locales")) {
-                LangResource.printAvailableLocales();
+                WorkspaceResourceAnchor.printAvailableLocales();
                 if (paramLength == 1) {
                     System.exit(0);
                 }
@@ -479,9 +474,9 @@ public class Workspace {
          */
         Workspace.ENGINES.add(Workspace.getInstallEngine());
         /*
-         * Start interpreter
+         * Workspace Bean Shell interpreter instance
          */
-        workspaceInterpreter = WorkspaceInterpreter.getInstance();
+        WorkspaceInterpreter.getInstance();
         /*
          * Add system plugins indifferent to users data
          */
@@ -505,7 +500,7 @@ public class Workspace {
                 quickLogin = args[++i];
             } else if (par.equalsIgnoreCase("-debug")) {
                 System.setProperty("debug", "true");
-                Workspace.LOG.info(LangResource.getString("message#21"));
+                Workspace.LOG.info(WorkspaceResourceAnchor.getString("message#21"));
             }
         }
         /*
@@ -515,7 +510,7 @@ public class Workspace {
         try {
             profilesEngine.load();
         } catch (IOException ex) {
-            Workspace.ui.showError(LangResource.getString("Workspace.load.profilerFailure"), ex);
+            Workspace.ui.showError(WorkspaceResourceAnchor.getString("Workspace.load.profilerFailure"), ex);
             System.exit(-3);
         }
 
@@ -526,7 +521,7 @@ public class Workspace {
                 Workspace.LOG.info("Logged in as " + quickLogin);
             } catch (Exception ex) {
                 Workspace.LOG.error("Can't log in as " + quickLogin);
-                Workspace.ui.showError(LangResource.getString(WORKSPACE_LOGIN_FAILURE), ex);
+                Workspace.ui.showError(WorkspaceResourceAnchor.getString(WORKSPACE_LOGIN_FAILURE), ex);
                 quickLogin = null;
             }
         }
@@ -563,7 +558,7 @@ public class Workspace {
                 ui = (UI) c.newInstance();
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            Workspace.ui.showError(LangResource.getString("Workspace.load.abort"), e);
+            Workspace.ui.showError(WorkspaceResourceAnchor.getString("Workspace.load.abort"), e);
             System.exit(-1);
         }
 
@@ -576,12 +571,13 @@ public class Workspace {
         }
 
         try {
+            installEngine = new WorkspaceInstaller(new File(getUserHomePath()));
             loadEngines();
             loadUserPlugins();
             ui.load();
         } catch (IOException ex) {
             Workspace.ui.showError(ui.getName() + WHITESPACE
-                + LangResource.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
+                + WorkspaceResourceAnchor.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
         }
 
         if (logo != null) {
@@ -598,9 +594,9 @@ public class Workspace {
          */
         ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
 
-        if ((isModified() && ui.showConfirmDialog(LangResource.getString("Workspace.logOff.question")
+        if ((isModified() && ui.showConfirmDialog(WorkspaceResourceAnchor.getString("Workspace.logOff.question")
                 + WHITESPACE + getProfiles().getUserName() + " ?",
-            LangResource.getString("Workspace.logOff.title"), icon)) || !isModified()) {
+            WorkspaceResourceAnchor.getString("Workspace.logOff.title"), icon)) || !isModified()) {
 
             RuntimeManager.killAllProcesses();
 
@@ -614,7 +610,7 @@ public class Workspace {
                 profilesEngine.logout();
                 profilesEngine.getLoginDlg().setVisible(true);
             } catch (Exception e) {
-                Workspace.ui.showError(LangResource.getString(WORKSPACE_LOGIN_FAILURE), e);
+                Workspace.ui.showError(WorkspaceResourceAnchor.getString(WORKSPACE_LOGIN_FAILURE), e);
                 return;
             }
             try {
@@ -623,7 +619,7 @@ public class Workspace {
                 ui.load();
             } catch (IOException ex) {
                 Workspace.ui.showError(ui.getName() + WHITESPACE
-                    + LangResource.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
+                    + WorkspaceResourceAnchor.getString(WORKSPACE_LOGIN_LOAD_FAILED), ex);
             }
         }
     }

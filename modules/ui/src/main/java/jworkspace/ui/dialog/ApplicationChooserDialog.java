@@ -39,7 +39,7 @@ import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.kernel.Workspace;
@@ -60,7 +60,7 @@ public class ApplicationChooserDialog extends ComponentDialog {
      * this package.
      */
     public ApplicationChooserDialog(Frame parent) {
-        super(parent, LangResource.getString("ApplicationChooser.title"), true);
+        super(parent, WorkspaceResourceAnchor.getString("ApplicationChooser.title"), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setIcon(new ImageIcon(Workspace.getResourceManager().
             getImage("application_big.png")));
@@ -79,9 +79,9 @@ public class ApplicationChooserDialog extends ComponentDialog {
     }
 
     protected JComponent buildDialogUI() {
-        setComment(LangResource.getString("ApplicationChooser.comment"));
+        setComment(WorkspaceResourceAnchor.getString("ApplicationChooser.comment"));
         treeTable = new KTreeTable();
-        treeTable.setTreeModel(Workspace.getInstallEngine().getApplicationModel());
+     // todo   treeTable.setTreeModel(Workspace.getInstallEngine().getApplicationModel());
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scroller = new JScrollPane(treeTable);
         scroller.setOpaque(false);

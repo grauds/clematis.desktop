@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.Config;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -144,11 +144,11 @@ class Profile {
                                  String email)
         throws ProfileOperationException {
         if (userName == null) {
-            throw new ProfileOperationException(LangResource.getString("Profile.userName.null"));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString("Profile.userName.null"));
         }
 
         if (password == null) {
-            throw new ProfileOperationException(LangResource.getString("Profile.passwd.null"));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString("Profile.passwd.null"));
         }
 
         return new Profile(userName, password, firstName, secondName, email);
@@ -177,7 +177,7 @@ class Profile {
     public void setEmail(String password, String email)
         throws ProfileOperationException {
         if (!checkPassword(password)) {
-            throw new ProfileOperationException(LangResource.getString(PROFILE_PASSWD_CHECK_FAILED));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILE_PASSWD_CHECK_FAILED));
         }
 
         this.email = email;
@@ -190,10 +190,10 @@ class Profile {
         throws ProfileOperationException {
 
         if (!checkPassword(oldPassword)) {
-            throw new ProfileOperationException(LangResource.getString(PROFILE_PASSWD_CHECK_FAILED));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILE_PASSWD_CHECK_FAILED));
         }
         if (!newPassword.equals(confirmPassword)) {
-            throw new ProfileOperationException(LangResource.getString("Profile.passwd.confirm.failed"));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString("Profile.passwd.confirm.failed"));
         }
         setPassword(newPassword);
     }
@@ -226,7 +226,7 @@ class Profile {
     public void setUserFirstName(String password, String userFirstName)
         throws ProfileOperationException {
         if (!checkPassword(password)) {
-            throw new ProfileOperationException(LangResource.getString(PROFILE_PASSWD_CHECK_FAILED));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILE_PASSWD_CHECK_FAILED));
         }
         this.userFirstName = userFirstName;
     }
@@ -239,7 +239,7 @@ class Profile {
     public void setUserLastName(String password, String userLastName)
         throws ProfileOperationException {
         if (!checkPassword(password)) {
-            throw new ProfileOperationException(LangResource.getString(PROFILE_PASSWD_CHECK_FAILED));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILE_PASSWD_CHECK_FAILED));
         }
         this.userLastName = userLastName;
     }
@@ -311,7 +311,7 @@ class Profile {
         throws ProfileOperationException {
 
         if (!checkPassword(password)) {
-            throw new ProfileOperationException(LangResource.getString(PROFILE_PASSWD_CHECK_FAILED));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILE_PASSWD_CHECK_FAILED));
         }
 
         setUserName(userName);

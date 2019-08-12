@@ -26,7 +26,7 @@ package jworkspace.ui.desktop;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 
 /**
  * Java Desktop constants
@@ -152,7 +152,7 @@ interface DesktopConstants {
     /**
      *
      */
-    String DESKTOP_NAME_DEFAULT = LangResource.getString("Desktop.defaultName");
+    String DESKTOP_NAME_DEFAULT = WorkspaceResourceAnchor.getString("Desktop.defaultName");
     /**
      *
      */

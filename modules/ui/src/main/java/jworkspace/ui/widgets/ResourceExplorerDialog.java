@@ -49,7 +49,7 @@ import javax.swing.border.EmptyBorder;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.ClassCache;
 
 /**
@@ -68,7 +68,7 @@ public class ResourceExplorerDialog extends ComponentDialog
     private String path;
 
     public ResourceExplorerDialog(Frame parent) {
-        super(parent, LangResource.getString("ResourceExplorerDlg.title"), true);
+        super(parent, WorkspaceResourceAnchor.getString("ResourceExplorerDlg.title"), true);
         setResizable(true);
         addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
@@ -101,11 +101,11 @@ public class ResourceExplorerDialog extends ComponentDialog
         browsePanel.setPreferredSize(new Dimension(150, 30));
         browsePanel.setBorder(new EmptyBorder(5, 0, 0, 0));
 
-        JLabel l = new JLabel(LangResource.getString("ResourceExplorerDlg.path"));
+        JLabel l = new JLabel(WorkspaceResourceAnchor.getString("ResourceExplorerDlg.path"));
         browsePanel.add(l, BorderLayout.WEST);
 
         bIconBrowse = new JButton("...");
-        bIconBrowse.setToolTipText(LangResource.getString("ResourceExplorerDlg.browse.tooltip"));
+        bIconBrowse.setToolTipText(WorkspaceResourceAnchor.getString("ResourceExplorerDlg.browse.tooltip"));
         bIconBrowse.addActionListener(this);
         bIconBrowse.setDefaultCapable(false);
         bIconBrowse.setOpaque(false);

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.ui.dialog.LoginDialog;
 import com.hyperrealm.kiwi.util.Config;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IUserProfileEngine;
 import jworkspace.kernel.Workspace;
 import jworkspace.kernel.WorkspaceLoginValidator;
@@ -174,9 +174,9 @@ public class UserProfileEngine implements IUserProfileEngine {
             }
             profilesManager.add(profile);
         } catch (IOException ex) {
-            UserProfileEngine.LOG.warn(LangResource.getString("message#290") + name, ex);
+            UserProfileEngine.LOG.warn(WorkspaceResourceAnchor.getString("message#290") + name, ex);
         } catch (ProfileOperationException ex) {
-            UserProfileEngine.LOG.warn(LangResource.getString("message#288") + name, ex);
+            UserProfileEngine.LOG.warn(WorkspaceResourceAnchor.getString("message#288") + name, ex);
         }
     }
 
@@ -188,7 +188,7 @@ public class UserProfileEngine implements IUserProfileEngine {
             Profile profile = profilesManager.loadProfile(name);
             profilesManager.delete(profile, password);
         } catch (ProfileOperationException ex) {
-            UserProfileEngine.LOG.warn(LangResource.getString("message#275") + name, ex);
+            UserProfileEngine.LOG.warn(WorkspaceResourceAnchor.getString("message#275") + name, ex);
         }
     }
 
@@ -257,7 +257,8 @@ public class UserProfileEngine implements IUserProfileEngine {
         Profile profile = profilesManager.loadProfile(name);
 
         if (!profile.checkPassword(password)) {
-            throw new ProfileOperationException(LangResource.getString("UserProfileEngine.passwd.check.failed"));
+            throw new ProfileOperationException(
+                WorkspaceResourceAnchor.getString("UserProfileEngine.passwd.check.failed"));
         }
 
         profilesManager.setCurrentProfile(profile.getUserName());
@@ -308,9 +309,9 @@ public class UserProfileEngine implements IUserProfileEngine {
     public JDialog getLoginDlg() {
         if (loginDlg == null) {
             loginDlg = new WorkspaceLoginValidator(Workspace.getUi().getFrame(),
-                LangResource.getString("LoginDlg.title"), ""
+                WorkspaceResourceAnchor.getString("LoginDlg.title"), ""
             );
-            loginDlg.setAcceptButtonText(LangResource.getString("LoginDlg.login.accept"));
+            loginDlg.setAcceptButtonText(WorkspaceResourceAnchor.getString("LoginDlg.login.accept"));
             loginDlg.pack();
             loginDlg.setIcon(null);
         }

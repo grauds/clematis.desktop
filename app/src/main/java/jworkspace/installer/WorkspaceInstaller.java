@@ -29,20 +29,17 @@ package jworkspace.installer;
 */
 
 import java.io.File;
-import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
-import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
 import com.hyperrealm.kiwi.util.StringUtils;
 
 import jworkspace.api.InstallEngine;
-import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspaceException;
 import lombok.Data;
 /**
  * Install engine is one of required by kernel.
@@ -59,7 +56,7 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Default logger
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Workspace.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInstaller.class);
     /**
      * JVM datasource
      */
@@ -74,11 +71,6 @@ public class WorkspaceInstaller implements InstallEngine {
     private DefinitionDataSource applicationData;
 
     /**
-     * Dynamic tree models are used by UI components
-     * to build visual tree against virtual models.
-     */
-    private DefaultKTreeModel jvmModel, libraryModel, applicationModel;
-    /**
      * Root folder for the data
      */
     private File dataRoot;
@@ -86,8 +78,81 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Default public constructor
      */
-    public WorkspaceInstaller() {
+    public WorkspaceInstaller(File dataRoot) {
         super();
+        this.dataRoot = dataRoot;
+        reset();
+    }
+
+    /**
+     * Load profile data.
+     */
+    @Override
+    public void load() {
+
+        try {
+            WorkspaceInstaller.LOG.info("> Loading installer");
+            /*
+             * Load data sources
+             */
+            applicationData.getRoot().load();
+            libraryData.getRoot().load();
+            jvmData.getRoot().load();
+            /*
+             * Install default virtual machine
+             */
+            if (jvmData.getChildren(jvmData.getRoot()).length == 0) {
+                JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
+
+                jvm.setName("default jvm");
+                jvm.setDescription("the jvm this instance of workspace is currently running");
+                jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
+                jvm.setVersion(System.getProperty("java.version"));
+                jvm.setArguments("-cp %c %m %a");
+                jvm.save();
+
+                jvmData.getRoot().add(jvm);
+            }
+
+            WorkspaceInstaller.LOG.info("> Installer is loaded");
+
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Resets initial state.
+     */
+    @Override
+    public void reset() {
+        /*
+         * (Re)set data sources
+         */
+        applicationData = new ApplicationDataSource(new File(dataRoot, ApplicationDataSource.ROOT));
+        libraryData = new LibraryDataSource(new File(dataRoot, LibraryDataSource.ROOT));
+        jvmData = new JVMDataSource(new File(dataRoot, JVMDataSource.ROOT));
+    }
+
+    /**
+     * Saves data state
+     */
+    @Override
+    public void save() {
+        try {
+            WorkspaceInstaller.LOG.info("> Saving installer");
+            /*
+             * Load data sources
+             */
+            applicationData.getRoot().save();
+            libraryData.getRoot().save();
+            jvmData.getRoot().save();
+
+            WorkspaceInstaller.LOG.info("> Installer is saved");
+
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -99,7 +164,7 @@ public class WorkspaceInstaller implements InstallEngine {
      * @param path String
      * @return String
      */
-    public String[] getInvocationArgs(String path) throws WorkspaceException {
+    public String[] getInvocationArgs(String path) {
 
         DefinitionNode node = findApplicationNode(path);
         return getInvocationArgs(((Application) node));
@@ -108,17 +173,18 @@ public class WorkspaceInstaller implements InstallEngine {
     /**
      * Load libraries from configuration file.
      */
-    private Enumeration loadLibraries(Application application) {
+    @Override
+    public List<Library> getApplicationLibraries(Application application) {
 
-        Vector<DefinitionNode> libs = new Vector<>();
+        List<Library> libs = new LinkedList<>();
         String[] linkPaths = StringUtils.split(application.getLibraryList(), ",");
         for (String linkPath : linkPaths) {
             DefinitionNode node = libraryData.findNode(linkPath);
-            if (node != null) {
-                libs.addElement(node);
+            if (node instanceof Library) {
+                libs.add((Library) node);
             }
         }
-        return libs.elements();
+        return libs;
     }
 
     /**
@@ -126,7 +192,8 @@ public class WorkspaceInstaller implements InstallEngine {
      *
      * @param application application
      */
-    private String[] getInvocationArgs(Application application) {
+    @Override
+    public String[] getInvocationArgs(Application application) {
 
         Vector<String> v = new Vector<>();
 
@@ -143,13 +210,12 @@ public class WorkspaceInstaller implements InstallEngine {
         StringBuilder sb = new StringBuilder();
         sb.append('"');
         sb.append('.');
-        Enumeration e = loadLibraries(application);
-        while (e.hasMoreElements()) {
-            Library lib = (Library) e.nextElement();
+        List<Library> libraries = getApplicationLibraries(application);
+        for (Library library : libraries) {
             if (sb.length() > 0) {
                 sb.append(pathSeparator);
             }
-            sb.append(lib.getPath());
+            sb.append(library.getPath());
         }
 
         // append the library for the program itself to the classpath
@@ -192,36 +258,12 @@ public class WorkspaceInstaller implements InstallEngine {
         return argList;
     }
 
-    /**
-     * Returns jar file for installation.
-     *
-     * @param path String
-     * @return String
-     */
-    public String getJarFile(String path) throws WorkspaceException {
-
-        DefinitionNode node = findApplicationNode(path);
-        return ((Application) node).getArchive();
-    }
-
-    /**
-     * Returns main class for installation.
-     *
-     * @param path String
-     * @return String
-     */
-    public String getMainClass(String path) throws WorkspaceException {
-
-        DefinitionNode node = findApplicationNode(path);
-        return ((Application) node).getMainClass();
-    }
-
-    private DefinitionNode findApplicationNode(String path) throws WorkspaceException {
+    private DefinitionNode findApplicationNode(String path) {
 
         DefinitionNode node = applicationData.findNode(path);
 
         if (!(node instanceof Application)) {
-            throw new WorkspaceException(path + " is not an application");
+            throw new IllegalArgumentException(path + " is not an application");
         }
 
         return node;
@@ -240,29 +282,10 @@ public class WorkspaceInstaller implements InstallEngine {
      * @param path String
      * @return String
      */
-    public String getWorkingDir(String path) throws WorkspaceException {
+    public String getApplicationWorkingDir(String path) {
 
         DefinitionNode node = findApplicationNode(path);
         return ((Application) node).getWorkingDirectory();
-    }
-
-    /**
-     * Returns flag, that tells Workspace to launch this application on startup.
-     * Usually, this flag should set to "true" for services like network connection or system clocks.
-     *
-     * @param path String
-     * @return String
-     */
-    @Override
-    public boolean isLoadedAtStartup(String path) {
-
-        DefinitionNode node = applicationData.findNode(path);
-
-        if (!(node instanceof Application)) {
-            return false;
-        }
-
-        return ((Application) node).isLoadedAtStartup();
     }
 
     /**
@@ -285,87 +308,4 @@ public class WorkspaceInstaller implements InstallEngine {
         return ((Application) node).isSeparateProcess();
     }
 
-    /**
-     * Load profile data.
-     */
-    @Override
-    public void load() {
-
-        try {
-            WorkspaceInstaller.LOG.info("> Loading installer");
-
-            dataRoot = new File(Workspace.getUserHomePath());
-            // create global data models
-            applicationData = new ApplicationDataSource(new File(dataRoot, ApplicationDataSource.ROOT));
-            applicationModel = new ExternalKTreeModel<>(applicationData);
-
-            libraryData = new LibraryDataSource(new File(dataRoot, LibraryDataSource.ROOT));
-            libraryModel = new ExternalKTreeModel<>(libraryData);
-
-            jvmData = new JVMDataSource(new File(dataRoot, JVMDataSource.ROOT));
-            jvmModel = new ExternalKTreeModel<>(jvmData);
-            /*
-             * Install default virtual machine
-             */
-            JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
-
-            jvm.setName("default jvm");
-            jvm.setDescription("the jvm this instance of workspace is currently running");
-            jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
-            jvm.setVersion(System.getProperty("java.version"));
-            jvm.setArguments("-cp %c %m %a");
-            jvm.save();
-
-            jvmData.getRoot().add(jvm);
-            /*
-             * Load applications
-             */
-            DefinitionNode root = applicationData.getRoot();
-            startupLaunch(applicationData.getChildren(root));
-            WorkspaceInstaller.LOG.info("> Installer is loaded");
-
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * Loads recursively all applications, that have launch at startup flag.
-     */
-    @SuppressWarnings("NestedIfDepth")
-    private void startupLaunch(DefinitionNode[] nodes) {
-
-        for (DefinitionNode node : nodes) {
-
-            if (node instanceof Application) {
-                if (((Application) node).isLoadedAtStartup()) {
-                    if (((Application) node).isSeparateProcess()) {
-                        Workspace.getRuntimeManager().executeExternalProcess(
-                                getInvocationArgs((Application) node),
-                                ((Application) node).getWorkingDirectory(),
-                                ((Application) node).getName());
-                    }
-                    /*
-                     * TODO implement the sandbox for a third party application
-                     */
-                }
-            } else {
-                startupLaunch(applicationData.getChildren(node));
-            }
-        }
-    }
-
-    /**
-     * Resets initial state.
-     */
-    @Override
-    public void reset() {
-    }
-
-    /**
-     * Saves profiles data. But there is no actually data to save, 'couse everything is already written on disk.
-     */
-    @Override
-    public void save() {
-    }
 }

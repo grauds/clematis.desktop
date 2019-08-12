@@ -33,7 +33,7 @@ import javax.swing.JTabbedPane;
 
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 
 /**
  * Settings dialog shows a list of general workspace options.
@@ -47,7 +47,7 @@ public class SettingsDialog extends ComponentDialog {
     private PlafPanel plafPanel;
 
     public SettingsDialog(Frame parent) {
-        super(parent, LangResource.getString("SettingsDialog.title"), true);
+        super(parent, WorkspaceResourceAnchor.getString("SettingsDialog.title"), true);
         setResizable(false);
     }
 
@@ -61,9 +61,9 @@ public class SettingsDialog extends ComponentDialog {
 
         LoggingPanel loggingPanel = new LoggingPanel();
 
-        tabbedPane.addTab(LangResource.getString("SettingsDialog.textureTab"), texturePanel);
-        tabbedPane.addTab(LangResource.getString("SettingsDialog.lafTab"), plafPanel);
-        tabbedPane.addTab(LangResource.getString("SettingsDialog.loggingTab"), loggingPanel);
+        tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.textureTab"), texturePanel);
+        tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.lafTab"), plafPanel);
+        tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.loggingTab"), loggingPanel);
 
         return (tabbedPane);
     }

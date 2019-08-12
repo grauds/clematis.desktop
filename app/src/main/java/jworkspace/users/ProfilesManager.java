@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 /**
  * This class can add, rename, delete or list user profiles.
@@ -66,10 +66,11 @@ class ProfilesManager implements Comparator {
     public void add(Profile profile) throws ProfileOperationException, IOException {
 
         if (profile == null) {
-            throw new ProfileOperationException(LangResource.getString(PROFILES_MANAGER_PROFILE_NULL));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILES_MANAGER_PROFILE_NULL));
         }
         if (getProfilesList().contains(profile.getUserName())) {
-            throw new ProfileOperationException(LangResource.getString("ProfilesManager.profile.alreadyExists"));
+            throw new ProfileOperationException(
+                WorkspaceResourceAnchor.getString("ProfilesManager.profile.alreadyExists"));
         }
 
         saveProfile(profile);
@@ -92,10 +93,11 @@ class ProfilesManager implements Comparator {
     public void delete(Profile profile, String password) throws ProfileOperationException {
 
         if (profile == null) {
-            throw new ProfileOperationException(LangResource.getString(PROFILES_MANAGER_PROFILE_NULL));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILES_MANAGER_PROFILE_NULL));
         }
         if (!profile.checkPassword(password)) {
-            throw new ProfileOperationException(LangResource.getString("ProfilesManager.passwd.check.failed"));
+            throw new ProfileOperationException(
+                WorkspaceResourceAnchor.getString("ProfilesManager.passwd.check.failed"));
         }
 
         File file = new File(profile.getProfilePath());
@@ -161,7 +163,7 @@ class ProfilesManager implements Comparator {
      */
     Profile loadProfile(String name) throws ProfileOperationException {
         if (name == null) {
-            throw new ProfileOperationException(LangResource.getString("ProfilesManager.name.null"));
+            throw new ProfileOperationException(WorkspaceResourceAnchor.getString("ProfilesManager.name.null"));
         }
         try {
             return readProfile(name);

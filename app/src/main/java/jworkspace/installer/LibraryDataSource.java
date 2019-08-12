@@ -51,7 +51,7 @@ class LibraryDataSource extends DefinitionDataSource {
      *
      * @param root java.io.File
      */
-    LibraryDataSource(File root) throws IOException {
+    LibraryDataSource(File root) {
         super(root);
         rootName = root != null ? root.getName() : LibraryDataSource.ROOT;
     }

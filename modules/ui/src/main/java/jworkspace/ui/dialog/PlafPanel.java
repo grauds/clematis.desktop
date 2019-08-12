@@ -44,7 +44,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.LookAndFeelChooser;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.widgets.ThemeChooser;
 
@@ -82,7 +82,7 @@ class PlafPanel extends KPanel implements ActionListener {
         //***** laf chooser *****
 
         KPanel kp = new KPanel();
-        kp.setBorder(new TitledBorder(LangResource.getString("PlafPanel.lafBorder.title")));
+        kp.setBorder(new TitledBorder(WorkspaceResourceAnchor.getString("PlafPanel.lafBorder.title")));
         kp.setLayout(new BorderLayout());
 
         getLfChooser().setPreferredSize(new Dimension(150, 20));
@@ -98,7 +98,7 @@ class PlafPanel extends KPanel implements ActionListener {
         //*** themes chooser ********
 
         kp = new KPanel();
-        kp.setBorder(new TitledBorder(LangResource.getString("PlafPanel.themesBorder.title")));
+        kp.setBorder(new TitledBorder(WorkspaceResourceAnchor.getString("PlafPanel.themesBorder.title")));
         kp.setLayout(new BorderLayout());
 
         getThemeChooser().setPreferredSize(new Dimension(150, 20));

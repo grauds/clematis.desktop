@@ -52,7 +52,7 @@ import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
@@ -89,16 +89,16 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         JTabbedPane tabbedPane = new JTabbedPane();
         setLayout(new BorderLayout());
 
-        tabbedPane.add(LangResource.getString("DesktopIconPanel.imagePanel.title"),
+        tabbedPane.add(WorkspaceResourceAnchor.getString("DesktopIconPanel.imagePanel.title"),
             createFirstPanel());
-        tabbedPane.add(LangResource.getString("DesktopIconPanel.commandPanel.title"),
+        tabbedPane.add(WorkspaceResourceAnchor.getString("DesktopIconPanel.commandPanel.title"),
             createModesPanel());
 
         tDesc = new JTextArea(7, 1);
         tDesc.setLineWrap(true);
         tDesc.setWrapStyleWord(true);
 
-        tabbedPane.add(LangResource.getString("DesktopIconPanel.descPanel.title"),
+        tabbedPane.add(WorkspaceResourceAnchor.getString("DesktopIconPanel.descPanel.title"),
             new JScrollPane(tDesc));
         tabbedPane.setOpaque(false);
         disableAllOnModesPanel();
@@ -114,9 +114,9 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
             }
         } else if (o == bScriptBrowse) {
             JFileChooser chooser
-                = ClassCache.getFileChooser(jworkspace.LangResource.getString("DesktopIconPanel.chooseScript.title"),
+                = ClassCache.getFileChooser(WorkspaceResourceAnchor.getString("DesktopIconPanel.chooseScript.title"),
                     new String[]{"bsh"},
-                    LangResource.getString("DesktopIconPanel.script")
+                    WorkspaceResourceAnchor.getString("DesktopIconPanel.script")
                 );
 
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -142,8 +142,8 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
             }
         } else if (o == bNativeBrowse) {
             JFileChooser chooser = ClassCache.getFileChooser(
-                jworkspace.LangResource.getString(DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE),
-                    null, LangResource.getString("DesktopIconPanel.native.command")
+                WorkspaceResourceAnchor.getString(DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE),
+                    null, WorkspaceResourceAnchor.getString("DesktopIconPanel.native.command")
                 );
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setMultiSelectionEnabled(false);
@@ -211,7 +211,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         gbc.weightx = 0;
         JLabel l;
 
-        l = new JLabel(LangResource.getString("DesktopIconPanel.icon.name"));
+        l = new JLabel(WorkspaceResourceAnchor.getString("DesktopIconPanel.icon.name"));
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
         firstPanel.add(l, gbc);
@@ -242,7 +242,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         ImageIcon icon = new ImageIcon(Workspace.
             getResourceManager().getImage("folder.png"));
         bIconBrowse = new JButton(icon);
-        bIconBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.browseImage.tooltip"));
+        bIconBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browseImage.tooltip"));
         bIconBrowse.addActionListener(this);
         bIconBrowse.setDefaultCapable(false);
         bIconBrowse.setOpaque(false);
@@ -251,7 +251,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         icon = new ImageIcon(Workspace.
             getResourceManager().getImage("repository.png"));
         bLibBrowser = new JButton(icon);
-        bLibBrowser.setToolTipText(LangResource.getString("DesktopIconPanel.browseRepos.tooltip"));
+        bLibBrowser.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browseRepos.tooltip"));
         bLibBrowser.addActionListener(this);
         bLibBrowser.setDefaultCapable(false);
         bLibBrowser.setOpaque(false);
@@ -284,7 +284,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         gbc.weightx = 0;
 
         ButtonGroup bg = new ButtonGroup();
-        rb3 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.javaApp"));
+        rb3 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.javaApp"));
         rb3.addActionListener(this);
         rb3.setOpaque(false);
         gbc.gridwidth = 1;
@@ -305,7 +305,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         p1.add(DesktopConstants.CENTER, tJavaApp);
 
         bAppBrowse = new KButton(DesktopConstants.DOTS);
-        bAppBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.browse.javaApp"));
+        bAppBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browse.javaApp"));
         bAppBrowse.addActionListener(this);
         bAppBrowse.setDefaultCapable(false);
         p1.add(DesktopConstants.EAST, bAppBrowse);
@@ -315,7 +315,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         modesPanel.add(p1, gbc);
 
-        rb1 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.bshConsole"));
+        rb1 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.bshConsole"));
         rb1.addActionListener(this);
         rb1.setOpaque(false);
         gbc.gridwidth = 1;
@@ -331,7 +331,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         modesPanel.add(tScriptedMethod, gbc);
 
-        rb2 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.bshFile"));
+        rb2 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.bshFile"));
         rb2.addActionListener(this);
         rb2.setOpaque(false);
         gbc.gridwidth = 1;
@@ -352,7 +352,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         p0.add(DesktopConstants.CENTER, tSourceScript);
 
         bScriptBrowse = new KButton(DesktopConstants.DOTS);
-        bScriptBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.browse.bshFile"));
+        bScriptBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browse.bshFile"));
         bScriptBrowse.addActionListener(this);
         bScriptBrowse.setDefaultCapable(false);
         p0.add(DesktopConstants.EAST, bScriptBrowse);
@@ -362,7 +362,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         modesPanel.add(p0, gbc);
 
-        rb4 = new JRadioButton(LangResource.getString("DesktopIconPanel.categ.native"));
+        rb4 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.native"));
         rb4.addActionListener(this);
         rb4.setOpaque(false);
         gbc.gridwidth = 1;
@@ -383,7 +383,8 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         p1.add(DesktopConstants.CENTER, tNativeCommand);
 
         bNativeBrowse = new KButton(DesktopConstants.DOTS);
-        bNativeBrowse.setToolTipText(LangResource.getString(DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
+        bNativeBrowse.setToolTipText(WorkspaceResourceAnchor.getString(
+            DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
         bNativeBrowse.addActionListener(this);
         bNativeBrowse.setDefaultCapable(false);
         p1.add(DesktopConstants.EAST, bNativeBrowse);
@@ -393,7 +394,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         modesPanel.add(p1, gbc);
 
-        JLabel l = new JLabel(LangResource.getString("DesktopIconPanel.native.wd"));
+        JLabel l = new JLabel(WorkspaceResourceAnchor.getString("DesktopIconPanel.native.wd"));
         l.setOpaque(false);
         gbc.gridwidth = 1;
         gbc.insets = KiwiUtils.FIRST_INSETS;
@@ -412,7 +413,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         p1.add(DesktopConstants.CENTER, field);
 
         bWdBrowse = new KButton(DesktopConstants.DOTS);
-        bWdBrowse.setToolTipText(LangResource.getString("DesktopIconPanel.native.wd.browse"));
+        bWdBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.native.wd.browse"));
         bWdBrowse.addActionListener(this);
         bWdBrowse.setDefaultCapable(false);
         p1.add(DesktopConstants.EAST, bWdBrowse);

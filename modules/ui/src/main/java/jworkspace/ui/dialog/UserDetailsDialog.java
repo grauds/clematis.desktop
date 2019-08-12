@@ -55,7 +55,7 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceManager;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 
 /**
@@ -71,7 +71,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
     private DefaultTableModel tmodel;
 
     public UserDetailsDialog(Frame parent) {
-        super(parent, LangResource.getString("UserDetailsDlg.title"), true);
+        super(parent, WorkspaceResourceAnchor.getString("UserDetailsDlg.title"), true);
     }
 
     protected boolean accept() {
@@ -94,15 +94,15 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
                 getImage("user_var.png"));
 
             String name = (String) JOptionPane.showInputDialog(this,
-                    LangResource.getString("UserDetailsDlg.addParam.question"),
-                    LangResource.getString("UserDetailsDlg.addParam.title"),
+                    WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.question"),
+                    WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.title"),
                     JOptionPane.INFORMATION_MESSAGE,
                     icon,
                     null, null);
 
             if (name != null && Workspace.getProfiles().getParameters().get(name) != null) {
                 JOptionPane.showMessageDialog(this,
-                    LangResource.getString("UserDetailsDlg.addParam.alreadyExists"));
+                    WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.alreadyExists"));
             } else if (name != null){
                 Object[] row = new Object[2];
                 row[0] = name;
@@ -117,8 +117,8 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
             String name = (String) table.getValueAt(rows[0], 0);
 
             if (JOptionPane.showConfirmDialog(this,
-                LangResource.getString("UserDetailsDlg.deleteParam.message") + "?",
-                LangResource.getString("UserDetailsDlg.deleteParam.title"),
+                WorkspaceResourceAnchor.getString("UserDetailsDlg.deleteParam.message") + "?",
+                WorkspaceResourceAnchor.getString("UserDetailsDlg.deleteParam.title"),
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 tmodel.removeRow(rows[0]);
                 Workspace.getProfiles().getParameters().remove(name);
@@ -151,8 +151,8 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         tabbedPane.setOpaque(false);
 
         userDetailsPanel = new UserDetailsPanel();
-        tabbedPane.addTab(LangResource.getString("UserDetailsDlg.generalTab"), userDetailsPanel);
-        tabbedPane.addTab(LangResource.getString("UserDetailsDlg.variablesTab"), buildPropertyEditor());
+        tabbedPane.addTab(WorkspaceResourceAnchor.getString("UserDetailsDlg.generalTab"), userDetailsPanel);
+        tabbedPane.addTab(WorkspaceResourceAnchor.getString("UserDetailsDlg.variablesTab"), buildPropertyEditor());
 
         return (tabbedPane);
     }
@@ -182,13 +182,13 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         ResourceManager kresmgr = KiwiUtils.getResourceManager();
 
         bNew = new KButton(kresmgr.getIcon("plus.png"));
-        bNew.setToolTipText(LangResource.getString("UserDetailsDlg.addParam.tooltip"));
+        bNew.setToolTipText(WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.tooltip"));
         bNew.addActionListener(this);
         bNew.setDefaultCapable(false);
         pButtons.add(bNew);
 
         bDelete = new KButton(kresmgr.getIcon("minus.png"));
-        bDelete.setToolTipText(LangResource.getString("UserDetailsDlg.deleteParam.tooltip"));
+        bDelete.setToolTipText(WorkspaceResourceAnchor.getString("UserDetailsDlg.deleteParam.tooltip"));
         bDelete.addActionListener(this);
         bDelete.setDefaultCapable(false);
         pButtons.add(bDelete);
@@ -199,11 +199,11 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         tmodel = new DefaultTableModel();
         table.setModel(tmodel);
 
-        tmodel.addColumn(LangResource.getString("UserDetailsDlg.variable"));
+        tmodel.addColumn(WorkspaceResourceAnchor.getString("UserDetailsDlg.variable"));
         table.addColumn(new TableColumn(0, 20));
         // todo col.setCellEditor(new ImmutableCellEditor());
 
-        tmodel.addColumn(LangResource.getString("UserDetailsDlg.value"));
+        tmodel.addColumn(WorkspaceResourceAnchor.getString("UserDetailsDlg.value"));
         table.addColumn(new TableColumn(1, 20));
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -215,7 +215,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         pButCarrier.add(pButtons, BorderLayout.NORTH);
         propertyEditor.add(pButCarrier, BorderLayout.EAST);
 
-        setAcceptButtonText(LangResource.getString("UserDetailsDlg.var.save"));
+        setAcceptButtonText(WorkspaceResourceAnchor.getString("UserDetailsDlg.var.save"));
 
         ListSelectionModel sel = new DefaultListSelectionModel();
         table.setSelectionModel(sel);

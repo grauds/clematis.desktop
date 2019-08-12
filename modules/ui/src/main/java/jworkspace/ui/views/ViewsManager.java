@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.AbstractViewsManager;
 import jworkspace.ui.IView;
@@ -108,7 +108,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Main menu
      */
-    private JMenu go = new JMenu(LangResource.getString("ViewsManager.menu.go"));
+    private JMenu go = new JMenu(WorkspaceResourceAnchor.getString("ViewsManager.menu.go"));
     /**
      * Menu for Workspace system menubar.
      */
@@ -160,8 +160,8 @@ public class ViewsManager extends AbstractViewsManager {
 
             String result = (String) JOptionPane.showInputDialog(
                 parent,
-                LangResource.getString("ViewsManager.newDesktop.message"),
-                LangResource.getString("ViewsManager.newDesktop.title"),
+                WorkspaceResourceAnchor.getString("ViewsManager.newDesktop.message"),
+                WorkspaceResourceAnchor.getString("ViewsManager.newDesktop.title"),
                 JOptionPane.QUESTION_MESSAGE,
                 icon, null, null);
 
@@ -186,8 +186,8 @@ public class ViewsManager extends AbstractViewsManager {
                 getImage("desktop/remove.png"));
 
             result = JOptionPane.showConfirmDialog(parent,
-                LangResource.getString("ViewsManager.removeView.message"),
-                LangResource.getString("ViewsManager.removeView.title"),
+                WorkspaceResourceAnchor.getString("ViewsManager.removeView.message"),
+                WorkspaceResourceAnchor.getString("ViewsManager.removeView.title"),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
             if (result == JOptionPane.YES_OPTION) {
                 deleteCurrentView();
@@ -269,7 +269,7 @@ public class ViewsManager extends AbstractViewsManager {
      */
     public JMenu[] getMenu() {
 
-        go.setMnemonic(LangResource.getString("ViewsManager.go.key").charAt(0));
+        go.setMnemonic(WorkspaceResourceAnchor.getString("ViewsManager.go.key").charAt(0));
         /*
          * Back action.
          */
@@ -382,7 +382,7 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Assemble default configuration.
          */
-        addDesktop(LangResource.getString("Desktop.defaultName"));
+        addDesktop(WorkspaceResourceAnchor.getString("Desktop.defaultName"));
         add(getHeaderPanel(), getHeaderPanel().getOrientation());
     }
 
@@ -393,8 +393,8 @@ public class ViewsManager extends AbstractViewsManager {
 
         if (views.size() == 1) {
             JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
-                    LangResource.getString("ViewsManager.cannotRmView.message"),
-                    LangResource.getString("ViewsManager.cannotRmView.title"),
+                    WorkspaceResourceAnchor.getString("ViewsManager.cannotRmView.message"),
+                    WorkspaceResourceAnchor.getString("ViewsManager.cannotRmView.title"),
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -467,7 +467,7 @@ public class ViewsManager extends AbstractViewsManager {
             try {
                 views.get(currentView).activated(false);
             } catch (Throwable err) {
-                WorkspaceError.exception(LangResource.getString("ViewsManager.deactivate.fault"), err);
+                WorkspaceError.exception(WorkspaceResourceAnchor.getString("ViewsManager.deactivate.fault"), err);
                 // do nothing, just go on
             }
             /*
@@ -494,7 +494,7 @@ public class ViewsManager extends AbstractViewsManager {
             try {
                 views.get(index).activated(true);
             } catch (Throwable err) {
-                WorkspaceError.exception(LangResource.getString("ViewsManager.activate.fault"), err);
+                WorkspaceError.exception(WorkspaceResourceAnchor.getString("ViewsManager.activate.fault"), err);
                 // do nothing, just go on
             }
             /*
@@ -717,7 +717,7 @@ public class ViewsManager extends AbstractViewsManager {
             && ((JComponent) getCurrentView()).getName() != null) {
             getHeaderPanel().setHeaderLabelText(((JComponent) getCurrentView()).getName());
         } else {
-            getHeaderPanel().setHeaderLabelText(LangResource.getString("ViewsManager.header.default"));
+            getHeaderPanel().setHeaderLabelText(WorkspaceResourceAnchor.getString("ViewsManager.header.default"));
         }
 
         setViewsList(getNames(), getCurrentViewNo());
@@ -733,7 +733,7 @@ public class ViewsManager extends AbstractViewsManager {
     public void addView(IView view, boolean displayImmediately, boolean register) {
 
         if (!(view instanceof JComponent)) {
-            throw new IllegalArgumentException(LangResource.getString("View should be a JComponent"));
+            throw new IllegalArgumentException(WorkspaceResourceAnchor.getString("View should be a JComponent"));
         }
 
         if (register) {
@@ -790,12 +790,12 @@ public class ViewsManager extends AbstractViewsManager {
                 ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
                     getImage("desktop/reload.png"));
                 JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
-                    LangResource.getString("ViewsManager.reload.message"),
-                    LangResource.getString("ViewsManager.reload.title"),
+                    WorkspaceResourceAnchor.getString("ViewsManager.reload.message"),
+                    WorkspaceResourceAnchor.getString("ViewsManager.reload.title"),
                     JOptionPane.INFORMATION_MESSAGE, icon);
             }
         } catch (IOException ex) {
-            WorkspaceError.exception(LangResource.getString("ViewsManager.reload.failed"), ex);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("ViewsManager.reload.failed"), ex);
         }
     }
 

@@ -75,7 +75,6 @@ import com.hyperrealm.kiwi.util.Task;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
-import jworkspace.LangResource;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.UI;
@@ -499,7 +498,7 @@ public class WorkspaceGUI implements UI {
          */
         SwingUtilities.invokeLater(() -> {
             pr = new ProgressDialog(Workspace.getUi().getFrame(),
-                LangResource.getString("WorkspaceGUI.shells.loading"), true);
+                WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.loading"), true);
 
             ShellsLoader shloader = new ShellsLoader();
             pr.track(shloader);
@@ -564,7 +563,7 @@ public class WorkspaceGUI implements UI {
             config.putBoolean(CK_UNDECORATED, getFrame().isUndecorated());
             config.store();
         } catch (IOException ex) {
-            WorkspaceError.exception(LangResource.getString("WorkspaceGUI.save.failed"), ex);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("WorkspaceGUI.save.failed"), ex);
         }
         /*
          * Write texture on disk
@@ -588,7 +587,7 @@ public class WorkspaceGUI implements UI {
                 }
 
             } catch (IOException e) {
-                WorkspaceError.exception(LangResource.getString("WorkspaceGUI.saveTexture.failed"), e);
+                WorkspaceError.exception(WorkspaceResourceAnchor.getString("WorkspaceGUI.saveTexture.failed"), e);
             }
         }
         /*
@@ -617,7 +616,7 @@ public class WorkspaceGUI implements UI {
 
             ((MainFrame) getFrame()).save(outputStream);
         } catch (IOException e) {
-            WorkspaceError.exception(LangResource.getString("WorkspaceGUI.saveFrame.failed"), e);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("WorkspaceGUI.saveFrame.failed"), e);
         }
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -713,12 +712,12 @@ public class WorkspaceGUI implements UI {
             Plugin[] plugins = Workspace.getRuntimeManager().loadPlugins(fileName);
 
             if (plugins == null || plugins.length == 0) {
-                pr.setMessage(LangResource.getString("WorkspaceGUI.shells.notFound"));
+                pr.setMessage(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));
                 pr.setProgress(PROGRESS_COMPLETED);
             } else {
 
                 for (int i = 0; i < plugins.length; i++) {
-                    pr.setMessage(LangResource.getString("WorkspaceGUI.shell.loading")
+                    pr.setMessage(WorkspaceResourceAnchor.getString("WorkspaceGUI.shell.loading")
                         + LOG_SPACE + plugins[i].getName());
                     WorkspaceGUI.LOG.info(PROMPT + "Loading " + plugins[i].getName() + LOG_FINISH);
                     if (plugins[i].getIcon() != null) {
@@ -817,8 +816,8 @@ public class WorkspaceGUI implements UI {
                     ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
                         getImage("desktop/desktop_big.png"));
                     JOptionPane.showMessageDialog(getFrame(),
-                        LangResource.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
-                        LangResource.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
+                        WorkspaceResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
+                        WorkspaceResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
                         JOptionPane.INFORMATION_MESSAGE, icon);
                 }
             }

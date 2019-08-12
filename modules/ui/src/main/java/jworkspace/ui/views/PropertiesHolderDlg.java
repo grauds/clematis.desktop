@@ -44,8 +44,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jworkspace.LangResource;
-
+import jworkspace.WorkspaceResourceAnchor;
 /**
  * This dialog holds a properties panel for a view. Each panel is placed as a component to a tab view.
  * After user selects to close dialog, this class invokes <code>syncData</code> method on every panel
@@ -72,19 +71,19 @@ public class PropertiesHolderDlg extends ComponentDialog {
     @SuppressWarnings("checkstyle:MagicNumber")
     PropertiesHolderDlg(Frame parent, PropertiesPanel[] optionPanels) {
 
-        super(parent, LangResource.getString("PropertiesHolder.title"), true);
+        super(parent, WorkspaceResourceAnchor.getString("PropertiesHolder.title"), true);
 
         if (optionPanels == null || optionPanels.length == 0) {
 
             KPanel emptyPanel = new KPanel();
             emptyPanel.setPreferredSize(new Dimension(250, 300));
             emptyPanel.setLayout(new BorderLayout());
-            JLabel l = new JLabel(LangResource.getString("PropertiesHolder.empty.message"));
+            JLabel l = new JLabel(WorkspaceResourceAnchor.getString("PropertiesHolder.empty.message"));
             l.setHorizontalAlignment(JLabel.CENTER);
             l.setOpaque(false);
             emptyPanel.add(l, BorderLayout.CENTER);
 
-            tabbedPane.addTab(LangResource.getString("PropertiesHolder.empty.tab"), emptyPanel);
+            tabbedPane.addTab(WorkspaceResourceAnchor.getString("PropertiesHolder.empty.tab"), emptyPanel);
         } else {
             for (PropertiesPanel optionPanel : optionPanels) {
                 if (!(optionPanel instanceof Component)) {
@@ -96,7 +95,7 @@ public class PropertiesHolderDlg extends ComponentDialog {
                 if (optionPanel.getName() != null) {
                     tabbedPane.addTab(optionPanel.getName(), (Component) optionPanel);
                 } else {
-                    tabbedPane.addTab(LangResource.getString("PropertiesHolder.empty.tab.header"),
+                    tabbedPane.addTab(WorkspaceResourceAnchor.getString("PropertiesHolder.empty.tab.header"),
                         (Component) optionPanel);
                 }
             }

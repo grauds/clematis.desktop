@@ -26,9 +26,11 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
-//
+import java.util.List;
+
+import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionDataSource;
+import jworkspace.installer.Library;
 import jworkspace.kernel.WorkspaceException;
 
 /**
@@ -39,10 +41,6 @@ import jworkspace.kernel.WorkspaceException;
  * @author Anton Troshin
  */
 public interface InstallEngine extends IEngine {
-    /**
-     * File extension for configuration file.
-     */
-    String FILE_EXTENSION = ".dat";
 
     /**
      * Returns application data.
@@ -50,13 +48,6 @@ public interface InstallEngine extends IEngine {
      * @return jworkspace.installer.DefinitionDataSource
      */
     DefinitionDataSource getApplicationData();
-
-    /**
-     * Returns tree model for application data.
-     *
-     * @return kiwi.ui.model.DynamicTreeModel
-     */
-    DefaultKTreeModel getApplicationModel();
 
     /**
      * Returns command line for application,
@@ -68,26 +59,11 @@ public interface InstallEngine extends IEngine {
     String[] getInvocationArgs(String path) throws WorkspaceException;
 
     /**
-     * Returns jar file for installation.
-     *
-     * @param path String
-     * @return String
-     */
-    String getJarFile(String path) throws WorkspaceException;
-
-    /**
      * Returns jvm data.
      *
      * @return jworkspace.installer.DefinitionDataSource
      */
     DefinitionDataSource getJvmData();
-
-    /**
-     * Returns tree model for jvm data.
-     *
-     * @return kiwi.ui.model.DynamicTreeModel
-     */
-    DefaultKTreeModel getJvmModel();
 
     /**
      * Returns library data.
@@ -97,19 +73,19 @@ public interface InstallEngine extends IEngine {
     DefinitionDataSource getLibraryData();
 
     /**
-     * Returns tree model for library data.
+     * Get the list of application libraries.
      *
-     * @return kiwi.ui.model.DynamicTreeModel
+     * @param application to get libraries of
+     * @return a list of libraries
      */
-    DefaultKTreeModel getLibraryModel();
+    List<Library> getApplicationLibraries(Application application);
 
     /**
-     * Returns main class for installation.
+     * Returns command line configured to launch application.
      *
-     * @param path String
-     * @return String
+     * @param application application
      */
-    String getMainClass(String path) throws WorkspaceException;
+    String[] getInvocationArgs(Application application);
 
     /**
      * Returns working directory for new process.
@@ -117,16 +93,7 @@ public interface InstallEngine extends IEngine {
      * @param path String
      * @return String
      */
-    String getWorkingDir(String path) throws WorkspaceException;
-
-    /**
-     * Returns flag, that tells Workspace to launch this application on startup. Usually, this flag should
-     * set to "true" for services like network connection or system clocks.
-     *
-     * @param path String
-     * @return String
-     */
-    boolean isLoadedAtStartup(String path);
+    String getApplicationWorkingDir(String path) throws WorkspaceException;
 
     /**
      * Returns flag, that tells Workspace to launch this application in separate process. Usually,

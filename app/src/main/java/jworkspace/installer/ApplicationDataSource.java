@@ -51,7 +51,7 @@ public class ApplicationDataSource extends DefinitionDataSource {
      *
      * @param root java.io.File
      */
-    ApplicationDataSource(File root) throws IOException {
+    ApplicationDataSource(File root) {
         super(root);
         rootName = root != null ? root.getName() : ApplicationDataSource.ROOT;
     }

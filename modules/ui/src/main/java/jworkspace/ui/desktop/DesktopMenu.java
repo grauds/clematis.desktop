@@ -35,7 +35,7 @@ import javax.swing.UIManager;
 import static jworkspace.ui.desktop.DesktopConstants.PASTE;
 import static jworkspace.ui.desktop.DesktopConstants.SELECT_ALL;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.UISwitchListener;
@@ -73,32 +73,35 @@ class DesktopMenu extends JPopupMenu {
         this.desktop = desktop;
 
         createShortcut = add(Utils.createMenuItem(listener,
-            LangResource.getString("Desktop.menu.createShortcut") + WorkspaceGUI.LOG_FINISH,
+            WorkspaceResourceAnchor.getString("Desktop.menu.createShortcut") + WorkspaceGUI.LOG_FINISH,
                 DesktopConstants.CREATE_SHORTCUT, null));
 
-        paste = add(Utils.createMenuItem(listener, LangResource.getString("Desktop.menu.paste"), PASTE, null));
+        paste = add(Utils.createMenuItem(listener, WorkspaceResourceAnchor.getString(
+            "Desktop.menu.paste"), PASTE, null));
         paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK));
 
-        selectAll = add(Utils.createMenuItem(listener, LangResource.getString("Desktop.menu.selectAll"),
+        selectAll = add(Utils.createMenuItem(listener, WorkspaceResourceAnchor.getString("Desktop.menu.selectAll"),
                 SELECT_ALL, null));
         selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
         this.addSeparator();
 
         gradientFill = add(Utils.createMenuItem(listener,
-            LangResource.getString("Desktop.menu.gradientFill"), DesktopConstants.GRADIENT_FILL, null));
+            WorkspaceResourceAnchor.getString("Desktop.menu.gradientFill"), DesktopConstants.GRADIENT_FILL, null));
 
         changeBackgroundColour = add(Utils.createMenuItem(listener,
-            LangResource.getString("Desktop.menu.background"), DesktopConstants.BACKGROUND, null));
+            WorkspaceResourceAnchor.getString("Desktop.menu.background"), DesktopConstants.BACKGROUND, null));
 
         chooseBgImage = add(Utils.createMenuItem(listener,
-            LangResource.getString("Desktop.menu.chooseBgImage"), DesktopConstants.CHOOSE_BACKGROUND_IMAGE, null));
+            WorkspaceResourceAnchor.getString("Desktop.menu.chooseBgImage"),
+            DesktopConstants.CHOOSE_BACKGROUND_IMAGE, null));
         switchCover = add(Utils.createMenuItem(listener,
-            LangResource.getString("Desktop.menu.switchCover"), DesktopConstants.SWITCH_COVER, null));
+            WorkspaceResourceAnchor.getString("Desktop.menu.switchCover"), DesktopConstants.SWITCH_COVER, null));
 
         this.addSeparator();
 
         closeAllWindows = add(Utils.createMenuItem(listener,
-            LangResource.getString("Desktop.menu.closeAllWindows"), DesktopConstants.CLOSE_ALL_WINDOWS, null));
+            WorkspaceResourceAnchor.getString("Desktop.menu.closeAllWindows"),
+            DesktopConstants.CLOSE_ALL_WINDOWS, null));
 
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }

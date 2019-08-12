@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KDesktopPane;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.IView;
@@ -232,8 +232,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
             case DesktopConstants.CREATE_SHORTCUT:
                 DesktopIcon icon = new DesktopIcon(
-                    LangResource.getString("Desktop.defaultIconName"),
-                    LangResource.getString("Desktop.defaultIconCommand"),
+                    WorkspaceResourceAnchor.getString("Desktop.defaultIconName"),
+                    WorkspaceResourceAnchor.getString("Desktop.defaultIconCommand"),
                     "", this, null);
                 DesktopIconDialog dlg =
                     new DesktopIconDialog(Workspace.getUi().getFrame());
@@ -251,7 +251,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             case DesktopConstants.BACKGROUND:
                 if (!isGradientFill()) {
                     Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
-                        LangResource.getString("Desktop.chooseBg.title"),
+                        WorkspaceResourceAnchor.getString("Desktop.chooseBg.title"),
                         getBackground());
 
                     if (color != null) {
@@ -261,10 +261,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                     }
                 } else {
                     Color color1 = JColorChooser.showDialog(Workspace.getUi().getFrame(),
-                        LangResource.getString("Desktop.chooseBg1.title"),
+                        WorkspaceResourceAnchor.getString("Desktop.chooseBg1.title"),
                         getBackground());
                     Color color2 = JColorChooser.showDialog(Workspace.getUi().getFrame(),
-                        LangResource.getString("Desktop.chooseBg2.title"),
+                        WorkspaceResourceAnchor.getString("Desktop.chooseBg2.title"),
                         bgColor2);
                     if (color1 != null) {
                         setBackground(color1);
@@ -446,8 +446,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     public JMenu[] getMenu() {
         if (desktopMenu == null) {
-            desktopMenu = new JMenu(LangResource.getString("Desktop.menu"));
-            desktopMenu.setMnemonic(LangResource.getString("Desktop.mnemonic").charAt(0));
+            desktopMenu = new JMenu(WorkspaceResourceAnchor.getString("Desktop.menu"));
+            desktopMenu.setMnemonic(WorkspaceResourceAnchor.getString("Desktop.mnemonic").charAt(0));
             desktopMenu.addMenuListener(new MenuListener() {
 
                 public void menuSelected(MenuEvent e) {
@@ -1080,7 +1080,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             validate();
             repaint();
         } catch (IOException | UnsupportedFlavorException e) {
-            WorkspaceError.exception(LangResource.getString("Desktop.pasteIcons.failed"), e);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.pasteIcons.failed"), e);
         }
     }
 
@@ -1245,15 +1245,15 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         DesktopIcon[] irem = getSelectedIcons();
 
         String dialogMessage = irem.length == 1
-            ? (LangResource.getString("Desktop.removeIcon.question") + " \"" + irem[0].getName() + "\"?")
-            : LangResource.getString("Desktop.removeIcons.question") + WorkspaceGUI.LOG_SPACE
+            ? (WorkspaceResourceAnchor.getString("Desktop.removeIcon.question") + " \"" + irem[0].getName() + "\"?")
+            : WorkspaceResourceAnchor.getString("Desktop.removeIcons.question") + WorkspaceGUI.LOG_SPACE
                + irem.length
                + WorkspaceGUI.LOG_SPACE
-               + LangResource.getString("Desktop.countIcon") + "?";
+               + WorkspaceResourceAnchor.getString("Desktop.countIcon") + "?";
 
         String dialogTitle = irem.length == 1
-            ? LangResource.getString("Desktop.removeIcon.title")
-            : LangResource.getString("Desktop.removeIcons.title");
+            ? WorkspaceResourceAnchor.getString("Desktop.removeIcon.title")
+            : WorkspaceResourceAnchor.getString("Desktop.removeIcons.title");
 
         if (JOptionPane.showConfirmDialog(Workspace.getUi().getFrame(),
             dialogMessage, dialogTitle, JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
@@ -1343,7 +1343,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             outputStream.flush();
             outputStream.close();
         } catch (Exception ex) {
-            WorkspaceError.exception(LangResource.getString("Desktop.save.failed"), ex);
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.save.failed"), ex);
         }
     }
 
@@ -1363,19 +1363,19 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     void updateMenuItems() {
 
         if (gradientFill) {
-            desktopPopupMenu.getGradientFill().setText(LangResource.getString("Desktop.menu.hideGradient"));
+            desktopPopupMenu.getGradientFill().setText(WorkspaceResourceAnchor.getString("Desktop.menu.hideGradient"));
         } else {
-            desktopPopupMenu.getGradientFill().setText(LangResource.getString("Desktop.menu.showGradient"));
+            desktopPopupMenu.getGradientFill().setText(WorkspaceResourceAnchor.getString("Desktop.menu.showGradient"));
         }
         if (getCover() == null) {
             desktopPopupMenu.getSwitchCover().setEnabled(false);
-            desktopPopupMenu.getSwitchCover().setText(LangResource.getString("Desktop.menu.noCover"));
+            desktopPopupMenu.getSwitchCover().setText(WorkspaceResourceAnchor.getString("Desktop.menu.noCover"));
         } else {
             desktopPopupMenu.getSwitchCover().setEnabled(true);
             if (isCoverVisible()) {
-                desktopPopupMenu.getSwitchCover().setText(LangResource.getString("Desktop.menu.hideCover"));
+                desktopPopupMenu.getSwitchCover().setText(WorkspaceResourceAnchor.getString("Desktop.menu.hideCover"));
             } else {
-                desktopPopupMenu.getSwitchCover().setText(LangResource.getString("Desktop.menu.showCover"));
+                desktopPopupMenu.getSwitchCover().setText(WorkspaceResourceAnchor.getString("Desktop.menu.showCover"));
             }
         }
         Transferable contents = Workspace.getUi().getClipboard().getContents(this);

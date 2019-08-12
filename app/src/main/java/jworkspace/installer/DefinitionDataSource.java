@@ -36,8 +36,6 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 
-import org.apache.commons.io.FileUtils;
-
 import com.hyperrealm.kiwi.ui.model.TreeDataSource;
 
 import lombok.EqualsAndHashCode;
@@ -67,11 +65,8 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      *
      * @param root java.io.File
      */
-    DefinitionDataSource(File root) throws IOException {
+    DefinitionDataSource(File root) {
         this.root = new DefinitionNode(null, root);
-        if (root != null && !root.exists()) {
-            FileUtils.forceMkdir(root);
-        }
     }
 
     /**

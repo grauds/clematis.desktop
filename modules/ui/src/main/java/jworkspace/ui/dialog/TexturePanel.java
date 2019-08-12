@@ -47,7 +47,7 @@ import javax.swing.border.TitledBorder;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
@@ -77,7 +77,7 @@ class TexturePanel extends KPanel implements ActionListener {
         KPanel p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
         p1.setBorder(new EmptyBorder(0, 0, 5, 0));
-        p1.setBorder(new TitledBorder(LangResource.getString("TexturePanel.textureBorder.title")));
+        p1.setBorder(new TitledBorder(WorkspaceResourceAnchor.getString("TexturePanel.textureBorder.title")));
 
         lImage = new jworkspace.ui.widgets.ImageRenderer();
         JScrollPane sp = new JScrollPane(lImage);
@@ -89,7 +89,7 @@ class TexturePanel extends KPanel implements ActionListener {
 
         ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("folder.png"));
         bIconBrowse = new JButton(icon);
-        bIconBrowse.setToolTipText(LangResource.getString("TexturePanel.texture.browse"));
+        bIconBrowse.setToolTipText(WorkspaceResourceAnchor.getString("TexturePanel.texture.browse"));
         bIconBrowse.addActionListener(this);
         bIconBrowse.setDefaultCapable(false);
         bIconBrowse.setOpaque(false);
@@ -97,7 +97,7 @@ class TexturePanel extends KPanel implements ActionListener {
 
         icon = new ImageIcon(Workspace.getResourceManager().getImage("repository.png"));
         bLibBrowser = new JButton(icon);
-        bLibBrowser.setToolTipText(LangResource.getString("TexturePanel.textureRepos.browse"));
+        bLibBrowser.setToolTipText(WorkspaceResourceAnchor.getString("TexturePanel.textureRepos.browse"));
         bLibBrowser.addActionListener(this);
         bLibBrowser.setDefaultCapable(false);
         bLibBrowser.setOpaque(false);
@@ -115,13 +115,13 @@ class TexturePanel extends KPanel implements ActionListener {
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.weightx = 0;
 
-        chShowTexture = new JCheckBox(LangResource.getString("TexturePanel.texture.show"));
+        chShowTexture = new JCheckBox(WorkspaceResourceAnchor.getString("TexturePanel.texture.show"));
         chShowTexture.setOpaque(false);
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         p6.add(chShowTexture, gbc);
 
-        chShowWTextures = new JCheckBox(LangResource.getString("TexturePanel.texturesKiwi.show"));
+        chShowWTextures = new JCheckBox(WorkspaceResourceAnchor.getString("TexturePanel.texturesKiwi.show"));
         chShowWTextures.setOpaque(false);
         chShowWTextures.addActionListener(this);
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;

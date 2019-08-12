@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.ui.KFileChooser;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
 
-import jworkspace.LangResource;
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.widgets.FilePreviewer;
 import jworkspace.ui.widgets.WorkspaceFileFilter;
@@ -93,9 +93,9 @@ public final class ClassCache {
      * This method allows to choose archive of jar or zip type.
      */
     public static File chooseArchive(Component parent) {
-        getFileChooser(LangResource.getString(CACHE_CHOOSE_ARCHIVE_TITLE),
+        getFileChooser(WorkspaceResourceAnchor.getString(CACHE_CHOOSE_ARCHIVE_TITLE),
                 new String[]{JAR_EXTENTION, ZIP_EXTENTION},
-                LangResource.getString(CACHE_ARCHIVES_TITLE)
+                WorkspaceResourceAnchor.getString(CACHE_ARCHIVES_TITLE)
             ).setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         if (getFileChooser().showOpenDialog(parent)
@@ -111,9 +111,9 @@ public final class ClassCache {
      * directory.
      */
     public static File chooseArchiveOrDir(Component parent) {
-        getFileChooser(LangResource.getString(CACHE_CHOOSE_ARCHIVE_OR_DIR_TITLE),
+        getFileChooser(WorkspaceResourceAnchor.getString(CACHE_CHOOSE_ARCHIVE_OR_DIR_TITLE),
                 new String[]{JAR_EXTENTION, ZIP_EXTENTION},
-                LangResource.getString(CACHE_ARCHIVES_TITLE)
+                WorkspaceResourceAnchor.getString(CACHE_ARCHIVES_TITLE)
             ).setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
         if (getFileChooser().showOpenDialog(parent)
@@ -135,7 +135,7 @@ public final class ClassCache {
      * This method allows to choose directory.
      */
     public static File chooseDirectory(Frame parent) {
-        getFileChooser(LangResource.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
+        getFileChooser(WorkspaceResourceAnchor.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
                 null, null
             ).setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
@@ -152,7 +152,7 @@ public final class ClassCache {
      */
     public static File chooseDirectory(Frame parent, File root) {
         KFileChooserDialog dirChooser = new KFileChooserDialog(parent,
-            LangResource.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
+            WorkspaceResourceAnchor.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
             KFileChooser.OPEN_DIALOG);
 
         UIManager.addPropertyChangeListener(new UISwitchListener(dirChooser));
@@ -166,7 +166,7 @@ public final class ClassCache {
      * This method allows to choose any file.
      */
     public static File chooseFile(Component parent) {
-        getFileChooser(LangResource.getString(CACHE_CHOOSE_FILE_TITLE),
+        getFileChooser(WorkspaceResourceAnchor.getString(CACHE_CHOOSE_FILE_TITLE),
                 null, null
             ).setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -182,9 +182,9 @@ public final class ClassCache {
      * This method allows to choose html file.
      */
     public static File chooseHTMLFile(Component parent) {
-        getFileChooser(LangResource.getString(CACHE_CHOOSE_HTML_TITLE),
+        getFileChooser(WorkspaceResourceAnchor.getString(CACHE_CHOOSE_HTML_TITLE),
                 new String[]{HTML_EXTENTION, HTM_EXTENTION, SHTML_EXTENTION},
-                LangResource.getString(CACHE_HYPERTEXT_TITLE)
+                WorkspaceResourceAnchor.getString(CACHE_HYPERTEXT_TITLE)
             ).setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         if (getFileChooser().showOpenDialog(parent)
@@ -198,9 +198,9 @@ public final class ClassCache {
      * This method allows to choose html file or directory.
      */
     public static File chooseHTMLFileOrDir(Component parent) {
-        getFileChooser(LangResource.getString(CACHE_CHOOSE_HTMLOR_DIRECTORY_TITLE),
+        getFileChooser(WorkspaceResourceAnchor.getString(CACHE_CHOOSE_HTMLOR_DIRECTORY_TITLE),
                 new String[]{HTML_EXTENTION, HTM_EXTENTION, SHTML_EXTENTION},
-                LangResource.getString(CACHE_HYPERTEXT_TITLE)
+                WorkspaceResourceAnchor.getString(CACHE_HYPERTEXT_TITLE)
             ).setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
         if (getFileChooser().showOpenDialog(parent)
@@ -243,7 +243,7 @@ public final class ClassCache {
      * This method allows to choose file to save.
      */
     public static File chooseSaveFile(Component parent) {
-        getFileChooser(LangResource.getString("Cache.saveAs"),
+        getFileChooser(WorkspaceResourceAnchor.getString("Cache.saveAs"),
                 null, null
             ).setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -284,9 +284,9 @@ public final class ClassCache {
      * Returns archive chooser
      */
     public static JFileChooser getArchiveChooser() {
-        return ClassCache.getFileChooser(LangResource.getString(CACHE_CHOOSE_ARCHIVE_TITLE),
+        return ClassCache.getFileChooser(WorkspaceResourceAnchor.getString(CACHE_CHOOSE_ARCHIVE_TITLE),
                 new String[]{JAR_EXTENTION, ZIP_EXTENTION},
-                LangResource.getString(CACHE_ARCHIVES_TITLE));
+                WorkspaceResourceAnchor.getString(CACHE_ARCHIVES_TITLE));
     }
 
     /**
@@ -325,9 +325,9 @@ public final class ClassCache {
      * Get html files chooser
      */
     public static JFileChooser getHtmlChooser() {
-        return ClassCache.getFileChooser(LangResource.getString("Cache.selectHTML"),
+        return ClassCache.getFileChooser(WorkspaceResourceAnchor.getString("Cache.selectHTML"),
                 new String[]{HTML_EXTENTION, SHTML_EXTENTION, HTM_EXTENTION},
-                LangResource.getString(CACHE_HYPERTEXT_TITLE));
+                WorkspaceResourceAnchor.getString(CACHE_HYPERTEXT_TITLE));
     }
 
     /**
@@ -342,13 +342,13 @@ public final class ClassCache {
      */
     public static JFileChooser getIconChooser(String path) {
         if (iconChooser == null) {
-            iconChooser = new JFileChooser(LangResource.getString("Cache.chooseIcon"));
+            iconChooser = new JFileChooser(WorkspaceResourceAnchor.getString("Cache.chooseIcon"));
             previewer = new FilePreviewer(iconChooser);
             iconChooser.setAccessory(previewer);
             WorkspaceFileFilter ff = new WorkspaceFileFilter(new String[]{"gif",
                 "jpg", "jpeg", "png", "ico", "bmp", "psd",
                 "tga", "cur", "tiff", "xpm"},
-                LangResource.getString("Cache.allFormats"));
+                WorkspaceResourceAnchor.getString("Cache.allFormats"));
             ff.setExtensionListInDescription(false);
             iconChooser.addChoosableFileFilter(ff);
             iconChooser.setFileView(new WorkspaceFileView());
