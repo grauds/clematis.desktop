@@ -25,6 +25,8 @@ ext {
 
     libs = [
 
+            javaTools             : "jdk.tools:jdk.tools:jdk1.8.0_212",
+
 // loggers
             slf4j                 : "org.slf4j:slf4j-api:$slf4jVersion",
             slf4jSimple           : "org.slf4j:slf4j-simple:$slf4jVersion",

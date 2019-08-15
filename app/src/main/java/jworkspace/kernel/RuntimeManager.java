@@ -135,13 +135,12 @@ public final class RuntimeManager {
     }
 
     /**
-     * Trims path to installed java application
-     * if it was given with the "programs" root folder
+     * Trims path to installed java application if it was given with the "programs" root folder
      *
      * @param path to trim
      * @return trimmed path
      */
-    private String trimPath(String path) {
+    public static String trimPath(String path) {
         if (path.startsWith(PROGRAMS)) {
             return path.substring(PROGRAMS.length());
         }
@@ -288,7 +287,7 @@ public final class RuntimeManager {
     /**
      * Returns plugin locator
      */
-    private PluginLocator getPluginLocator() {
+    public PluginLocator getPluginLocator() {
         if (pluginLocator == null) {
             pluginLocator = new PluginLocator(getPluginContext());
         }

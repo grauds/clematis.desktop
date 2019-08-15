@@ -69,4 +69,9 @@ public class PluginException extends Exception {
         super(message, cause);
     }
 
+    @Override
+    public String toString() {
+        return "PluginException{} " + super.toString()
+            + (getCause() != null ? (": " + getCause()) : "");
+    }
 }

@@ -55,9 +55,14 @@ import com.hyperrealm.kiwi.event.PluginReloadListener;
 
 public final class Plugin<T> {
 
-    private static final String FAILED_TO_INSTANTIATE_PLUGIN = "failed to instantiate plugin ";
+    public static final String PLUGIN_NAME = "PluginName";
+    public static final String PLUGIN_TYPE = "PluginType";
+    public static final String PLUGIN_DESCRIPTION = "PluginDescription";
+    public static final String PLUGIN_ICON = "PluginIcon";
+    public static final String PLUGIN_VERSION = "PluginVersion";
+    public static final String PLUGIN_HELP_URL = "PluginHelpURL";
 
-    private static final String PLUGIN_NAME = "PluginName";
+    private static final String FAILED_TO_INSTANTIATE_PLUGIN = "failed to instantiate plugin ";
 
     private boolean loaded = false;
 
@@ -270,7 +275,7 @@ public final class Plugin<T> {
 
             mf = jar.getManifest();
         } catch (IOException ex) {
-            throw new PluginException("Unable to read archive");
+            throw new PluginException("Unable to read archive", ex);
         }
 
         if (mf == null) {
@@ -315,19 +320,19 @@ public final class Plugin<T> {
                 case PLUGIN_NAME:
                     name = v;
                     break;
-                case "PluginType":
+                case PLUGIN_TYPE:
                     type = v;
                     break;
-                case "PluginDescription":
+                case PLUGIN_DESCRIPTION:
                     desc = v;
                     break;
-                case "PluginIcon":
+                case PLUGIN_ICON:
                     iconFile = v;
                     break;
-                case "PluginVersion":
+                case PLUGIN_VERSION:
                     version = v;
                     break;
-                case "PluginHelpURL":
+                case PLUGIN_HELP_URL:
                     try {
                         helpURL = new URL(v);
                     } catch (MalformedURLException ex) { /* ignore */ }
@@ -383,7 +388,7 @@ public final class Plugin<T> {
         try {
             pluginClass = loader.loadClass(className);
         } catch (Exception ex) {
-            throw new PluginException("failed to load plugin class " + className, ex);
+            throw new PluginException("Failed to load plugin class " + className, ex);
         }
 
         loaded = true;
@@ -458,16 +463,14 @@ public final class Plugin<T> {
             }
 
         } catch (Exception ex) {
-            throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN
-                + pluginClass.getName(), ex));
+            throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN + pluginClass.getName(), ex));
         }
 
         if (obj == null) {
             try {
                 obj = pluginClass.newInstance();
             } catch (Exception ex) {
-                throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN
-                    + pluginClass.getName(), ex));
+                throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN + pluginClass.getName(), ex));
             }
         }
 
@@ -476,8 +479,7 @@ public final class Plugin<T> {
         try {
             instance = (T) obj;
         } catch (ClassCastException ex) {
-            throw (new PluginException("plugin class " + pluginClass.getName()
-                + " is of incompatible type", ex));
+            throw (new PluginException("Plugin class " + pluginClass.getName() + " is of incompatible type", ex));
         }
 
         return (instance);

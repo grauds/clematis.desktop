@@ -107,7 +107,7 @@ public class PluginClassLoader extends ClassLoader {
 
         int ind = className.lastIndexOf('.');
         if (ind < 0) {
-            return null; // won't support classes in unnamed packages
+            throw new ClassNotFoundException("Won't support classes in unnamed packages");
         }
 
         String classPackage = className.substring(0, ind);
