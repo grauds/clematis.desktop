@@ -43,8 +43,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
@@ -56,7 +54,6 @@ import jworkspace.ui.WorkspacePluginContext;
 /**
  * @author Anton Troshin
  */
-@RunWith(PowerMockRunner.class)
 public class WorkspaceTests {
 
     private static final String PLUGIN_JAR = "plugin.jar";
@@ -116,7 +113,8 @@ public class WorkspaceTests {
      */
     @Test
     public void testSystemPlugins() throws PluginException, IOException {
-        Plugin testPlugin = new PluginLocator(new WorkspacePluginContext())
+        Plugin<ITestPlugin> testPlugin = new PluginLocator<ITestPlugin>(new WorkspacePluginContext())
+
             .loadPlugin(pluginArchiveFile, PLUGIN_TYPE_ANY);
 
         assert testPlugin.getName().equals(TEST_PLUGIN_NAME);
@@ -127,10 +125,11 @@ public class WorkspaceTests {
         assert testPlugin.getType().equals(PLUGIN_TYPE_ANY);
 
         testPlugin.reload();
+        Object obj = testPlugin.newInstance();
+        assert obj instanceof TestPlugin;
 
-        // we can't cast to a class loaded with a parent classloader and call plugin directly
-        thrown.expect(ClassCastException.class);
-        assert ((ITestPlugin) testPlugin.newInstance()).doPluginWork() == 2;
+        TestPlugin plugin = (TestPlugin) obj;
+        assert plugin.doPluginWork() == 2;
     }
 
 }
