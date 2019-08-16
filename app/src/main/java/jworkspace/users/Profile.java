@@ -28,13 +28,13 @@ package jworkspace.users;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -46,7 +46,6 @@ import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.Config;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -154,19 +153,19 @@ class Profile {
         return new Profile(userName, password, firstName, secondName, email);
     }
 
-    String getProfileRelativeFolder() throws IOException {
+    Path ensureProfilePath(Path basePath) throws IOException {
 
-        String path = getProfilePath();
+        Path path = getProfilePath(basePath);
 
-        if (!Files.exists(Paths.get(path))) {
-            Files.createDirectories(Paths.get(path));
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
         }
 
         return path;
     }
 
-    String getProfilePath() {
-        return Workspace.getBasePath() + USERS + File.separator + userName + File.separator;
+    Path getProfilePath(Path basePath) {
+        return Paths.get(basePath.toString(), USERS, userName);
     }
 
     /**
@@ -247,12 +246,12 @@ class Profile {
     /**
      * Load profile from disk
      */
-    public void load() throws IOException {
+    public void load(Path basePath) throws IOException {
 
         /*
          * Read user variables
          */
-        try (FileInputStream inputFile = new FileInputStream(getProfilePath() + VAR_CFG)) {
+        try (FileInputStream inputFile = new FileInputStream(getProfilePath(basePath) + VAR_CFG)) {
             getParameters().load(inputFile);
         } catch (FileNotFoundException ex) {
             LOG.warn("Configuration is not found for " + userName);
@@ -260,7 +259,7 @@ class Profile {
         /*
          * Read password
          */
-        try (FileInputStream inputFile = new FileInputStream(getProfilePath() + PROFILE_DAT);
+        try (FileInputStream inputFile = new FileInputStream(getProfilePath(basePath) + PROFILE_DAT);
              DataInputStream dis = new DataInputStream(inputFile)) {
             /*
              * Read all data
@@ -278,18 +277,19 @@ class Profile {
 
     /**
      * Save profile on disk
+     * @param basePath to the folder containing user information
      */
-    protected void save() throws IOException {
+    protected void save(Path basePath) throws IOException {
         /*
          * Write user variables
          */
-        try (FileOutputStream outputFile = new FileOutputStream(getProfileRelativeFolder() + VAR_CFG)) {
+        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath) + VAR_CFG)) {
             getParameters().store(outputFile, "USER VARIABLES");
         }
         /*
          * Write password
          */
-        try (FileOutputStream outputFile = new FileOutputStream(getProfileRelativeFolder() + PROFILE_DAT);
+        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath) + PROFILE_DAT);
              DataOutputStream dos = new DataOutputStream(outputFile)) {
 
             /*

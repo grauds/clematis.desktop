@@ -25,8 +25,10 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,6 +39,7 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
+import lombok.NonNull;
 /**
  * @author Anton Troshin
  * @param <T> type of plugin object to load
@@ -60,17 +63,21 @@ public class WorkspacePluginLocator<T> extends PluginLocator<T> {
      *
      * @param directory path to directory
      */
-    public List<Plugin<T>> loadPlugins(String directory) {
+    public List<Plugin<T>> loadPlugins(Path directory) {
+        if (directory != null) {
 
-        LOG.info("> Loading plugins from " + directory);
-        return scanPluginsDir(directory);
+            LOG.info("> Loading plugins from " + directory);
+            return scanPluginsDir(directory.toFile());
+        } else {
+
+            return Collections.emptyList();
+        }
     }
 
-    private List<Plugin<T>> scanPluginsDir(String name) {
+    private List<Plugin<T>> scanPluginsDir(@NonNull File dir) {
 
         List<Plugin<T>> plugins = new ArrayList<>();
         try {
-            File dir = new File(name);
             if (dir.isDirectory()) {
 
                 File[] files = dir.listFiles();
@@ -82,7 +89,7 @@ public class WorkspacePluginLocator<T> extends PluginLocator<T> {
                     Arrays.sort(files, Comparator.comparing(File::getName));
 
                     for (File file : files) {
-                        plugins.addAll(scanPluginsDir(file.getAbsolutePath()));
+                        plugins.addAll(scanPluginsDir(file));
                     }
                 }
             } else if (dir.getName().endsWith("jar")) {
@@ -90,7 +97,7 @@ public class WorkspacePluginLocator<T> extends PluginLocator<T> {
                 plugins.add(plugin);
             }
         } catch (PluginException ex) {
-            LOG.warn("Cannot load plugins from " + name + " - " + ex.toString());
+            LOG.warn("Cannot load plugins from " + dir.getAbsolutePath() + " - " + ex.toString());
         }
         return plugins;
     }

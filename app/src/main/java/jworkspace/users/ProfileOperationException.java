@@ -26,7 +26,10 @@ package jworkspace.users;
   ----------------------------------------------------------------------------
 */
 
-class ProfileOperationException extends Exception {
+/**
+ * @author Anton Troshin
+ */
+public class ProfileOperationException extends Exception {
     ProfileOperationException(String s) {
         super(s);
     }

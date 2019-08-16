@@ -32,12 +32,10 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.IConstants;
 import jworkspace.api.WorkspaceException;
 /**
  * Runtime manager is a core component for Java Workspace to start/stop processes registered in installer
@@ -48,8 +46,6 @@ public final class RuntimeManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RuntimeManager.class);
 
-    private static final String WHITESPACE = " ";
-
     private static final String PROGRAMS = "programs/";
 
     private static final String USER_DIR = "user.dir";
@@ -59,8 +55,6 @@ public final class RuntimeManager {
     private static final String CANNOT_START_APPLICATION = "Cannot start application";
 
     private static final String CANNOT_SET_OLD_WORKING_DIRECTORY = "Cannot set old working directory";
-
-    private static final String SLASH = "/";
 
     private static RuntimeManager instance = null;
 
@@ -79,12 +73,11 @@ public final class RuntimeManager {
     /**
      * Kill all processes.
      */
-    static void killAllProcesses() {
+    public void killAllProcesses() {
 
         boolean alive = false;
-        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("exit.png"));
 
-        for (JavaProcess jp : Workspace.getRuntimeManager().getAllProcesses()) {
+        for (JavaProcess jp : getAllProcesses()) {
             if (jp.isAlive()) {
                 alive = true;
                 break;
@@ -95,13 +88,10 @@ public final class RuntimeManager {
             return;
         }
 
-        if (Workspace.getUi().showConfirmDialog(WorkspaceResourceAnchor.getString("Workspace.killAll.question"),
-            WorkspaceResourceAnchor.getString("Workspace.killAll.title"), icon)) {
 
-            for (JavaProcess jp : Workspace.getRuntimeManager().getAllProcesses()) {
-                if (jp != null) {
-                    jp.kill();
-                }
+        for (JavaProcess jp : getAllProcesses()) {
+            if (jp != null) {
+                jp.kill();
             }
         }
 
@@ -119,7 +109,7 @@ public final class RuntimeManager {
      *
      * @param path in workspace installer's database
      */
-    private synchronized void executeExternalProcess(String path) throws WorkspaceException {
+    private synchronized void executeExternalProcess(String path) throws WorkspaceException, IOException {
 
         String[] args = Workspace.getWorkspaceInstaller().getInvocationArgs(path);
         String workingDir = Workspace.getWorkspaceInstaller().getApplicationWorkingDir(path);
@@ -133,7 +123,7 @@ public final class RuntimeManager {
      * @param path to trim
      * @return trimmed path
      */
-    public static String trimPath(String path) {
+    private static String trimPath(String path) {
         if (path.startsWith(PROGRAMS)) {
             return path.substring(PROGRAMS.length());
         }
@@ -166,7 +156,7 @@ public final class RuntimeManager {
              * Try to set working directory
              */
             if (!NativeLib.setCurrentDir(workingDir)) {
-                throw new IOException(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + workingDirInt);
+                throw new IOException(CANNOT_SET_WORKING_DIRECTORY + IConstants.WHITESPACE + workingDirInt);
             }
             /*
              * Create java process
@@ -186,7 +176,8 @@ public final class RuntimeManager {
              * Try to set old working directory
              */
             if (!NativeLib.setCurrentDir(oldWorkingDir)) {
-                Workspace.getUi().showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                Workspace.getUi().showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY
+                    + IConstants.WHITESPACE + oldWorkingDir);
             }
 
         } catch (Error err) {
@@ -207,7 +198,8 @@ public final class RuntimeManager {
              */
             if (workingDir != null) {
                 if (!NativeLib.setCurrentDir(workingDir)) {
-                    Workspace.getUi().showMessage(CANNOT_SET_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                    Workspace.getUi().showMessage(CANNOT_SET_WORKING_DIRECTORY
+                        + IConstants.WHITESPACE + oldWorkingDir);
                 }
             }
             Runtime.getRuntime().exec(command);
@@ -219,7 +211,8 @@ public final class RuntimeManager {
              * Try to set old working directory
              */
             if (!NativeLib.setCurrentDir(oldWorkingDir)) {
-                Workspace.getUi().showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY + WHITESPACE + oldWorkingDir);
+                Workspace.getUi().showMessage(CANNOT_SET_OLD_WORKING_DIRECTORY
+                    + IConstants.WHITESPACE + oldWorkingDir);
             }
         }
     }
@@ -228,7 +221,7 @@ public final class RuntimeManager {
      * This method executes application, previously configured by installer. Path is an address
      * of application configuration file, relative to /programs/ folder.
      */
-    public void run(String path) throws WorkspaceException {
+    public void run(String path) throws WorkspaceException, IOException {
         executeExternalProcess(path);
     }
 

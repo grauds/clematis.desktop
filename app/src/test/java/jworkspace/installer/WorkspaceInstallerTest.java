@@ -17,7 +17,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import jworkspace.kernel.Workspace;
-import jworkspace.api.WorkspaceException;
 import jworkspace.ui.WorkspaceResourceManager;
 /**
  * @author Anton Troshin
@@ -34,15 +33,15 @@ public class WorkspaceInstallerTest {
         testFolder.create();
 
         mockStatic(Workspace.class);
-        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().getPath() + File.separator);
+        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().toPath());
         when(Workspace.getResourceManager()).thenReturn(new WorkspaceResourceManager());
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
     @Test
-    public void testSampleInstallation() throws IOException, InstallationException, WorkspaceException {
+    public void testSampleInstallation() throws IOException, InstallationException {
 
-        File dataRoot = new File(Workspace.getBasePath());
+        File dataRoot = Workspace.getBasePath().toFile();
 
 // create tree data models
         ApplicationDataSource applicationData

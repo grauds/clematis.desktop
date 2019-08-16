@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.ui.KFrame;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
@@ -619,7 +620,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Updates controls for the component.
      */
     public void update() {
-        setTitle(Workspace.getVersion() + WorkspaceGUI.LOG_SPACE + Workspace.getUserManager().getUserName());
+        setTitle(IConstants.VERSION + WorkspaceGUI.LOG_SPACE + Workspace.getUserManager().getUserName());
         invalidate();
         validate();
         repaint();

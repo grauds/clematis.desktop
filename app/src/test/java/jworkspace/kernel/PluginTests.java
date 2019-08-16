@@ -185,7 +185,7 @@ public class PluginTests {
     public void testTwoPlugins() throws PluginException {
 
         final WorkspacePluginLocator<ITestPlugin> pluginLocator = new WorkspacePluginLocator<>();
-        List<Plugin<ITestPlugin>> plugins = pluginLocator.loadPlugins(testFolder.getRoot().getAbsolutePath());
+        List<Plugin<ITestPlugin>> plugins = pluginLocator.loadPlugins(testFolder.getRoot().toPath());
 
         assert plugins.size() == 2;
         assert !plugins.get(0).equals(plugins.get(1));

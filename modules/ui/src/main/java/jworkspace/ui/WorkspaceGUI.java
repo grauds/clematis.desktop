@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,9 +78,9 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.IConstants;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.UI;
-import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
 import jworkspace.kernel.WorkspacePluginLocator;
 import jworkspace.ui.action.UISwitchListener;
@@ -234,15 +235,11 @@ public class WorkspaceGUI implements UI {
     @Override
     public Frame getFrame() {
         if (frame == null) {
-            frame = new MainFrame(Workspace.getVersion(), this);
+            frame = new MainFrame(IConstants.VERSION, this);
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     if (e.getSource() == frame) {
-                        try {
-                            Workspace.exit();
-                        } catch (WorkspaceException ex) {
-                            WorkspaceError.exception(ex.getMessage(), ex);
-                        }
+                        Workspace.exit();
                     }
                 }
             });
@@ -521,7 +518,7 @@ public class WorkspaceGUI implements UI {
         frame = null;
         components = new HashMap<>();
         shells = new HashSet<>();
-        getFrame().setTitle(Workspace.getVersion());
+        getFrame().setTitle(IConstants.VERSION);
         ClassCache.resetFileChoosers();
     }
 
@@ -701,7 +698,7 @@ public class WorkspaceGUI implements UI {
                 LOG.error(e.getMessage(), e);
                 return;
             }
-            List<Plugin> plugins = new WorkspacePluginLocator().loadPlugins(fileName);
+            List<Plugin> plugins = new WorkspacePluginLocator().loadPlugins(Paths.get(fileName));
 
             if (plugins == null || plugins.size() == 0) {
                 pr.setMessage(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));

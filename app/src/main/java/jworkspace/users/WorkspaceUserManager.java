@@ -27,6 +27,7 @@ package jworkspace.users;
 */
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Vector;
@@ -46,26 +47,27 @@ import jworkspace.kernel.Workspace;
  * @author Anton Troshin
  */
 @SuppressWarnings("unused")
-public class UserManager implements IUserManager {
+public class WorkspaceUserManager implements IUserManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceUserManager.class);
 
-    private static UserManager instance = null;
+    private static WorkspaceUserManager instance = null;
 
-    private ProfilesManager profilesManager = new ProfilesManager();
+    private ProfilesManager profilesManager;
 
     private boolean userLogged = false;
 
     /**
      * Default public constructor.
      */
-    private UserManager() {
+    private WorkspaceUserManager() {
         super();
     }
 
-    public static synchronized UserManager getInstance() {
+    public static synchronized WorkspaceUserManager getInstance() {
         if (instance == null) {
-            instance = new UserManager();
+            instance = new WorkspaceUserManager();
+            instance.profilesManager = new ProfilesManager(Workspace.getBasePath());
         }
         return instance;
     }
@@ -136,8 +138,8 @@ public class UserManager implements IUserManager {
     /**
      * Returns path to user folder from current user profile.
      */
-    public String getCurrentProfileRelativePath() throws IOException {
-        return profilesManager.getCurrentProfileRelativePath();
+    public Path ensureCurrentProfilePath(Path basePath) throws IOException {
+        return profilesManager.ensureCurrentProfilePath(basePath);
     }
 
     /**
@@ -169,9 +171,9 @@ public class UserManager implements IUserManager {
             }
             profilesManager.add(profile);
         } catch (IOException ex) {
-            UserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#290") + name, ex);
+            WorkspaceUserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#290") + name, ex);
         } catch (ProfileOperationException ex) {
-            UserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#288") + name, ex);
+            WorkspaceUserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#288") + name, ex);
         }
     }
 
@@ -183,7 +185,7 @@ public class UserManager implements IUserManager {
             Profile profile = profilesManager.loadProfile(name);
             profilesManager.delete(profile, password);
         } catch (ProfileOperationException ex) {
-            UserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#275") + name, ex);
+            WorkspaceUserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#275") + name, ex);
         }
     }
 
@@ -196,8 +198,8 @@ public class UserManager implements IUserManager {
     /**
      * Get path to specified user folder.
      */
-    public String getProfileRelativePath(String name) throws IOException {
-        return new Profile(name).getProfileRelativeFolder();
+    public Path ensureProfilePath(String name, Path basePath) throws IOException {
+        return new Profile(name).ensureProfilePath(basePath);
     }
 
     /*** Returns all users in system
@@ -237,17 +239,15 @@ public class UserManager implements IUserManager {
     }
 
     /**
-     * Loads profiles manager and profiles from disk
-     * via serialization support.
      */
     public void load() {
-        UserManager.LOG.info("> Profiles manager is loaded");
+        WorkspaceUserManager.LOG.info("> Profiles manager is loaded");
     }
 
     /**
      * User login procedure.
      */
-    public void login(String name, String password) throws ProfileOperationException, IOException {
+    public void login(String name, String password) throws ProfileOperationException {
 
         Profile profile = profilesManager.loadProfile(name);
 
@@ -256,10 +256,10 @@ public class UserManager implements IUserManager {
                 WorkspaceResourceAnchor.getString("UserProfileEngine.passwd.check.failed"));
         }
 
-        profilesManager.setCurrentProfile(profile.getUserName());
+        profilesManager.setCurrentProfile(profile);
         userLogged = true;
 
-        UserManager.LOG.info("> You are logged as " + getUserName());
+        WorkspaceUserManager.LOG.info("> You are logged as " + getUserName());
     }
 
     /**

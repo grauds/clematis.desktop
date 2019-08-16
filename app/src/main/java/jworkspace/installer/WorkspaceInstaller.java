@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.StringUtils;
 
 import jworkspace.api.IWorkspaceInstaller;
-import jworkspace.kernel.Workspace;
 import lombok.Data;
 
 /**
@@ -76,15 +75,6 @@ public class WorkspaceInstaller implements IWorkspaceInstaller {
      * Root folder for the data
      */
     private File dataRoot;
-
-    /**
-     * Default public constructor
-     */
-    public WorkspaceInstaller() {
-        super();
-        this.dataRoot = new File(Workspace.getBasePath());
-        reset();
-    }
 
     /**
      * Public constructor with custom data root

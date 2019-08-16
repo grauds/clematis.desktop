@@ -34,4 +34,16 @@ public interface IConstants {
      * Small menu ICON
      */
     String MENU_ICON = "MENU_ICON";
+    /**
+     * The directory where Workspace will be looking for plugins
+     */
+    String PLUGINS_DIRECTORY = "plugins";
+    /**
+     * Version
+     */
+    String VERSION = "Clematis 2.0";
+    /**
+     * Whitespace for logging purposes
+     */
+    String WHITESPACE = " ";
 }

@@ -99,7 +99,7 @@ public final class WorkspaceInterpreter {
 
             interpreterThread = new Thread(interpreter);
             interpreterThread.start();
-            LOG.info(">" + "Bean Shell Interpreter succefully started");
+            LOG.info("> Bean Shell Interpreter is successfully started");
         } catch (IOException e) {
             LOG.error("Cannot start Bean Shell Interpreter", e);
         }

@@ -1,6 +1,5 @@
 package jworkspace.users;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -36,7 +35,7 @@ public class LoginTest {
         testFolder.create();
 
         mockStatic(Workspace.class);
-        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().getPath() + File.separator);
+        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().toPath());
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
@@ -45,7 +44,7 @@ public class LoginTest {
 
         Profile profile = new Profile("test", "password", "First Name", "Second Name", "test@test.com");
 
-        UserManager userManager = UserManager.getInstance();
+        WorkspaceUserManager userManager = WorkspaceUserManager.getInstance();
 
         // this adds incomplete profile -> to disk
         userManager.addProfile(profile.getUserName(), "password");
@@ -59,13 +58,14 @@ public class LoginTest {
         // deselect incomplete profile -> to disk
         userManager.logout();
         // save complete to disk
-        profile.save();
+        profile.save(Workspace.getBasePath());
         // selects complete profile -> from disk
         userManager.login(profile.getUserName(), "password");
 
         assert userManager.getUserName().equals(profile.getUserName());
         assert userManager.getDescription().equals(profile.getDescription());
-        assert userManager.getCurrentProfileRelativePath().equals(profile.getProfilePath());
+        assert userManager.ensureCurrentProfilePath(Workspace.getBasePath())
+            .equals(profile.getProfilePath(Workspace.getBasePath()));
         assert userManager.getEmail().equals(profile.getEmail());
         assert userManager.getParameters().equals(profile.getParameters());
         assert userManager.getUserFirstName().equals(profile.getUserFirstName());

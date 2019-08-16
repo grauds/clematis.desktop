@@ -28,9 +28,12 @@ package jworkspace.api;
 */
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Vector;
 
 import com.hyperrealm.kiwi.util.Config;
+
+import jworkspace.users.ProfileOperationException;
 
 /**
  * User profile systems of Java Workspace should implement this interface as it provides minimum
@@ -56,7 +59,7 @@ public interface IUserManager extends WorkspaceComponent {
      *
      * @return java.lang.String
      */
-    String getCurrentProfileRelativePath() throws IOException;
+    Path ensureCurrentProfilePath(Path basePath) throws IOException;
 
     /**
      * Get user first name
@@ -103,7 +106,7 @@ public interface IUserManager extends WorkspaceComponent {
      *
      * @return java.lang.String
      */
-    String getProfileRelativePath(String name) throws IOException;
+    Path ensureProfilePath(String name, Path basePath) throws IOException;
 
     /**
      * Get users list.
@@ -123,7 +126,7 @@ public interface IUserManager extends WorkspaceComponent {
     /**
      * Login procedure.
      */
-    void login(String name, String password) throws Exception;
+    void login(String name, String password) throws ProfileOperationException, IOException;
 
     /**
      * Logout current user.
@@ -136,15 +139,6 @@ public interface IUserManager extends WorkspaceComponent {
      * @return boolean
      */
     boolean userLogged();
-
-//    /**
-//     * Returns login dialog for the system.
-//     * Login dialog should perform login security
-//     * functions.
-//     *
-//     * @return login dialog for the system.
-//     */
-//    JDialog getLoginDlg();
 
     /**
      * Set user name

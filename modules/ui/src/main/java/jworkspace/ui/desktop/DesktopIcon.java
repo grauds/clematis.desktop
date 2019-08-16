@@ -489,7 +489,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
         } else if (mode == DesktopConstants.JAVA_APP_MODE) {
             try {
                 Workspace.getRuntimeManager().run(command);
-            } catch (WorkspaceException ex) {
+            } catch (WorkspaceException | IOException ex) {
                 WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.cannotLaunch"), ex);
             }
         } else if (mode == DesktopConstants.NATIVE_COMMAND_MODE) {

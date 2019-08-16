@@ -28,6 +28,8 @@ package jworkspace.users;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -38,11 +40,17 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 /**
  * This class can add, rename, delete or list user profiles.
  * There can be only one instance of manager in workspace.
  */
+@Data
+@Setter(AccessLevel.PACKAGE)
+@Getter(AccessLevel.PACKAGE)
 @SuppressWarnings("unused")
 class ProfilesManager implements Comparator {
 
@@ -54,10 +62,13 @@ class ProfilesManager implements Comparator {
 
     private static final String USERS = "users";
 
+    private Path basePath;
+
     private Profile currentProfile = null;
 
-    ProfilesManager() {
+    ProfilesManager(Path basePath) {
         super();
+        this.basePath = basePath;
     }
 
     /**
@@ -100,7 +111,7 @@ class ProfilesManager implements Comparator {
                 WorkspaceResourceAnchor.getString("ProfilesManager.passwd.check.failed"));
         }
 
-        File file = new File(profile.getProfilePath());
+        File file = profile.getProfilePath(getBasePath()).toFile();
         if (KiwiUtils.deleteTree(file) == 0) {
             LOG.warn("No files were deleted for " + profile.getUserName());
         }
@@ -117,32 +128,8 @@ class ProfilesManager implements Comparator {
         }
     }
 
-    /**
-     * Returns current profile
-     */
-    Profile getCurrentProfile() {
-        return currentProfile;
-    }
-
     void clearCurrentProfile() {
         currentProfile = null;
-    }
-
-    /**
-     * Sets current profile by its name.
-     */
-    void setCurrentProfile(String name) throws ProfileOperationException, IOException {
-
-        if (name == null || currentProfile != null && currentProfile.getUserName().equals(name)) {
-            return;
-        }
-
-        if (currentProfile != null && !currentProfile.getUserName().equals(name)) {
-            saveCurrentProfile();
-
-        }
-
-        currentProfile = loadProfile(name);
     }
 
     /**
@@ -150,9 +137,9 @@ class ProfilesManager implements Comparator {
      *
      * @return java.lang.String
      */
-    String getCurrentProfileRelativePath() throws IOException {
+    Path ensureCurrentProfilePath(Path basePath) throws IOException {
         if (currentProfile != null) {
-            return currentProfile.getProfileRelativeFolder();
+            return currentProfile.ensureProfilePath(basePath);
         } else {
             throw new IOException("Current profile is null");
         }
@@ -180,7 +167,7 @@ class ProfilesManager implements Comparator {
 
         Vector<String> list = new Vector<>();
 
-        File file = new File(Workspace.getBasePath() + USERS + File.separator);
+        File file = Paths.get(getBasePath().toString(), USERS).toFile();
         File[] dirs = file.listFiles();
 
         if (dirs != null) {
@@ -201,11 +188,11 @@ class ProfilesManager implements Comparator {
      * @param userName java.lang.String
      * @return jworkspace.users.Profile
      */
-    private static Profile readProfile(String userName) throws IOException {
+    private Profile readProfile(String userName) throws IOException {
 
         Profile profile = new Profile();
         profile.setUserName(userName);
-        profile.load();
+        profile.load(getBasePath());
         return profile;
     }
 
@@ -213,7 +200,7 @@ class ProfilesManager implements Comparator {
      * Saves current profile on disk.
      */
     void saveCurrentProfile() throws IOException {
-        saveProfile(currentProfile);
+        saveProfile(getCurrentProfile());
     }
 
     /**
@@ -221,12 +208,12 @@ class ProfilesManager implements Comparator {
      *
      * @param profile to save
      */
-    void saveProfile(Profile profile) throws IOException {
+    private void saveProfile(Profile profile) throws IOException {
 
         if (profile == null) {
             return;
         }
 
-        profile.save();
+        profile.save(getBasePath());
     }
 }

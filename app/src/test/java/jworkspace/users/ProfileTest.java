@@ -1,6 +1,5 @@
 package jworkspace.users;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -29,7 +28,7 @@ public class ProfileTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private ProfilesManager profilesManager = new ProfilesManager();
+    private ProfilesManager profilesManager;
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
@@ -38,7 +37,8 @@ public class ProfileTest {
         testFolder.create();
 
         mockStatic(Workspace.class);
-        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().getPath() + File.separator);
+        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().toPath());
+        profilesManager = new ProfilesManager(testFolder.getRoot().toPath());
     }
 
     @Test
@@ -54,11 +54,11 @@ public class ProfileTest {
 
         String newPassword = "password";
         profile.setPassword("", newPassword, newPassword);
-        profile.save();
+        profile.save(testFolder.getRoot().toPath());
 
         Profile anotherCopy = new Profile();
         anotherCopy.setUserName("test");
-        anotherCopy.load();
+        anotherCopy.load(testFolder.getRoot().toPath());
 
         assert anotherCopy.equals(profile);
 

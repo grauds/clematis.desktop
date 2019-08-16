@@ -50,7 +50,6 @@ import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
-import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.action.AbstractStateAction;
 import jworkspace.ui.dialog.SettingsDialog;
@@ -227,7 +226,7 @@ public class UIActions implements IConstants {
         try {
 
             DocumentDataSource helpSource = new DocumentDataSource(Workspace.getResourceManager());
-            DocumentBrowserFrame dbf = new DocumentBrowserFrame(Workspace.getVersion()
+            DocumentBrowserFrame dbf = new DocumentBrowserFrame(IConstants.VERSION
                 + WorkspaceGUI.LOG_SPACE + WorkspaceResourceAnchor.getString("message#184"),
                 "", helpSource);
 
@@ -266,11 +265,11 @@ public class UIActions implements IConstants {
         }
 
         public void actionPerformed(ActionEvent e) {
-            try {
-                Workspace.changeCurrentProfile();
-            } catch (WorkspaceException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
+//            try {
+//                Workspace.changeCurrentProfile();
+//            } catch (WorkspaceException ex) {
+//                LOG.error(ex.getMessage(), ex);
+//            }
         }
     }
 
@@ -280,11 +279,7 @@ public class UIActions implements IConstants {
         }
 
         public void actionPerformed(ActionEvent e) {
-            try {
-                Workspace.exit();
-            } catch (WorkspaceException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
+            Workspace.exit();
         }
     }
 

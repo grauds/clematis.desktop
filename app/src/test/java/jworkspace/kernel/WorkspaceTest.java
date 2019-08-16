@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import jworkspace.users.ProfileOperationException;
 /**
  * @author Anton Troshin
  */
@@ -45,9 +46,9 @@ public class WorkspaceTest {
     }
 
     @Test
-    public void testBeginWork() {
+    public void testBeginWork() throws IOException, ProfileOperationException {
 // I would like to start a new workspace
-        Workspace.start(new String[0]);
+        Workspace.start(testFolder.getRoot().toPath(), "root", "");
 
     }
 
