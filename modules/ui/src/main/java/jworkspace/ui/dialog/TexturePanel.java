@@ -152,10 +152,10 @@ class TexturePanel extends KPanel implements ActionListener {
 
     private void callResourceBrowser(ResourceExplorerDialog resBrowser) {
         resBrowser.setHint(true);
-        String path = Workspace.getProfiles().getParameters().getString(TEXTURES_REPOSITORY);
+        String path = Workspace.getUserManager().getParameters().getString(TEXTURES_REPOSITORY);
         if (path == null && Workspace.getUi() instanceof WorkspaceGUI) {
             path = ((WorkspaceGUI) Workspace.getUi()).getTexturesPath();
-            Workspace.getProfiles().getParameters().putString(TEXTURES_REPOSITORY, path);
+            Workspace.getUserManager().getParameters().putString(TEXTURES_REPOSITORY, path);
         }
         resBrowser.setData(path);
         resBrowser.setVisible(true);

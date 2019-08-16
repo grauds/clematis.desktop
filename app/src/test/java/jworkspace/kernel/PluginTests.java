@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -50,8 +51,6 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
-import jworkspace.ui.WorkspacePluginContext;
-
 /**
  * @author Anton Troshin
  */
@@ -65,8 +64,6 @@ public class PluginTests {
     private static final String TEST_PLUGIN_CLASS_2 = "TestPlugin2.class";
     private static final String TEST_PLUGIN = "jworkspace.kernel.TestPlugin";
     private static final String TEST_PLUGIN_2 = "jworkspace.kernel.TestPlugin2";
-
-    private static final String PLUGIN_TYPE_ANY = "ANY";
 
     private static final String TEST_PLUGIN_NAME = "Test plugin";
     private static final String TEST_PLUGIN_DESCRIPTION = "Test plugin description";
@@ -129,7 +126,7 @@ public class PluginTests {
         attributes.put(new Attributes.Name(Plugin.PLUGIN_VERSION), TEST_PLUGIN_VERSION);
         attributes.put(new Attributes.Name(Plugin.PLUGIN_HELP_URL), TEST_PLUGIN_HELP_URL);
         attributes.put(new Attributes.Name(Plugin.PLUGIN_ICON), TEST_PLUGIN_ICON);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_TYPE), PLUGIN_TYPE_ANY);
+        attributes.put(new Attributes.Name(Plugin.PLUGIN_TYPE), Plugin.PLUGIN_TYPE_ANY);
 
         manifest.getEntries().put(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS, attributes);
         return manifest;
@@ -152,7 +149,7 @@ public class PluginTests {
         attributes.put(new Attributes.Name(Plugin.PLUGIN_VERSION), TEST_PLUGIN_VERSION_2);
         attributes.put(new Attributes.Name(Plugin.PLUGIN_HELP_URL), TEST_PLUGIN_HELP_URL);
         attributes.put(new Attributes.Name(Plugin.PLUGIN_ICON), TEST_PLUGIN_ICON_2);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_TYPE), PLUGIN_TYPE_ANY);
+        attributes.put(new Attributes.Name(Plugin.PLUGIN_TYPE), Plugin.PLUGIN_TYPE_ANY);
 
         manifest.getEntries().put(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS_2, attributes);
         return manifest;
@@ -165,14 +162,14 @@ public class PluginTests {
         assert testPlugin.getClassName().equals(TEST_PLUGIN);
         assert testPlugin.getVersion().equals(TEST_PLUGIN_VERSION);
         assert testPlugin.getHelpURL().toString().equals(TEST_PLUGIN_HELP_URL);
-        assert testPlugin.getType().equals(PLUGIN_TYPE_ANY);
+        assert testPlugin.getType().equals(Plugin.PLUGIN_TYPE_ANY);
     }
 
     @Test
     public void testLoadPlugin() throws PluginException {
 
-        Plugin<ITestPlugin> testPlugin = new PluginLocator<ITestPlugin>(new WorkspacePluginContext())
-            .loadPlugin(getPluginArchiveFile(PLUGIN_JAR), PLUGIN_TYPE_ANY);
+        Plugin<ITestPlugin> testPlugin = new WorkspacePluginLocator<ITestPlugin>()
+            .loadPlugin(getPluginArchiveFile(PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
 
         assertPluginEqualsManifest(testPlugin);
 
@@ -187,20 +184,16 @@ public class PluginTests {
     @Test
     public void testTwoPlugins() throws PluginException {
 
-        final PluginLocator<ITestPlugin> pluginLocator = new PluginLocator<>(new WorkspacePluginContext());
+        final WorkspacePluginLocator<ITestPlugin> pluginLocator = new WorkspacePluginLocator<>();
+        List<Plugin<ITestPlugin>> plugins = pluginLocator.loadPlugins(testFolder.getRoot().getAbsolutePath());
 
-        Plugin<ITestPlugin> testPlugin1 = pluginLocator
-            .loadPlugin(getPluginArchiveFile(PLUGIN_JAR), PLUGIN_TYPE_ANY);
+        assert plugins.size() == 2;
+        assert !plugins.get(0).equals(plugins.get(1));
 
-        Plugin<ITestPlugin> testPlugin2 = pluginLocator
-            .loadPlugin(getPluginArchiveFile(ANOTHER_PLUGIN_JAR), PLUGIN_TYPE_ANY);
-
-        assert !testPlugin1.equals(testPlugin2);
-
-        Object obj1 = testPlugin1.newInstance();
+        Object obj1 = plugins.get(0).newInstance();
         assert obj1 instanceof TestPlugin;
 
-        Object obj2 = testPlugin2.newInstance();
+        Object obj2 = plugins.get(1).newInstance();
         assert obj2 instanceof TestPlugin;
 
     }
@@ -208,11 +201,11 @@ public class PluginTests {
     @Test
     public void testUpdatePlugin() throws IOException, PluginException {
 
-        final PluginLocator<ITestPlugin> pluginLocator = new PluginLocator<>(new WorkspacePluginContext());
+        final PluginLocator<ITestPlugin> pluginLocator = new WorkspacePluginLocator<>();
 
 // create version one
         Plugin<ITestPlugin> testPlugin = pluginLocator
-            .loadPlugin(getPluginArchiveFile(PLUGIN_JAR), PLUGIN_TYPE_ANY);
+            .loadPlugin(getPluginArchiveFile(PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
 
         Object obj1 = testPlugin.newInstance();
         assert obj1 instanceof TestPlugin;
@@ -223,7 +216,7 @@ public class PluginTests {
 
 // create version two from the same archive
         testPlugin = pluginLocator
-            .loadPlugin(getPluginArchiveFile(PLUGIN_JAR), PLUGIN_TYPE_ANY);
+            .loadPlugin(getPluginArchiveFile(PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
 
         Object obj2 = testPlugin.newInstance();
         assert !(obj2 instanceof TestPlugin);

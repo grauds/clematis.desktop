@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -78,8 +79,9 @@ import com.hyperrealm.kiwi.util.plugin.PluginException;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.UI;
+import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspaceException;
+import jworkspace.kernel.WorkspacePluginLocator;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
@@ -311,16 +313,6 @@ public class WorkspaceGUI implements UI {
     @Override
     public boolean isModified() {
         return getFrame() != null && ((MainFrame) getFrame()).isModified();
-    }
-
-    /**
-     * Check whether argument component is registered.
-     *
-     * @return registered component.
-     */
-    @Override
-    public Object isRegistered(String clazz) {
-        return components.get(clazz);
     }
 
     /**
@@ -709,28 +701,28 @@ public class WorkspaceGUI implements UI {
                 LOG.error(e.getMessage(), e);
                 return;
             }
-            Plugin[] plugins = Workspace.getRuntimeManager().loadPlugins(fileName);
+            List<Plugin> plugins = new WorkspacePluginLocator().loadPlugins(fileName);
 
-            if (plugins == null || plugins.length == 0) {
+            if (plugins == null || plugins.size() == 0) {
                 pr.setMessage(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));
                 pr.setProgress(PROGRESS_COMPLETED);
             } else {
 
-                for (int i = 0; i < plugins.length; i++) {
+                for (int i = 0; i < plugins.size(); i++) {
                     pr.setMessage(WorkspaceResourceAnchor.getString("WorkspaceGUI.shell.loading")
-                        + LOG_SPACE + plugins[i].getName());
-                    WorkspaceGUI.LOG.info(PROMPT + "Loading " + plugins[i].getName() + LOG_FINISH);
-                    if (plugins[i].getIcon() != null) {
-                        pr.setIcon(plugins[i].getIcon());
+                        + LOG_SPACE + plugins.get(i).getName());
+                    WorkspaceGUI.LOG.info(PROMPT + "Loading " +  plugins.get(i).getName() + LOG_FINISH);
+                    if (plugins.get(i).getIcon() != null) {
+                        pr.setIcon(plugins.get(i).getIcon());
                     }
                     try {
-                        installShell(plugins[i]);
-                        WorkspaceGUI.LOG.info(PROMPT + "Installed " + plugins[i].getName() + LOG_FINISH);
+                        installShell(plugins.get(i));
+                        WorkspaceGUI.LOG.info(PROMPT + "Installed " +  plugins.get(i).getName() + LOG_FINISH);
                     } catch (Exception | Error ex) {
-                        WorkspaceGUI.LOG.warn(PROMPT + "GUI Shell " + plugins[i].getName()
+                        WorkspaceGUI.LOG.warn(PROMPT + "GUI Shell " +  plugins.get(i).getName()
                             + " failed to load " + ex.toString());
                     }
-                    pr.setProgress(i * PROGRESS_COMPLETED / plugins.length);
+                    pr.setProgress(i * PROGRESS_COMPLETED / plugins.size());
                 }
                 pr.setProgress(PROGRESS_COMPLETED);
                 update();

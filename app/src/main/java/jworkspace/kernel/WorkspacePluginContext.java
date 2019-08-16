@@ -26,30 +26,11 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
-import java.io.File;
+import com.hyperrealm.kiwi.util.plugin.PluginContext;
 
 /**
- * Workspace local users validation. This class only checks for writable home directory
- * and redirects the validation to users profile engine
- *
  * @author Anton Troshin
  */
-public class WorkspaceLoginValidator {
+public class WorkspacePluginContext implements PluginContext {
 
-    /**
-     * Validates input parameters.
-     */
-    public boolean validate(String name, String password) {
-        if (name != null && !name.trim().equals("")) {
-            try {
-                File file = File.createTempFile(name + "_check", "tmp");
-                if (file.delete()) {
-                    Workspace.getUserManager().login(name, password);
-                }
-            } catch (Exception ex) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

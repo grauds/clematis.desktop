@@ -29,7 +29,6 @@ package jworkspace.api;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
-import java.util.Map;
 
 import javax.swing.Icon;
 
@@ -38,7 +37,7 @@ import javax.swing.Icon;
  *
  * @author Anton Troshin
  */
-public interface UI extends IEngine {
+public interface UI extends WorkspaceComponent {
 
     /**
      * Register workspace listeners
@@ -64,28 +63,6 @@ public interface UI extends IEngine {
      * Check whether this UI is modified.
      */
     boolean isModified();
-
-    /**
-     * Returns all registered components.
-     */
-    Map<String, Object> getAllRegistered();
-
-    /**
-     * Check whether if a component is registered
-     *
-     * @return registered component.
-     */
-    Object isRegistered(String clazz);
-
-    /**
-     * Register component.
-     */
-    void register(Object obj);
-
-    /**
-     * Unregister component by class name.
-     */
-    void unregister(String clazz);
 
     /**
      * Command to update the UI.

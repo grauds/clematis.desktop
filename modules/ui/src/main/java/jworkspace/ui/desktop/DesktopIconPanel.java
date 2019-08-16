@@ -180,12 +180,12 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
     private void callResourceBrowser(ResourceExplorerDialog resBrowser) {
 
         resBrowser.setHint(false);
-        String path = Workspace.getProfiles().getParameters().
+        String path = Workspace.getUserManager().getParameters().
             getString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
 
         if (path == null && Workspace.getUi() instanceof WorkspaceGUI) {
             path = ((WorkspaceGUI) Workspace.getUi()).getDesktopIconsPath();
-            Workspace.getProfiles().getParameters().
+            Workspace.getUserManager().getParameters().
                 putString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
         }
         resBrowser.setData(path);

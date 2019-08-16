@@ -39,15 +39,17 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.StringUtils;
 
-import jworkspace.api.InstallEngine;
+import jworkspace.api.IWorkspaceInstaller;
+import jworkspace.kernel.Workspace;
 import lombok.Data;
+
 /**
  * Install engine is one of required by kernel.
  *
  * @author Anton Troshin
  */
 @Data
-public class WorkspaceInstaller implements InstallEngine {
+public class WorkspaceInstaller implements IWorkspaceInstaller {
 
     /**
      * File extension for configuration file.
@@ -77,6 +79,16 @@ public class WorkspaceInstaller implements InstallEngine {
 
     /**
      * Default public constructor
+     */
+    public WorkspaceInstaller() {
+        super();
+        this.dataRoot = new File(Workspace.getBasePath());
+        reset();
+    }
+
+    /**
+     * Public constructor with custom data root
+     * @param dataRoot - a folder to store information in
      */
     public WorkspaceInstaller(File dataRoot) {
         super();

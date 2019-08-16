@@ -28,7 +28,6 @@ package jworkspace.ui;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
-import java.util.HashMap;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
@@ -83,46 +82,6 @@ public class DefaultUI implements UI {
     @Override
     public boolean isModified() {
         return false;
-    }
-
-    /**
-     * Returns all registered components.
-     * @return
-     */
-    @Override
-    public HashMap<String, Object> getAllRegistered() {
-        return null;
-    }
-
-    /**
-     * Check whether gui shell is registered
-     *
-     * @param clazz to find any instances of
-     * @return registered component.
-     */
-    @Override
-    public Object isRegistered(String clazz) {
-        return null;
-    }
-
-    /**
-     * Register gui shell.
-     *
-     * @param obj to register
-     */
-    @Override
-    public void register(Object obj) {
-
-    }
-
-    /**
-     * Unregister gui shell.
-     *
-     * @param clazz to remove all instances of
-     */
-    @Override
-    public void unregister(String clazz) {
-
     }
 
     /**

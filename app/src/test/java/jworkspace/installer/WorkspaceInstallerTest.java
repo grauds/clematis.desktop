@@ -17,7 +17,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspaceException;
+import jworkspace.api.WorkspaceException;
 import jworkspace.ui.WorkspaceResourceManager;
 /**
  * @author Anton Troshin

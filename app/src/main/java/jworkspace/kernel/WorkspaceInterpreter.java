@@ -29,6 +29,7 @@ package jworkspace.kernel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -71,10 +72,6 @@ public final class WorkspaceInterpreter {
      * Stream for interpreter
      */
     private PipedOutputStream outPipe;
-    /**
-     * Stream for interpreter
-     */
-    private InputStream in;
 
     public static synchronized WorkspaceInterpreter getInstance() {
 
@@ -90,19 +87,22 @@ public final class WorkspaceInterpreter {
      */
     private synchronized void startInterpreter() {
 
-        WorkspaceInterpreter.LOG.info("> Starting Bean Shell Interpreter");
-//        outPipe = new PipedOutputStream();
-//        try {
-//            in = new PipedInputStream(outPipe);
-//        } catch (IOException e) {
-//            Workspace.getUi().showError("Cannot start Bean Shell Interpreter", e);
-//        }
-        interpreter = new Interpreter(new InputStreamReader(System.in, StandardCharsets.UTF_8),
-            System.out, System.out, false, null);
+        LOG.info("> Starting Bean Shell Interpreter");
+        outPipe = new PipedOutputStream();
+        try {
+            /*
+             * Stream for interpreter
+             */
+            InputStream in = new PipedInputStream(outPipe);
+            interpreter = new Interpreter(new InputStreamReader(in, StandardCharsets.UTF_8),
+                System.out, System.err, true, null);
 
-        interpreterThread = new Thread(interpreter);
-        interpreterThread.start();
-        WorkspaceInterpreter.LOG.info(">" + "Bean Shell Interpreter succefully started");
+            interpreterThread = new Thread(interpreter);
+            interpreterThread.start();
+            LOG.info(">" + "Bean Shell Interpreter succefully started");
+        } catch (IOException e) {
+            LOG.error("Cannot start Bean Shell Interpreter", e);
+        }
     }
 
     /**
@@ -115,7 +115,7 @@ public final class WorkspaceInterpreter {
             }
             interpreter.source(fileName);
         } catch (EvalError | IOException ex) {
-            Workspace.getUi().showError(CANNOT_INTERPRET + fileName, ex);
+            LOG.error(ex.getMessage(), ex);
         }
     }
 
@@ -134,7 +134,7 @@ public final class WorkspaceInterpreter {
             outPipe.write(commandLineInt.getBytes(StandardCharsets.UTF_8));
             outPipe.flush();
         } catch (IOException e) {
-            Workspace.getUi().showError(CANNOT_INTERPRET + commandLineInt, e);
+            LOG.error(CANNOT_INTERPRET + commandLineInt, e);
         }
     }
 

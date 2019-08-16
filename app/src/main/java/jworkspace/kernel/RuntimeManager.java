@@ -28,10 +28,7 @@ package jworkspace.kernel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -40,13 +37,8 @@ import javax.swing.ImageIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
-import com.hyperrealm.kiwi.util.plugin.PluginLocator;
-
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.WorkspacePluginContext;
-
+import jworkspace.api.WorkspaceException;
 /**
  * Runtime manager is a core component for Java Workspace to start/stop processes registered in installer
  *
@@ -70,23 +62,17 @@ public final class RuntimeManager {
 
     private static final String SLASH = "/";
 
+    private static RuntimeManager instance = null;
+
     /**
      * The list of all external processes in Java Workspace.
      */
     private Vector<JavaProcess> processes = new Vector<>();
-    /**
-     * Workspace plugin context defines context for all plugins, visible or not.
-     */
-    private WorkspacePluginContext pluginContext = null;
-    /**
-     * Plugin locator
-     */
-    private PluginLocator pluginLocator = null;
 
     /**
      * Default constructor.
      */
-    RuntimeManager() {
+    private RuntimeManager() {
         super();
     }
 
@@ -121,6 +107,13 @@ public final class RuntimeManager {
 
     }
 
+    public static synchronized RuntimeManager getInstance() {
+        if (instance == null) {
+            instance = new RuntimeManager();
+        }
+        return instance;
+    }
+
     /**
      * Executes program externally launching separate java process.
      *
@@ -128,8 +121,8 @@ public final class RuntimeManager {
      */
     private synchronized void executeExternalProcess(String path) throws WorkspaceException {
 
-        String[] args = Workspace.getInstallEngine().getInvocationArgs(path);
-        String workingDir = Workspace.getInstallEngine().getApplicationWorkingDir(path);
+        String[] args = Workspace.getWorkspaceInstaller().getInvocationArgs(path);
+        String workingDir = Workspace.getWorkspaceInstaller().getApplicationWorkingDir(path);
 
         executeExternalProcess(args, workingDir, trimPath(path));
     }
@@ -244,7 +237,7 @@ public final class RuntimeManager {
      *
      * @return jworkspace.kernel.JavaProcess[]
      */
-    JavaProcess[] getAllProcesses() {
+    public JavaProcess[] getAllProcesses() {
         JavaProcess[] prs = new JavaProcess[processes.size()];
         processes.copyInto(prs);
         return prs;
@@ -272,76 +265,5 @@ public final class RuntimeManager {
      */
     public void remove(JavaProcess pr) {
         processes.removeElement(pr);
-    }
-
-    /**
-     * Returns plugin context for the workspace
-     */
-    private WorkspacePluginContext getPluginContext() {
-        if (pluginContext == null) {
-            pluginContext = new WorkspacePluginContext();
-        }
-        return pluginContext;
-    }
-
-    /**
-     * Returns plugin locator
-     */
-    public PluginLocator getPluginLocator() {
-        if (pluginLocator == null) {
-            pluginLocator = new PluginLocator(getPluginContext());
-        }
-        return pluginLocator;
-    }
-
-    /**
-     * Load plugins from specified directory. This method traverses directory, with all subdirectories,
-     * searches for jar file and tries to load all plugins.
-     *
-     * @param directory path to directory
-     */
-    public Plugin[] loadPlugins(String directory) {
-
-        RuntimeManager.LOG.info("> Loading plugins from " + directory);
-
-        List<Plugin> plugins = scanPluginsDir(directory);
-        Plugin[] retvalue = plugins.toArray(new Plugin[0]);
-
-        RuntimeManager.LOG.info("> Plugins from " + directory + " are loaded");
-
-        return retvalue;
-    }
-
-    void resetPluginsCache() {
-        pluginLocator = null;
-    }
-
-    private List<Plugin> scanPluginsDir(String name) {
-
-        List<Plugin> plugins = new ArrayList<>();
-        try {
-            File dir = new File(name);
-            if (dir.isDirectory()) {
-
-                File[] files = dir.listFiles();
-                if (files != null) {
-                    /*
-                     * As there is no guarantee, that files will be in alphabetical order, lets sort
-                     * directories and files.
-                     */
-                    Arrays.sort(files, Comparator.comparing(File::getName));
-
-                    for (File file : files) {
-                        plugins.addAll(scanPluginsDir(file.getAbsolutePath()));
-                    }
-                }
-            } else if (dir.getName().endsWith("jar")) {
-                Plugin plugin = getPluginLocator().loadPlugin(dir, "Any");
-                plugins.add(plugin);
-            }
-        } catch (PluginException ex) {
-            RuntimeManager.LOG.warn("Cannot load plugins from " + name + " - " + ex.toString());
-        }
-        return plugins;
     }
 }

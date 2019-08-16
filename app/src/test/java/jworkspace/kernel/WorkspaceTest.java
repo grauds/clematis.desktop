@@ -1,15 +1,14 @@
 package jworkspace.kernel;
-
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2002 Anton Troshin
+   Copyright (C) 1999-2019 Anton Troshin
 
    This file is part of Java Workspace.
 
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   VERSION 2 of the License, or (at your option) any later VERSION.
 
    This application is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,35 +25,34 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 
+import java.io.IOException;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /**
- * An exception within workspace
- *
  * @author Anton Troshin
  */
-public class WorkspaceException extends Exception {
+public class WorkspaceTest {
 
-    private Throwable wrappedException = null;
+    private final TemporaryFolder testFolder = new TemporaryFolder();
 
-    public WorkspaceException() {
-        super();
+    @Before
+    public void before() throws IOException {
+        testFolder.create();
     }
 
-    public WorkspaceException(String s) {
-        super(s);
+    @Test
+    public void testBeginWork() {
+// I would like to start a new workspace
+        Workspace.start(new String[0]);
+
     }
 
-    public WorkspaceException(String s, Throwable t) {
-        super(s);
-        wrappedException = t;
-    }
-
-    public WorkspaceException(Throwable t) {
-        super();
-        wrappedException = t;
-    }
-
-    public Throwable getWrappedException() {
-        return wrappedException;
+    @After
+    public void after() {
+        testFolder.delete();
     }
 }

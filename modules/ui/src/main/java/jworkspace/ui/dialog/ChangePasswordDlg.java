@@ -68,7 +68,7 @@ class ChangePasswordDlg extends ComponentDialog {
 
     protected boolean accept() {
         try {
-            Workspace.getProfiles().setPassword(
+            Workspace.getUserManager().setPassword(
                 new String(oldPass.getPassword()),
                 new String(newPass.getPassword()),
                 new String(confirmPass.getPassword()));

@@ -55,6 +55,8 @@ import com.hyperrealm.kiwi.event.PluginReloadListener;
 
 public final class Plugin<T> {
 
+    public static final String PLUGIN_TYPE_ANY = "ANY";
+
     public static final String PLUGIN_NAME = "PluginName";
     public static final String PLUGIN_TYPE = "PluginType";
     public static final String PLUGIN_DESCRIPTION = "PluginDescription";

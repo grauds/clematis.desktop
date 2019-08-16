@@ -1,4 +1,5 @@
-package jworkspace.ui;
+package jworkspace.api;
+
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -26,11 +27,34 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 
-import com.hyperrealm.kiwi.util.plugin.PluginContext;
+import java.io.IOException;
 
 /**
+ * User aware engine which lifecycle is simply to load and save the data from the disk
+ * and be able to come back to initial state by resetting and clearing all the data.
+ *
+ *
  * @author Anton Troshin
  */
-public class WorkspacePluginContext implements PluginContext {
+public interface WorkspaceComponent {
 
+    /**
+     * Save engine
+     */
+    void load() throws IOException;
+
+    /**
+     * Load engine
+     */
+    void save() throws IOException;
+
+    /**
+     * Reset engine
+     */
+    void reset();
+
+    /**
+     * Get human readable name
+     */
+    String getName();
 }

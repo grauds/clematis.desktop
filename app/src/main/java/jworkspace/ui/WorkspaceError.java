@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
+import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspaceException;
 
 /**
  * Gui error reporter for the end-user

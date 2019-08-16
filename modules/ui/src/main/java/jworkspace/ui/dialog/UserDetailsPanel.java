@@ -153,19 +153,19 @@ class UserDetailsPanel extends KPanel {
     }
 
     public void setData() {
-        tNick.setText(Workspace.getProfiles().getUserName());
-        tName.setText(Workspace.getProfiles().getUserFirstName());
-        tSurname.setText(Workspace.getProfiles().getUserLastName());
-        tMail.setText(Workspace.getProfiles().getEmail());
-        tDescription.setText(Workspace.getProfiles().getDescription());
+        tNick.setText(Workspace.getUserManager().getUserName());
+        tName.setText(Workspace.getUserManager().getUserFirstName());
+        tSurname.setText(Workspace.getUserManager().getUserLastName());
+        tMail.setText(Workspace.getUserManager().getEmail());
+        tDescription.setText(Workspace.getUserManager().getDescription());
     }
 
     public boolean syncData() {
-        Workspace.getProfiles().setUserFirstName(tName.getText());
-        Workspace.getProfiles().setUserLastName(tSurname.getText());
-        Workspace.getProfiles().setEmail(tMail.getText());
-        Workspace.getProfiles().setDescription(tDescription.getText());
-        Workspace.getProfiles().setUserName(tNick.getText());
+        Workspace.getUserManager().setUserFirstName(tName.getText());
+        Workspace.getUserManager().setUserLastName(tSurname.getText());
+        Workspace.getUserManager().setEmail(tMail.getText());
+        Workspace.getUserManager().setDescription(tDescription.getText());
+        Workspace.getUserManager().setUserName(tNick.getText());
 
         return true;
     }

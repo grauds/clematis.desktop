@@ -30,8 +30,6 @@ package jworkspace.api;
 import java.io.IOException;
 import java.util.Vector;
 
-import javax.swing.JDialog;
-
 import com.hyperrealm.kiwi.util.Config;
 
 /**
@@ -40,7 +38,7 @@ import com.hyperrealm.kiwi.util.Config;
  *
  * @author Anton Troshin
  */
-public interface IUserProfileEngine extends IEngine {
+public interface IUserManager extends WorkspaceComponent {
     /**
      * Get user-defined property from user profile.
      */
@@ -139,14 +137,14 @@ public interface IUserProfileEngine extends IEngine {
      */
     boolean userLogged();
 
-    /**
-     * Returns login dialog for the system.
-     * Login dialog should perform login security
-     * functions.
-     *
-     * @return login dialog for the system.
-     */
-    JDialog getLoginDlg();
+//    /**
+//     * Returns login dialog for the system.
+//     * Login dialog should perform login security
+//     * functions.
+//     *
+//     * @return login dialog for the system.
+//     */
+//    JDialog getLoginDlg();
 
     /**
      * Set user name

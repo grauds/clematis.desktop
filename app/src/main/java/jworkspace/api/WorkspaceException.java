@@ -1,9 +1,8 @@
 package jworkspace.api;
 
-
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2018 Anton Troshin
+   Copyright (C) 1999-2002 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -27,32 +26,35 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 
-import java.io.IOException;
 
 /**
- * Abstract workspace engine
-
+ * An exception within workspace
+ *
  * @author Anton Troshin
  */
-public interface IEngine {
+public class WorkspaceException extends Exception {
 
-    /**
-     * Save engine
-     */
-    void load() throws IOException;
+    private Throwable wrappedException = null;
 
-    /**
-     * Load engine
-     */
-    void save() throws IOException;
+    public WorkspaceException() {
+        super();
+    }
 
-    /**
-     * Reset engine
-     */
-    void reset();
+    public WorkspaceException(String s) {
+        super(s);
+    }
 
-    /**
-     * Get human readable name
-     */
-    String getName();
+    public WorkspaceException(String s, Throwable t) {
+        super(s);
+        wrappedException = t;
+    }
+
+    public WorkspaceException(Throwable t) {
+        super();
+        wrappedException = t;
+    }
+
+    public Throwable getWrappedException() {
+        return wrappedException;
+    }
 }

@@ -2,7 +2,7 @@ package jworkspace.kernel;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2018 Anton Troshin
+   Copyright (C) 1999-2019 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -47,15 +47,16 @@ import com.hyperrealm.kiwi.util.Config;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IEngine;
-import jworkspace.api.IUserProfileEngine;
+import jworkspace.api.IUserManager;
+import jworkspace.api.IWorkspaceInstaller;
 import jworkspace.api.IWorkspaceListener;
-import jworkspace.api.InstallEngine;
 import jworkspace.api.UI;
+import jworkspace.api.WorkspaceComponent;
+import jworkspace.api.WorkspaceException;
 import jworkspace.installer.WorkspaceInstaller;
 import jworkspace.ui.DefaultUI;
 import jworkspace.ui.WorkspaceResourceManager;
-import jworkspace.users.UserProfileEngine;
+import jworkspace.users.UserManager;
 
 /**
  * Workspace is a core class for Java Workspace
@@ -84,19 +85,17 @@ public class Workspace {
      * Listeners for service events.
      */
     private static final List<IWorkspaceListener> LISTENERS = new Vector<>();
-
     /**
-     * Runtime manager
+     * The directory where Workspace will be looking for plugins
+     * todo: Make configurable
      */
-    private static final RuntimeManager RUNTIME_MANAGER = new RuntimeManager();
+    private static final String PLUGINS_DIRECTORY = "plugins";
     /**
-     * SYSTEM PLUGINS. This is actually invisible services,
-     * that are loaded by system at startup and unloaded on finish.
-     * These services are for all users in system.
-     * <p>
-     * Each one is executed in its own thread and has its own security manager
+     * SYSTEM PLUGINS. This is actually invisible services, that are loaded by system at startup and
+     * unloaded on finish. These services are for all users in system and must implement WorkspaceComponent
+     * interface to be plugged into workspace lifecycle.
      */
-    private static final Set<Plugin> SYSTEM_PLUGINS = new HashSet<>();
+    private static final Set<Plugin<WorkspaceComponent>> SYSTEM_PLUGINS = new HashSet<>();
     /**
      * USER PLUGINS. This is actually invisible services,
      * that are loaded by user at login or later manually and unloaded on logout.
@@ -108,7 +107,7 @@ public class Workspace {
     /**
      * Workspace ENGINES in a synchronized list
      */
-    private static final Collection<IEngine> ENGINES = new Vector<>();
+    private static final Collection<WorkspaceComponent> COMPONENTS = new Vector<>();
     /**
      * Resource manager.
      */
@@ -122,8 +121,6 @@ public class Workspace {
 
     private static final String WHITESPACE = " ";
 
-    private static final String PLUGINS = "plugins";
-
     private static final String WORKSPACE_ENGINE_LOAD_FAILED = "Workspace.engine.loadFailed";
 
     private static final String WORKSPACE_ENGINE_SAVE_FAILED = "Workspace.engine.saveFailed";
@@ -131,14 +128,9 @@ public class Workspace {
     private static final String EMPTY_STRING = "#\n";
 
     /**
-     * User profile engine interface
-     */
-    private static IUserProfileEngine profilesEngine = new UserProfileEngine();
-
-    /**
      * Installer
      */
-    private static InstallEngine installEngine;
+    private static IWorkspaceInstaller workspaceInstaller = new WorkspaceInstaller();
 
     /**
      * Java Workspace UI, selectable by users
@@ -156,17 +148,43 @@ public class Workspace {
     private Workspace() {}
 
     /**
+     * Starts the application.
+     *
+     * @param args an array of command-line arguments
+     */
+    public static void main(String[] args) {
+
+        int paramLength = args.length;
+
+        for (String par : args) {
+
+            if (par.equalsIgnoreCase("-locales")) {
+                WorkspaceResourceAnchor.printAvailableLocales();
+                if (paramLength == 1) {
+                    System.exit(0);
+                }
+            } else if (par.equalsIgnoreCase("-VERSION")) {
+                if (paramLength == 1) {
+                    System.exit(0);
+                }
+            }
+        }
+
+        start(args);
+    }
+    
+    /**
      * Adds SYSTEM PLUGIN.
      */
-    private static void addSystemPlugin(Plugin pl) {
+    public static void addSystemPlugin(Plugin<WorkspaceComponent> pl) {
         SYSTEM_PLUGINS.add(pl);
     }
 
     /**
      * Adds SYSTEM PLUGINS
      */
-    private static void addSystemPlugins(Plugin[] pls) {
-        for (Plugin pl : pls) {
+    public static void addSystemPlugins(List<Plugin<WorkspaceComponent>> pls) {
+        for (Plugin<WorkspaceComponent> pl : pls) {
             addSystemPlugin(pl);
         }
     }
@@ -174,30 +192,16 @@ public class Workspace {
     /**
      * Adds USER PLUGIN.
      */
-    private static void addUserPlugin(Plugin pl) {
+    public static void addUserPlugin(Plugin pl) {
         USER_PLUGINS.add(pl);
     }
 
     /**
      * Adds USER PLUGINS
      */
-    private static void addUserPlugins(Plugin[] pls) {
+    public static void addUserPlugins(Plugin[] pls) {
         for (Plugin pl : pls) {
             addUserPlugin(pl);
-        }
-    }
-
-    /**
-     * Save ui preferences and reset components to their original state
-     */
-    private static void saveAndResetUI() {
-
-        try {
-            ui.save();
-            ui.reset();
-        } catch (IOException ex) {
-            Workspace.ui.showError(ui.getName() + WHITESPACE
-                + WorkspaceResourceAnchor.getString("Workspace.logOff.saveFailed"), ex);
         }
     }
 
@@ -214,19 +218,18 @@ public class Workspace {
 
             RuntimeManager.killAllProcesses();
 
-            if (Workspace.getProfiles().userLogged()) {
+            if (Workspace.getUserManager().userLogged()) {
 
-                saveAndResetUI();
-                saveEngines();
+               // saveAndResetUI();
+              //  saveEngines();
 
                 try {
-                    profilesEngine.logout();
-                    profilesEngine.save();
+                    UserManager.getInstance().logout();
+                    UserManager.getInstance().save();
                 } catch (Exception e) {
                     Workspace.ui.showError(WorkspaceResourceAnchor.getString("Workspace.logout.failure"), e);
                 }
             }
-            Workspace.LOG.info("> 1999 - 2019 Copyright Anton Troshin");
             System.exit(0);
         }
     }
@@ -246,7 +249,7 @@ public class Workspace {
     }
 
     /**
-     * Deliver even
+     * Deliver event to all the listeners
      */
     public static synchronized void fireEvent(Object event, Object lparam, Object rparam) {
 
@@ -261,15 +264,15 @@ public class Workspace {
      * Returns class, implemented interface
      * <code>jworkspace.api.InstallEngine</code>
      */
-    public static InstallEngine getInstallEngine() {
-        return installEngine;
+    public static IWorkspaceInstaller getWorkspaceInstaller() {
+        return workspaceInstaller;
     }
 
     /**
      * Returns class, implemented interface <code>jworkspace.api.IUserProfileEngine</code>
      */
-    public static IUserProfileEngine getProfiles() {
-        return profilesEngine;
+    public static IUserManager getUserManager() {
+        return UserManager.getInstance();
     }
 
     /**
@@ -281,7 +284,7 @@ public class Workspace {
     }
 
     public static String getUserHomePath() throws IOException {
-        return getBasePath() + Workspace.getProfiles().getCurrentProfileRelativePath();
+        return getBasePath() + Workspace.getUserManager().getCurrentProfileRelativePath();
     }
 
     /**
@@ -298,7 +301,7 @@ public class Workspace {
      * <code>jworkspace.kernel.RuntimeManager</code>
      */
     public static RuntimeManager getRuntimeManager() {
-        return RUNTIME_MANAGER;
+        return RuntimeManager.getInstance();
     }
 
     /**
@@ -355,43 +358,10 @@ public class Workspace {
         return clazz != null ? getService(clazz.getCanonicalName()) : null;
     }
 
-    private static void loadEngines() {
-        for (IEngine engine : ENGINES) {
-            try {
-                engine.load();
-            } catch (IOException ex) {
-                String name = engine.getName();
-                Workspace.ui.showError(name
-                    + WHITESPACE + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_LOAD_FAILED), ex);
-                Workspace.LOG.error(name
-                    + WHITESPACE + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_LOAD_FAILED
-                    + ex.toString()));
-            }
-        }
-    }
-
-    private static void saveEngines() throws WorkspaceException {
-        for (IEngine engine : ENGINES) {
-            try {
-                engine.save();
-                engine.reset();
-            } catch (IOException ex) {
-                String name = engine.getName();
-                Workspace.LOG.error(name
-                    + WHITESPACE
-                    + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_SAVE_FAILED
-                    + ex.toString()));
-                throw new WorkspaceException(name
-                    + WHITESPACE
-                    + WorkspaceResourceAnchor.getString(WORKSPACE_ENGINE_SAVE_FAILED), ex);
-            }
-        }
-    }
-
     private static void loadUserPlugins() throws IOException {
 
-        String fileName = Workspace.getUserHomePath() + PLUGINS;
-        addUserPlugins(Workspace.getRuntimeManager().loadPlugins(fileName));
+     //   String fileName = Workspace.getUserHomePath() + PLUGINS;
+       // addUserPlugins(WorkspacePluginLocator.loadPlugins(fileName));
     }
 
     /**
@@ -401,38 +371,18 @@ public class Workspace {
         return ui.isModified();
     }
 
-    /**
-     * Starts the application.
-     *
-     * @param args an array of command-line arguments
-     */
-    public static void main(java.lang.String[] args) {
 
-        int paramLength = args.length;
-
-        for (String par : args) {
-
-            if (par.equalsIgnoreCase("-locales")) {
-                WorkspaceResourceAnchor.printAvailableLocales();
-                if (paramLength == 1) {
-                    System.exit(0);
-                }
-            } else if (par.equalsIgnoreCase("-VERSION")) {
-                if (paramLength == 1) {
-                    System.exit(0);
-                }
-            }
-        }
-
-        start(args);
-    }
-
-    static void start(String[] args) {
+    public static void start(String[] args) {
 
         long start = System.currentTimeMillis();
-        Workspace.LOG.info("> Starting" + WHITESPACE + Workspace.getVersion());
-
-        initSystem();
+        /*
+         * Workspace Bean Shell interpreter instance
+         */
+        WorkspaceInterpreter.getInstance();
+        /*
+         * Add system plugins indifferent to users data
+         */
+        addSystemPlugins(new WorkspacePluginLocator<WorkspaceComponent>().loadPlugins(PLUGINS_DIRECTORY));
 
         try {
             initUserWorkspace(args);
@@ -464,26 +414,6 @@ public class Workspace {
     }
 
     /**
-     * Load plugins from root directory
-     */
-    private static void initSystem() {
-
-        Workspace.LOG.info("> Loading " + Workspace.getVersion());
-        /*
-         * Add installer to engines to make it sensitive for user data
-         */
-        Workspace.ENGINES.add(Workspace.getInstallEngine());
-        /*
-         * Workspace Bean Shell interpreter instance
-         */
-        WorkspaceInterpreter.getInstance();
-        /*
-         * Add system plugins indifferent to users data
-         */
-        addSystemPlugins(Workspace.getRuntimeManager().loadPlugins(PLUGINS));
-    }
-
-    /**
      * This method is responsible for Workspace initialization.
      * It performs full startup procedure and logs on user.
      */
@@ -508,7 +438,7 @@ public class Workspace {
          *  -qlogin [profile name]
          */
         try {
-            profilesEngine.load();
+            getUserManager().load();
         } catch (IOException ex) {
             Workspace.ui.showError(WorkspaceResourceAnchor.getString("Workspace.load.profilerFailure"), ex);
             System.exit(-3);
@@ -517,7 +447,7 @@ public class Workspace {
         if (quickLogin != null) {
             try {
                 Workspace.LOG.info("Logging in as " + quickLogin);
-                profilesEngine.login(quickLogin, "");
+                getUserManager().login(quickLogin, "");
                 Workspace.LOG.info("Logged in as " + quickLogin);
             } catch (Exception ex) {
                 Workspace.LOG.error("Can't log in as " + quickLogin);
@@ -526,13 +456,13 @@ public class Workspace {
             }
         }
 
-        if (quickLogin == null) {
-            profilesEngine.getLoginDlg().setVisible(true);
-        }
+//        if (quickLogin == null) {
+//           // profilesEngine.getLoginDlg().setVisible(true);
+//        }
         /*
          * If login failed - silently leave the basic system running
          */
-        if (!profilesEngine.userLogged()) {
+        if (!getUserManager().userLogged()) {
             return;
         }
 
@@ -571,8 +501,8 @@ public class Workspace {
         }
 
         try {
-            installEngine = new WorkspaceInstaller(new File(getUserHomePath()));
-            loadEngines();
+            workspaceInstaller = new WorkspaceInstaller(new File(getUserHomePath()));
+            //loadEngines();
             loadUserPlugins();
             ui.load();
         } catch (IOException ex) {
@@ -595,26 +525,24 @@ public class Workspace {
         ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("user_change.png"));
 
         if ((isModified() && ui.showConfirmDialog(WorkspaceResourceAnchor.getString("Workspace.logOff.question")
-                + WHITESPACE + getProfiles().getUserName() + " ?",
+                + WHITESPACE + getUserManager().getUserName() + " ?",
             WorkspaceResourceAnchor.getString("Workspace.logOff.title"), icon)) || !isModified()) {
 
             RuntimeManager.killAllProcesses();
 
-            saveAndResetUI();
-            saveEngines();
+            //saveAndResetUI();
+            //saveEngines();
             USER_PLUGINS.clear();
 
-            getRuntimeManager().resetPluginsCache();
-
             try {
-                profilesEngine.logout();
-                profilesEngine.getLoginDlg().setVisible(true);
+                getUserManager().logout();
+              //  profilesEngine.getLoginDlg().setVisible(true);
             } catch (Exception e) {
                 Workspace.ui.showError(WorkspaceResourceAnchor.getString(WORKSPACE_LOGIN_FAILURE), e);
                 return;
             }
             try {
-                loadEngines();
+                //loadEngines();
                 loadUserPlugins();
                 ui.load();
             } catch (IOException ex) {

@@ -45,36 +45,36 @@ public class LoginTest {
 
         Profile profile = new Profile("test", "password", "First Name", "Second Name", "test@test.com");
 
-        UserProfileEngine userProfileEngine = new UserProfileEngine();
+        UserManager userManager = UserManager.getInstance();
 
         // this adds incomplete profile -> to disk
-        userProfileEngine.addProfile(profile.getUserName(), "password");
+        userManager.addProfile(profile.getUserName(), "password");
         // this selects incomplete profile -> from disk
-        userProfileEngine.login(profile.getUserName(), "password");
+        userManager.login(profile.getUserName(), "password");
         // incomplete profile is not equals to one in memory
-        assert userProfileEngine.getUserName().equals(profile.getUserName());
-        assert !userProfileEngine.getEmail().equals(profile.getEmail());
-        assert !userProfileEngine.getUserFirstName().equals(profile.getUserFirstName());
-        assert !userProfileEngine.getUserLastName().equals(profile.getUserLastName());
+        assert userManager.getUserName().equals(profile.getUserName());
+        assert !userManager.getEmail().equals(profile.getEmail());
+        assert !userManager.getUserFirstName().equals(profile.getUserFirstName());
+        assert !userManager.getUserLastName().equals(profile.getUserLastName());
         // deselect incomplete profile -> to disk
-        userProfileEngine.logout();
+        userManager.logout();
         // save complete to disk
         profile.save();
         // selects complete profile -> from disk
-        userProfileEngine.login(profile.getUserName(), "password");
+        userManager.login(profile.getUserName(), "password");
 
-        assert userProfileEngine.getUserName().equals(profile.getUserName());
-        assert userProfileEngine.getDescription().equals(profile.getDescription());
-        assert userProfileEngine.getCurrentProfileRelativePath().equals(profile.getProfilePath());
-        assert userProfileEngine.getEmail().equals(profile.getEmail());
-        assert userProfileEngine.getParameters().equals(profile.getParameters());
-        assert userProfileEngine.getUserFirstName().equals(profile.getUserFirstName());
-        assert userProfileEngine.getUserLastName().equals(profile.getUserLastName());
+        assert userManager.getUserName().equals(profile.getUserName());
+        assert userManager.getDescription().equals(profile.getDescription());
+        assert userManager.getCurrentProfileRelativePath().equals(profile.getProfilePath());
+        assert userManager.getEmail().equals(profile.getEmail());
+        assert userManager.getParameters().equals(profile.getParameters());
+        assert userManager.getUserFirstName().equals(profile.getUserFirstName());
+        assert userManager.getUserLastName().equals(profile.getUserLastName());
 
-        userProfileEngine.logout();
-        assert !userProfileEngine.userLogged();
+        userManager.logout();
+        assert !userManager.userLogged();
 
-        userProfileEngine.removeProfile(profile.getUserName(), "password");
+        userManager.removeProfile(profile.getUserName(), "password");
     }
 
     @After

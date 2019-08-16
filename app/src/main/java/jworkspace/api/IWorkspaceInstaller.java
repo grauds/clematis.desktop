@@ -31,7 +31,6 @@ import java.util.List;
 import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionDataSource;
 import jworkspace.installer.Library;
-import jworkspace.kernel.WorkspaceException;
 
 /**
  * Installation systems of Java Workspace
@@ -40,7 +39,7 @@ import jworkspace.kernel.WorkspaceException;
  *
  * @author Anton Troshin
  */
-public interface InstallEngine extends IEngine {
+public interface IWorkspaceInstaller extends WorkspaceComponent {
 
     /**
      * Returns application data.

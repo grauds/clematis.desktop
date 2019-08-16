@@ -26,23 +26,19 @@ package jworkspace.users;
   ----------------------------------------------------------------------------
 */
 
-import java.awt.Color;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
-
-import javax.swing.JDialog;
+import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hyperrealm.kiwi.ui.dialog.LoginDialog;
 import com.hyperrealm.kiwi.util.Config;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IUserProfileEngine;
+import jworkspace.api.IUserManager;
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspaceLoginValidator;
 
 /**
  * Profile engine is one of required by kernel.
@@ -50,29 +46,28 @@ import jworkspace.kernel.WorkspaceLoginValidator;
  * @author Anton Troshin
  */
 @SuppressWarnings("unused")
-public class UserProfileEngine implements IUserProfileEngine {
+public class UserManager implements IUserManager {
 
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(UserProfileEngine.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserManager.class);
 
-    private static final String USER_HOME = "user.home";
+    private static UserManager instance = null;
 
     private ProfilesManager profilesManager = new ProfilesManager();
 
     private boolean userLogged = false;
 
     /**
-     * Login dialog
-     */
-    private LoginDialog loginDlg = null;
-
-    /**
      * Default public constructor.
      */
-    public UserProfileEngine() {
+    private UserManager() {
         super();
+    }
+
+    public static synchronized UserManager getInstance() {
+        if (instance == null) {
+            instance = new UserManager();
+        }
+        return instance;
     }
 
     /**
@@ -174,9 +169,9 @@ public class UserProfileEngine implements IUserProfileEngine {
             }
             profilesManager.add(profile);
         } catch (IOException ex) {
-            UserProfileEngine.LOG.warn(WorkspaceResourceAnchor.getString("message#290") + name, ex);
+            UserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#290") + name, ex);
         } catch (ProfileOperationException ex) {
-            UserProfileEngine.LOG.warn(WorkspaceResourceAnchor.getString("message#288") + name, ex);
+            UserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#288") + name, ex);
         }
     }
 
@@ -188,7 +183,7 @@ public class UserProfileEngine implements IUserProfileEngine {
             Profile profile = profilesManager.loadProfile(name);
             profilesManager.delete(profile, password);
         } catch (ProfileOperationException ex) {
-            UserProfileEngine.LOG.warn(WorkspaceResourceAnchor.getString("message#275") + name, ex);
+            UserManager.LOG.warn(WorkspaceResourceAnchor.getString("message#275") + name, ex);
         }
     }
 
@@ -207,7 +202,7 @@ public class UserProfileEngine implements IUserProfileEngine {
 
     /*** Returns all users in system
      */
-    public java.util.Vector getUsersList() {
+    public Vector getUsersList() {
         return profilesManager.getProfilesList();
     }
 
@@ -246,7 +241,7 @@ public class UserProfileEngine implements IUserProfileEngine {
      * via serialization support.
      */
     public void load() {
-        UserProfileEngine.LOG.info("> Profiles manager is loaded");
+        UserManager.LOG.info("> Profiles manager is loaded");
     }
 
     /**
@@ -264,7 +259,7 @@ public class UserProfileEngine implements IUserProfileEngine {
         profilesManager.setCurrentProfile(profile.getUserName());
         userLogged = true;
 
-        UserProfileEngine.LOG.info("> You are logged as " + getUserName());
+        UserManager.LOG.info("> You are logged as " + getUserName());
     }
 
     /**
@@ -301,22 +296,5 @@ public class UserProfileEngine implements IUserProfileEngine {
     public void setUserName(String name) {
         profilesManager.getCurrentProfile().setUserName(name);
         Workspace.getUi().update();
-    }
-
-    /**
-     * Returns login dialog for this UI system.
-     */
-    public JDialog getLoginDlg() {
-        if (loginDlg == null) {
-            loginDlg = new WorkspaceLoginValidator(Workspace.getUi().getFrame(),
-                WorkspaceResourceAnchor.getString("LoginDlg.title"), ""
-            );
-            loginDlg.setAcceptButtonText(WorkspaceResourceAnchor.getString("LoginDlg.login.accept"));
-            loginDlg.pack();
-            loginDlg.setIcon(null);
-        }
-        loginDlg.setTexture(null);
-        loginDlg.getContentPane().setBackground(Color.white);
-        return loginDlg;
     }
 }

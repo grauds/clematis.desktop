@@ -50,8 +50,8 @@ import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
+import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspaceException;
 import jworkspace.ui.action.AbstractStateAction;
 import jworkspace.ui.dialog.SettingsDialog;
 import jworkspace.ui.dialog.UserDetailsDialog;
