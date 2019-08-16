@@ -84,16 +84,12 @@ public final class Plugin<T> {
 
     private String jarFile;
 
-    /* stuff that must be loaded */
     private Class pluginClass = null;
 
     private Icon icon = null;
 
-    private JarFile jar = null;
-
     private URL helpURL = null;
 
-    /* support objects */
     private PluginClassLoader loader;
 
     private PluginLocator<T> locator;
@@ -268,145 +264,130 @@ public final class Plugin<T> {
 
         Manifest mf;
 
-        try {
-            jar = new JarFile(new File(jarFile));
-
-            // open the manifest and find the plugin entry
+        try (JarFile jar = new JarFile(new File(jarFile))) {
 
             mf = jar.getManifest();
+
+            if (mf == null) {
+                throw new PluginException("No manifest found");
+            }
+
+            String classFile = null;
+            Attributes attrs = null;
+            boolean found = false;
+
+            Map map = mf.getEntries();
+            Iterator iter = map.keySet().iterator();
+
+            while (iter.hasNext()) {
+
+                classFile = (String) iter.next();
+                attrs = mf.getAttributes(classFile);
+
+                if (attrs.getValue(PLUGIN_NAME) != null) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                throw new PluginException("No plugin entry found in manifest");
+            }
+
+            className = PluginClassLoader.pathToClassName(classFile);
+
+            // read in the attributes
+
+            iter = attrs.keySet().iterator();
+
+            while (iter.hasNext()) {
+
+                Attributes.Name nm = (Attributes.Name) iter.next();
+                String a = nm.toString();
+                String v = attrs.getValue(nm);
+
+                switch (a) {
+                    case PLUGIN_NAME:
+                        name = v;
+                        break;
+                    case PLUGIN_TYPE:
+                        type = v;
+                        break;
+                    case PLUGIN_DESCRIPTION:
+                        desc = v;
+                        break;
+                    case PLUGIN_ICON:
+                        iconFile = v;
+                        break;
+                    case PLUGIN_VERSION:
+                        version = v;
+                        break;
+                    case PLUGIN_HELP_URL:
+                        try {
+                            helpURL = new URL(v);
+                        } catch (MalformedURLException ex) { /* ignore */ }
+                        break;
+                    default:
+                        props.put(a, v);
+                        break;
+                }
+            }
+
+            if ((type == null) || (name == null)) {
+                throw new PluginException("Invalid plugin manifest entry");
+            }
+
+            if (!type.equals(expectedType)) {
+                throw new PluginException("Plugin type mismatch");
+            }
+
+            // create the classloader
+
+            loader = locator.createClassLoader();
+            loader.addJarFile(jar);
+
+            // load the ICON
+
+            GraphicsEnvironment.getLocalGraphicsEnvironment();
+            if (iconFile != null && !GraphicsEnvironment.isHeadless()) {
+                JarEntry entry = (JarEntry) jar.getEntry(iconFile);
+                if (entry != null) {
+                    try {
+                        InputStream in = jar.getInputStream(entry);
+                        Image im = locator.getDecoder().decodeImage(in);
+                        if (im != null) {
+                            icon = new ImageIcon(im);
+                        }
+                        in.close();
+                    } catch (IOException ex) {
+                        icon = null;
+                    }
+                }
+            }
+
+            // load the plugin class
+
+            try {
+                pluginClass = loader.loadClass(className);
+            } catch (Exception ex) {
+                throw new PluginException("Failed to load plugin class " + className, ex);
+            }
+
+            loaded = true;
+
         } catch (IOException ex) {
             throw new PluginException("Unable to read archive", ex);
         }
-
-        if (mf == null) {
-            throw new PluginException("No manifest found");
-        }
-
-        String classFile = null;
-        Attributes attrs = null;
-        boolean found = false;
-
-        Map map = mf.getEntries();
-        Iterator iter = map.keySet().iterator();
-
-        while (iter.hasNext()) {
-
-            classFile = (String) iter.next();
-            attrs = mf.getAttributes(classFile);
-
-            if (attrs.getValue(PLUGIN_NAME) != null) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            throw new PluginException("No plugin entry found in manifest");
-        }
-
-        className = PluginClassLoader.pathToClassName(classFile);
-
-        // read in the attributes
-
-        iter = attrs.keySet().iterator();
-
-        while (iter.hasNext()) {
-
-            Attributes.Name nm = (Attributes.Name) iter.next();
-            String a = nm.toString();
-            String v = attrs.getValue(nm);
-
-            switch (a) {
-                case PLUGIN_NAME:
-                    name = v;
-                    break;
-                case PLUGIN_TYPE:
-                    type = v;
-                    break;
-                case PLUGIN_DESCRIPTION:
-                    desc = v;
-                    break;
-                case PLUGIN_ICON:
-                    iconFile = v;
-                    break;
-                case PLUGIN_VERSION:
-                    version = v;
-                    break;
-                case PLUGIN_HELP_URL:
-                    try {
-                        helpURL = new URL(v);
-                    } catch (MalformedURLException ex) { /* ignore */ }
-                    break;
-                default:
-                    props.put(a, v);
-                    break;
-            }
-        }
-
-        if ((type == null) || (name == null)) {
-            try {
-                jar.close();
-            } catch (IOException ignored) {
-            }
-            throw new PluginException("Invalid plugin manifest entry");
-        }
-
-        if (!type.equals(expectedType)) {
-            try {
-                jar.close();
-            } catch (IOException ignored) {
-            }
-            throw new PluginException("Plugin type mismatch");
-        }
-
-        // create the classloader
-
-        loader = locator.createClassLoader();
-        loader.addJarFile(jar);
-
-        // load the ICON
-
-        GraphicsEnvironment.getLocalGraphicsEnvironment();
-        if (iconFile != null && !GraphicsEnvironment.isHeadless()) {
-            JarEntry entry = (JarEntry) jar.getEntry(iconFile);
-            if (entry != null) {
-                try {
-                    InputStream in = jar.getInputStream(entry);
-                    Image im = locator.getDecoder().decodeImage(in);
-                    if (im != null) {
-                        icon = new ImageIcon(im);
-                    }
-                    in.close();
-                } catch (IOException ex) {
-                    icon = null;
-                }
-            }
-        }
-
-        // load the plugin class
-
-        try {
-            pluginClass = loader.loadClass(className);
-        } catch (Exception ex) {
-            throw new PluginException("Failed to load plugin class " + className, ex);
-        }
-
-        loaded = true;
     }
 
     /* Unload the plugin.
      */
 
-    private void unload() throws IOException {
+    private void reset() {
         loader = null;
         pluginClass = null;
         icon = null;
-        try {
-            jar.close();
-        } finally {
-            jar = null;
-            loaded = false;
-        }
+        loaded = false;
     }
 
     /**
@@ -415,8 +396,8 @@ public final class Plugin<T> {
      * @since Kiwi 2.0
      */
 
-    public void reload() throws PluginException, IOException {
-        unload();
+    public void reload() throws PluginException {
+        reset();
         load();
         firePluginReloaded();
     }
