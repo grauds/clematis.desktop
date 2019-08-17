@@ -131,7 +131,7 @@ public interface IUserManager extends WorkspaceComponent {
     /**
      * Logout current user.
      */
-    void logout() throws Exception;
+    void logout();
 
     /**
      * Returns true, if there is user, logged in workspace.

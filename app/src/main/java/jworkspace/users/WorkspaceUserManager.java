@@ -55,19 +55,18 @@ public class WorkspaceUserManager implements IUserManager {
 
     private ProfilesManager profilesManager;
 
-    private boolean userLogged = false;
-
     /**
      * Default public constructor.
+     * @param basePath
      */
-    private WorkspaceUserManager() {
+    private WorkspaceUserManager(Path basePath) {
         super();
+        this.profilesManager = new ProfilesManager(basePath);
     }
 
     public static synchronized WorkspaceUserManager getInstance() {
         if (instance == null) {
-            instance = new WorkspaceUserManager();
-            instance.profilesManager = new ProfilesManager(Workspace.getBasePath());
+            instance = new WorkspaceUserManager(Workspace.getBasePath());
         }
         return instance;
     }
@@ -257,8 +256,6 @@ public class WorkspaceUserManager implements IUserManager {
         }
 
         profilesManager.setCurrentProfile(profile);
-        userLogged = true;
-
         WorkspaceUserManager.LOG.info("> You are logged as " + getUserName());
     }
 
@@ -272,7 +269,6 @@ public class WorkspaceUserManager implements IUserManager {
             LOG.error(e.getMessage(), e);
         }
         profilesManager.clearCurrentProfile();
-        userLogged = false;
     }
 
     /**
@@ -287,7 +283,7 @@ public class WorkspaceUserManager implements IUserManager {
      * returns whether user is logged.
      */
     public boolean userLogged() {
-        return userLogged;
+        return profilesManager.getCurrentProfile() != null;
     }
 
     /**

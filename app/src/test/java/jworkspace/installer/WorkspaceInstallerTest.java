@@ -72,7 +72,7 @@ public class WorkspaceInstallerTest {
 // add library node to root
         libraryData.getRoot().add(testLibrary);
 
-// create library node
+// create application node
         Application testApplication = new Application(applicationData.getRoot(), "test_application");
         testApplication.setArchive("./application.jar");
         testApplication.setArguments(ARGUMENT_TEST);

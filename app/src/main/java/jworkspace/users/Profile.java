@@ -59,7 +59,7 @@ import lombok.Setter;
 @Data
 @EqualsAndHashCode(doNotUseGetters = true, exclude = {"cipherpass", "messageDigest"})
 @SuppressWarnings("unused")
-class Profile {
+public class Profile {
 
     private static final String VAR_CFG = "var.cfg";
 

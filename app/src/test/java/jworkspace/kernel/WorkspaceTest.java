@@ -26,7 +26,11 @@ package jworkspace.kernel;
 */
 
 import java.io.IOException;
+import java.util.Collections;
 
+import jworkspace.installer.Application;
+import jworkspace.installer.DefinitionDataSource;
+import jworkspace.installer.DefinitionNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +53,29 @@ public class WorkspaceTest {
     public void testBeginWork() throws IOException, ProfileOperationException {
 // I would like to start a new workspace
         Workspace.start(testFolder.getRoot().toPath(), "root", "");
+// assert user is logged in
+        assert Workspace.getUserManager().getUserName().equalsIgnoreCase("root");
+// create a sample application record
+        DefinitionDataSource dds = Workspace.getWorkspaceInstaller().getApplicationData();
 
+        Application testApplication = new Application(dds.getRoot(), "test_application");
+        testApplication.setArchive("./application.jar");
+        testApplication.setDescription("test java standalone application");
+        testApplication.setDocs("path_to_docs");
+        testApplication.setMainClass("jworkspace.testapp");
+        testApplication.setSource("path_to_source");
+        testApplication.setVersion("1.0.0");
+        testApplication.setWorkingDirectory("./");
+        testApplication.save();
+
+        Workspace.changeCurrentProfile("anton", "");
+        Workspace.changeCurrentProfile("root", "");
+
+        DefinitionNode testApplication2 = Workspace.getWorkspaceInstaller().getApplicationData()
+                .findNode(testApplication.getLinkString());
+        assert testApplication2.equals(testApplication);
+
+        Workspace.removeUserWorkspace();
     }
 
     @After

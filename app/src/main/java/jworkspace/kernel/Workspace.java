@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 
-import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.api.IUserManager;
 import jworkspace.api.IWorkspaceInstaller;
@@ -52,6 +51,7 @@ import jworkspace.ui.DefaultUI;
 import jworkspace.ui.WorkspaceResourceManager;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.WorkspaceUserManager;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 
@@ -71,7 +71,7 @@ public class Workspace {
     /**
      * Base workspace path to store data
      */
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     private static Path basePath;
 
     /**
@@ -155,24 +155,6 @@ public class Workspace {
         for (Plugin<WorkspaceComponent> pl : pls) {
             addUserPlugin(pl);
         }
-    }
-
-    /**
-     * Exits workspace.
-     */
-    public static void exit() {
-
-        RuntimeManager.getInstance().killAllProcesses();
-
-        if (Workspace.getUserManager().userLogged()) {
-            try {
-                getWorkspaceInstaller().save();
-                WorkspaceUserManager.getInstance().logout();
-            } catch (Exception e) {
-                LOG.error(WorkspaceResourceAnchor.getString("Workspace.logout.failure"), e);
-            }
-        }
-        System.exit(0);
     }
 
     /**
@@ -279,20 +261,35 @@ public class Workspace {
         throws IOException, ProfileOperationException {
 
         long start = System.currentTimeMillis();
-
+        /*
+         * Set the base path
+         */
         Workspace.setBasePath(baseDir);
         /*
          * Add system plugins indifferent to users data
          */
         addSystemPlugins(new WorkspacePluginLocator<WorkspaceComponent>()
-            .loadPlugins(Paths.get(baseDir + IConstants.PLUGINS_DIRECTORY))
+            .loadPlugins(Paths.get(baseDir.toAbsolutePath().toString(), IConstants.PLUGINS_DIRECTORY))
         );
+        /*
+         * Run Workspace Bean Shell interpreter instance for console command line
+         */
+        // WorkspaceInterpreter.getInstance();
+        /*
+         * Initialize user data
+         */
+        initUserWorkspace(username, password);
 
+        long end = System.currentTimeMillis();
+        LOG.info("Started in: " + (end - start) + " millis");
+    }
+
+    private static void initUserWorkspace(@NonNull String username, @NonNull String password)
+            throws IOException, ProfileOperationException {
         /*
          * Login procedure starts here
          */
         getUserManager().login(username, password);
-
         /*
          * If login failed - silently leave the basic system running
          */
@@ -300,22 +297,6 @@ public class Workspace {
             LOG.warn("User hasn't been logged in");
             return;
         }
-
-        /*
-         * Initialize user data
-         */
-        initUserWorkspace();
-
-        /*
-         * Run Workspace Bean Shell interpreter instance
-         */
-        WorkspaceInterpreter.getInstance();
-
-        long end = System.currentTimeMillis();
-        LOG.info("Started in: " + (end - start) + " millis");
-    }
-
-    private static void initUserWorkspace() throws IOException {
         /*
          * User logged past this line - start loading user components
          */
@@ -325,22 +306,56 @@ public class Workspace {
                     IConstants.PLUGINS_DIRECTORY)
             )
         );
+        /*
+         * Load the installer database
+         */
+        getWorkspaceInstaller().load();
+    }
+
+    static void removeUserWorkspace() throws IOException {
+        /*
+           Shut down all the running processes
+         */
+        RuntimeManager.getInstance().killAllProcesses();
+        /*
+         * Remove installer
+         */
+        getWorkspaceInstaller().save();
+        workspaceInstaller = null;
+        /*
+         * Logout the user
+         */
+        getUserManager().logout();
     }
 
     /**
      * User login and logout procedures.
      */
     public static void changeCurrentProfile(@NonNull String username, @NonNull String password)
-        throws Exception {
-
-        getUserManager().logout();
-
-        workspaceInstaller = null;
-
-        getUserManager().login(username, password);
+            throws IOException, ProfileOperationException {
+        /*
+         * Logout the previous user
+         */
+        removeUserWorkspace();
         /*
          * Initialize user data
          */
-        initUserWorkspace();
+        initUserWorkspace(username, password);
+    }
+
+    /**
+     * Exits workspace.
+     */
+    public static void exit() {
+        /*
+         * Logout the previous user
+         */
+        try {
+            removeUserWorkspace();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
+        System.exit(0);
+
     }
 }

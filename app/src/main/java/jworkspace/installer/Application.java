@@ -39,6 +39,7 @@ import com.hyperrealm.kiwi.io.ConfigFile;
 import jworkspace.kernel.Workspace;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 /**
  * Application entry is a definition node, that stores
@@ -72,17 +73,17 @@ public class Application extends DefinitionNode {
 
     private static final String APPLICATION_DEFINITION_CONFIG_HEADER = "Application Definition";
 
-    private String name;
-    private String version;
-    private String jvm;
-    private String archive;
-    private String mainClass;
-    private String arguments;
-    private String workingDirectory;
+    private String name = "";
+    private String version = "";
+    private String jvm = "";
+    private String archive = "";
+    private String mainClass = "";
+    private String arguments = "";
+    private String workingDirectory = "";
     private String libraryList = "";
-    private String description;
-    private String source;
-    private String docs;
+    private String description = "";
+    private String source = "";
+    private String docs = "";
 
     private ConfigFile config;
 
@@ -112,10 +113,7 @@ public class Application extends DefinitionNode {
     /**
      * Sets path to application jar file.
      */
-    public void setArchive(String archive) throws InstallationException {
-        if (archive == null) {
-            throw new InstallationException("Archive name is null.");
-        }
+    public void setArchive(@NonNull String archive) {
         this.archive = archive;
     }
 
@@ -133,10 +131,7 @@ public class Application extends DefinitionNode {
      *
      * @param jvm java.lang.String
      */
-    public void setJVM(String jvm) throws InstallationException {
-        if (jvm == null) {
-            throw new InstallationException("Jvm is null.");
-        }
+    public void setJVM(@NonNull String jvm) {
         this.jvm = jvm;
     }
 
@@ -145,20 +140,14 @@ public class Application extends DefinitionNode {
      * be a fully qualified class name, for example
      * <code>java.lang.Object</code>.
      */
-    public void setMainClass(String mainClass) throws InstallationException {
-        if (mainClass == null) {
-            throw new InstallationException("Main Class is null");
-        }
+    public void setMainClass(@NonNull String mainClass) {
         this.mainClass = mainClass;
     }
 
     /**
      * Sets human readable name of application.
      */
-    public void setName(String name) throws InstallationException {
-        if (name == null) {
-            throw new InstallationException("Name is null");
-        }
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
@@ -174,10 +163,7 @@ public class Application extends DefinitionNode {
      * Sets version of application. This can be useful for
      * user, as version is not recognized by installer.
      */
-    public void setVersion(String version) throws InstallationException {
-        if (version == null) {
-            throw new InstallationException("Version is null");
-        }
+    public void setVersion(@NonNull String version) {
         this.version = version;
     }
 
@@ -187,10 +173,7 @@ public class Application extends DefinitionNode {
      * for spawned process, as it has to find resources, relative to working directory. This is
      * the only case, then workspace uses its native library.
      */
-    public void setWorkingDirectory(String dir) throws InstallationException {
-        if (dir == null) {
-            throw new InstallationException("Working Directory is null");
-        }
+    public void setWorkingDirectory(@NonNull String dir) {
         this.workingDirectory = dir;
     }
 

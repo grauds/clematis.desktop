@@ -46,13 +46,13 @@ import lombok.Getter;
 import lombok.Setter;
 /**
  * This class can add, rename, delete or list user profiles.
- * There can be only one instance of manager in workspace.
+ * @author Anton Troshin
  */
 @Data
 @Setter(AccessLevel.PACKAGE)
 @Getter(AccessLevel.PACKAGE)
 @SuppressWarnings("unused")
-class ProfilesManager implements Comparator {
+public class ProfilesManager implements Comparator {
 
     private static final String DEFAULT_USER_NAME = "root";
 

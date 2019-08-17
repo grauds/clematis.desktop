@@ -105,7 +105,7 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
      * @param linkPath java.lang.String
      */
     @SuppressWarnings("ReturnCount")
-    DefinitionNode findNode(String linkPath) {
+    public DefinitionNode findNode(String linkPath) {
 
         if (linkPath == null) {
             return null;
