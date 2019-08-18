@@ -42,9 +42,8 @@ import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 import lombok.NonNull;
 /**
  * @author Anton Troshin
- * @param <T> type of plugin object to load
  */
-public class WorkspacePluginLocator<T> extends PluginLocator<T> {
+public class WorkspacePluginLocator extends PluginLocator {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkspacePluginLocator.class);
 
@@ -63,7 +62,7 @@ public class WorkspacePluginLocator<T> extends PluginLocator<T> {
      *
      * @param directory path to directory
      */
-    public List<Plugin<T>> loadPlugins(Path directory) {
+    public List<Plugin> loadPlugins(Path directory) {
         if (directory != null) {
 
             LOG.info("> Loading plugins from " + directory);
@@ -74,9 +73,9 @@ public class WorkspacePluginLocator<T> extends PluginLocator<T> {
         }
     }
 
-    private List<Plugin<T>> scanPluginsDir(@NonNull File dir) {
+    private List<Plugin> scanPluginsDir(@NonNull File dir) {
 
-        List<Plugin<T>> plugins = new ArrayList<>();
+        List<Plugin> plugins = new ArrayList<>();
         try {
             if (dir.isDirectory()) {
 
@@ -93,7 +92,7 @@ public class WorkspacePluginLocator<T> extends PluginLocator<T> {
                     }
                 }
             } else if (dir.getName().endsWith("jar")) {
-                Plugin<T> plugin = loadPlugin(dir, Plugin.PLUGIN_TYPE_ANY);
+                Plugin plugin = loadPlugin(dir, Plugin.PLUGIN_TYPE_ANY);
                 plugins.add(plugin);
             }
         } catch (PluginException ex) {

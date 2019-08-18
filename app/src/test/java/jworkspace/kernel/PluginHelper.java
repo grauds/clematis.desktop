@@ -112,7 +112,7 @@ class PluginHelper {
         return manifest;
     }
 
-    static void assertPluginEqualsManifest(Plugin<ITestPlugin> testPlugin) {
+    static void assertPluginEqualsManifest(Plugin testPlugin) {
 
         assert testPlugin.getName().equals(TEST_PLUGIN_NAME);
         assert testPlugin.getDescription().equals(TEST_PLUGIN_DESCRIPTION);

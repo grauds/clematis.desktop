@@ -48,12 +48,11 @@ import com.hyperrealm.kiwi.event.PluginReloadListener;
  * entry in a JAR Manifest. Instances of the plugin object itself can be
  * created with the <code>newInstance()</code> method.
  *
- * @param <T>
  * @author Mark Lindner
  * @since Kiwi 1.3
  */
 
-public final class Plugin<T> {
+public final class Plugin {
 
     public static final String PLUGIN_TYPE_ANY = "ANY";
 
@@ -94,7 +93,7 @@ public final class Plugin<T> {
 
     private PluginClassLoader loader;
 
-    private PluginLocator<T> locator;
+    private PluginLocator locator;
 
     private EventListenerList listeners = new EventListenerList();
 
@@ -104,7 +103,7 @@ public final class Plugin<T> {
      * and rescans everything. (hopefully...will this really work?)
      */
 
-    Plugin(PluginLocator<T> locator, String jarFile, String expectedType)
+    Plugin(PluginLocator locator, String jarFile, String expectedType)
         throws PluginException {
 
         this.locator = locator;
@@ -416,7 +415,7 @@ public final class Plugin<T> {
      * @since Kiwi 2.0
      */
 
-    public T newInstance() throws PluginException {
+    public Object newInstance() throws PluginException {
         if (!loaded) {
             throw (new PluginException("Plugin is not loaded!"));
         }
@@ -457,15 +456,7 @@ public final class Plugin<T> {
             }
         }
 
-        T instance;
-
-        try {
-            instance = (T) obj;
-        } catch (ClassCastException ex) {
-            throw (new PluginException("Plugin class " + pluginClass.getName() + " is of incompatible type", ex));
-        }
-
-        return (instance);
+        return obj;
     }
 
     /**

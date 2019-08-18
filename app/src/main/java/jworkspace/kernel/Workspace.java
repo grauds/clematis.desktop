@@ -80,12 +80,12 @@ public class Workspace {
      * unloaded on finish. These services are for all users in system and must implement WorkspaceComponent
      * interface to be plugged into workspace lifecycle.
      */
-    private static Set<Plugin<WorkspaceComponent>> systemPlugins = new HashSet<>();
+    private static Set<Plugin> systemPlugins = new HashSet<>();
     /**
      * These are actually invisible services, that are loaded by user at login or later manually
      * and unloaded on logout. These services are NOT for all users in system.
      */
-    private static Set<Plugin<WorkspaceComponent>> userPlugins = new HashSet<>();
+    private static Set<Plugin> userPlugins = new HashSet<>();
     /**
      * Workspace components list
      */
@@ -133,44 +133,52 @@ public class Workspace {
     /**
      * Adds system plugin
      */
-    public static void addSystemPlugin(Plugin<WorkspaceComponent> pl) throws PluginException {
-        if (pl != null) {
-            systemPlugins.add(pl);
-            workspaceComponents.add(pl.newInstance());
-        }
+    public static void addSystemPlugin(Plugin pl) throws PluginException, IOException {
+        addPlugin(pl, systemPlugins, workspaceComponents);
     }
 
     /**
      * Adds system plugins
      */
-    public static void addSystemPlugins(List<Plugin<WorkspaceComponent>> pls) {
-        for (Plugin<WorkspaceComponent> pl : pls) {
-            try {
-                addSystemPlugin(pl);
-            } catch (PluginException e) {
-                LOG.error(e.getMessage(), e);
-            }
-        }
+    public static void addSystemPlugins(List<Plugin> pls) {
+        addPlugins(pls, systemPlugins, workspaceComponents);
+    }
+
+    /**
+     * Adds user plugins
+     */
+    public static void addUserPlugins(List<Plugin> pls) {
+        addPlugins(pls, userPlugins, workspaceUserComponents);
     }
 
     /**
      * Adds user plugin.
      */
-    public static void addUserPlugin(Plugin<WorkspaceComponent> pl) throws PluginException {
-        if (pl != null) {
-            userPlugins.add(pl);
-            workspaceUserComponents.add(pl.newInstance());
+    private static void addPlugin(Plugin pl,
+                                     Set<Plugin> plugins,
+                                     Collection<WorkspaceComponent> components)
+            throws PluginException, IOException {
+        if (pl != null && plugins != null && components != null) {
+            plugins.add(pl);
+            Object instance = pl.newInstance();
+            if (instance instanceof WorkspaceComponent) {
+                WorkspaceComponent workspaceComponent = (WorkspaceComponent) instance;
+                workspaceComponent.load();
+                components.add(workspaceComponent);
+            }
         }
     }
 
     /**
      * Adds user plugins
      */
-    public static void addUserPlugins(List<Plugin<WorkspaceComponent>> pls) {
-        for (Plugin<WorkspaceComponent> pl : pls) {
+    private static void addPlugins(List<Plugin> pls,
+                                  Set<Plugin> plugins,
+                                  Collection<WorkspaceComponent> components) {
+        for (Plugin pl : pls) {
             try {
-                addUserPlugin(pl);
-            } catch (PluginException e) {
+                addPlugin(pl, plugins, components);
+            } catch (PluginException | IOException e) {
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -290,8 +298,8 @@ public class Workspace {
         /*
          * Add system plugins indifferent to users data
          */
-        addSystemPlugins(new WorkspacePluginLocator<WorkspaceComponent>()
-            .loadPlugins(Paths.get(baseDir.toAbsolutePath().toString(), IConstants.PLUGINS_DIRECTORY))
+        addSystemPlugins(new WorkspacePluginLocator().loadPlugins(Paths.get(baseDir.toAbsolutePath().toString(),
+                IConstants.PLUGINS_DIRECTORY))
         );
         /*
          * Run Workspace Bean Shell interpreter instance for console command line
@@ -322,7 +330,7 @@ public class Workspace {
         /*
          * User logged past this line - start loading user components
          */
-        addUserPlugins(new WorkspacePluginLocator<WorkspaceComponent>()
+        addUserPlugins(new WorkspacePluginLocator()
             .loadPlugins(
                 Paths.get(getUserManager().ensureCurrentProfilePath(getBasePath()).toString(),
                     IConstants.PLUGINS_DIRECTORY)
@@ -339,6 +347,15 @@ public class Workspace {
            Shut down all the running processes
          */
         RuntimeManager.getInstance().killAllProcesses();
+        /*
+         * Save and clear all user components loaded as plugins
+         */
+        for (WorkspaceComponent workspaceComponent : workspaceUserComponents) {
+            workspaceComponent.save();
+            workspaceComponent.reset();
+        }
+        workspaceUserComponents.clear();
+
         /*
          * Remove installer
          */
@@ -374,6 +391,13 @@ public class Workspace {
          */
         try {
             removeUserWorkspace();
+            /*
+             * Save and clear all system components loaded as plugins
+             */
+            for (WorkspaceComponent workspaceComponent : workspaceComponents) {
+                workspaceComponent.save();
+                workspaceComponent.reset();
+            }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }

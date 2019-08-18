@@ -60,7 +60,7 @@ public class PluginTests {
     @Test
     public void testLoadPlugin() throws PluginException {
 
-        Plugin<ITestPlugin> testPlugin = new WorkspacePluginLocator<ITestPlugin>()
+        Plugin testPlugin = new WorkspacePluginLocator()
             .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
@@ -76,8 +76,8 @@ public class PluginTests {
     @Test
     public void testTwoPlugins() throws PluginException {
 
-        final WorkspacePluginLocator<ITestPlugin> pluginLocator = new WorkspacePluginLocator<>();
-        List<Plugin<ITestPlugin>> plugins = pluginLocator.loadPlugins(testFolder.getRoot().toPath());
+        final WorkspacePluginLocator pluginLocator = new WorkspacePluginLocator();
+        List<Plugin> plugins = pluginLocator.loadPlugins(testFolder.getRoot().toPath());
 
         assert plugins.size() == 3;
         assert !plugins.get(0).equals(plugins.get(1));
@@ -94,22 +94,25 @@ public class PluginTests {
     @Test
     public void testUpdatePlugin() throws IOException, PluginException {
 
-        final PluginLocator<ITestPlugin> pluginLocator = new WorkspacePluginLocator<>();
+        final PluginLocator pluginLocator = new WorkspacePluginLocator();
 
 // create version one
-        Plugin<ITestPlugin> testPlugin = pluginLocator
-            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
+        Plugin testPlugin = pluginLocator
+            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(),
+                    PluginHelper.PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
 
         Object obj1 = testPlugin.newInstance();
         assert obj1 instanceof TestPlugin;
 
 // update the archive by any means (may be a download from Internet)
         Manifest manifest2 = PluginHelper.getManifest2();
-        PluginHelper.writeJarFile(testFolder.getRoot(), PluginHelper.TEST_PLUGIN_CLASS_2, manifest2, PluginHelper.PLUGIN_JAR);
+        PluginHelper.writeJarFile(testFolder.getRoot(),
+                PluginHelper.TEST_PLUGIN_CLASS_2, manifest2, PluginHelper.PLUGIN_JAR);
 
 // create version two from the same archive
         testPlugin = pluginLocator
-            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
+            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(),
+                    PluginHelper.PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
 
         Object obj2 = testPlugin.newInstance();
         assert !(obj2 instanceof TestPlugin);
@@ -121,10 +124,10 @@ public class PluginTests {
 
     @Test
     public void testPluginsCommunication() throws PluginException {
-        final PluginLocator<ITestPlugin> pluginLocator = new WorkspacePluginLocator<>();
+        final PluginLocator pluginLocator = new WorkspacePluginLocator();
 
 // create version one
-        Plugin<ITestPlugin> testPlugin = pluginLocator
+        Plugin testPlugin = pluginLocator
                 .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR),
                         Plugin.PLUGIN_TYPE_ANY);
 
@@ -132,7 +135,7 @@ public class PluginTests {
         assert obj1 instanceof TestPlugin;
 
 // create version one
-        Plugin<ITestPlugin> testPlugin2 = pluginLocator
+        Plugin testPlugin2 = pluginLocator
                 .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR_2),
                         Plugin.PLUGIN_TYPE_ANY);
 
