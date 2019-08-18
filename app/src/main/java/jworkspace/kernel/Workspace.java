@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.plugin.Plugin;
+import com.hyperrealm.kiwi.util.plugin.PluginException;
 
 import jworkspace.api.IConstants;
 import jworkspace.api.IUserManager;
@@ -90,6 +91,10 @@ public class Workspace {
      */
     private static Collection<WorkspaceComponent> workspaceComponents = new Vector<>();
     /**
+     * Workspace user components list
+     */
+    private static Collection<WorkspaceComponent> workspaceUserComponents = new Vector<>();
+    /**
      * Resource manager
      */
     private static WorkspaceResourceManager resourceManager = new WorkspaceResourceManager();
@@ -128,8 +133,11 @@ public class Workspace {
     /**
      * Adds system plugin
      */
-    public static void addSystemPlugin(Plugin<WorkspaceComponent> pl) {
-        systemPlugins.add(pl);
+    public static void addSystemPlugin(Plugin<WorkspaceComponent> pl) throws PluginException {
+        if (pl != null) {
+            systemPlugins.add(pl);
+            workspaceComponents.add(pl.newInstance());
+        }
     }
 
     /**
@@ -137,15 +145,22 @@ public class Workspace {
      */
     public static void addSystemPlugins(List<Plugin<WorkspaceComponent>> pls) {
         for (Plugin<WorkspaceComponent> pl : pls) {
-            addSystemPlugin(pl);
+            try {
+                addSystemPlugin(pl);
+            } catch (PluginException e) {
+                LOG.error(e.getMessage(), e);
+            }
         }
     }
 
     /**
      * Adds user plugin.
      */
-    public static void addUserPlugin(Plugin<WorkspaceComponent> pl) {
-        userPlugins.add(pl);
+    public static void addUserPlugin(Plugin<WorkspaceComponent> pl) throws PluginException {
+        if (pl != null) {
+            userPlugins.add(pl);
+            workspaceUserComponents.add(pl.newInstance());
+        }
     }
 
     /**
@@ -153,31 +168,38 @@ public class Workspace {
      */
     public static void addUserPlugins(List<Plugin<WorkspaceComponent>> pls) {
         for (Plugin<WorkspaceComponent> pl : pls) {
-            addUserPlugin(pl);
+            try {
+                addUserPlugin(pl);
+            } catch (PluginException e) {
+                LOG.error(e.getMessage(), e);
+            }
         }
     }
 
     /**
      * Add listener for service events.
      */
-    public static void addListener(IWorkspaceListener l) {
-        workspaceListeners.add(l);
+    public static boolean addListener(IWorkspaceListener l) {
+        if (l != null && !workspaceListeners.contains(l)) {
+            return workspaceListeners.add(l);
+        }
+        return false;
     }
 
     /**
      * Remove workspace listener
      */
-    public static void removeListener(IWorkspaceListener l) {
-        workspaceListeners.remove(l);
+    public static boolean removeListener(IWorkspaceListener l) {
+        return workspaceListeners.remove(l);
     }
 
     /**
      * Deliver event to all the listeners
      */
-    public static synchronized void fireEvent(Object event, Object lparam, Object rparam) {
+    public static synchronized void fireEvent(Integer event, Object lparam, Object rparam) {
 
         for (IWorkspaceListener listener : workspaceListeners) {
-            if (event instanceof Integer && (Integer) event == listener.getCode()) {
+            if (event == listener.getCode()) {
                 listener.processEvent(event, lparam, rparam);
             }
         }

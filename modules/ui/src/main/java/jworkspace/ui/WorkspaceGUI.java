@@ -760,7 +760,7 @@ public class WorkspaceGUI implements UI {
             return CODE;
         }
 
-        public void processEvent(Object event, Object lparam, Object rparam) {
+        public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if (lparam instanceof Hashtable
                 && ((Hashtable) lparam).get(IWorkspaceListener.VIEW_PARAMETER) instanceof IView
@@ -786,7 +786,7 @@ public class WorkspaceGUI implements UI {
             return CODE;
         }
 
-        public void processEvent(Object event, Object lparam, Object rparam) {
+        public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if ((lparam instanceof Hashtable)
                 && ((Hashtable) lparam).get(VIEW_PARAMETER) instanceof JComponent
@@ -824,7 +824,7 @@ public class WorkspaceGUI implements UI {
             return CODE;
         }
 
-        public void processEvent(Object event, Object lparam, Object rparam) {
+        public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if (lparam instanceof Hashtable
                 && ((Hashtable) lparam).get(MENUS_PARAMETER) instanceof Vector
@@ -867,7 +867,7 @@ public class WorkspaceGUI implements UI {
             return CODE;
         }
 
-        public void processEvent(Object event, Object lparam, Object rparam) {
+        public void processEvent(Integer event, Object lparam, Object rparam) {
             if (lparam instanceof Hashtable
                 && ((Hashtable) lparam).get(FRAME_PARAMETER) instanceof Frame) {
 

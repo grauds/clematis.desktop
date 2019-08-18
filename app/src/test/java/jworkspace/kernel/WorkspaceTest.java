@@ -26,8 +26,9 @@ package jworkspace.kernel;
 */
 
 import java.io.IOException;
-import java.util.Collections;
+import java.nio.file.Paths;
 
+import jworkspace.api.IConstants;
 import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionDataSource;
 import jworkspace.installer.DefinitionNode;
@@ -47,6 +48,8 @@ public class WorkspaceTest {
     @Before
     public void before() throws IOException {
         testFolder.create();
+        PluginHelper.preparePlugins(testFolder.getRoot(), Paths.get(testFolder.getRoot().getAbsolutePath(),
+                IConstants.PLUGINS_DIRECTORY).toFile());
     }
 
     @Test
@@ -69,9 +72,15 @@ public class WorkspaceTest {
         testApplication.save();
 
         Workspace.changeCurrentProfile("anton", "");
-        Workspace.changeCurrentProfile("root", "");
 
         DefinitionNode testApplication2 = Workspace.getWorkspaceInstaller().getApplicationData()
+                .findNode(testApplication.getLinkString());
+
+        assert testApplication2 == null;
+
+        Workspace.changeCurrentProfile("root", "");
+
+        testApplication2 = Workspace.getWorkspaceInstaller().getApplicationData()
                 .findNode(testApplication.getLinkString());
         assert testApplication2.equals(testApplication);
 
