@@ -27,6 +27,8 @@ package jworkspace.ui;
 */
 
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
@@ -40,19 +42,24 @@ import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.io.FileUtils;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
+import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.ui.action.ActionChangedListener;
 import jworkspace.ui.cpanel.CButton;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Workspace utils.
@@ -446,5 +453,102 @@ public final class Utils implements IConstants {
         menuItem.setEnabled(a.isEnabled());
         menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
         return menuItem;
+    }
+
+
+    /**
+     * Create button from action without text
+     */
+    public static JButton createButtonFromAction(Action a) {
+        return createButtonFromAction(a, false);
+    }
+
+    /**
+     * Wraps lines at the given number of columns
+     */
+    public static String wrapLines(String s, int cols) {
+
+        char[] c = s.toCharArray();
+        char[] d = new char[c.length];
+
+        int i = 0;
+        int j = 0;
+        int lastspace = -1;
+        while (i < c.length) {
+            if (c[i] == '\n') {
+                j = 0;
+            }
+            if (j > cols && lastspace > 0) {
+                d[lastspace] = '\n';
+                j = i - lastspace;
+                lastspace = -1;
+            }
+            if (c[i] == ' ') {
+                lastspace = i;
+            }
+            d[i] = c[i];
+            i++;
+            j++;
+        }
+        return new String(d);
+    }
+
+    /**
+     * Create button from action
+     */
+    public static JButton createButtonFromAction(Action a, boolean text) {
+
+        JButton b = new JButton((Icon) a.getValue(Action.SMALL_ICON));
+        b.setAction(a);
+        if (text) {
+            b.setText((String) a.getValue(Action.NAME));
+        } else {
+            b.setText("");
+        }
+        b.setEnabled(a.isEnabled());
+        b.setToolTipText((String) a.getValue(Action.SHORT_DESCRIPTION));
+        return b;
+    }
+
+    /**
+     * Creates a wrapped mulit-line label from several labels
+     */
+    public static JPanel createMultiLineLabel(String s, int cols) {
+
+        boolean done = false;
+        String msg = wrapLines(s, cols);
+        char[] c = msg.toCharArray();
+        int i = 0;
+        StringBuffer sb = new StringBuffer();
+
+        // use grid bag layout
+        GridBagLayout gb = new GridBagLayout();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 0;
+        // set layout on the panel
+        JPanel p = new JPanel(gb);
+        JLabel l = null;
+
+        // iterate until all strings are added
+        while (!done) {
+            if (i >= c.length || c[i] == '\n') {
+                l = new JLabel(sb.toString());
+                sb = new StringBuffer();
+                // add first label
+                gbc.gridwidth = GridBagConstraints.REMAINDER;
+                gbc.weightx = 1;
+                gbc.insets = KiwiUtils.LAST_INSETS;
+                p.add(l, gbc);
+                if (i >= c.length) {
+                    done = true;
+                }
+            } else {
+                sb.append(c[i]);
+            }
+            i++;
+        }
+        return p;
     }
 }

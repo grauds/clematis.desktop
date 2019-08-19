@@ -34,10 +34,7 @@ public class WorkspaceGUITest {
 
     @Test
     public void testIsLoading() {
-//        /*
-//         * Test workspace is loading
-//         */
-//        Workspace.main(new String[]{});
+
 
     }
 }

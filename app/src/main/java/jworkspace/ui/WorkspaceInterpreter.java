@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace.ui;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -29,7 +29,6 @@ package jworkspace.kernel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -89,20 +88,16 @@ public final class WorkspaceInterpreter {
 
         LOG.info("> Starting Bean Shell Interpreter");
         outPipe = new PipedOutputStream();
-        try {
-            /*
-             * Stream for interpreter
-             */
-            InputStream in = new PipedInputStream(outPipe);
-            interpreter = new Interpreter(new InputStreamReader(in, StandardCharsets.UTF_8),
-                System.out, System.err, true, null);
+        /*
+         * Stream for interpreter
+         */
+        InputStream in = System.in;
+        interpreter = new Interpreter(new InputStreamReader(in, StandardCharsets.UTF_8),
+            System.out, System.err, true, null);
 
-            interpreterThread = new Thread(interpreter);
-            interpreterThread.start();
-            LOG.info("> Bean Shell Interpreter is successfully started");
-        } catch (IOException e) {
-            LOG.error("Cannot start Bean Shell Interpreter", e);
-        }
+        interpreterThread = new Thread(interpreter);
+        interpreterThread.start();
+        LOG.info("> Bean Shell Interpreter is successfully started");
     }
 
     /**

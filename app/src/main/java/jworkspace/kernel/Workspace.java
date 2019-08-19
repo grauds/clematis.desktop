@@ -304,7 +304,7 @@ public class Workspace {
         /*
          * Run Workspace Bean Shell interpreter instance for console command line
          */
-        // WorkspaceInterpreter.getInstance();
+       // WorkspaceInterpreter.getInstance();
         /*
          * Initialize user data
          */

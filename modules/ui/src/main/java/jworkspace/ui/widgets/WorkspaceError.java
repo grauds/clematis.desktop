@@ -1,4 +1,4 @@
-package jworkspace.ui;
+package jworkspace.ui.widgets;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -51,7 +51,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
-
+import jworkspace.ui.Utils;
 /**
  * Gui error reporter for the end-user
  *

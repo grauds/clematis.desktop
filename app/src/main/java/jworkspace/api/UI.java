@@ -27,10 +27,7 @@ package jworkspace.api;
 */
 
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
-
-import javax.swing.Icon;
 
 /**
  * User interface for JVM. The default is the desktop metaphor
@@ -38,11 +35,6 @@ import javax.swing.Icon;
  * @author Anton Troshin
  */
 public interface UI extends WorkspaceComponent {
-
-    /**
-     * Register workspace listeners
-     */
-    void registerListeners();
 
     /**
      * Returns special clipboard for graphic interface.
@@ -55,11 +47,6 @@ public interface UI extends WorkspaceComponent {
     Frame getFrame();
 
     /**
-     * Splash screen
-     */
-    Window getLogoScreen();
-
-    /**
      * Check whether this UI is modified.
      */
     boolean isModified();
@@ -68,13 +55,6 @@ public interface UI extends WorkspaceComponent {
      * Command to update the UI.
      */
     void update();
-
-    /**
-     * Show error to user either way UI is capable to
-     *
-     * @param question message
-     */
-    boolean showConfirmDialog(String question, String title, Icon icon);
 
     /**
      * Show error to user

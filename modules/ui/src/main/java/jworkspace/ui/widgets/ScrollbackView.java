@@ -1,4 +1,4 @@
-package jworkspace.ui;
+package jworkspace.ui.widgets;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2018 Anton Troshin

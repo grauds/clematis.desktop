@@ -59,6 +59,7 @@ import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.widgets.GlassDragPane;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Main frame for Java Workspace UI

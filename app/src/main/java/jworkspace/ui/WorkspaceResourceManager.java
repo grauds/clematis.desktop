@@ -41,7 +41,7 @@ import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 import jworkspace.WorkspaceResourceAnchor;
 
 /**
- * Special resource manager that takes advantage of Apache Commons image loading library.
+ * Special resource manager
  *
  * @author Anton Troshin
  */

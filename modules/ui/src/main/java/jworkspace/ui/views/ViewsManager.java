@@ -69,11 +69,11 @@ import jworkspace.kernel.Workspace;
 import jworkspace.ui.AbstractViewsManager;
 import jworkspace.ui.IView;
 import jworkspace.ui.Utils;
-import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Desktop manager drives views in common JFrame environment. It may add/delete/switch the view in a card layout

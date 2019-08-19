@@ -46,7 +46,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.WorkspaceError;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Change password of a user profile dialog

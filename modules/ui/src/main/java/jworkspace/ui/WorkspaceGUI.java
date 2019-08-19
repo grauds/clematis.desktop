@@ -88,6 +88,7 @@ import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.views.DefaultCompoundView;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Workspace Desktop user interface
@@ -214,7 +215,6 @@ public class WorkspaceGUI implements UI {
     /**
      * Register workspace listeners
      */
-    @Override
     public void registerListeners() {
         Workspace.addListener(new ExternalFrameListener());
         Workspace.addListener(new SwitchMenuListener());
@@ -247,8 +247,6 @@ public class WorkspaceGUI implements UI {
         return frame;
     }
 
-
-    @Override
     public Window getLogoScreen() {
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -650,7 +648,6 @@ public class WorkspaceGUI implements UI {
      * @param title    of confirmation dialog
      * @param icon     of confirmation dialog
      */
-    @Override
     public boolean showConfirmDialog(String question, String title, Icon icon) {
         return false;
     }

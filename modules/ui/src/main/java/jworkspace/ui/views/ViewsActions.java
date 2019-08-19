@@ -41,8 +41,8 @@ import javax.swing.JOptionPane;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.action.AbstractStateAction;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Actions of desktop manager

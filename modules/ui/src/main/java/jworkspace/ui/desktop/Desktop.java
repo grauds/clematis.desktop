@@ -80,11 +80,11 @@ import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.IView;
 import jworkspace.ui.Utils;
-import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.views.PropertiesPanel;
 import jworkspace.ui.widgets.GlassDragPane;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Java Desktop

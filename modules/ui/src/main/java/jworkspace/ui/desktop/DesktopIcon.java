@@ -57,10 +57,10 @@ import javax.swing.UIManager;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspaceInterpreter;
 import jworkspace.ui.Utils;
-import jworkspace.ui.WorkspaceError;
+import jworkspace.ui.WorkspaceInterpreter;
 import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Desktop icon is a shortcut to command.

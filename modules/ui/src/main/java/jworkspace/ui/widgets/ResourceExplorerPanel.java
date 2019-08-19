@@ -71,7 +71,6 @@ import com.hyperrealm.kiwi.util.Task;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
 
 /**

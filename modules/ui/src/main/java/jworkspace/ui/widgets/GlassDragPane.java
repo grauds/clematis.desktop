@@ -32,7 +32,6 @@ import java.awt.Graphics;
 import javax.swing.JComponent;
 
 import jworkspace.ui.Utils;
-
 /**
  * Drag pane is created each time a component is moved in Java Workspace. For example,
  * desktop icons or control panel use this component.

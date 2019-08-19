@@ -26,11 +26,7 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
-
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
@@ -42,14 +38,6 @@ import jworkspace.api.UI;
  * @author Anton Troshin
  */
 public class DefaultUI implements UI {
-
-    /**
-     * Register workspace listeners
-     */
-    @Override
-    public void registerListeners() {
-
-    }
 
     /**
      * Returns own clipboard
@@ -68,15 +56,6 @@ public class DefaultUI implements UI {
     }
 
     /**
-     * Logo screen displays information
-     * about version of Java Workspace.
-     */
-    @Override
-    public Window getLogoScreen() {
-        return null;
-    }
-
-    /**
      * Check whether this UI is modified.
      */
     @Override
@@ -88,60 +67,23 @@ public class DefaultUI implements UI {
      * Updates all UI.
      */
     @Override
-    public void update() {
-
-    }
+    public void update() {}
 
     @Override
-    public boolean showConfirmDialog(String question, String title, Icon icon) {
-
-        int result = JOptionPane.showConfirmDialog(getFrame(),
-            question,
-            title,
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
-            icon);
-
-        return result == JOptionPane.YES_OPTION;
-    }
+    public void showError(String usermsg, Throwable ex) {}
 
     @Override
-    public void showError(String usermsg, Throwable ex) {
-        WorkspaceError.exception(usermsg, ex);
-    }
+    public void showMessage(String usermsg) {}
 
     @Override
-    public void showMessage(String usermsg) {
-        WorkspaceError.msg(usermsg);
-    }
+    public void load() {}
 
-    /**
-     * Save engine
-     */
     @Override
-    public void load() {
+    public void save() {}
 
-    }
-
-    /**
-     * Load engine
-     */
     @Override
-    public void save() {
+    public void reset() {}
 
-    }
-
-    /**
-     * Reset engine
-     */
-    @Override
-    public void reset() {
-
-    }
-
-    /**
-     * Get human readable name
-     */
     @Override
     public String getName() {
         return null;
