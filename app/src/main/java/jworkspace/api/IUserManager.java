@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import com.hyperrealm.kiwi.util.Config;
 
+import jworkspace.users.Profile;
 import jworkspace.users.ProfileOperationException;
 
 /**
@@ -127,6 +128,11 @@ public interface IUserManager extends WorkspaceComponent {
      * Login procedure.
      */
     void login(String name, String password) throws ProfileOperationException, IOException;
+
+    /**
+     * Login procedure.
+     */
+    void login(Profile profile) throws ProfileOperationException, IOException;
 
     /**
      * Logout current user.

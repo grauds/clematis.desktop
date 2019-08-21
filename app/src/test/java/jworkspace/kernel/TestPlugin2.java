@@ -7,6 +7,7 @@ import jworkspace.api.IWorkspaceListener;
  */
 public class TestPlugin2 implements ITestPlugin, IWorkspaceListener {
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private int value = 3;
     @SuppressWarnings("checkstyle:MagicNumber")
     @Override

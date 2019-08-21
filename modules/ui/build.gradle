@@ -1,3 +1,5 @@
+version '2.0.0-SNAPSHOT'
+
 processResources {
 
     def expandedFiles = ['config/application.properties']
@@ -22,7 +24,7 @@ ext {
 dependencies {
 
     compile project(':kiwi')
-    compile project(':app')
+    compile project(':jworkspace')
 
     compile "commons-codec:commons-codec:$codecVersion"
     compile "org.jdom:jdom2:$jdomVersion"

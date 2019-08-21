@@ -39,6 +39,7 @@ import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.ApplicationDataSource;
+import lombok.Setter;
 
 /**
  * This class represent a single java runtime process,
@@ -73,6 +74,7 @@ public final class JavaProcess {
     /**
      * Native process
      */
+    @Setter
     private Process process;
     /**
      * Start time
@@ -82,6 +84,12 @@ public final class JavaProcess {
      * Alive flag
      */
     private boolean alive = false;
+
+    JavaProcess(Process process, String processName) {
+        setName(processName);
+        setProcess(process);
+        follow(processName);
+    }
 
     /**
      * Constructor
@@ -99,7 +107,12 @@ public final class JavaProcess {
         setName(processName);
 
         Runtime runtime = Runtime.getRuntime();
-        process = runtime.exec(args);
+        setProcess(runtime.exec(args));
+
+        follow(processName);
+    }
+
+    private void follow(String processName) {
 
         startTime = new Date();
 
@@ -112,8 +125,8 @@ public final class JavaProcess {
         waitThread.start();
 
         LOG.info(WorkspaceResourceAnchor.getString(JAVA_PROCESS_MESSAGE) + WHITESPACE + processName);
-        LOG.info(WorkspaceResourceAnchor.getString(JAVA_PROCESS_STARTED_AT) + WHITESPACE
-            + DateFormat.getInstance().format(startTime));
+        LOG.info(WorkspaceResourceAnchor.getString(JAVA_PROCESS_STARTED_AT)
+            + WHITESPACE + DateFormat.getInstance().format(startTime));
 
         alive = true;
     }

@@ -61,7 +61,8 @@ public class PluginTests {
     public void testLoadPlugin() throws PluginException {
 
         Plugin testPlugin = new WorkspacePluginLocator()
-            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
+            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(),
+                PluginHelper.PLUGIN_JAR), Plugin.PLUGIN_TYPE_ANY);
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
 
@@ -73,6 +74,7 @@ public class PluginTests {
         assert plugin.doPluginWork() == 2;
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     public void testTwoPlugins() throws PluginException {
 
@@ -122,6 +124,7 @@ public class PluginTests {
         assert !obj1.equals(obj2);
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     public void testPluginsCommunication() throws PluginException {
         final PluginLocator pluginLocator = new WorkspacePluginLocator();
@@ -146,7 +149,7 @@ public class PluginTests {
         assert ((TestPlugin) obj1).doPluginWork() == 2;
         assert ((TestPlugin2) obj2).doPluginWork() == 8;
     }
-        @After
+    @After
     public void after() {
         testFolder.delete();
     }

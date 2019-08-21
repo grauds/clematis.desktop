@@ -38,7 +38,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
-//
+
+import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,18 +47,16 @@ import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.Config;
 
 import jworkspace.WorkspaceResourceAnchor;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
 /**
  * This class represents a single user in workspace.
  *
  * @author Anton Troshin
  */
 @Data
-@EqualsAndHashCode(doNotUseGetters = true, exclude = {"cipherpass", "messageDigest"})
+@EqualsAndHashCode(doNotUseGetters = true, exclude = {"password", "messageDigest"})
 @SuppressWarnings("unused")
 public class Profile {
 
@@ -81,13 +80,13 @@ public class Profile {
     /**
      * User name
      */
+    @Option(name = "username")
     private String userName = "";
     /**
      * Password is encrypted using DMD5
      */
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private byte[] cipherpass = new byte[]{};
+    @Option(name = "password")
+    private byte[] password = new byte[]{};
 
     private MessageDigest messageDigest;
 
@@ -104,7 +103,7 @@ public class Profile {
     /**
      * Empty constructor
      */
-    Profile() {
+    public Profile() {
         super();
         setPasswordAndDigest("");
     }
@@ -138,10 +137,13 @@ public class Profile {
      * @param secondName java.lang.String
      * @param email      java.lang.String
      */
-    public static Profile create(String userName, String password,
-                                 String firstName, String secondName,
+    public static Profile create(String userName,
+                                 String password,
+                                 String firstName,
+                                 String secondName,
                                  String email)
         throws ProfileOperationException {
+
         if (userName == null) {
             throw new ProfileOperationException(WorkspaceResourceAnchor.getString("Profile.userName.null"));
         }
@@ -197,12 +199,12 @@ public class Profile {
         setPassword(newPassword);
     }
 
-    void setPassword(String newPassword) {
+    public void setPassword(String newPassword) {
         if (this.messageDigest != null) {
             if (newPassword != null) {
-                this.cipherpass = this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8));
+                this.password = this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8));
             } else {
-                this.cipherpass = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
+                this.password = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
             }
         }
     }
@@ -269,7 +271,7 @@ public class Profile {
             userLastName = dis.readUTF();
             email = dis.readUTF();
             description = dis.readUTF();
-            cipherpass = StreamUtils.readStreamToByteArray(dis);
+            password = StreamUtils.readStreamToByteArray(dis);
         } catch (FileNotFoundException ex) {
             LOG.warn("Saved data is not found for " + userName);
         }
@@ -300,7 +302,7 @@ public class Profile {
             dos.writeUTF(userLastName);
             dos.writeUTF(email);
             dos.writeUTF(description);
-            dos.write(cipherpass);
+            dos.write(password);
         }
     }
 
@@ -325,16 +327,27 @@ public class Profile {
     }
 
     /**
-     * Check whether supplied password is correct.
+     * Check whether if supplied plain password is correct.
      */
     boolean checkPassword(String passwordCandidate) {
 
         if (this.messageDigest != null) {
             return Arrays.equals(this.messageDigest
-                .digest(passwordCandidate.getBytes(StandardCharsets.UTF_8)), cipherpass);
+                .digest(passwordCandidate.getBytes(StandardCharsets.UTF_8)), password);
         } else {
             return passwordCandidate != null
-                && Arrays.equals(passwordCandidate.getBytes(StandardCharsets.UTF_8), cipherpass);
+                && Arrays.equals(passwordCandidate.getBytes(StandardCharsets.UTF_8), password);
         }
+    }
+
+    /**
+     * Check whether if supplied encoded password is correct.
+     */
+    boolean checkPassword(@NonNull Profile candidate) {
+        return Arrays.equals(candidate.getPassword(), password);
+    }
+
+    public byte[] getPassword() {
+        return Arrays.copyOf(password, password.length);
     }
 }

@@ -40,6 +40,7 @@ import com.hyperrealm.kiwi.util.Config;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IUserManager;
 import jworkspace.kernel.Workspace;
+import lombok.NonNull;
 
 /**
  * Profile engine is one of required by kernel.
@@ -246,13 +247,18 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * User login procedure.
      */
-    public void login(String name, String password) throws ProfileOperationException {
+    public void login(@NonNull String name, @NonNull String password) throws ProfileOperationException {
 
-        Profile profile = profilesManager.loadProfile(name);
+        login(Profile.create(name, password, "", "", ""));
+    }
 
-        if (!profile.checkPassword(password)) {
-            throw new ProfileOperationException(
-                WorkspaceResourceAnchor.getString("UserProfileEngine.passwd.check.failed"));
+    @Override
+    public void login(@NonNull Profile candidate) throws ProfileOperationException {
+
+        Profile profile = profilesManager.loadProfile(candidate.getUserName());
+
+        if (!profile.checkPassword(candidate)) {
+            throw new ProfileOperationException("Login has failed");
         }
 
         profilesManager.setCurrentProfile(profile);

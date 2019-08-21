@@ -28,21 +28,23 @@ package jworkspace.kernel;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import jworkspace.api.IConstants;
-import jworkspace.installer.Application;
-import jworkspace.installer.DefinitionDataSource;
-import jworkspace.installer.DefinitionNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import jworkspace.api.IConstants;
+import jworkspace.installer.Application;
+import jworkspace.installer.DefinitionDataSource;
+import jworkspace.installer.DefinitionNode;
 import jworkspace.users.ProfileOperationException;
+
 /**
  * @author Anton Troshin
  */
 public class WorkspaceTest {
 
+    private static final String USERNAME = "root";
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @Before
@@ -55,9 +57,9 @@ public class WorkspaceTest {
     @Test
     public void testBeginWork() throws IOException, ProfileOperationException {
 // I would like to start a new workspace
-        Workspace.start(testFolder.getRoot().toPath(), "root", "");
+        Workspace.start(testFolder.getRoot().toPath(), USERNAME, "");
 // assert user is logged in
-        assert Workspace.getUserManager().getUserName().equalsIgnoreCase("root");
+        assert Workspace.getUserManager().getUserName().equalsIgnoreCase(USERNAME);
 // create a sample application record
         DefinitionDataSource dds = Workspace.getWorkspaceInstaller().getApplicationData();
 
@@ -78,7 +80,7 @@ public class WorkspaceTest {
 
         assert testApplication2 == null;
 
-        Workspace.changeCurrentProfile("root", "");
+        Workspace.changeCurrentProfile(USERNAME, "");
 
         testApplication2 = Workspace.getWorkspaceInstaller().getApplicationData()
                 .findNode(testApplication.getLinkString());

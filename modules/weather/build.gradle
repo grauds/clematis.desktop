@@ -3,7 +3,7 @@ plugins {
     id "groovy"
 }
 
-
+version '1.0.0-SNAPSHOT'
 apply plugin: "org.flywaydb.flyway"
 
 ext {

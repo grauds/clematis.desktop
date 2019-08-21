@@ -8,30 +8,19 @@ buildscript {
         }
     }
 }
-
 plugins {
     id 'jacoco'
 }
 
 group 'name.troshin.anton.clematis'
-version '2.0.0 - DEV'
+version '2.0.0-SNAPSHOT'
 
-allprojects {
+subprojects {
+
     apply plugin: 'java'
     apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
     apply plugin: 'jacoco'
-}
-
-test {
-    jacoco {
-        append = false
-        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpDir = file("$buildDir/jacoco/classpathdumps")
-    }
-}
-
-subprojects {
 
     apply from: file("${project.rootDir}/dependencies.gradle")
     apply from: file("${project.rootDir}/libraries.gradle")
@@ -41,6 +30,14 @@ subprojects {
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
+
+    test {
+        jacoco {
+            append = false
+            destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+            classDumpDir = file("$buildDir/jacoco/classpathdumps")
+        }
+    }
 
     compileJava {
        // options.compilerArgs << '-Xlint:unchecked' << "-Xlint:deprecation"

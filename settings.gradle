@@ -1,6 +1,10 @@
 rootProject.name = 'clematis'
 
 include 'app'
+project(':app').name = 'jworkspace'
+
+include 'launcher'
+project(':launcher').projectDir = file('modules/launcher')
 
 include 'kiwi'
 project(':kiwi').projectDir = file('libs/kiwi')

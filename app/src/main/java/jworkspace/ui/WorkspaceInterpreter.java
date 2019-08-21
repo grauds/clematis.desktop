@@ -81,6 +81,9 @@ public final class WorkspaceInterpreter {
         return ourInstance;
     }
 
+    public synchronized void stop() throws InterruptedException {
+        getInstance().interpreterThread.join();
+    }
     /**
      * Re/starts interpreter thread
      */

@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,7 @@ import jworkspace.api.WorkspaceComponent;
 import jworkspace.installer.WorkspaceInstaller;
 import jworkspace.ui.DefaultUI;
 import jworkspace.ui.WorkspaceResourceManager;
+import jworkspace.users.Profile;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.WorkspaceUserManager;
 import lombok.AccessLevel;
@@ -118,14 +121,16 @@ public class Workspace {
 
     /**
      * Starts the application.
-     * todo: parse command line arguments
      *
      * @param args an array of command-line arguments
      */
     public static void main(String[] args) {
         try {
-            start(getBasePath(), "root", "");
-        } catch (IOException | ProfileOperationException e) {
+            Profile candidate = new Profile();
+            CmdLineParser parser = new CmdLineParser(candidate);
+            parser.parseArgument(args);
+            start(getBasePath(), candidate);
+        } catch (IOException | ProfileOperationException | CmdLineException e) {
             LOG.error(e.getMessage(), e);
         }
     }
@@ -282,12 +287,7 @@ public class Workspace {
         return ui;
     }
 
-    /**
-     * Start a new workspace and read all the data from the given directory
-     *
-     * @param baseDir to store all workspace data in
-     */
-    public static synchronized void start(@NonNull Path baseDir, @NonNull String username, @NonNull String password)
+    public static synchronized void start(@NonNull Path baseDir, @NonNull Profile candidate)
         throws IOException, ProfileOperationException {
 
         long start = System.currentTimeMillis();
@@ -299,27 +299,33 @@ public class Workspace {
          * Add system plugins indifferent to users data
          */
         addSystemPlugins(new WorkspacePluginLocator().loadPlugins(Paths.get(baseDir.toAbsolutePath().toString(),
-                IConstants.PLUGINS_DIRECTORY))
+            IConstants.PLUGINS_DIRECTORY))
         );
-        /*
-         * Run Workspace Bean Shell interpreter instance for console command line
-         */
-       // WorkspaceInterpreter.getInstance();
         /*
          * Initialize user data
          */
-        initUserWorkspace(username, password);
+        initUserWorkspace(candidate);
 
         long end = System.currentTimeMillis();
         LOG.info("Started in: " + (end - start) + " millis");
     }
+    /**
+     * Start a new workspace and read all the data from the given directory
+     *
+     * @param baseDir to store all workspace data in
+     */
+    public static synchronized void start(@NonNull Path baseDir, @NonNull String username, @NonNull String password)
+        throws ProfileOperationException, IOException {
 
-    private static void initUserWorkspace(@NonNull String username, @NonNull String password)
+        start(baseDir, Profile.create(username, password, "", "", ""));
+    }
+
+    private static void initUserWorkspace(@NonNull Profile candidate)
             throws IOException, ProfileOperationException {
         /*
          * Login procedure starts here
          */
-        getUserManager().login(username, password);
+        getUserManager().login(candidate);
         /*
          * If login failed - silently leave the basic system running
          */
@@ -379,7 +385,7 @@ public class Workspace {
         /*
          * Initialize user data
          */
-        initUserWorkspace(username, password);
+        initUserWorkspace(Profile.create(username, password, "", "", ""));
     }
 
     /**

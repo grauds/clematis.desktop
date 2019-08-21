@@ -18,100 +18,133 @@ package jworkspace.kernel;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
  */
+
+import java.io.Console;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jworkspace.api.IConstants;
 /**
- * Starts the application. Dynamically loads
- * Java Workspace libraries from ./lib directory.
+ * Starts the application.
+ * <p>
+ * 1. Dynamically loads Java Workspace libraries from ./lib directory.
+ * 2. Checks 'plugins' directory
+ * 3. Checks 'users' directory
+ *
+ * @author Anton Troshin
  */
-public class WorkspaceLauncher implements FilenameFilter
-{
+public class WorkspaceLauncher {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceLauncher.class);
+    /**
+     * Workspace main class name
+     */
+    private static final String JWORKSPACE_CLASS = "jworkspace.kernel.Workspace";
+    /**
+     * Prompt for console username
+     */
+    private static final String USERNAME_PROMPT = "Username (default 'root'): ";
+    /**
+     * Prompt for console password
+     */
+    private static final String PASSWORD_PROMPT = "Password: ";
+
+    private WorkspaceLauncher() {}
+
     /**
      * Starts the application.
+     *
      * @param args an array of command-line arguments
      */
-    public static void main(java.lang.String[] args)
-    {
-        WorkspaceLauncher launcher = new WorkspaceLauncher();
-        /**
+    @SuppressWarnings("regexp")
+    @SuppressFBWarnings("DM_DEFAULT_ENCODING")
+    public static void main(String[] args) {
+
+        Console console = System.console();
+        String userName = "root";
+        String password = "";
+
+        if (console != null) {
+            console.readLine(USERNAME_PROMPT, userName);
+            console.readPassword(PASSWORD_PROMPT, password);
+        } else {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println(USERNAME_PROMPT);
+            userName = scanner.nextLine();
+            System.out.println(PASSWORD_PROMPT);
+            password = scanner.nextLine();
+        }
+        /*
          * Fill command line for a new process.
          */
-        StringBuffer commandLine = launcher.getCommandLine();
-        /**
+        StringBuffer commandLine = getCommandLine();
+        /*
          * Add arguments
          */
-        commandLine.append(" ");
-        commandLine.append("jworkspace.kernel.Workspace");
-        commandLine.append(" ");
+        commandLine.append(IConstants.WHITESPACE);
+        commandLine.append(JWORKSPACE_CLASS);
+        commandLine.append(IConstants.WHITESPACE);
 
-        for (int i = 0; i < args.length; i++)
-        {
-          commandLine.append(args[i]);
-          commandLine.append(" ");
-        }
-        /**
+        commandLine.append(" --username ").append(userName);
+        commandLine.append(" --password ").append(password);
+
+        /*
          * Launch workspace
          */
-        try
-        {
-            Runtime.getRuntime().exec(commandLine.toString());
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+        try {
+            LOG.info(commandLine.toString());
+            Process process = Runtime.getRuntime().exec(commandLine.toString());
+            new JavaProcess(process, "Java Workspace");
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
         }
     }
+
     /**
      * Get command line for launching Java Workspace.
+     *
      * @return command line for launching Java Workspace
      */
-    protected StringBuffer getCommandLine()
-    {
-      StringBuffer sb = new StringBuffer();
-      //********************* lib path *****************************
-      File lib = new File("lib/");
-      if (lib.exists())
-      {
-         String[] jars = lib.list(this);
-         for (int i = 0; i < jars.length; i++)
-         {
-             if ( jars[i].startsWith("_") )
-             {
-                 sb.insert(0, File.pathSeparator);
-                 sb.insert(0, jars[i]);
-                 sb.insert(0, File.separator);
-                 sb.insert(0, "lib");
-                 sb.insert(0, File.separator);
-                 sb.insert(0, ".");
-             }
-             else
-             {
-                 sb.append(".");
-                 sb.append(File.separator);
-                 sb.append("lib");
-                 sb.append(File.separator);
-                 sb.append(jars[i]);
-                 sb.append(File.pathSeparator);
-             }
-         }
-      }
-      sb.insert( 0, "javaw -Djava.library.path=." + File.separator
-                 + "lib -classpath .;." + File.separator + "i18n"
-                 + File.pathSeparator);
-      //********************* lib path *****************************
-      return sb;
-    }
-    /**
-     * Tests if a specified file should be included in a file list.
-     *
-     * @param   dir    the directory in which the file was found.
-     * @param   name   the name of the file.
-     * @return  <code>true</code> if and only if the name should be
-     * included in the file list; <code>false</code> otherwise.
-     */
-    public boolean accept(File dir, String name)
-    {
-        return name.toLowerCase().endsWith("jar");
+    @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:NestedIfDepth"})
+    public static StringBuffer getCommandLine() {
+        StringBuffer sb = new StringBuffer();
+
+        File lib = Paths.get(Workspace.getBasePath().toString(), "lib").toFile();
+
+        try {
+            if (!lib.exists()) {
+                Files.createDirectories(lib.toPath());
+            }
+            File[] jars = lib.listFiles((dir, name) -> name.toLowerCase().endsWith("jar"));
+            if (jars != null) {
+                int i = 0;
+                for (File jar : jars) {
+
+                    String classpathChunk = Paths.get(lib.getAbsolutePath(), jar.getName()).toAbsolutePath()
+                        + (i + 1 == jars.length ? "" : File.pathSeparator);
+
+                    if (jar.getName().startsWith("_")) {
+                        sb.insert(0, classpathChunk);
+                    } else {
+                        sb.append(classpathChunk);
+                    }
+                    i++;
+                }
+            }
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
+
+        sb.insert(0, "java -Djava.library.path=" + lib.getAbsolutePath() + " -classpath ");
+        return sb;
     }
 }
