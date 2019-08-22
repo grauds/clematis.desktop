@@ -225,7 +225,7 @@ public class UIActions implements IConstants {
     private void showHelp() {
         try {
 
-            DocumentDataSource helpSource = new DocumentDataSource(Workspace.getResourceManager());
+            DocumentDataSource helpSource = new DocumentDataSource(WorkspaceGUI.getResourceManager());
             DocumentBrowserFrame dbf = new DocumentBrowserFrame(IConstants.VERSION
                 + WorkspaceGUI.LOG_SPACE + WorkspaceResourceAnchor.getString("message#184"),
                 "", helpSource);

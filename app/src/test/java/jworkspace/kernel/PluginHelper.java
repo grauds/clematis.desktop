@@ -7,13 +7,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
+import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 
 
 /**
@@ -52,8 +52,8 @@ class PluginHelper {
         writeJarFile(testPluginClassPath, testPluginClass, manifest, testPluginClassPath, pluginJar);
     }
 
-    static void writeJarFile(File testPluginClassPath, String testPluginClass, Manifest manifest,
-                             File jarPath, String pluginJar)
+    private static void writeJarFile(File testPluginClassPath, String testPluginClass, Manifest manifest,
+                                     File jarPath, String pluginJar)
             throws IOException {
 
         Files.createDirectories(jarPath.toPath());
@@ -73,43 +73,30 @@ class PluginHelper {
         return new File(folder, file);
     }
 
-    static Manifest getManifest() {
+    private static Manifest getManifest() {
 
-        Manifest manifest = getManifestHeader();
+        PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS,
+            TEST_PLUGIN_NAME,
+            PluginDTO.PLUGIN_TYPE_ANY,
+            TEST_PLUGIN_DESCRIPTION,
+            TEST_PLUGIN_ICON,
+            TEST_PLUGIN_VERSION,
+            TEST_PLUGIN_HELP_URL);
 
-        Attributes attributes = new Attributes();
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_NAME), TEST_PLUGIN_NAME);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_DESCRIPTION), TEST_PLUGIN_DESCRIPTION);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_VERSION), TEST_PLUGIN_VERSION);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_HELP_URL), TEST_PLUGIN_HELP_URL);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_ICON), TEST_PLUGIN_ICON);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_TYPE), Plugin.PLUGIN_TYPE_ANY);
-
-        manifest.getEntries().put(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS, attributes);
-        return manifest;
-    }
-
-    private static Manifest getManifestHeader() {
-
-        Manifest manifest = new Manifest();
-        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        return manifest;
+        return PluginDTO.getManifest(plugin);
     }
 
     static Manifest getManifest2() {
 
-        Manifest manifest = getManifestHeader();
+        PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS_2,
+            TEST_PLUGIN_NAME_2,
+            PluginDTO.PLUGIN_TYPE_ANY,
+            TEST_PLUGIN_DESCRIPTION_2,
+            TEST_PLUGIN_ICON_2,
+            TEST_PLUGIN_VERSION_2,
+            TEST_PLUGIN_HELP_URL);
 
-        Attributes attributes = new Attributes();
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_NAME), TEST_PLUGIN_NAME_2);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_DESCRIPTION), TEST_PLUGIN_DESCRIPTION_2);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_VERSION), TEST_PLUGIN_VERSION_2);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_HELP_URL), TEST_PLUGIN_HELP_URL);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_ICON), TEST_PLUGIN_ICON_2);
-        attributes.put(new Attributes.Name(Plugin.PLUGIN_TYPE), Plugin.PLUGIN_TYPE_ANY);
-
-        manifest.getEntries().put(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS_2, attributes);
-        return manifest;
+        return PluginDTO.getManifest(plugin);
     }
 
     static void assertPluginEqualsManifest(Plugin testPlugin) {
@@ -119,7 +106,7 @@ class PluginHelper {
         assert testPlugin.getClassName().equals(TEST_PLUGIN);
         assert testPlugin.getVersion().equals(TEST_PLUGIN_VERSION);
         assert testPlugin.getHelpURL().toString().equals(TEST_PLUGIN_HELP_URL);
-        assert testPlugin.getType().equals(Plugin.PLUGIN_TYPE_ANY);
+        assert testPlugin.getType().equals(PluginDTO.PLUGIN_TYPE_ANY);
     }
 
     static void preparePlugins(File folder) throws IOException {

@@ -108,7 +108,7 @@ public class KDialog extends JDialog {
 
         getContentPane().setLayout(new GridLayout(1, 0));
 
-        main = new KPanel(UIChangeManager.getDefaultTexture());
+        main = new KPanel(UIChangeManager.getInstance().getDefaultTexture());
 
         main.setOpaque(true);
 

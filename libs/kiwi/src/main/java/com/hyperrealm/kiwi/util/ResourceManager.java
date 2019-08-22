@@ -339,9 +339,11 @@ public class ResourceManager {
             return (icon);
         }
 
-        icon = new ImageIcon(getImage(name));
-        icons.put(name, icon);
-
+        Image image = getImage(name);
+        if (image != null) {
+            icon = new ImageIcon();
+            icons.put(name, icon);
+        }
         return (icon);
     }
 
@@ -369,10 +371,9 @@ public class ResourceManager {
 
         String path = imagePath + name;
         image = loader.getResourceAsImage(path);
-        if (image == null) {
-            throw (new ResourceNotFoundException(path));
+        if (image != null) {
+            images.put(name, image);
         }
-        images.put(name, image);
 
         return (image);
     }

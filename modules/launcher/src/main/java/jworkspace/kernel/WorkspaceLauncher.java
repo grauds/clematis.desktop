@@ -94,8 +94,13 @@ public class WorkspaceLauncher {
         commandLine.append(JWORKSPACE_CLASS);
         commandLine.append(IConstants.WHITESPACE);
 
-        commandLine.append(" --username ").append(userName);
-        commandLine.append(" --password ").append(password);
+        if (!userName.isEmpty()) {
+            commandLine.append(" -username ").append(userName);
+        }
+
+        if (!password.isEmpty()) {
+            commandLine.append(" -password ").append(password);
+        }
 
         /*
          * Launch workspace

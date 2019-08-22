@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.ResourceManager;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
-import jworkspace.WorkspaceResourceAnchor;
-
 /**
  * Special resource manager
  *
@@ -58,9 +56,10 @@ public class WorkspaceResourceManager extends ResourceManager {
 
     /**
      * Empty default constructor
+     * @param anchorClass to use
      */
-    public WorkspaceResourceManager() {
-        super(WorkspaceResourceAnchor.class);
+    public WorkspaceResourceManager(Class<?> anchorClass) {
+        super(anchorClass);
     }
 
     /**

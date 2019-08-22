@@ -148,6 +148,10 @@ public class WorkspaceGUI implements UI {
      */
     private static SplashScreen logo = null;
     /**
+     * Resource manager
+     */
+    private static WorkspaceResourceManager resourceManager = null;
+    /**
      * Workspace main frame
      */
     private MainFrame frame = null;
@@ -198,7 +202,8 @@ public class WorkspaceGUI implements UI {
      */
     public WorkspaceGUI() {
         super();
-        UIChangeManager.setDefaultFrameIcon(new WorkspaceResourceManager().getImage("jw_16x16.png"));
+        UIChangeManager.getInstance().setDefaultFrameIcon(
+            new WorkspaceResourceManager(WorkspaceGUI.class).getImage("jw_16x16.png"));
         registerListeners();
     }
 
@@ -210,6 +215,18 @@ public class WorkspaceGUI implements UI {
             actions = new UIActions(this);
         }
         return actions;
+    }
+
+    /**
+     * Returns resource manager for the GUI.
+     *
+     * @return kiwi.util.WorkspaceResourceManager
+     */
+    public static synchronized WorkspaceResourceManager getResourceManager() {
+        if (resourceManager == null) {
+            resourceManager = new WorkspaceResourceManager(WorkspaceGUI.class);
+        }
+        return resourceManager;
     }
 
     /**
@@ -324,10 +341,10 @@ public class WorkspaceGUI implements UI {
     public void setTextureVisible(boolean isTextureVisible) {
         this.isTextureVisible = isTextureVisible;
         if (isTextureVisible && texture != null) {
-            UIChangeManager.setDefaultTexture(texture);
+            UIChangeManager.getInstance().setDefaultTexture(texture);
             ((MainFrame) getFrame()).setTexture(texture);
         } else {
-            UIChangeManager.setDefaultTexture(null);
+            UIChangeManager.getInstance().setDefaultTexture(null);
             ((MainFrame) getFrame()).setTexture(null);
         }
     }
@@ -799,7 +816,7 @@ public class WorkspaceGUI implements UI {
                 if (currentView instanceof Desktop) {
                     ((Desktop) currentView).addView(view, display, register);
                 } else {
-                    ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
+                    ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                         getImage("desktop/desktop_big.png"));
                     JOptionPane.showMessageDialog(getFrame(),
                         WorkspaceResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),

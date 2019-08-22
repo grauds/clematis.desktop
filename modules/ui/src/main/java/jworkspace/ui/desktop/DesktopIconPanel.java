@@ -239,7 +239,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         KPanel bp = new KPanel();
         bp.setLayout(new GridLayout(0, 1, 5, 5));
 
-        ImageIcon icon = new ImageIcon(Workspace.
+        ImageIcon icon = new ImageIcon(WorkspaceGUI.
             getResourceManager().getImage("folder.png"));
         bIconBrowse = new JButton(icon);
         bIconBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browseImage.tooltip"));
@@ -248,7 +248,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         bIconBrowse.setOpaque(false);
         bp.add(bIconBrowse);
 
-        icon = new ImageIcon(Workspace.
+        icon = new ImageIcon(WorkspaceGUI.
             getResourceManager().getImage("repository.png"));
         bLibBrowser = new JButton(icon);
         bLibBrowser.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browseRepos.tooltip"));

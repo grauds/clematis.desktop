@@ -41,6 +41,7 @@ import javax.swing.JOptionPane;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.action.AbstractStateAction;
 import jworkspace.ui.widgets.WorkspaceError;
 
@@ -177,8 +178,8 @@ public class ViewsActions implements IConstants {
      */
     public class BrowseBackAction extends AbstractAction {
 
-        Image normal = Workspace.getResourceManager().getImage("cpanel/normal/back.png");
-        Image hover = Workspace.getResourceManager().getImage("cpanel/hover/back.png");
+        Image normal = WorkspaceGUI.getResourceManager().getImage("cpanel/normal/back.png");
+        Image hover = WorkspaceGUI.getResourceManager().getImage("cpanel/hover/back.png");
         String description = WorkspaceResourceAnchor.getString("ViewsManager.back.tooltip");
 
         BrowseBackAction() {
@@ -197,8 +198,8 @@ public class ViewsActions implements IConstants {
      */
     public class BrowseForwardAction extends AbstractAction {
 
-        Image normal = Workspace.getResourceManager().getImage("cpanel/normal/forward.png");
-        Image hover = Workspace.getResourceManager().getImage("cpanel/hover/forward.png");
+        Image normal = WorkspaceGUI.getResourceManager().getImage("cpanel/normal/forward.png");
+        Image hover = WorkspaceGUI.getResourceManager().getImage("cpanel/hover/forward.png");
         String description = WorkspaceResourceAnchor.getString("ViewsManager.forward.tooltip");
 
         BrowseForwardAction() {
@@ -217,8 +218,8 @@ public class ViewsActions implements IConstants {
      */
     public class AddDesktopAction extends AbstractAction {
 
-        Image normal = Workspace.getResourceManager().getImage("cpanel/normal/adesktop.png");
-        Image hover = Workspace.getResourceManager().getImage("cpanel/hover/adesktop.png");
+        Image normal = WorkspaceGUI.getResourceManager().getImage("cpanel/normal/adesktop.png");
+        Image hover = WorkspaceGUI.getResourceManager().getImage("cpanel/hover/adesktop.png");
         String description = WorkspaceResourceAnchor.getString("ViewsManager.adesktop.tooltip");
 
         AddDesktopAction() {
@@ -237,8 +238,8 @@ public class ViewsActions implements IConstants {
      */
     public class RemoveViewAction extends AbstractAction {
 
-        Image normal = Workspace.getResourceManager().getImage("cpanel/normal/ddesktop.png");
-        Image hover = Workspace.getResourceManager().getImage("cpanel/hover/ddesktop.png");
+        Image normal = WorkspaceGUI.getResourceManager().getImage("cpanel/normal/ddesktop.png");
+        Image hover = WorkspaceGUI.getResourceManager().getImage("cpanel/hover/ddesktop.png");
         String description = WorkspaceResourceAnchor.getString("ViewsManager.ddesktop.tooltip");
 
         RemoveViewAction() {
@@ -251,8 +252,7 @@ public class ViewsActions implements IConstants {
             Frame parent = Workspace.getUi().getFrame();
             if (parent != null) {
                 int result;
-                ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
-                    getImage("desktop/remove.png"));
+                ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().getImage("desktop/remove.png"));
                 result = JOptionPane.showConfirmDialog(parent,
                     WorkspaceResourceAnchor.getString("ViewsManager.deleteView.question") + "?",
                     WorkspaceResourceAnchor.getString("ViewsManager.deleteView.title"),
@@ -286,12 +286,9 @@ public class ViewsActions implements IConstants {
      * @author Anton Troshin
      */
     public class PropertiesAction extends AbstractAction {
-        Image normal = Workspace.getResourceManager().
-            getImage("cpanel/normal/vprefs.png");
-        Image hover = Workspace.getResourceManager().
-            getImage("cpanel/hover/vprefs.png");
-        String description = WorkspaceResourceAnchor.
-            getString("ViewsManager.vprefs.tooltip");
+        Image normal = WorkspaceGUI.getResourceManager().getImage("cpanel/normal/vprefs.png");
+        Image hover = WorkspaceGUI.getResourceManager().getImage("cpanel/hover/vprefs.png");
+        String description = WorkspaceResourceAnchor.getString("ViewsManager.vprefs.tooltip");
 
         PropertiesAction() {
             super(PROPERTIES_ACTION_NAME);

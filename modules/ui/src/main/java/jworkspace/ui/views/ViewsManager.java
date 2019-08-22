@@ -155,7 +155,7 @@ public class ViewsManager extends AbstractViewsManager {
         Frame parent = jworkspace.kernel.Workspace.getUi().getFrame();
         if (parent != null) {
 
-            ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
+            ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                 getImage("desktop/desktop_big.png"));
 
             String result = (String) JOptionPane.showInputDialog(
@@ -182,7 +182,7 @@ public class ViewsManager extends AbstractViewsManager {
         if (parent != null) {
             int result;
 
-            ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
+            ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                 getImage("desktop/remove.png"));
 
             result = JOptionPane.showConfirmDialog(parent,
@@ -787,7 +787,7 @@ public class ViewsManager extends AbstractViewsManager {
             if (getCurrentView() != null) {
                 getCurrentView().reset();
                 getCurrentView().load();
-                ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
+                ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                     getImage("desktop/reload.png"));
                 JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
                     WorkspaceResourceAnchor.getString("ViewsManager.reload.message"),

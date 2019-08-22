@@ -65,7 +65,7 @@ public class WorkspaceResourceAnchor {
             resources = ResourceBundle.getBundle("i18n/strings");
         }
 
-        String message = null;
+        String message = "null";
         try {
 
             message = resources.getString(id);

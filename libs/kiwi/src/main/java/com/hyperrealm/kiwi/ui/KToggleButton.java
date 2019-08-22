@@ -91,7 +91,7 @@ public class KToggleButton extends JToggleButton {
      */
 
     private void init() {
-        setOpaque(!UIChangeManager.getButtonsAreTransparent());
+        setOpaque(!UIChangeManager.getInstance().getButtonsAreTransparent());
     }
 
 }

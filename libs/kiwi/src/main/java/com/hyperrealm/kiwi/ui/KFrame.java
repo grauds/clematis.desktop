@@ -78,12 +78,12 @@ public class KFrame extends JFrame {
 
         ResourceManager rm = KiwiUtils.getResourceManager();
         getContentPane().setLayout(new GridLayout(1, 0));
-        main = new KPanel(UIChangeManager
+        main = new KPanel(UIChangeManager.getInstance()
             .getDefaultTexture());
         main.setOpaque(true);
         main.setLayout(new BorderLayout(0, 0));
         getContentPane().add(main);
-        Image frameIcon = UIChangeManager.getDefaultFrameIcon();
+        Image frameIcon = UIChangeManager.getInstance().getDefaultFrameIcon();
         setIconImage((frameIcon != null) ? frameIcon
             : rm.getImage("kiwi.png"));
 

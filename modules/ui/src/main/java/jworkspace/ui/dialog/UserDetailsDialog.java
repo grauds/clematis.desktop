@@ -57,6 +57,7 @@ import com.hyperrealm.kiwi.util.ResourceManager;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * Carrier class for <code>jworkspace.ui.UserDetailsPanel</code>
@@ -90,7 +91,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         Object o = ev.getSource();
 
         if (o == bNew) {
-            ImageIcon icon = new ImageIcon(Workspace.getResourceManager().
+            ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                 getImage("user_var.png"));
 
             String name = (String) JOptionPane.showInputDialog(this,

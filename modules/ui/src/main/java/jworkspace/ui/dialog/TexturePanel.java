@@ -87,7 +87,7 @@ class TexturePanel extends KPanel implements ActionListener {
         KPanel bp = new KPanel();
         bp.setLayout(new GridLayout(0, 1, 5, 5));
 
-        ImageIcon icon = new ImageIcon(Workspace.getResourceManager().getImage("folder.png"));
+        ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().getImage("folder.png"));
         bIconBrowse = new JButton(icon);
         bIconBrowse.setToolTipText(WorkspaceResourceAnchor.getString("TexturePanel.texture.browse"));
         bIconBrowse.addActionListener(this);
@@ -95,7 +95,7 @@ class TexturePanel extends KPanel implements ActionListener {
         bIconBrowse.setOpaque(false);
         bp.add(bIconBrowse);
 
-        icon = new ImageIcon(Workspace.getResourceManager().getImage("repository.png"));
+        icon = new ImageIcon(WorkspaceGUI.getResourceManager().getImage("repository.png"));
         bLibBrowser = new JButton(icon);
         bLibBrowser.setToolTipText(WorkspaceResourceAnchor.getString("TexturePanel.textureRepos.browse"));
         bLibBrowser.addActionListener(this);

@@ -43,7 +43,7 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.Library;
-import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * This dialog shows a tree of installed libraries in workspace.
@@ -57,7 +57,7 @@ public class LibraryChooserDialog extends ComponentDialog {
 
     public LibraryChooserDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString(LIBRARY_CHOOSER_DLG_TITLE), true);
-        setComment(new ImageIcon(Workspace.getResourceManager().getImage("library_big.png")),
+        setComment(new ImageIcon(WorkspaceGUI.getResourceManager().getImage("library_big.png")),
             WorkspaceResourceAnchor.getString(LIBRARY_CHOOSER_DLG_TITLE));
     }
 

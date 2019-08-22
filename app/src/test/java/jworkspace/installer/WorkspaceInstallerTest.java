@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceResourceManager;
 /**
@@ -34,7 +35,7 @@ public class WorkspaceInstallerTest {
 
         mockStatic(Workspace.class);
         when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().toPath());
-        when(Workspace.getResourceManager()).thenReturn(new WorkspaceResourceManager());
+        when(Workspace.getResourceManager()).thenReturn(new WorkspaceResourceManager(WorkspaceResourceAnchor.class));
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")

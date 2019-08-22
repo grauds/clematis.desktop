@@ -33,7 +33,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileView;
 
-import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * @author Anton Troshin
@@ -41,7 +41,7 @@ import jworkspace.kernel.Workspace;
 @SuppressWarnings("MagicNumber")
 public class WorkspaceFileView extends FileView {
 
-    private static final Icon HTML_ICON = Workspace.getResourceManager().getIcon("filedlg/html.gif");
+    private static final Icon HTML_ICON = WorkspaceGUI.getResourceManager().getIcon("filedlg/html.gif");
 
     private Map<String, Icon> icons = new HashMap<>();
 
@@ -51,17 +51,17 @@ public class WorkspaceFileView extends FileView {
 
     public WorkspaceFileView() {
         super();
-        putIcon("jpg", Workspace.getResourceManager().
+        putIcon("jpg", WorkspaceGUI.getResourceManager().
             getIcon("filedlg/jpg.gif"));
-        putIcon("gif", Workspace.getResourceManager().
+        putIcon("gif", WorkspaceGUI.getResourceManager().
             getIcon("filedlg/gif.gif"));
-        putIcon("jar", Workspace.getResourceManager().
+        putIcon("jar", WorkspaceGUI.getResourceManager().
             getIcon("filedlg/jar.gif"));
-        putIcon("java", Workspace.getResourceManager().
+        putIcon("java", WorkspaceGUI.getResourceManager().
             getIcon("filedlg/java.gif"));
-        putIcon("class", Workspace.getResourceManager().
+        putIcon("class", WorkspaceGUI.getResourceManager().
             getIcon("filedlg/class.gif"));
-        putIcon("jsp", Workspace.getResourceManager().
+        putIcon("jsp", WorkspaceGUI.getResourceManager().
             getIcon("filedlg/jsp.gif"));
         putIcon("html", HTML_ICON);
         putIcon("htm", HTML_ICON);

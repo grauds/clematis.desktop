@@ -68,6 +68,7 @@ import static jworkspace.ui.desktop.DesktopConstants.TOP_RIGHT_CORNER_IMAGE;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
+import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.views.PropertiesPanel;
 import jworkspace.ui.widgets.ImageRenderer;
 
@@ -165,7 +166,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         this.desktop = desktop;
 
         ImageRenderer imageRenderer = new ThisPanelImageRenderer();
-        imageRenderer.setImage(Workspace.getResourceManager().
+        imageRenderer.setImage(WorkspaceGUI.getResourceManager().
             getImage("desktop/monitor.gif"));
         imageRenderer.setBorder(new EmptyBorder(5, 0, 0, 0));
         imageRenderer.setOpaque(false);

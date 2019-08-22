@@ -25,8 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -35,12 +33,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.event.EventListenerList;
 
 import com.hyperrealm.kiwi.event.PluginReloadEvent;
 import com.hyperrealm.kiwi.event.PluginReloadListener;
+
+import lombok.EqualsAndHashCode;
 
 /**
  * A class that represents a plugin. A <code>Plugin</code> object encapsulates
@@ -51,45 +50,16 @@ import com.hyperrealm.kiwi.event.PluginReloadListener;
  * @author Mark Lindner
  * @since Kiwi 1.3
  */
-
-public final class Plugin {
-
-    public static final String PLUGIN_TYPE_ANY = "ANY";
-
-    public static final String PLUGIN_NAME = "PluginName";
-    public static final String PLUGIN_TYPE = "PluginType";
-    public static final String PLUGIN_DESCRIPTION = "PluginDescription";
-    public static final String PLUGIN_ICON = "PluginIcon";
-    public static final String PLUGIN_VERSION = "PluginVersion";
-    public static final String PLUGIN_HELP_URL = "PluginHelpURL";
+@EqualsAndHashCode(callSuper = true)
+public final class Plugin extends PluginDTO {
 
     private static final String FAILED_TO_INSTANTIATE_PLUGIN = "failed to instantiate plugin ";
 
-    private boolean loaded = false;
-
-    private String className;
-
-    private String name;
-
-    private String type;
-
-    private String desc;
-
-    private String iconFile;
+    private Class pluginClass = null;
 
     private Properties props = new Properties();
 
-    private String version;
-
-    private String expectedType;
-
-    private String jarFile;
-
-    private Class pluginClass = null;
-
-    private Icon icon = null;
-
-    private URL helpURL = null;
+    private boolean loaded = false;
 
     private PluginClassLoader loader;
 
@@ -102,34 +72,12 @@ public final class Plugin {
      * a jar file for plugin entires. When it's reloaded, it reopens the jar file
      * and rescans everything. (hopefully...will this really work?)
      */
-
     Plugin(PluginLocator locator, String jarFile, String expectedType)
         throws PluginException {
+        super(expectedType, jarFile);
 
         this.locator = locator;
-        this.jarFile = jarFile;
-        this.expectedType = expectedType;
         load();
-    }
-
-    /**
-     * Get the version number for this plugin.
-     *
-     * @return The version number.
-     */
-
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * Get the class name for this plugin.
-     *
-     * @return The class name.
-     */
-
-    public String getClassName() {
-        return className;
     }
 
     /**
@@ -140,106 +88,6 @@ public final class Plugin {
 
     public PluginContext getContext() {
         return locator.getContext();
-    }
-
-    /**
-     * Get the name of this plugin.
-     *
-     * @return The name.
-     */
-
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Get the type of this plugin.
-     *
-     * @return The type.
-     */
-
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Get the path to the file that the plugin was loaded from.
-     *
-     * @since Kiwi 2.0
-     */
-
-    public String getFile() {
-        return jarFile;
-    }
-
-    /**
-     * Get the user-defined properties for the plugin. These correspond to the
-     * user-defined key/value pairs in the Manifest entry for this plugin.
-     *
-     * @return A <code>Properties</code> object containing the user-defined
-     * properties.
-     */
-
-    public Properties getProperties() {
-        return props;
-    }
-
-    /**
-     * Get a specific user-defined property for the plugin. User-defined
-     * properties are those fields in the Manifest entry for the plugin that are
-     * not defined and recognized by the plugin framework itself.
-     *
-     * @param name The property name (key).
-     * @return The value of the property, or <code>null</code> if there is no
-     * property with the given name.
-     */
-
-    public String getProperty(String name) {
-        return props.getProperty(name);
-    }
-
-    /**
-     * Get a specific user-defined property for the plugin.
-     *
-     * @param name         The property name (key).
-     * @param defaultValue The default value for this property.
-     * @return The value of the property, or <code>defaultValue</code> if there
-     * is no property with the given name.
-     */
-
-    public String getProperty(String name, String defaultValue) {
-        return props.getProperty(name, defaultValue);
-    }
-
-    /**
-     * Get the description of this plugin.
-     *
-     * @return The description, or <b>null</b> if no description is available.
-     */
-
-    public String getDescription() {
-        return desc;
-    }
-
-    /**
-     * Get the ICON for this plugin.
-     *
-     * @return The ICON, or <b>null</b> if no ICON is available.
-     */
-
-    public Icon getIcon() {
-        return icon;
-    }
-
-    /**
-     * Get the help URL for this plugin.
-     *
-     * @return The URL, or <b>null</b> if no URL is available.
-     * @since Kiwi 2.0
-     */
-
-    public URL getHelpURL() {
-        return helpURL;
     }
 
     /**
@@ -309,24 +157,22 @@ public final class Plugin {
 
                 switch (a) {
                     case PLUGIN_NAME:
-                        name = v;
+                        setName(v);
                         break;
                     case PLUGIN_TYPE:
-                        type = v;
+                        setType(v);
                         break;
                     case PLUGIN_DESCRIPTION:
-                        desc = v;
+                        setDescription(v);
                         break;
                     case PLUGIN_ICON:
-                        iconFile = v;
+                        setIconFile(v);
                         break;
                     case PLUGIN_VERSION:
-                        version = v;
+                        setVersion(v);
                         break;
                     case PLUGIN_HELP_URL:
-                        try {
-                            helpURL = new URL(v);
-                        } catch (MalformedURLException ex) { /* ignore */ }
+                        setHelpUrl(v);
                         break;
                     default:
                         props.put(a, v);
@@ -345,7 +191,7 @@ public final class Plugin {
             // create the classloader
 
             loader = locator.createClassLoader();
-            loader.addJarFile(jar);
+            loader.addJarFile(jarFile);
 
             // load the ICON
 
@@ -521,5 +367,32 @@ public final class Plugin {
         }
 
         return (n);
+    }
+
+    /**
+     * Get a specific user-defined property for the plugin. User-defined
+     * properties are those fields in the Manifest entry for the plugin that are
+     * not defined and recognized by the plugin framework itself.
+     *
+     * @param name The property name (key).
+     * @return The value of the property, or <code>null</code> if there is no
+     * property with the given name.
+     */
+
+    public String getProperty(String name) {
+        return props.getProperty(name);
+    }
+
+    /**
+     * Get a specific user-defined property for the plugin.
+     *
+     * @param name         The property name (key).
+     * @param defaultValue The default value for this property.
+     * @return The value of the property, or <code>defaultValue</code> if there
+     * is no property with the given name.
+     */
+
+    public String getProperty(String name, String defaultValue) {
+        return props.getProperty(name, defaultValue);
     }
 }

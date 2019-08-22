@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.DefinitionNode;
 import jworkspace.installer.JVM;
-import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * This dialog shows a tree of installed jvms in workspace.
@@ -62,7 +62,7 @@ public class JvmChooserDialog extends ComponentDialog {
     JvmChooserDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString(JVM_CHOOSER_DLG_TITLE), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        setComment(new ImageIcon(Workspace.getResourceManager().getImage("jvm_big.png")),
+        setComment(new ImageIcon(WorkspaceGUI.getResourceManager().getImage("jvm_big.png")),
             WorkspaceResourceAnchor.getString(JVM_CHOOSER_DLG_TITLE));
     }
 

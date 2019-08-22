@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
+import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.api.IUserManager;
 import jworkspace.api.IWorkspaceInstaller;
@@ -100,7 +101,7 @@ public class Workspace {
     /**
      * Resource manager
      */
-    private static WorkspaceResourceManager resourceManager = new WorkspaceResourceManager();
+    private static WorkspaceResourceManager resourceManager = null;
     /**
      * Listeners for service events.
      */
@@ -166,6 +167,11 @@ public class Workspace {
         if (pl != null && plugins != null && components != null) {
             plugins.add(pl);
             Object instance = pl.newInstance();
+            // initialize ui
+            if (instance instanceof UI) {
+                Workspace.ui = (UI) instance;
+            }
+            // collect all components
             if (instance instanceof WorkspaceComponent) {
                 WorkspaceComponent workspaceComponent = (WorkspaceComponent) instance;
                 workspaceComponent.load();
@@ -269,7 +275,10 @@ public class Workspace {
      *
      * @return kiwi.util.WorkspaceResourceManager
      */
-    public static WorkspaceResourceManager getResourceManager() {
+    public static synchronized WorkspaceResourceManager getResourceManager() {
+        if (resourceManager == null) {
+            resourceManager = new WorkspaceResourceManager(WorkspaceResourceAnchor.class);
+        }
         return resourceManager;
     }
 

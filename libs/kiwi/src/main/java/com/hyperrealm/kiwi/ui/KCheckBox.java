@@ -88,7 +88,7 @@ public class KCheckBox extends JCheckBox {
      */
 
     private void init() {
-        setOpaque(!UIChangeManager.getButtonsAreTransparent());
+        setOpaque(!UIChangeManager.getInstance().getButtonsAreTransparent());
     }
 
 }

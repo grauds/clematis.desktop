@@ -137,7 +137,7 @@ public class KInternalFrame extends JInternalFrame {
 
         ResourceManager rm = KiwiUtils.getResourceManager();
         getContentPane().setLayout(new GridLayout(1, 0));
-        main = new KPanel(UIChangeManager.getDefaultTexture());
+        main = new KPanel(UIChangeManager.getInstance().getDefaultTexture());
         main.setOpaque(true);
         getContentPane().add(main);
         setFrameIcon(rm.getIcon("kiwi.png"));

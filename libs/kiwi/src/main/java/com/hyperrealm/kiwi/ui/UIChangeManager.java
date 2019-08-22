@@ -87,11 +87,11 @@ public final class UIChangeManager implements PropertyChangeSource {
 
     private static UIChangeManager instance = null;
 
-    private static final ArrayList<JComponent> COMPONENTS = new ArrayList<>();
+    private final ArrayList<JComponent> components = new ArrayList<>();
 
-    private static Properties props = new Config();
+    private Properties props = new Config();
 
-    private static PropertyChangeSupport support;
+    private PropertyChangeSupport support;
 
     /* constructor -- singleton pattern  */
 
@@ -100,7 +100,6 @@ public final class UIChangeManager implements PropertyChangeSource {
         props.put(BUTTON_OPACITY_PROPERTY, Boolean.FALSE);
         Image texture = KiwiUtils.getResourceManager().getTexture(DEFAULT_TEXTURE);
         props.put(TEXTURE_PROPERTY, texture);
-
         // MetalLookAndFeel.setCurrentTheme(new KiwiTheme());
     }
 
@@ -110,7 +109,7 @@ public final class UIChangeManager implements PropertyChangeSource {
     public static synchronized UIChangeManager getInstance() {
         if (instance == null) {
             instance = new UIChangeManager();
-            support = new PropertyChangeSupport(instance);
+            instance.support = new PropertyChangeSupport(instance);
         }
         return instance;
     }
@@ -123,7 +122,7 @@ public final class UIChangeManager implements PropertyChangeSource {
      * @see com.hyperrealm.kiwi.ui.KButton
      */
 
-    public static boolean getButtonsAreTransparent() {
+    public boolean getButtonsAreTransparent() {
         boolean flag = (Boolean) props.get(BUTTON_OPACITY_PROPERTY);
         return (!flag);
     }
@@ -137,7 +136,7 @@ public final class UIChangeManager implements PropertyChangeSource {
      * @see com.hyperrealm.kiwi.ui.KButton
      */
 
-    public static void setButtonsAreTransparent(boolean flag) {
+    public void setButtonsAreTransparent(boolean flag) {
         props.put(BUTTON_OPACITY_PROPERTY, !flag);
         support.firePropertyChange(BUTTON_OPACITY_PROPERTY, null,
             props.get(BUTTON_OPACITY_PROPERTY));
@@ -153,7 +152,7 @@ public final class UIChangeManager implements PropertyChangeSource {
      * @see com.hyperrealm.kiwi.ui.KPanel
      */
 
-    public static Image getDefaultTexture() {
+    public Image getDefaultTexture() {
         Object o = props.get(TEXTURE_PROPERTY);
 
         if (o == Void.class) {
@@ -173,7 +172,7 @@ public final class UIChangeManager implements PropertyChangeSource {
      * @see com.hyperrealm.kiwi.ui.KPanel
      */
 
-    public static void setDefaultTexture(Image texture) {
+    public void setDefaultTexture(Image texture) {
 
         props.put(TEXTURE_PROPERTY, (texture == null) ? Void.class : texture);
 
@@ -188,7 +187,7 @@ public final class UIChangeManager implements PropertyChangeSource {
      * @since Kiwi 1.4.2
      */
 
-    public static Image getDefaultFrameIcon() {
+    public Image getDefaultFrameIcon() {
         Object o = props.get(FRAME_ICON_PROPERTY);
 
         if (o == Void.class) {
@@ -206,11 +205,13 @@ public final class UIChangeManager implements PropertyChangeSource {
      * @since Kiwi 1.4.2
      */
 
-    public static void setDefaultFrameIcon(Image icon) {
+    public void setDefaultFrameIcon(Image icon) {
 
         props.put(FRAME_ICON_PROPERTY, (icon == null) ? Void.class : icon);
 
-        support.firePropertyChange(FRAME_ICON_PROPERTY, null, icon);
+        if (icon != null) {
+            support.firePropertyChange(FRAME_ICON_PROPERTY, null, icon);
+        }
     }
 
     /**
@@ -219,7 +220,7 @@ public final class UIChangeManager implements PropertyChangeSource {
      * @param theme The color theme.
      */
 
-    public static void setColorTheme(ColorTheme theme) {
+    public void setColorTheme(ColorTheme theme) {
         MetalLookAndFeel.setCurrentTheme(theme);
         try {
             UIManager.setLookAndFeel(METAL_PLAF);
@@ -263,9 +264,9 @@ public final class UIChangeManager implements PropertyChangeSource {
      */
 
     public void registerComponent(JComponent c) {
-        synchronized (COMPONENTS) {
-            if (!COMPONENTS.contains(c)) {
-                COMPONENTS.add(c);
+        synchronized (components) {
+            if (!components.contains(c)) {
+                components.add(c);
             }
         }
     }
@@ -278,8 +279,8 @@ public final class UIChangeManager implements PropertyChangeSource {
      */
 
     public void unregisterComponent(JComponent c) {
-        synchronized (COMPONENTS) {
-            COMPONENTS.remove(c);
+        synchronized (components) {
+            components.remove(c);
         }
     }
 
@@ -323,8 +324,8 @@ public final class UIChangeManager implements PropertyChangeSource {
     /* update look&feel on all COMPONENTS */
 
     private void update() {
-        synchronized (COMPONENTS) {
-            for (JComponent c : COMPONENTS) {
+        synchronized (components) {
+            for (JComponent c : components) {
                 SwingUtilities.updateComponentTreeUI(c);
             }
         }

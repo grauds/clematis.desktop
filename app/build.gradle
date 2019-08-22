@@ -6,6 +6,12 @@ dependencies {
     compile "args4j:args4j:2.0.16"
 }
 
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 task deployToLibs(type: Copy) {
     from jar
     into "${System.getProperty("user.home")}/.jworkspace/lib/"

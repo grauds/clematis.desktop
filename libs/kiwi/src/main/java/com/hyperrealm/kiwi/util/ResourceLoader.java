@@ -25,6 +25,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
 /**
@@ -45,6 +48,10 @@ import com.hyperrealm.kiwi.ui.KiwiAudioClip;
  */
 
 public class ResourceLoader {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceLoader.class);
     /**
      * The class object associated with this resource loader.
      */
@@ -143,10 +150,10 @@ public class ResourceLoader {
 
         Image im = null;
 
-        try {
-            InputStream is = getResourceAsStream(path);
+        try (InputStream is = getResourceAsStream(path)) {
             im = decoder.decodeImage(is);
-        } catch (IOException ignored) {
+        } catch (IOException ex) {
+            LOG.error(ex.getMessage(), ex);
         }
 
         return (im);

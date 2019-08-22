@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.plugin.Plugin;
+import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
 
@@ -92,7 +93,7 @@ public class WorkspacePluginLocator extends PluginLocator {
                     }
                 }
             } else if (dir.getName().endsWith("jar")) {
-                Plugin plugin = loadPlugin(dir, Plugin.PLUGIN_TYPE_ANY);
+                Plugin plugin = loadPlugin(dir, PluginDTO.PLUGIN_TYPE_ANY);
                 plugins.add(plugin);
             }
         } catch (PluginException ex) {

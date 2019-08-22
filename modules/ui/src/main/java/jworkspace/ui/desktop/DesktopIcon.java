@@ -58,6 +58,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.Utils;
+import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.WorkspaceInterpreter;
 import jworkspace.ui.action.UISwitchListener;
 import jworkspace.ui.widgets.WorkspaceError;
@@ -298,7 +299,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     public void setIcon(ImageIcon icon) {
         if (icon == null || icon.getIconHeight() == -1 || icon.getIconWidth() == -1) {
-            this.icon = (ImageIcon) Workspace.getResourceManager().getIcon(DesktopConstants.DEFAULT_ICON);
+            this.icon = (ImageIcon) WorkspaceGUI.getResourceManager().getIcon(DesktopConstants.DEFAULT_ICON);
         } else {
             this.icon = icon;
         }

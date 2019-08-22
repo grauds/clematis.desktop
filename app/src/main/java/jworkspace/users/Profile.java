@@ -43,7 +43,6 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.Config;
 
 import jworkspace.WorkspaceResourceAnchor;
@@ -80,13 +79,13 @@ public class Profile {
     /**
      * User name
      */
-    @Option(name = "username")
+    @Option(name = "-username")
     private String userName = "";
     /**
      * Password is encrypted using DMD5
      */
-    @Option(name = "password")
-    private byte[] password = new byte[]{};
+    @Option(name = "-password")
+    private String password = "";
 
     private MessageDigest messageDigest;
 
@@ -202,9 +201,11 @@ public class Profile {
     public void setPassword(String newPassword) {
         if (this.messageDigest != null) {
             if (newPassword != null) {
-                this.password = this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8));
+                this.password = new String(this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8)),
+                    StandardCharsets.UTF_8);
             } else {
-                this.password = this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8));
+                this.password = new String(this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8)),
+                    StandardCharsets.UTF_8);
             }
         }
     }
@@ -271,7 +272,7 @@ public class Profile {
             userLastName = dis.readUTF();
             email = dis.readUTF();
             description = dis.readUTF();
-            password = StreamUtils.readStreamToByteArray(dis);
+            password = dis.readUTF();
         } catch (FileNotFoundException ex) {
             LOG.warn("Saved data is not found for " + userName);
         }
@@ -302,7 +303,7 @@ public class Profile {
             dos.writeUTF(userLastName);
             dos.writeUTF(email);
             dos.writeUTF(description);
-            dos.write(password);
+            dos.writeUTF(password);
         }
     }
 
@@ -332,11 +333,14 @@ public class Profile {
     boolean checkPassword(String passwordCandidate) {
 
         if (this.messageDigest != null) {
-            return Arrays.equals(this.messageDigest
-                .digest(passwordCandidate.getBytes(StandardCharsets.UTF_8)), password);
+            return Arrays.equals(
+                new String(this.messageDigest.digest(passwordCandidate.getBytes(StandardCharsets.UTF_8)),
+                    StandardCharsets.UTF_8).getBytes(StandardCharsets.UTF_8),
+                getPassword());
         } else {
             return passwordCandidate != null
-                && Arrays.equals(passwordCandidate.getBytes(StandardCharsets.UTF_8), password);
+                && Arrays.equals(passwordCandidate.getBytes(StandardCharsets.UTF_8),
+                getPassword());
         }
     }
 
@@ -344,10 +348,10 @@ public class Profile {
      * Check whether if supplied encoded password is correct.
      */
     boolean checkPassword(@NonNull Profile candidate) {
-        return Arrays.equals(candidate.getPassword(), password);
+        return Arrays.equals(candidate.getPassword(), getPassword());
     }
 
     public byte[] getPassword() {
-        return Arrays.copyOf(password, password.length);
+        return password.getBytes(StandardCharsets.UTF_8);
     }
 }

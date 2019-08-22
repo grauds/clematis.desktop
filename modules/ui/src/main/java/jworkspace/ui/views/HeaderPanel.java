@@ -46,7 +46,7 @@ import javax.swing.SwingUtilities;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * Header panel serves as information bridge for desktop navigation, displaying the name of
@@ -88,7 +88,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
      */
     public HeaderPanel(String title) {
         super();
-        headerLabel.setIcon(new ImageIcon(Workspace.getResourceManager().
+        headerLabel.setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().
             getImage("desktop/desktop.png")));
         setLayout(this);
 
@@ -251,7 +251,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
 
         private ClockLabel() {
             super();
-            setIcon(new ImageIcon(Workspace.getResourceManager().getImage("clock.png")));
+            setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().getImage("clock.png")));
         }
 
         public void paintComponent(Graphics g) {

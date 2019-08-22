@@ -20,12 +20,17 @@
 package com.hyperrealm.kiwi.util.plugin;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /** The internal class loader for plugins.
  *
  * The plugin will be loaded in its own namespace. It will have access to all
@@ -49,10 +54,14 @@ import java.util.jar.JarFile;
  * @author Mark Lindner
  */
 public class PluginClassLoader extends ClassLoader {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(PluginClassLoader.class);
 
     private static final int PATH_EXTRA_LENGTH = 6;
 
-    private final ArrayList<JarFile> jars;
+    private final ArrayList<String> jars;
 
     private ArrayList<String> forbiddenPackages;
 
@@ -83,7 +92,7 @@ public class PluginClassLoader extends ClassLoader {
     /*
      */
 
-    void addJarFile(JarFile file) {
+    void addJarFile(String file) {
         synchronized (jars) {
             if ((file != null) && !jars.contains(file)) {
                 jars.add(file);
@@ -136,41 +145,47 @@ public class PluginClassLoader extends ClassLoader {
                 if (!isRestrictedPackage(classPackage)) {
                     String path = classNameToPath(className);
 
-                    for (JarFile jar : jars) {
+                    for (String jarPath : jars) {
 
-                        JarEntry entry = (JarEntry) jar.getEntry(path);
-                        if (entry == null) {
-                            continue; // move on to next JAR file
-                        }
+                        try (JarFile jar = new JarFile(new File(jarPath))) {
 
-                        // found it! so let's load it...
+                            JarEntry entry = (JarEntry) jar.getEntry(path);
+                            if (entry == null) {
+                                continue; // move on to next JAR file
+                            }
 
-                        BufferedInputStream ins = null;
-                        int r, size = 0;
-                        byte[] b = null;
+                            // found it! so let's load it...
 
-                        try {
-                            ins = new BufferedInputStream(jar.getInputStream(entry));
-                            size = (int) entry.getSize();
+                            BufferedInputStream ins = null;
+                            int r, size = 0;
+                            byte[] b = null;
 
-                            b = new byte[size];
-                            r = ins.read(b, 0, size);
-                        } catch (IOException ex) {
-                            r = -1;
-                        }
-
-                        if (ins != null) {
                             try {
-                                ins.close();
-                            } catch (IOException ex) { /* ignore */ }
-                        }
+                                ins = new BufferedInputStream(jar.getInputStream(entry));
+                                size = (int) entry.getSize();
 
-                        if (r != size) {
-                            throw (new ClassFormatError(className));
-                        }
+                                b = new byte[size];
+                                r = ins.read(b, 0, size);
+                            } catch (IOException ex) {
+                                r = -1;
+                            }
 
-                        result = defineClass(className, b, 0, size);
-                        break;
+                            if (ins != null) {
+                                try {
+                                    ins.close();
+                                } catch (IOException ex) { /* ignore */ }
+                            }
+
+                            if (r != size) {
+                                throw (new ClassFormatError(className));
+                            }
+
+                            result = defineClass(className, b, 0, size);
+                            break;
+                        } catch (IOException ex) {
+                            /* ignore error, & continue */
+                            LOG.error(ex.getMessage(), ex);
+                        }
                     }
                 }
             }
@@ -227,19 +242,26 @@ public class PluginClassLoader extends ClassLoader {
     /**
      *
      */
-
+    @SuppressFBWarnings("OS_OPEN_STREAM")
     public synchronized InputStream getResourceAsStream(String name) {
         /* Scan through JAR files looking for the resource */
 
-        for (JarFile jar : jars) {
+        for (String jarPath : jars) {
 
-            JarEntry entry = jar.getJarEntry(name);
-            if (entry != null) {
-                try {
-                    return (jar.getInputStream(entry));
-                } catch (IOException ex) {
-                    /* ignore error, & continue */
+            try {
+                JarFile jar = new JarFile(new File(jarPath));
+                JarEntry entry = jar.getJarEntry(name);
+                if (entry != null) {
+                    try {
+                        return (jar.getInputStream(entry));
+                    } catch (IOException ex) {
+                        /* ignore error, & continue */
+                        LOG.error(ex.getMessage());
+                    }
                 }
+            } catch (IOException ex) {
+                /* ignore error, & continue */
+                LOG.error(ex.getMessage());
             }
         }
 

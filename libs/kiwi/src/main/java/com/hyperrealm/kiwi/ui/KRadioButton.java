@@ -81,7 +81,7 @@ public class KRadioButton extends JRadioButton {
      */
 
     private void init() {
-        setOpaque(!UIChangeManager.getButtonsAreTransparent());
+        setOpaque(!UIChangeManager.getInstance().getButtonsAreTransparent());
     }
 
 }

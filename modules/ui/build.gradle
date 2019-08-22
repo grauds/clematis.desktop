@@ -23,9 +23,29 @@ ext {
 
 dependencies {
 
-    compile project(':kiwi')
     compile project(':jworkspace')
 
     compile "commons-codec:commons-codec:$codecVersion"
     compile "org.jdom:jdom2:$jdomVersion"
 }
+
+jar {
+    manifest {
+         attributes([
+                 "PluginName": "Java Workspace GUI",
+                 "PluginType": "ANY",
+                 "PluginDescription": "",
+                 "PluginIcon": "",
+                 "PluginVersion": "$version",
+                 "PluginHelpURL": ""
+         ], "jworkspace.ui.WorkspaceGUI.class")
+    }
+}
+
+task deployToPlugins(type: Copy) {
+    from jar
+    into "${System.getProperty("user.home")}/.jworkspace/plugins/"
+}
+
+deployToPlugins.dependsOn(assemble)
+build.finalizedBy deployToPlugins

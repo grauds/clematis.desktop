@@ -129,7 +129,7 @@ public abstract class WorkspaceEditor extends JInternalFrame implements ActionLi
 
         Container main = getContentPane();
 
-        pane = new KPanel(UIChangeManager.getDefaultTexture());
+        pane = new KPanel(UIChangeManager.getInstance().getDefaultTexture());
         pane.setBorder(KiwiUtils.DEFAULT_BORDER);
         pane.setLayout(new BorderLayout(0, 0));
 

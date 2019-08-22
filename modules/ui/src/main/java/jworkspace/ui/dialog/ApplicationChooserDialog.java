@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.Application;
 import jworkspace.installer.DefinitionNode;
-import jworkspace.kernel.Workspace;
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * Application chooser
@@ -62,7 +62,7 @@ public class ApplicationChooserDialog extends ComponentDialog {
     public ApplicationChooserDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString("ApplicationChooser.title"), true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        setIcon(new ImageIcon(Workspace.getResourceManager().
+        setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().
             getImage("application_big.png")));
     }
 
