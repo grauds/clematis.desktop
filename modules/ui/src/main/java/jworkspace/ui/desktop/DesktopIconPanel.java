@@ -217,7 +217,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         firstPanel.add(l, gbc);
 
         tName = new JTextField(20);
-        tName.setPreferredSize(new Dimension(150, 20));
+ //       tName.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -295,10 +295,10 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
         KPanel p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
-        p1.setPreferredSize(new Dimension(150, 20));
+//        p1.setPreferredSize(new Dimension(150, 20));
 
         tJavaApp = new JTextField(15);
-        tJavaApp.setPreferredSize(new Dimension(150, 20));
+ //       tJavaApp.setPreferredSize(new Dimension(150, 20));
         tJavaApp.setOpaque(false);
         tJavaApp.setEditable(false);
 
@@ -325,7 +325,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         modesPanel.add(rb1, gbc);
 
         tScriptedMethod = new JTextField(15);
-        tScriptedMethod.setPreferredSize(new Dimension(150, 20));
+ //       tScriptedMethod.setPreferredSize(new Dimension(150, 20));
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -342,10 +342,10 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
         KPanel p0 = new KPanel();
         p0.setLayout(new BorderLayout(5, 5));
-        p0.setPreferredSize(new Dimension(150, 20));
+ //       p0.setPreferredSize(new Dimension(150, 20));
 
         tSourceScript = new JTextField(15);
-        tSourceScript.setPreferredSize(new Dimension(150, 20));
+ //       tSourceScript.setPreferredSize(new Dimension(150, 20));
         tSourceScript.setOpaque(false);
         tSourceScript.setEditable(false);
 
@@ -373,10 +373,10 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
         p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
-        p1.setPreferredSize(new Dimension(150, 20));
+ //       p1.setPreferredSize(new Dimension(150, 20));
 
         tNativeCommand = new JTextField(15);
-        tNativeCommand.setPreferredSize(new Dimension(150, 20));
+ //       tNativeCommand.setPreferredSize(new Dimension(150, 20));
         tNativeCommand.setOpaque(false);
         tNativeCommand.setEditable(true);
 
@@ -403,10 +403,10 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
         p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
-        p1.setPreferredSize(new Dimension(150, 20));
+ //       p1.setPreferredSize(new Dimension(150, 20));
 
         field = new JTextField(15);
-        field.setPreferredSize(new Dimension(150, 20));
+ //       field.setPreferredSize(new Dimension(150, 20));
         field.setOpaque(false);
         field.setEditable(true);
 

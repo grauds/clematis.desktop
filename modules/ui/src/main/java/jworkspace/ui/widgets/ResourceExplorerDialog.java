@@ -27,7 +27,6 @@ package jworkspace.ui.widgets;
 */
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -98,7 +97,7 @@ public class ResourceExplorerDialog extends ComponentDialog
          */
         KPanel browsePanel = new KPanel();
         browsePanel.setLayout(new BorderLayout(5, 5));
-        browsePanel.setPreferredSize(new Dimension(150, 30));
+        //browsePanel.setPreferredSize(new Dimension(150, 30));
         browsePanel.setBorder(new EmptyBorder(5, 0, 0, 0));
 
         JLabel l = new JLabel(WorkspaceResourceAnchor.getString("ResourceExplorerDlg.path"));
@@ -112,7 +111,7 @@ public class ResourceExplorerDialog extends ComponentDialog
         browsePanel.add(bIconBrowse, BorderLayout.EAST);
 
         tf = new JTextField(15);
-        tf.setPreferredSize(new Dimension(30, 20));
+      //  tf.setPreferredSize(new Dimension(30, 20));
         tf.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {

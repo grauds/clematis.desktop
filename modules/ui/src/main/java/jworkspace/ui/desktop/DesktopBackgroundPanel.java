@@ -28,7 +28,6 @@ package jworkspace.ui.desktop;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -295,7 +294,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         controls.add(l, gbc);
 
         tName = new JTextField(20);
-        tName.setPreferredSize(new Dimension(150, 20));
+       // tName.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -310,7 +309,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
 
         KPanel p0 = new KPanel();
         p0.setLayout(new BorderLayout(5, 5));
-        p0.setPreferredSize(new Dimension(150, 20));
+       // p0.setPreferredSize(new Dimension(150, 20));
 
         JButton bBrowse = new JButton("...");
         bBrowse.setDefaultCapable(false);
@@ -323,7 +322,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
             pathField.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.noCover"));
         }
 
-        pathField.setPreferredSize(new Dimension(150, 20));
+     //   pathField.setPreferredSize(new Dimension(150, 20));
         pathField.setEditable(false);
 
         p0.add(pathField, BorderLayout.CENTER);
@@ -373,7 +372,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
                 cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_CENTER));
                 break;
         }
-        cbStyle.setPreferredSize(new Dimension(60, 20));
+      //  cbStyle.setPreferredSize(new Dimension(60, 20));
         cbStyle.addActionListener(this);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
@@ -390,7 +389,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         coverVisibleCheckbox.addActionListener(this);
         coverVisibleCheckbox.setOpaque(false);
         coverVisibleCheckbox.setActionCommand(DesktopConstants.TOGGLE_WALLPAPER);
-        coverVisibleCheckbox.setPreferredSize(new Dimension(60, 20));
+      //  coverVisibleCheckbox.setPreferredSize(new Dimension(60, 20));
         if (desktop.isCoverVisible()) {
             coverVisibleCheckbox.setSelected(true);
         }
@@ -409,7 +408,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         gradient.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.gradient"));
         gradient.addActionListener(this);
         gradient.setActionCommand(DesktopConstants.TOGGLE_GRADIENT);
-        gradient.setPreferredSize(new Dimension(60, 20));
+      //  gradient.setPreferredSize(new Dimension(60, 20));
         gradient.setOpaque(false);
         if (desktop.isGradientFill()) {
             gradient.setSelected(true);
@@ -441,7 +440,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         bBrowseTop.setActionCommand(DesktopConstants.CHOOSE_GRADIENT_COLOR_1);
         bBrowseTop.addActionListener(this);
         bBrowseTop.setBackground(bgColor);
-        bBrowseTop.setPreferredSize(new Dimension(20, 20));
+  //      bBrowseTop.setPreferredSize(new Dimension(20, 20));
         kp1.add(bBrowseTop, BorderLayout.EAST);
 
         KPanel kp2 = new KPanel();
@@ -456,7 +455,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         bBrowseBottom.setActionCommand(DesktopConstants.CHOOSE_GRADIENT_COLOR_2);
         bBrowseBottom.addActionListener(this);
         bBrowseBottom.setBackground(bgColor2);
-        bBrowseBottom.setPreferredSize(new Dimension(20, 20));
+      //  bBrowseBottom.setPreferredSize(new Dimension(20, 20));
         kp2.add(bBrowseBottom, BorderLayout.EAST);
 
         //   chooser.setPreferredSize(new Dimension(150, 20));

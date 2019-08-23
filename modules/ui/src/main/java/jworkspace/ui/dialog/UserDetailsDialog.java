@@ -27,7 +27,6 @@ package jworkspace.ui.dialog;
 */
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -224,7 +223,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         sel.addListSelectionListener(
             ev -> bDelete.setEnabled(!(table.getSelectionModel().isSelectionEmpty()))
         );
-        propertyEditor.setPreferredSize(new Dimension(200, 200));
+     //   propertyEditor.setPreferredSize(new Dimension(200, 200));
         return propertyEditor;
     }
 

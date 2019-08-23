@@ -28,7 +28,6 @@ package jworkspace.ui.views;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +75,7 @@ public class PropertiesHolderDlg extends ComponentDialog {
         if (optionPanels == null || optionPanels.length == 0) {
 
             KPanel emptyPanel = new KPanel();
-            emptyPanel.setPreferredSize(new Dimension(250, 300));
+         //   emptyPanel.setPreferredSize(new Dimension(250, 300));
             emptyPanel.setLayout(new BorderLayout());
             JLabel l = new JLabel(WorkspaceResourceAnchor.getString("PropertiesHolder.empty.message"));
             l.setHorizontalAlignment(JLabel.CENTER);

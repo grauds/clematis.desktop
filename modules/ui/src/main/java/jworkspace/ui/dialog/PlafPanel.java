@@ -26,7 +26,6 @@ package jworkspace.ui.dialog;
 */
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -85,7 +84,7 @@ class PlafPanel extends KPanel implements ActionListener {
         kp.setBorder(new TitledBorder(WorkspaceResourceAnchor.getString("PlafPanel.lafBorder.title")));
         kp.setLayout(new BorderLayout());
 
-        getLfChooser().setPreferredSize(new Dimension(150, 20));
+     //   getLfChooser().setPreferredSize(new Dimension(150, 20));
         getLfChooser().addActionListener(this);
         kp.add(getLfChooser(), BorderLayout.NORTH);
         kp.add(getTextAreaScroll(), BorderLayout.CENTER);
@@ -101,7 +100,7 @@ class PlafPanel extends KPanel implements ActionListener {
         kp.setBorder(new TitledBorder(WorkspaceResourceAnchor.getString("PlafPanel.themesBorder.title")));
         kp.setLayout(new BorderLayout());
 
-        getThemeChooser().setPreferredSize(new Dimension(150, 20));
+   //     getThemeChooser().setPreferredSize(new Dimension(150, 20));
         getThemeChooser().addActionListener(this);
         kp.add(getThemeChooser(), BorderLayout.CENTER);
 
@@ -197,7 +196,7 @@ class PlafPanel extends KPanel implements ActionListener {
      */
     private JScrollPane getTextAreaScroll() {
         JScrollPane scrollPane = new JScrollPane(getTextArea());
-        scrollPane.setPreferredSize(new Dimension(150, 60));
+  //      scrollPane.setPreferredSize(new Dimension(150, 60));
         scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         return scrollPane;
     }

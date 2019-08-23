@@ -29,7 +29,6 @@ package jworkspace.ui.dialog;
 */
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -100,7 +99,7 @@ class ChangePasswordDlg extends ComponentDialog {
         carrier.add(l, gbc);
 
         oldPass = new JPasswordField(20);
-        oldPass.setPreferredSize(new Dimension(150, 20));
+      //  oldPass.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -112,7 +111,7 @@ class ChangePasswordDlg extends ComponentDialog {
         carrier.add(l, gbc);
 
         newPass = new JPasswordField(20);
-        newPass.setPreferredSize(new Dimension(150, 20));
+    //    newPass.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -124,7 +123,7 @@ class ChangePasswordDlg extends ComponentDialog {
         carrier.add(l, gbc);
 
         confirmPass = new JPasswordField(20);
-        confirmPass.setPreferredSize(new Dimension(150, 20));
+   //     confirmPass.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;

@@ -32,11 +32,11 @@ dependencies {
 jar {
     manifest {
          attributes([
-                 "PluginName": "Java Workspace GUI",
+                 "PluginName": "$archiveBaseName",
                  "PluginType": "ANY",
-                 "PluginDescription": "",
+                 "PluginDescription": "$archiveClassifier",
                  "PluginIcon": "",
-                 "PluginVersion": "$version",
+                 "PluginVersion": "$archiveVersion",
                  "PluginHelpURL": ""
          ], "jworkspace.ui.WorkspaceGUI.class")
     }
