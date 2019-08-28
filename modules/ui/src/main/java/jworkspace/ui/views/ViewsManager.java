@@ -37,6 +37,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -806,10 +809,9 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Read header panel orientation and visibility.
          */
-        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DESKTOP_CONFIG;
-        LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
+        File file = Workspace.getUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
 
-        try (FileInputStream inputFile = new FileInputStream(fileName);
+        try (FileInputStream inputFile = new FileInputStream(file);
              DataInputStream dataStream = new DataInputStream(inputFile)) {
 
             boolean visible = dataStream.readBoolean();
@@ -860,10 +862,7 @@ public class ViewsManager extends AbstractViewsManager {
      */
     public void save() throws IOException {
 
-        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DESKTOP_CONFIG;
-        LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
-
-        File file = new File(Workspace.getUserHomePath() + getPath());
+        File file = Workspace.getUserHomePath().resolve(getPath()).toFile();
         if (!file.exists()) {
             if (!file.mkdirs()) {
                 LOG.error("Can't create directories, not saving: " + file.getAbsolutePath());
@@ -873,7 +872,9 @@ public class ViewsManager extends AbstractViewsManager {
             KiwiUtils.deleteTree(file);
         }
 
-        try (FileOutputStream outputFile = new FileOutputStream(fileName);
+        file = Workspace.getUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
+
+        try (FileOutputStream outputFile = new FileOutputStream(file);
             DataOutputStream outputStream = new DataOutputStream(outputFile)) {
 
             outputStream.writeBoolean(getHeaderPanel().isVisible());
@@ -883,14 +884,16 @@ public class ViewsManager extends AbstractViewsManager {
 
             for (IView view : views) {
                 if (view instanceof Desktop) {
-                    String viewSavePath = getPath() + File.separator + VIEW + counter;
-                    File file1 = new File(Workspace.getUserHomePath() + getPath() + File.separator + VIEW + counter);
-                    if (!file1.exists() && !file1.mkdirs()) {
-                        LOG.error("Couldn't create directories for view: " + file1.getAbsolutePath());
-                        continue;
+
+                    File viewSavePath = Paths.get(getPath(), VIEW, String.valueOf(counter)).toFile();
+
+                    Path file1 = Workspace.getUserHomePath().resolve(getPath()).resolve(VIEW)
+                        .resolve(String.valueOf(counter));
+                    if (!Files.exists(file1)) {
+                        Files.createDirectories(file1);
                     }
 
-                    view.setPath(viewSavePath);
+                    view.setPath(viewSavePath.toPath().toString());
                     counter++;
                 }
                 view.save();

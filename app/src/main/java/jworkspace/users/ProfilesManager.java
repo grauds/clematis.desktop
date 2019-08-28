@@ -66,6 +66,8 @@ public class ProfilesManager implements Comparator {
 
     private Profile currentProfile = null;
 
+    private final Profile defaultProfile = new Profile("default", "", "", "", "");
+
     ProfilesManager(Path basePath) {
         super();
         this.basePath = basePath;
@@ -138,11 +140,7 @@ public class ProfilesManager implements Comparator {
      * @return java.lang.String
      */
     Path ensureCurrentProfilePath(Path basePath) throws IOException {
-        if (currentProfile != null) {
-            return currentProfile.ensureProfilePath(basePath);
-        } else {
-            throw new IOException("Current profile is null");
-        }
+        return getCurrentProfile().ensureProfilePath(basePath);
     }
 
     /**
@@ -215,5 +213,17 @@ public class ProfilesManager implements Comparator {
         }
 
         profile.save(getBasePath());
+    }
+
+    Profile getCurrentProfile() {
+        if (currentProfile == null) {
+            return defaultProfile;
+        } else {
+            return currentProfile;
+        }
+    }
+
+    Profile getDefaultProfile() {
+        return defaultProfile;
     }
 }

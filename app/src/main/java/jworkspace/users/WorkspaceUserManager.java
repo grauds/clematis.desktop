@@ -289,7 +289,8 @@ public class WorkspaceUserManager implements IUserManager {
      * returns whether user is logged.
      */
     public boolean userLogged() {
-        return profilesManager.getCurrentProfile() != null;
+        return profilesManager.getCurrentProfile() != null && profilesManager.getCurrentProfile()
+            != profilesManager.getDefaultProfile();
     }
 
     /**

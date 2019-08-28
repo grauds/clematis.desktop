@@ -254,7 +254,7 @@ public class Profile {
         /*
          * Read user variables
          */
-        try (FileInputStream inputFile = new FileInputStream(getProfilePath(basePath) + VAR_CFG)) {
+        try (FileInputStream inputFile = new FileInputStream(getProfilePath(basePath).resolve(VAR_CFG).toFile())) {
             getParameters().load(inputFile);
         } catch (FileNotFoundException ex) {
             LOG.warn("Configuration is not found for " + userName);
@@ -262,7 +262,7 @@ public class Profile {
         /*
          * Read password
          */
-        try (FileInputStream inputFile = new FileInputStream(getProfilePath(basePath) + PROFILE_DAT);
+        try (FileInputStream inputFile = new FileInputStream(getProfilePath(basePath).resolve(PROFILE_DAT).toFile());
              DataInputStream dis = new DataInputStream(inputFile)) {
             /*
              * Read all data
@@ -286,13 +286,15 @@ public class Profile {
         /*
          * Write user variables
          */
-        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath) + VAR_CFG)) {
+        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath)
+            .resolve(VAR_CFG).toFile())) {
             getParameters().store(outputFile, "USER VARIABLES");
         }
         /*
          * Write password
          */
-        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath) + PROFILE_DAT);
+        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath)
+            .resolve(PROFILE_DAT).toFile());
              DataOutputStream dos = new DataOutputStream(outputFile)) {
 
             /*

@@ -879,10 +879,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     public void load() throws IOException {
 
-        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DesktopConstants.DESKTOP_DAT;
-        LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
+        File file = Workspace.getUserHomePath()
+            .resolve(getPath()).resolve(DesktopConstants.DESKTOP_DAT).toFile();
 
-        try (FileInputStream inputFile = new FileInputStream(fileName);
+        try (FileInputStream inputFile = new FileInputStream(file);
              ObjectInputStream dataStream = new ObjectInputStream(inputFile)) {
 
             this.setName(dataStream.readUTF());
@@ -1288,10 +1288,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             setName(DesktopConstants.DESKTOP_NAME_DEFAULT);
         }
 
-        String fileName = Workspace.getUserHomePath() + getPath() + File.separator + DesktopConstants.DESKTOP_DAT;
-        LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
-
-        File file = new File(Workspace.getUserHomePath() + getPath());
+        File file = Workspace.getUserHomePath().resolve(getPath()).toFile();
 
         if (!file.exists()) {
             if (!file.mkdirs()) {
@@ -1300,9 +1297,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             }
         }
 
-        try {
-            FileOutputStream outputFile = new FileOutputStream(fileName);
-            ObjectOutputStream outputStream = new ObjectOutputStream(outputFile);
+        file = Workspace.getUserHomePath().resolve(getPath()).resolve(DesktopConstants.DESKTOP_DAT).toFile();
+
+        try (FileOutputStream outputFile = new FileOutputStream(file);
+             ObjectOutputStream outputStream = new ObjectOutputStream(outputFile)) {
 
             outputStream.writeUTF(getName());
 
@@ -1341,9 +1339,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             }
 
             outputStream.flush();
-            outputStream.close();
-        } catch (Exception ex) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.save.failed"), ex);
         }
     }
 

@@ -131,8 +131,8 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
 
         Image p = null;
         try {
-            String fileName = Workspace.getUserHomePath() + "portrait.jpg";
-            p = ImageIO.read(new File(fileName));
+            File file = Workspace.getUserHomePath().resolve("portrait.jpg").toFile();
+            p = ImageIO.read(file);
         } catch (IOException e) {
             // do not pay attention
         }

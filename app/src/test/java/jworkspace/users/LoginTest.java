@@ -48,6 +48,9 @@ public class LoginTest {
 
         // this adds incomplete profile -> to disk
         userManager.addProfile(profile.getUserName(), "password");
+
+        assert userManager.getUserName().equals("default");
+
         // this selects incomplete profile -> from disk
         userManager.login(profile.getUserName(), "password");
         // incomplete profile is not equals to one in memory

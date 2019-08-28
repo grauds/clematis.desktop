@@ -98,7 +98,6 @@ public class PlafFactory {
      */
     private void load() {
         String fileName = CONFIG_FILE_PATH + File.separator + sysConfig;
-        LOG.info(WorkspaceGUI.PROMPT + "Reading file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
         try {
             File file = new File(fileName);
             SAXBuilder builder = new SAXBuilder();

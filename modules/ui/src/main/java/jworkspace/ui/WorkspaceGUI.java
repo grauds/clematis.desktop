@@ -105,7 +105,7 @@ public class WorkspaceGUI implements UI {
 
     public static final String LOG_SPACE = " ";
 
-    public static final String PROMPT = ">";
+    public static final String PROMPT = "> ";
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceGUI.class);
 
@@ -133,13 +133,11 @@ public class WorkspaceGUI implements UI {
 
     private static final String DATA_FILE = "jwxwin.dat";
 
-    private static final String LOADING_LAF_MESSAGE = "Loading laf";
+    private static final String LOADING_LAF_MESSAGE = " Loading laf ";
 
-    private static final String READING_FILE = "Reading file";
+    private static final String READING_FILE = " Reading file ";
 
-    private static final String WRITING_FILE = "Writing file";
-
-    private static final String SAVING = "Saving";
+    private static final String WRITING_FILE = " Writing file ";
 
     private static final String FRAME_PARAMETER = "frame";
 
@@ -413,13 +411,9 @@ public class WorkspaceGUI implements UI {
          */
         boolean undecorated = false;
         components = new HashMap<>();
-        String fileName;
 
         try {
-            fileName = Workspace.getUserHomePath() + CONFIG_FILE;
-            WorkspaceGUI.LOG.info(PROMPT + READING_FILE + fileName + LOG_FINISH);
-
-            config = new ConfigFile(new File(fileName), "GUI Definition");
+            config = new ConfigFile(Workspace.getUserHomePath().resolve(CONFIG_FILE).toFile(), "GUI Definition");
             config.load();
 
             laf = config.getString(CK_LAF, DEFAULT_LAF);
@@ -433,7 +427,7 @@ public class WorkspaceGUI implements UI {
             laf = DEFAULT_LAF;
             isTextureVisible = false;
             isKiwiTextureVisible = false;
-            LOG.warn("Error loading GUI", ex);
+            LOG.warn(ex.getMessage());
         }
         /*
          * Set undecorated
@@ -446,12 +440,10 @@ public class WorkspaceGUI implements UI {
          * Load recently used texture
          */
         try {
-
-            fileName = Workspace.getUserHomePath() + TEXTURE_FILE_NAME;
             /*
              * Read texture
              */
-            texture = ImageIO.read(new File(fileName));
+            texture = ImageIO.read(Workspace.getUserHomePath().resolve(TEXTURE_FILE_NAME).toFile());
             /*
              * Finally set texture on frame
              */
@@ -459,7 +451,7 @@ public class WorkspaceGUI implements UI {
 
         } catch (IOException e) {
 
-            WorkspaceGUI.LOG.warn("Cannot set texture", e);
+            WorkspaceGUI.LOG.warn("Cannot set texture: " + e.getMessage());
 
         } finally {
             /*
@@ -482,10 +474,8 @@ public class WorkspaceGUI implements UI {
         }
 
         // LOAD PROFILE DATA
-        try (FileInputStream inputFile = new FileInputStream(Workspace.getUserHomePath() + DATA_FILE);
+        try (FileInputStream inputFile = new FileInputStream(Workspace.getUserHomePath().resolve(DATA_FILE).toFile());
             DataInputStream inputStream = new DataInputStream(inputFile)) {
-
-            WorkspaceGUI.LOG.info(PROMPT + READING_FILE + Workspace.getUserHomePath() + DATA_FILE + LOG_FINISH);
             /*
              * Delegates loading of UI components to workspace frame
              */
@@ -550,9 +540,7 @@ public class WorkspaceGUI implements UI {
     public void save() {
 
         try {
-            String fileName = Workspace.getUserHomePath() + CONFIG_FILE;
-            WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + fileName + LOG_FINISH);
-            File file = new File(fileName);
+            File file = Workspace.getUserHomePath().resolve(CONFIG_FILE).toFile();
 
             if (config == null) {
                 config = new ConfigFile(file, "GUI Configuration");
@@ -574,7 +562,8 @@ public class WorkspaceGUI implements UI {
          */
         if (texture != null) {
 
-            try (OutputStream os = new FileOutputStream(Workspace.getUserHomePath() + TEXTURE_FILE_NAME)) {
+            try (OutputStream os = new FileOutputStream(Workspace.getUserHomePath()
+                .resolve(TEXTURE_FILE_NAME).toFile())) {
 
                 ImageIcon textureIcon = new ImageIcon(texture);
                 BufferedImage bi = new BufferedImage(
@@ -613,10 +602,9 @@ public class WorkspaceGUI implements UI {
          */
         displayedFrames = new ArrayList<>();
 
-        try (FileOutputStream outputFile = new FileOutputStream(Workspace.getUserHomePath() + DATA_FILE);
+        try (FileOutputStream outputFile = new FileOutputStream(Workspace.getUserHomePath()
+            .resolve(DATA_FILE).toFile());
              DataOutputStream outputStream = new DataOutputStream(outputFile)) {
-
-            WorkspaceGUI.LOG.info(PROMPT + WRITING_FILE + Workspace.getUserHomePath() + DATA_FILE + LOG_FINISH);
 
             ((MainFrame) getFrame()).save(outputStream);
         } catch (IOException e) {
@@ -707,7 +695,7 @@ public class WorkspaceGUI implements UI {
 
             String fileName;
             try {
-                fileName = Workspace.getUserHomePath() + "shells";
+                fileName = Workspace.getUserHomePath().resolve("shells").toFile().getAbsolutePath();
             } catch (IOException e) {
                 LOG.error(e.getMessage(), e);
                 return;

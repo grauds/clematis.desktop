@@ -23,7 +23,7 @@ ext {
 
 dependencies {
 
-    compile project(':jworkspace')
+    compileOnly project(':jworkspace')
 
     compile "commons-codec:commons-codec:$codecVersion"
     compile "org.jdom:jdom2:$jdomVersion"
@@ -40,8 +40,10 @@ jar {
                  "PluginHelpURL": ""
          ], "jworkspace.ui.WorkspaceGUI.class")
     }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
-
 task deployToPlugins(type: Copy) {
     from jar
     into "${System.getProperty("user.home")}/.jworkspace/plugins/"

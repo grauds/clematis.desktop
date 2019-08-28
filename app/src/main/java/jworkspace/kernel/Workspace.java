@@ -131,7 +131,7 @@ public class Workspace {
             CmdLineParser parser = new CmdLineParser(candidate);
             parser.parseArgument(args);
             start(getBasePath(), candidate);
-        } catch (IOException | ProfileOperationException | CmdLineException e) {
+        } catch (IOException | CmdLineException e) {
             LOG.error(e.getMessage(), e);
         }
     }
@@ -160,10 +160,11 @@ public class Workspace {
     /**
      * Adds user plugin.
      */
-    private static void addPlugin(Plugin pl,
+    public static WorkspaceComponent addPlugin(Plugin pl,
                                      Set<Plugin> plugins,
                                      Collection<WorkspaceComponent> components)
-            throws PluginException, IOException {
+            throws PluginException {
+
         if (pl != null && plugins != null && components != null) {
             plugins.add(pl);
             Object instance = pl.newInstance();
@@ -174,10 +175,11 @@ public class Workspace {
             // collect all components
             if (instance instanceof WorkspaceComponent) {
                 WorkspaceComponent workspaceComponent = (WorkspaceComponent) instance;
-                workspaceComponent.load();
                 components.add(workspaceComponent);
+                return workspaceComponent;
             }
         }
+        return null;
     }
 
     /**
@@ -189,7 +191,7 @@ public class Workspace {
         for (Plugin pl : pls) {
             try {
                 addPlugin(pl, plugins, components);
-            } catch (PluginException | IOException e) {
+            } catch (PluginException e) {
                 LOG.error(e.getMessage(), e);
             }
         }
@@ -297,7 +299,7 @@ public class Workspace {
     }
 
     public static synchronized void start(@NonNull Path baseDir, @NonNull Profile candidate)
-        throws IOException, ProfileOperationException {
+        throws IOException {
 
         long start = System.currentTimeMillis();
         /*
@@ -305,15 +307,37 @@ public class Workspace {
          */
         Workspace.setBasePath(baseDir);
         /*
-         * Add system plugins indifferent to users data
+         * Login procedure
+         */
+        try {
+
+            getUserManager().login(candidate);
+
+        } catch (ProfileOperationException ex) {
+            /*
+             * Mark the error and let user go with default profile
+             */
+            LOG.error(ex.toString(), ex);
+        }
+        /*
+         * Add system plugins
          */
         addSystemPlugins(new WorkspacePluginLocator().loadPlugins(Paths.get(baseDir.toAbsolutePath().toString(),
             IConstants.PLUGINS_DIRECTORY))
         );
         /*
+         * User logged past this line - start loading user components
+         */
+        addUserPlugins(new WorkspacePluginLocator()
+            .loadPlugins(
+                Paths.get(getUserManager().ensureCurrentProfilePath(getBasePath()).toString(),
+                    IConstants.PLUGINS_DIRECTORY)
+            )
+        );
+        /*
          * Initialize user data
          */
-        initUserWorkspace(candidate);
+        initUserWorkspace();
 
         long end = System.currentTimeMillis();
         LOG.info("Started in: " + (end - start) + " millis");
@@ -329,39 +353,45 @@ public class Workspace {
         start(baseDir, Profile.create(username, password, "", "", ""));
     }
 
-    private static void initUserWorkspace(@NonNull Profile candidate)
-            throws IOException, ProfileOperationException {
+    /**
+     * Load user specific data for system plugins, add and load user's plugins
+     *
+     * @throws IOException is data can't be loaded or plugins can't be added
+     */
+    private static void initUserWorkspace() throws IOException {
+
         /*
-         * Login procedure starts here
+         * Load all system components
          */
-        getUserManager().login(candidate);
-        /*
-         * If login failed - silently leave the basic system running
-         */
-        if (!getUserManager().userLogged()) {
-            LOG.warn("User hasn't been logged in");
-            return;
+        for (WorkspaceComponent workspaceComponent : workspaceComponents) {
+            workspaceComponent.load();
         }
-        /*
-         * User logged past this line - start loading user components
-         */
-        addUserPlugins(new WorkspacePluginLocator()
-            .loadPlugins(
-                Paths.get(getUserManager().ensureCurrentProfilePath(getBasePath()).toString(),
-                    IConstants.PLUGINS_DIRECTORY)
-            )
-        );
+
         /*
          * Load the installer database
          */
         getWorkspaceInstaller().load();
+
+        /*
+         * Load all user components
+         */
+        for (WorkspaceComponent workspaceComponent : workspaceUserComponents) {
+            workspaceComponent.load();
+        }
     }
 
+    /**
+     * Save user specific data in system plugins, save and remove user plugins
+     *
+     * @throws IOException if data can't be saved or plugins can't be loaded
+     */
     static void removeUserWorkspace() throws IOException {
+
         /*
-           Shut down all the running processes
+         *  Shut down all the running processes
          */
         RuntimeManager.getInstance().killAllProcesses();
+
         /*
          * Save and clear all user components loaded as plugins
          */
@@ -376,25 +406,52 @@ public class Workspace {
          */
         getWorkspaceInstaller().save();
         workspaceInstaller = null;
+
         /*
-         * Logout the user
+         * Save and clear all system components user specific data
          */
-        getUserManager().logout();
+        for (WorkspaceComponent workspaceComponent : workspaceComponents) {
+            workspaceComponent.save();
+            workspaceComponent.reset();
+        }
     }
 
     /**
-     * User login and logout procedures.
+     * User login and logout procedure
      */
     public static void changeCurrentProfile(@NonNull String username, @NonNull String password)
-            throws IOException, ProfileOperationException {
+            throws IOException {
+
         /*
          * Logout the previous user
          */
         removeUserWorkspace();
+
+        /*
+         * Logout the old user
+         */
+        getUserManager().logout();
+
+        try {
+            /*
+             * Login new user
+             */
+            Profile candidate = Profile.create(username, password, "", "", "");
+            /*
+             * Login procedure
+             */
+            getUserManager().login(candidate);
+        } catch (ProfileOperationException ex) {
+            /*
+             * Mark the error and let user go with default profile
+             */
+            LOG.error(ex.toString(), ex);
+        }
+
         /*
          * Initialize user data
          */
-        initUserWorkspace(Profile.create(username, password, "", "", ""));
+        initUserWorkspace();
     }
 
     /**
@@ -407,13 +464,11 @@ public class Workspace {
         try {
             removeUserWorkspace();
             /*
-             * Save and clear all system components loaded as plugins
+             * Logout the old user
              */
-            for (WorkspaceComponent workspaceComponent : workspaceComponents) {
-                workspaceComponent.save();
-                workspaceComponent.reset();
-            }
-        } catch (IOException e) {
+            getUserManager().logout();
+
+        } catch (Error | Exception e) {
             LOG.error(e.getMessage(), e);
         }
         System.exit(0);
