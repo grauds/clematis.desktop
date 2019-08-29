@@ -1,4 +1,4 @@
-package jworkspace.ui.plaf;
+package jworkspace.ui.config.plaf;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin
@@ -47,9 +47,13 @@ class XPlafConnector {
      * Default logger
      */
     private static final Logger LOG = LoggerFactory.getLogger(XPlafConnector.class);
+
     private static final String CURRENT = "current";
+
     private static final String CLASS_NODE = "class";
+
     private static final String THEME_NODE = "theme";
+
     private static final String NAME_ATTRIBUTE = "name";
     /**
      * Look and feel instance
@@ -189,8 +193,16 @@ class XPlafConnector {
         return info;
     }
 
+    public void setInfo(UIManager.LookAndFeelInfo info) {
+        this.info = info;
+    }
+
     public MetalTheme[] getThemes() {
         return themes;
+    }
+
+    public void setThemes(MetalTheme[] themes) {
+        this.themes = themes;
     }
 
     /**
@@ -200,6 +212,15 @@ class XPlafConnector {
      */
     void setCurrentTheme(String clazz) {
         currentTheme = lookUpTheme(clazz);
+    }
+
+    /**
+     * Sets current theme for this look and feel.
+     *
+     * @param theme
+     */
+    void setCurrentTheme(MetalTheme theme) {
+        currentTheme = theme;
     }
 
     /**
@@ -250,4 +271,5 @@ class XPlafConnector {
             LOG.error("Can't set look and feel", e);
         }
     }
+
 }

@@ -37,6 +37,8 @@ import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
 import jworkspace.kernel.WorkspacePluginLocator;
+import jworkspace.ui.api.Constants;
+import jworkspace.ui.config.UIConfig;
 
 /**
  * @author Anton Troshin
@@ -67,6 +69,28 @@ public class ShellsTests {
 
         TestShell plugin = (TestShell) obj;
         assert plugin.getButtons().length == 0;
+    }
+
+    @Test
+    public void testConfig() {
+
+        UIConfig uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(Constants.CONFIG_FILE).toFile());
+
+        uiConfig.saveLaf();
+        uiConfig.saveTheme();
+        uiConfig.setKiwiTextureVisible(true);
+        uiConfig.setTexture(WorkspaceGUI.getResourceManager().getImage("test_texture.gif"));
+        uiConfig.setTextureVisible(true);
+
+        uiConfig.save();
+
+        uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(Constants.CONFIG_FILE).toFile());
+        uiConfig.load();
+
+        assert uiConfig.getTexture() != null;
+        assert uiConfig.isTextureVisible();
+        assert uiConfig.isKiwiTextureVisible();
+        assert !uiConfig.isDecorated();
     }
 
     @After

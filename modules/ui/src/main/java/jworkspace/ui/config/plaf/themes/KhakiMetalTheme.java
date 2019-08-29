@@ -1,4 +1,4 @@
-package jworkspace.ui.themes;
+package jworkspace.ui.config.plaf.themes;
 /*
  * Copyright (c) 2002 Sun Microsystems, Inc. All  Rights Reserved.
  *
@@ -35,7 +35,7 @@ package jworkspace.ui.themes;
  */
 
 /*
- * @(#)GreenMetalTheme.java	1.7 02/06/13
+ * @(#)KhakiMetalTheme.java	1.7 02/06/13
  */
 
 
@@ -43,20 +43,22 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 
 /**
- * This class describes a theme using "green" colors.
+ * This class describes a theme using "khaki" colors.
  *
  * @author Steve Wilson
  * @version 1.7 06/13/02
  */
-public class GreenMetalTheme extends DefaultMetalTheme {
+public class KhakiMetalTheme extends DefaultMetalTheme {
 
-    // greenish colors
-    private final ColorUIResource primary1 = new ColorUIResource(51, 102, 51);
-    private final ColorUIResource primary2 = new ColorUIResource(102, 153, 102);
-    private final ColorUIResource primary3 = new ColorUIResource(153, 204, 153);
+    private final ColorUIResource primary1 = new ColorUIResource(87, 87, 47);
+    private final ColorUIResource primary2 = new ColorUIResource(159, 151, 111);
+    private final ColorUIResource primary3 = new ColorUIResource(199, 183, 143);
+    private final ColorUIResource secondary1 = new ColorUIResource(111, 111, 111);
+    private final ColorUIResource secondary2 = new ColorUIResource(159, 159, 159);
+    private final ColorUIResource secondary3 = new ColorUIResource(231, 215, 183);
 
     public String getName() {
-        return "Emerald";
+        return "Sandstone";
     }
 
     protected ColorUIResource getPrimary1() {
@@ -69,6 +71,18 @@ public class GreenMetalTheme extends DefaultMetalTheme {
 
     protected ColorUIResource getPrimary3() {
         return primary3;
+    }
+
+    protected ColorUIResource getSecondary1() {
+        return secondary1;
+    }
+
+    protected ColorUIResource getSecondary2() {
+        return secondary2;
+    }
+
+    protected ColorUIResource getSecondary3() {
+        return secondary3;
     }
 
 }

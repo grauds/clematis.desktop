@@ -1,4 +1,4 @@
-package jworkspace.ui;
+package jworkspace.ui.config;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -20,7 +20,8 @@ import com.hyperrealm.kiwi.io.ConfigFile;
 
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.api.Constants;
-import jworkspace.ui.plaf.PlafFactory;
+import jworkspace.ui.config.plaf.PlafFactory;
+import lombok.NonNull;
 
 /**
  * @author Anton Troshin
@@ -35,6 +36,10 @@ public class UIConfig {
      *
      */
     public static final String CK_TEXTURE = "gui.texture";
+    /**
+     *
+     */
+    public static final String CK_TEXTURE_VISIBLE = "gui.texture.visible";
     /**
      *
      */
@@ -58,18 +63,14 @@ public class UIConfig {
     /**
      * Workspace background texture
      */
-    private BufferedImage texture = null;
+    private Image texture = null;
     /**
      * Configuration
      */
-    private ConfigFile config = null;
-    /**
-     * Configuration file
-     */
-    private final File configFile;
+    private ConfigFile config;
 
-    public UIConfig(File configFile) {
-        this.configFile = configFile;
+    public UIConfig(@NonNull File configFile) {
+        this.config = new ConfigFile(configFile, "GUI Related Properties");
     }
 
     /**
@@ -82,7 +83,7 @@ public class UIConfig {
     /**
      * Set texture for java workspace gui
      */
-    public void setTexture(BufferedImage texture) {
+    public void setTexture(Image texture) {
         this.texture = texture;
     }
 
@@ -90,12 +91,12 @@ public class UIConfig {
      * Is texture visible
      */
     public boolean isTextureVisible() {
-        return config.getBoolean(CK_TEXTURE, false);
+        return config.getBoolean(CK_TEXTURE_VISIBLE, false);
     }
 
 
     public void setTextureVisible(boolean b) {
-        config.putBoolean(CK_TEXTURE, b);
+        config.putBoolean(CK_TEXTURE_VISIBLE, b);
     }
 
     /**
@@ -114,7 +115,9 @@ public class UIConfig {
     }
 
     public void saveLaf() {
-        config.putString(CK_LAF, UIManager.getLookAndFeel().getClass().getName());
+        if (UIManager.getLookAndFeel() != null) {
+            config.putString(CK_LAF, UIManager.getLookAndFeel().getClass().getName());
+        }
     }
 
     public String getTheme() {
@@ -140,7 +143,6 @@ public class UIConfig {
     public void load() {
 
         try {
-            config = new ConfigFile(configFile, "GUI Definition");
             config.load();
 
         } catch (IOException e) {
@@ -157,12 +159,8 @@ public class UIConfig {
 
         } catch (IOException e) {
             LOG.warn("Cannot read texture: " + e.getMessage());
-
-        } finally {
-            /*
-             * Read texture show or hide flag
-             */
             setTextureVisible(false);
+
         }
     }
 

@@ -78,9 +78,10 @@ import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.config.UIConfig;
+import jworkspace.ui.config.plaf.PlafFactory;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
-import jworkspace.ui.plaf.PlafFactory;
 import jworkspace.ui.views.DefaultCompoundView;
 import jworkspace.ui.widgets.WorkspaceError;
 
@@ -375,8 +376,7 @@ public class WorkspaceGUI implements UI {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } else {
 
-                    PlafFactory.getInstance().setCurrentTheme(uiConfig.getLaf(),
-                        uiConfig.getTheme());
+                    PlafFactory.getInstance().setCurrentTheme(uiConfig.getLaf(), uiConfig.getTheme());
                 }
             }
         } catch (Exception ex) {

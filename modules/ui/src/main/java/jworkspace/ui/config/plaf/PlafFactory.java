@@ -1,4 +1,4 @@
-package jworkspace.ui.plaf;
+package jworkspace.ui.config.plaf;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -31,11 +31,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.MetalTheme;
 
 import org.jdom2.Document;
@@ -47,7 +49,7 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jworkspace.ui.api.Constants;
+import jworkspace.kernel.Workspace;
 
 /**
  * Pluggable look and feel factory
@@ -55,30 +57,30 @@ import jworkspace.ui.api.Constants;
  */
 public class PlafFactory {
     /**
+     * The name of configuration file
+     */
+    private static final String LAFS_XML = "lafs.xml";
+    /**
+     * Path to save in workspace environment
+     */
+    private static final Path PATH = Workspace.getBasePath().resolve(LAFS_XML);
+    /**
      * Default logger
      */
     private static final Logger LOG = LoggerFactory.getLogger(PlafFactory.class);
-    /**
-     * The directory of config
-     */
-    private static final String CONFIG_FILE_PATH = "config";
     /**
      * Single instance
      */
     private static PlafFactory instance;
     /**
-     * The name of configuration file
-     */
-    private static String sysConfig = "lafs.xml";
-    /**
      * Array of plaf connectors
      */
     private List<XPlafConnector> connectors = new ArrayList<>();
+
     /**
      * Private constructor
      */
-    private PlafFactory() {
-    }
+    private PlafFactory() {}
 
     /**
      * Get a single instance of this factory
@@ -97,9 +99,8 @@ public class PlafFactory {
      * Load and install look and feels from user configuration file
      */
     private void load() {
-        String fileName = CONFIG_FILE_PATH + File.separator + sysConfig;
         try {
-            File file = new File(fileName);
+            File file = PATH.toFile();
             SAXBuilder builder = new SAXBuilder();
             Document doc = builder.build(file);
             Element root = doc.getRootElement();
@@ -115,7 +116,20 @@ public class PlafFactory {
                 }
             }
         } catch (JDOMException | IOException e) {
-            LOG.error("Cannot load plaf factory", e);
+            LOG.warn("Cannot load the factory, applying the defaults. Caused by: ", e);
+
+            UIManager.LookAndFeelInfo[] installed = UIManager.getInstalledLookAndFeels();
+            MetalTheme currentTheme = MetalLookAndFeel.getCurrentTheme();
+
+            for (UIManager.LookAndFeelInfo info : installed) {
+                XPlafConnector connector = new XPlafConnector();
+                connector.setInfo(info);
+                connector.setThemes(new MetalTheme[0]);
+                if (info.getClassName().equals(MetalLookAndFeel.class.getCanonicalName())) {
+                    connector.setCurrentTheme(currentTheme);
+                }
+                connectors.add(connector);
+            }
         }
     }
 
@@ -123,12 +137,8 @@ public class PlafFactory {
      * Save all look and feel user config
      */
     public void save() {
-        String fileName = CONFIG_FILE_PATH + File.separator + sysConfig;
-        LOG.info(Constants.PROMPT + "Writing file" + Constants.LOG_SPACE + fileName + Constants.LOG_FINISH);
-        File file = new File(fileName);
-
         try (StringWriter sw = new StringWriter();
-             FileOutputStream os = new FileOutputStream(file)) {
+             FileOutputStream os = new FileOutputStream(PATH.toFile())) {
 
             Element plafs = new Element("plafs");
             for (XPlafConnector connector : connectors) {
@@ -143,7 +153,7 @@ public class PlafFactory {
             os.flush();
 
         } catch (IOException e) {
-            LOG.warn("Cannot save plaf factory", e);
+            LOG.warn("Cannot save the factory: ", e);
         }
     }
 

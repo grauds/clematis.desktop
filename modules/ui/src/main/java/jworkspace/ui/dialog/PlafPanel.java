@@ -44,7 +44,7 @@ import com.hyperrealm.kiwi.ui.LookAndFeelChooser;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.plaf.PlafFactory;
+import jworkspace.ui.config.plaf.PlafFactory;
 import jworkspace.ui.widgets.ThemeChooser;
 
 /**
