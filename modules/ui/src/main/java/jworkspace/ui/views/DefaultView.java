@@ -29,7 +29,7 @@ import javax.swing.JMenu;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
-import jworkspace.ui.IView;
+import jworkspace.ui.api.IView;
 
 /**
  * Default user gui view.

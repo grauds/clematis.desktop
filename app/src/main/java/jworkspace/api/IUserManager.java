@@ -60,6 +60,13 @@ public interface IUserManager extends WorkspaceComponent {
      *
      * @return java.lang.String
      */
+    Path getCurrentProfilePath(Path basePath);
+
+    /**
+     * Ensure the path to current user folder
+     *
+     * @return java.lang.String
+     */
     Path ensureCurrentProfilePath(Path basePath) throws IOException;
 
     /**

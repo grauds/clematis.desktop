@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.IShell;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.IShell;
 import jworkspace.ui.cpanel.CButton;
 
 /**

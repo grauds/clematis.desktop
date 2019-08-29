@@ -42,7 +42,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.action.AbstractStateAction;
+import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.widgets.WorkspaceError;
 
 /**

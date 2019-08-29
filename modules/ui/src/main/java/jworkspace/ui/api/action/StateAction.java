@@ -1,4 +1,5 @@
-package jworkspace.ui;
+package jworkspace.ui.api.action;
+
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin
@@ -25,16 +26,24 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 
-import org.junit.Test;
+import javax.swing.Action;
 
 /**
+ * State action has two states - SELECTED and UNSELECTED, and a property SELECTABLE.
+ *
  * @author Anton Troshin
  */
-public class WorkspaceGUITest {
+public interface StateAction extends Action {
 
-    @Test
-    public void testIsLoading() {
+    String SELECTED = "SELECTED";
 
+    String SELECTABLE = "SELECTABLE";
 
-    }
+    boolean isSelected();
+
+    void setSelected(boolean selected);
+
+    boolean isSelectable();
+
+    void setSelectable(boolean selected);
 }

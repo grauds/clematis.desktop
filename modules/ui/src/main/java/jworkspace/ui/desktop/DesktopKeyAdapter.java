@@ -27,6 +27,8 @@ package jworkspace.ui.desktop;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import jworkspace.ui.api.Constants;
+
 /**
  * Desktop key listener
  * @author Anton Troshin
@@ -43,27 +45,27 @@ class DesktopKeyAdapter extends KeyAdapter {
 
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             if (e.getSource() instanceof DesktopIcon) {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_NORTH, (DesktopIcon) e.getSource());
+                desktop.selectNextIcon(Constants.ICON_ON_NORTH, (DesktopIcon) e.getSource());
             } else {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_NORTH);
+                desktop.selectNextIcon(Constants.ICON_ON_NORTH);
             }
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             if (e.getSource() instanceof DesktopIcon) {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_SOUTH, (DesktopIcon) e.getSource());
+                desktop.selectNextIcon(Constants.ICON_ON_SOUTH, (DesktopIcon) e.getSource());
             } else {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_SOUTH);
+                desktop.selectNextIcon(Constants.ICON_ON_SOUTH);
             }
         } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             if (e.getSource() instanceof DesktopIcon) {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_WEST, (DesktopIcon) e.getSource());
+                desktop.selectNextIcon(Constants.ICON_ON_WEST, (DesktopIcon) e.getSource());
             } else {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_WEST);
+                desktop.selectNextIcon(Constants.ICON_ON_WEST);
             }
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             if (e.getSource() instanceof DesktopIcon) {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_EAST, (DesktopIcon) e.getSource());
+                desktop.selectNextIcon(Constants.ICON_ON_EAST, (DesktopIcon) e.getSource());
             } else {
-                desktop.selectNextIcon(DesktopConstants.ICON_ON_EAST);
+                desktop.selectNextIcon(Constants.ICON_ON_EAST);
             }
         } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
             desktop.removeSelectedIcons();

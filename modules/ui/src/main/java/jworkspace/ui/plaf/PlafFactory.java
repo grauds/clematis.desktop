@@ -47,7 +47,7 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.Constants;
 
 /**
  * Pluggable look and feel factory
@@ -124,7 +124,7 @@ public class PlafFactory {
      */
     public void save() {
         String fileName = CONFIG_FILE_PATH + File.separator + sysConfig;
-        LOG.info(WorkspaceGUI.PROMPT + "Writing file" + WorkspaceGUI.LOG_SPACE + fileName + WorkspaceGUI.LOG_FINISH);
+        LOG.info(Constants.PROMPT + "Writing file" + Constants.LOG_SPACE + fileName + Constants.LOG_FINISH);
         File file = new File(fileName);
 
         try (StringWriter sw = new StringWriter();

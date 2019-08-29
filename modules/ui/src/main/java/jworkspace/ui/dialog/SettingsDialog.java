@@ -34,6 +34,7 @@ import javax.swing.JTabbedPane;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.ui.logging.LoggingPanel;
 
 /**
  * Settings dialog shows a list of general workspace options.

@@ -80,7 +80,7 @@ public class Profile {
      * User name
      */
     @Option(name = "-username")
-    private String userName = "";
+    private String userName = "default";
     /**
      * Password is encrypted using DMD5
      */

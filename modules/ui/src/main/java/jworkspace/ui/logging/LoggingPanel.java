@@ -1,6 +1,6 @@
 // Created: 04.11.2003 T 14:36:26
 // Copyright (C) 2003 by John Wiley & Sons Inc. All Rights Reserved.
-package jworkspace.ui.dialog;
+package jworkspace.ui.logging;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin
@@ -43,7 +43,6 @@ import javax.swing.ListSelectionModel;
 import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.logging.WindowHandler;
 
 /**
  * Panel with a list of loggers, available in system
@@ -51,7 +50,7 @@ import jworkspace.ui.logging.WindowHandler;
  *
  * @author <a href='mailto:anton.troshin@gmail.com'>Anton Troshin</a>
  */
-class LoggingPanel extends KPanel {
+public class LoggingPanel extends KPanel {
     /**
      * List displaying the currently-instantiated loggers
      */
@@ -63,7 +62,7 @@ class LoggingPanel extends KPanel {
     /**
      * Set up the interface and make visible
      */
-    LoggingPanel() {
+    public LoggingPanel() {
         super();
         setupGUI();
         populateList();

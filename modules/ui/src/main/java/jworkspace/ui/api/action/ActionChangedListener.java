@@ -1,4 +1,4 @@
-package jworkspace.ui.action;
+package jworkspace.ui.api.action;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin

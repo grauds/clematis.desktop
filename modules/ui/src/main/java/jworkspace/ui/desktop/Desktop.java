@@ -78,10 +78,10 @@ import com.hyperrealm.kiwi.ui.KDesktopPane;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
-import jworkspace.ui.IView;
 import jworkspace.ui.Utils;
-import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.IView;
+import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.views.PropertiesPanel;
 import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
@@ -186,7 +186,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         addMouseMotionListener(this);
         setLayout(new DesktopLayout(this));
         addKeyListener(new DesktopKeyAdapter(this));
-        setName(DesktopConstants.DESKTOP_NAME_DEFAULT);
+        setName(Constants.DESKTOP_NAME_DEFAULT);
         addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
                 repaint();
@@ -225,12 +225,12 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         String command = e.getActionCommand();
         switch (command) {
 
-            case DesktopConstants.GRADIENT_FILL:
+            case Constants.GRADIENT_FILL:
                 gradientFill = !gradientFill;
                 repaint();
                 break;
 
-            case DesktopConstants.CREATE_SHORTCUT:
+            case Constants.CREATE_SHORTCUT:
                 DesktopIcon icon = new DesktopIcon(
                     WorkspaceResourceAnchor.getString("Desktop.defaultIconName"),
                     WorkspaceResourceAnchor.getString("Desktop.defaultIconCommand"),
@@ -248,7 +248,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 }
                 break;
 
-            case DesktopConstants.BACKGROUND:
+            case Constants.BACKGROUND:
                 if (!isGradientFill()) {
                     Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
                         WorkspaceResourceAnchor.getString("Desktop.chooseBg.title"),
@@ -276,24 +276,24 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 }
                 break;
 
-            case DesktopConstants.PASTE:
+            case Constants.PASTE:
                 pasteIcons();
                 break;
 
-            case DesktopConstants.SELECT_ALL:
+            case Constants.SELECT_ALL:
                 selectAll();
                 break;
 
-            case DesktopConstants.CLOSE_ALL_WINDOWS:
+            case Constants.CLOSE_ALL_WINDOWS:
                 this.closeAllFrames();
                 break;
 
-            case DesktopConstants.SWITCH_COVER:
+            case Constants.SWITCH_COVER:
                 setCoverVisible(!coverVisible);
                 repaint();
                 break;
 
-            case DesktopConstants.CHOOSE_BACKGROUND_IMAGE:
+            case Constants.CHOOSE_BACKGROUND_IMAGE:
                 JFileChooser fch = ClassCache.getIconChooser();
                 if (fch.showOpenDialog(Workspace.getUi().getFrame()) != JFileChooser.APPROVE_OPTION) {
                     return;
@@ -377,7 +377,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     public void addView(javax.swing.JComponent panel, boolean displayImmediately, boolean unique) {
         if (panel.getName() == null) {
-            panel.setName(DesktopConstants.DESKTOP_NAME_DEFAULT);
+            panel.setName(Constants.DESKTOP_NAME_DEFAULT);
         }
 
         JInternalFrame existing = findFrame(panel.getName());
@@ -641,13 +641,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      * Set render mode
      */
     void setRenderMode(int mode) {
-        if (mode != DesktopConstants.CENTER_IMAGE
-            && mode != DesktopConstants.TILE_IMAGE
-            && mode != DesktopConstants.STRETCH_IMAGE
-            && mode != DesktopConstants.TOP_LEFT_CORNER_IMAGE
-            && mode != DesktopConstants.TOP_RIGHT_CORNER_IMAGE
-            && mode != DesktopConstants.BOTTOM_LEFT_CORNER_IMAGE
-            && mode != DesktopConstants.BOTTOM_RIGHT_CORNER_IMAGE) {
+        if (mode != Constants.CENTER_IMAGE
+            && mode != Constants.TILE_IMAGE
+            && mode != Constants.STRETCH_IMAGE
+            && mode != Constants.TOP_LEFT_CORNER_IMAGE
+            && mode != Constants.TOP_RIGHT_CORNER_IMAGE
+            && mode != Constants.BOTTOM_LEFT_CORNER_IMAGE
+            && mode != Constants.BOTTOM_RIGHT_CORNER_IMAGE) {
             throw new IllegalArgumentException("Illegal render mode");
         }
 
@@ -879,8 +879,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     public void load() throws IOException {
 
-        File file = Workspace.getUserHomePath()
-            .resolve(getPath()).resolve(DesktopConstants.DESKTOP_DAT).toFile();
+        File file = Workspace.ensureUserHomePath()
+            .resolve(getPath()).resolve(Constants.DESKTOP_DAT).toFile();
 
         try (FileInputStream inputFile = new FileInputStream(file);
              ObjectInputStream dataStream = new ObjectInputStream(inputFile)) {
@@ -1018,12 +1018,12 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             /*
              * Drawing of desktop image can occur in several rendering modes.
              */
-            if (renderMode == DesktopConstants.CENTER_IMAGE) {
+            if (renderMode == Constants.CENTER_IMAGE) {
                 g.drawImage(getCover().getImage(), (getWidth() - getCover().getIconWidth()) / 2,
                     (getHeight() - getCover().getIconHeight()) / 2, this);
-            } else if (renderMode == DesktopConstants.STRETCH_IMAGE) {
+            } else if (renderMode == Constants.STRETCH_IMAGE) {
                 g.drawImage(getCover().getImage(), 0, 0, getWidth(), getHeight(), this);
-            } else if (renderMode == DesktopConstants.TILE_IMAGE) {
+            } else if (renderMode == Constants.TILE_IMAGE) {
                 int x = 0, y = 0;
                 while (x < getWidth()) {
                     while (y < getHeight()) {
@@ -1033,13 +1033,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                     x += getCover().getIconWidth();
                     y = 0;
                 }
-            } else if (renderMode == DesktopConstants.TOP_LEFT_CORNER_IMAGE) {
+            } else if (renderMode == Constants.TOP_LEFT_CORNER_IMAGE) {
                 g.drawImage(getCover().getImage(), 0, 0, this);
-            } else if (renderMode == DesktopConstants.BOTTOM_LEFT_CORNER_IMAGE) {
+            } else if (renderMode == Constants.BOTTOM_LEFT_CORNER_IMAGE) {
                 g.drawImage(getCover().getImage(), 0, this.getHeight() - getCover().getIconHeight(), this);
-            } else if (renderMode == DesktopConstants.TOP_RIGHT_CORNER_IMAGE) {
+            } else if (renderMode == Constants.TOP_RIGHT_CORNER_IMAGE) {
                 g.drawImage(getCover().getImage(), this.getWidth() - getCover().getIconWidth(), 0, this);
-            } else if (renderMode == DesktopConstants.BOTTOM_RIGHT_CORNER_IMAGE) {
+            } else if (renderMode == Constants.BOTTOM_RIGHT_CORNER_IMAGE) {
                 g.drawImage(getCover().getImage(), this.getWidth() - getCover().getIconWidth(),
                     this.getHeight() - getCover().getIconHeight(), this);
             }
@@ -1117,7 +1117,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
          * on this desktop.
          */
         if (selectedIcons.length == 0) {
-            DesktopIcon topLeft = getAtCorner(DesktopConstants.TOP_LEFT_ICON);
+            DesktopIcon topLeft = getAtCorner(Constants.TOP_LEFT_ICON);
             if (topLeft != null) {
                 topLeft.setSelected(true);
                 topLeft.requestFocus();
@@ -1154,13 +1154,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             /*
              * Divide all icons into groups
              */
-            if ((direction == DesktopConstants.ICON_ON_NORTH
+            if ((direction == Constants.ICON_ON_NORTH
                 && Utils.isNorthernQuadrant(cursorIconPoint, currentIconPoint))
-                || (direction == DesktopConstants.ICON_ON_SOUTH
+                || (direction == Constants.ICON_ON_SOUTH
                 && Utils.isSouthernQuadrant(cursorIconPoint, currentIconPoint))
-                || (direction == DesktopConstants.ICON_ON_EAST
+                || (direction == Constants.ICON_ON_EAST
                 && Utils.isEasternQuadrant(cursorIconPoint, currentIconPoint))
-                || (direction == DesktopConstants.ICON_ON_WEST
+                || (direction == Constants.ICON_ON_WEST
                 && Utils.isWesternQuadrant(cursorIconPoint, currentIconPoint))) {
                 /*
                  * Min is becoming the first icon in quadrant
@@ -1187,7 +1187,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     void selectNextIcon(int direction) {
-        selectNextIcon(direction, getAtCorner(DesktopConstants.TOP_RIGHT_ICON));
+        selectNextIcon(direction, getAtCorner(Constants.TOP_RIGHT_ICON));
     }
 
     /**
@@ -1198,7 +1198,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         DesktopIcon res = null;
         for (DesktopIcon desktopIcon : desktopIcons) {
             switch (corner) {
-                case DesktopConstants.TOP_LEFT_ICON:
+                case Constants.TOP_LEFT_ICON:
                     if (res == null) {
                         res = desktopIcon;
                     } else if (desktopIcon.getXPos() < res.getXPos()
@@ -1206,7 +1206,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                         res = desktopIcon;
                     }
                     break;
-                case DesktopConstants.TOP_RIGHT_ICON:
+                case Constants.TOP_RIGHT_ICON:
                     if (res == null) {
                         res = desktopIcon;
                     } else if (desktopIcon.getXPos() > res.getXPos()
@@ -1214,7 +1214,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                         res = desktopIcon;
                     }
                     break;
-                case DesktopConstants.BOTTOM_LEFT_ICON:
+                case Constants.BOTTOM_LEFT_ICON:
                     if (res == null) {
                         res = desktopIcon;
                     } else if (desktopIcon.getXPos() < res.getXPos()
@@ -1222,7 +1222,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                         res = desktopIcon;
                     }
                     break;
-                case DesktopConstants.BOTTOM_RIGHT_ICON:
+                case Constants.BOTTOM_RIGHT_ICON:
                     if (res == null) {
                         res = desktopIcon;
                     } else if (desktopIcon.getXPos() > res.getXPos()
@@ -1246,9 +1246,9 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
         String dialogMessage = irem.length == 1
             ? (WorkspaceResourceAnchor.getString("Desktop.removeIcon.question") + " \"" + irem[0].getName() + "\"?")
-            : WorkspaceResourceAnchor.getString("Desktop.removeIcons.question") + WorkspaceGUI.LOG_SPACE
+            : WorkspaceResourceAnchor.getString("Desktop.removeIcons.question") + Constants.LOG_SPACE
                + irem.length
-               + WorkspaceGUI.LOG_SPACE
+               + Constants.LOG_SPACE
                + WorkspaceResourceAnchor.getString("Desktop.countIcon") + "?";
 
         String dialogTitle = irem.length == 1
@@ -1285,10 +1285,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     public void save() throws IOException {
 
         if (getName() == null) {
-            setName(DesktopConstants.DESKTOP_NAME_DEFAULT);
+            setName(Constants.DESKTOP_NAME_DEFAULT);
         }
 
-        File file = Workspace.getUserHomePath().resolve(getPath()).toFile();
+        File file = Workspace.ensureUserHomePath().resolve(getPath()).toFile();
 
         if (!file.exists()) {
             if (!file.mkdirs()) {
@@ -1297,7 +1297,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             }
         }
 
-        file = Workspace.getUserHomePath().resolve(getPath()).resolve(DesktopConstants.DESKTOP_DAT).toFile();
+        file = Workspace.ensureUserHomePath().resolve(getPath()).resolve(Constants.DESKTOP_DAT).toFile();
 
         try (FileOutputStream outputFile = new FileOutputStream(file);
              ObjectOutputStream outputStream = new ObjectOutputStream(outputFile)) {
@@ -1400,8 +1400,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         checkDesktopSize();
         if (array.length > 0) {
             p = array[0].getLocation();
-            p.x = p.x + DesktopConstants.FRAME_OFFSET;
-            p.y = p.y + DesktopConstants.FRAME_OFFSET;
+            p.x = p.x + Constants.FRAME_OFFSET;
+            p.y = p.y + Constants.FRAME_OFFSET;
         } else {
             p = new Point(0, 0);
         }
@@ -1441,13 +1441,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         JInternalFrame[] allFrames = getAllFrames();
 
         manager.setNormalSize();
-        int frameHeight = (getBounds().height - 5) - allFrames.length * DesktopConstants.FRAME_OFFSET;
-        int frameWidth = (getBounds().width - 5) - allFrames.length * DesktopConstants.FRAME_OFFSET;
+        int frameHeight = (getBounds().height - 5) - allFrames.length * Constants.FRAME_OFFSET;
+        int frameWidth = (getBounds().width - 5) - allFrames.length * Constants.FRAME_OFFSET;
         for (int i = allFrames.length - 1; i >= 0; i--) {
             allFrames[i].setSize(frameWidth, frameHeight);
             allFrames[i].setLocation(x, y);
-            x = x + DesktopConstants.FRAME_OFFSET;
-            y = y + DesktopConstants.FRAME_OFFSET;
+            x = x + Constants.FRAME_OFFSET;
+            y = y + Constants.FRAME_OFFSET;
         }
     }
 

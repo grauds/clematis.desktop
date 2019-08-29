@@ -75,6 +75,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Returns parameter from current user profile
      */
+    @Override
     public Config getParameters() {
         return profilesManager.getCurrentProfile().getParameters();
     }
@@ -82,6 +83,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Returns user name from current user profile
      */
+    @Override
     public String getUserName() {
         return profilesManager.getCurrentProfile().getUserName();
     }
@@ -89,6 +91,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Get human readable name for installer
      */
+    @Override
     public String getName() {
         return "Java Workspace User Management v2.00";
     }
@@ -96,6 +99,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Returns user first name from current user profile
      */
+    @Override
     public String getUserFirstName() {
         return profilesManager.getCurrentProfile().getUserFirstName();
     }
@@ -103,6 +107,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Set user first name
      */
+    @Override
     public void setUserFirstName(String name) {
         profilesManager.getCurrentProfile().setUserFirstName(name);
     }
@@ -110,6 +115,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Returns user last name from current user profile
      */
+    @Override
     public String getUserLastName() {
         return profilesManager.getCurrentProfile().getUserLastName();
     }
@@ -117,6 +123,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Set user last name
      */
+    @Override
     public void setUserLastName(String name) {
         profilesManager.getCurrentProfile().setUserLastName(name);
     }
@@ -124,6 +131,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Returns user email from current user profile
      */
+    @Override
     public String getEmail() {
         return profilesManager.getCurrentProfile().getEmail();
     }
@@ -131,6 +139,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Set user mail
      */
+    @Override
     public void setEmail(String mail) {
         profilesManager.getCurrentProfile().setEmail(mail);
     }
@@ -138,14 +147,21 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Returns path to user folder from current user profile.
      */
+    @Override
     public Path ensureCurrentProfilePath(Path basePath) throws IOException {
         return profilesManager.ensureCurrentProfilePath(basePath);
+    }
+
+    @Override
+    public Path getCurrentProfilePath(Path basePath) {
+        return profilesManager.getCurrentProfilePath(basePath);
     }
 
     /**
      * Add new profile
      */
     @SuppressWarnings("checkstyle:MagicNumber")
+    @Override
     public void addProfile(String name, String... fields) {
 
         if (name == null) {
@@ -180,6 +196,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Remove profile
      */
+    @Override
     public void removeProfile(String name, String password) {
         try {
             Profile profile = profilesManager.loadProfile(name);
@@ -192,18 +209,21 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Reset this engine.
      */
-    public void reset() {
-    }
+    @Override
+    public void reset() {}
 
     /**
      * Get path to specified user folder.
      */
+    @Override
     public Path ensureProfilePath(String name, Path basePath) throws IOException {
         return new Profile(name).ensureProfilePath(basePath);
     }
 
-    /*** Returns all users in system
+    /**
+     *  Returns all users in system
      */
+    @Override
     public Vector getUsersList() {
         return profilesManager.getProfilesList();
     }
@@ -211,6 +231,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Set password
      */
+    @Override
     public void setPassword(String oldPassword, String password, String confirmPassword)
         throws ProfileOperationException {
 
@@ -220,6 +241,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Check password
      */
+    @Override
     public boolean checkPassword(String password) {
         return profilesManager.getCurrentProfile().checkPassword(password);
     }
@@ -227,6 +249,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Return user description
      */
+    @Override
     public String getDescription() {
         return profilesManager.getCurrentProfile().getDescription();
     }
@@ -234,12 +257,14 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Set description for the current profile
      */
+    @Override
     public void setDescription(String desc) {
         profilesManager.getCurrentProfile().setDescription(desc);
     }
 
     /**
      */
+    @Override
     public void load() {
         WorkspaceUserManager.LOG.info("> Profiles manager is loaded");
     }
@@ -247,6 +272,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * User login procedure.
      */
+    @Override
     public void login(@NonNull String name, @NonNull String password) throws ProfileOperationException {
 
         login(Profile.create(name, password, "", "", ""));
@@ -268,6 +294,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * User logout procedure.
      */
+    @Override
     public void logout() {
         try {
             profilesManager.saveCurrentProfile();
@@ -281,6 +308,7 @@ public class WorkspaceUserManager implements IUserManager {
      * Saves profiles manager and profiles on disk
      * via serialization support.
      */
+    @Override
     public void save() throws IOException {
         profilesManager.saveCurrentProfile();
     }
@@ -288,6 +316,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * returns whether user is logged.
      */
+    @Override
     public boolean userLogged() {
         return profilesManager.getCurrentProfile() != null && profilesManager.getCurrentProfile()
             != profilesManager.getDefaultProfile();
@@ -296,6 +325,7 @@ public class WorkspaceUserManager implements IUserManager {
     /**
      * Set user name
      */
+    @Override
     public void setUserName(String name) {
         profilesManager.getCurrentProfile().setUserName(name);
         Workspace.getUi().update();

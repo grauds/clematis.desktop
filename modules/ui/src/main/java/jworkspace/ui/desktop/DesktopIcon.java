@@ -60,7 +60,8 @@ import jworkspace.kernel.Workspace;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.WorkspaceInterpreter;
-import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.widgets.WorkspaceError;
 
 /**
@@ -86,7 +87,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
 
     private String workingDir;
 
-    private int mode = DesktopConstants.JAVA_APP_MODE;
+    private int mode = Constants.JAVA_APP_MODE;
 
     private ImageIcon icon = null;
 
@@ -299,7 +300,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     public void setIcon(ImageIcon icon) {
         if (icon == null || icon.getIconHeight() == -1 || icon.getIconWidth() == -1) {
-            this.icon = (ImageIcon) WorkspaceGUI.getResourceManager().getIcon(DesktopConstants.DEFAULT_ICON);
+            this.icon = (ImageIcon) WorkspaceGUI.getResourceManager().getIcon(Constants.DEFAULT_ICON);
         } else {
             this.icon = icon;
         }
@@ -483,17 +484,17 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      * Execute command line for this desktop icon
      */
     private void launch() {
-        if (mode == DesktopConstants.SCRIPTED_FILE_MODE) {
+        if (mode == Constants.SCRIPTED_FILE_MODE) {
             WorkspaceInterpreter.getInstance().sourceScriptFile(command);
-        } else if (mode == DesktopConstants.SCRIPTED_METHOD_MODE) {
+        } else if (mode == Constants.SCRIPTED_METHOD_MODE) {
             WorkspaceInterpreter.getInstance().executeScript(command);
-        } else if (mode == DesktopConstants.JAVA_APP_MODE) {
+        } else if (mode == Constants.JAVA_APP_MODE) {
             try {
                 Workspace.getRuntimeManager().run(command);
             } catch (WorkspaceException | IOException ex) {
                 WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.cannotLaunch"), ex);
             }
-        } else if (mode == DesktopConstants.NATIVE_COMMAND_MODE) {
+        } else if (mode == Constants.NATIVE_COMMAND_MODE) {
             Workspace.getRuntimeManager().executeNativeCommand(command, workingDir);
         }
     }

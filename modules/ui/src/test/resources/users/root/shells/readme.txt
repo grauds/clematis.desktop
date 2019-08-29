@@ -1,1 +1,0 @@
-Shells extensions should be placed here.

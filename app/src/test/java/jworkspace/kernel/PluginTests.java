@@ -62,7 +62,7 @@ public class PluginTests {
     public void testLoadPlugin() throws PluginException {
 
         Plugin testPlugin = new WorkspacePluginLocator()
-            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(),
+            .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
                 PluginHelper.PLUGIN_JAR), PluginDTO.PLUGIN_TYPE_ANY);
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
@@ -101,7 +101,7 @@ public class PluginTests {
 
 // create version one
         Plugin testPlugin = pluginLocator
-            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(),
+            .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
                     PluginHelper.PLUGIN_JAR), PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj1 = testPlugin.newInstance();
@@ -109,12 +109,12 @@ public class PluginTests {
 
 // update the archive by any means (may be a download from Internet)
         Manifest manifest2 = PluginHelper.getManifest2();
-        PluginHelper.writeJarFile(testFolder.getRoot(),
+        PluginHelper.writePluginJarFile(testFolder.getRoot(),
                 PluginHelper.TEST_PLUGIN_CLASS_2, manifest2, PluginHelper.PLUGIN_JAR);
 
 // create version two from the same archive
         testPlugin = pluginLocator
-            .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(),
+            .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
                     PluginHelper.PLUGIN_JAR), PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj2 = testPlugin.newInstance();
@@ -132,7 +132,7 @@ public class PluginTests {
 
 // create version one
         Plugin testPlugin = pluginLocator
-                .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR),
+                .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR),
                         PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj1 = testPlugin.newInstance();
@@ -140,7 +140,7 @@ public class PluginTests {
 
 // create version one
         Plugin testPlugin2 = pluginLocator
-                .loadPlugin(PluginHelper.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR_2),
+                .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR_2),
                         PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj2 = testPlugin2.newInstance();

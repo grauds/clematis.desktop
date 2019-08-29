@@ -47,7 +47,7 @@ import com.hyperrealm.kiwi.ui.KFileChooser;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.widgets.FilePreviewer;
 import jworkspace.ui.widgets.WorkspaceFileFilter;
 import jworkspace.ui.widgets.WorkspaceFileView;

@@ -30,7 +30,7 @@ import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceClassCache;
-import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.editor.LangResource;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;

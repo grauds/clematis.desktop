@@ -46,6 +46,8 @@ public class ProfileTest {
 
         Profile profile = new Profile();
 
+        assert profile.getUserName().equals("default");
+
         profile.setUserName("test");
         profile.setEmail("test@test.com");
         profile.setUserFirstName("First Name");

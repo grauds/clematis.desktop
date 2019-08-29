@@ -45,13 +45,13 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.DocumentBrowserFrame;
 import com.hyperrealm.kiwi.ui.model.DocumentDataSource;
-import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.action.AbstractStateAction;
+import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.dialog.SettingsDialog;
 import jworkspace.ui.dialog.UserDetailsDialog;
 import jworkspace.ui.widgets.ImageRenderer;
@@ -66,12 +66,12 @@ public class UIActions implements IConstants {
      * Logoff action name
      */
     static final String LOGOFF_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.logoff") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.logoff") + Constants.LOG_FINISH;
     /**
      * Exit action name
      */
     static final String EXIT_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.exit") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.exit") + Constants.LOG_FINISH;
     /**
      * About action name
      */
@@ -81,17 +81,17 @@ public class UIActions implements IConstants {
      * Help action name
      */
     static final String HELP_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.help") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.help") + Constants.LOG_FINISH;
     /**
      * Settings action name
      */
     static final String SETTINGS_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.settings") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.settings") + Constants.LOG_FINISH;
     /**
      * My details action name
      */
     static final String MY_DETAILS_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.mydetails") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.mydetails") + Constants.LOG_FINISH;
     /**
      * Show control panel action name
      */
@@ -104,7 +104,7 @@ public class UIActions implements IConstants {
      * New user action name
      */
     private static final String NEW_USER_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.newuser") + WorkspaceGUI.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.newuser") + Constants.LOG_FINISH;
 
     /**
      * Full screen action name
@@ -202,8 +202,7 @@ public class UIActions implements IConstants {
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         JDialog aboutFrame = new JDialog(Workspace.getUi().getFrame());
-        Image im = new ResourceLoader(WorkspaceResourceAnchor.class)
-            .getResourceAsImage("logo/Logo.gif");
+        Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.gif");
 
         aboutFrame.getContentPane().setLayout(new BorderLayout());
         ImageRenderer imr = new ImageRenderer();
@@ -227,7 +226,7 @@ public class UIActions implements IConstants {
 
             DocumentDataSource helpSource = new DocumentDataSource(WorkspaceGUI.getResourceManager());
             DocumentBrowserFrame dbf = new DocumentBrowserFrame(IConstants.VERSION
-                + WorkspaceGUI.LOG_SPACE + WorkspaceResourceAnchor.getString("message#184"),
+                + Constants.LOG_SPACE + WorkspaceResourceAnchor.getString("message#184"),
                 "", helpSource);
 
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

@@ -24,6 +24,7 @@ ext {
 dependencies {
 
     compileOnly project(':jworkspace')
+    testCompile project(':jworkspace')
 
     compile "commons-codec:commons-codec:$codecVersion"
     compile "org.jdom:jdom2:$jdomVersion"

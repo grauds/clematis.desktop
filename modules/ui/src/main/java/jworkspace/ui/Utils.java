@@ -57,7 +57,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
-import jworkspace.ui.action.ActionChangedListener;
+import jworkspace.ui.api.action.ActionChangedListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.widgets.WorkspaceError;
 

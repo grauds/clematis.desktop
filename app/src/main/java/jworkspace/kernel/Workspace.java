@@ -265,11 +265,19 @@ public class Workspace {
 
     /**
      *
-     * @return path to a current user profile folder
+     * @return path to a current user profile folder and ensure it exists
      * @throws IOException in case current profile is null
      */
-    public static Path getUserHomePath() throws IOException {
+    public static Path ensureUserHomePath() throws IOException {
         return Workspace.getUserManager().ensureCurrentProfilePath(getBasePath());
+    }
+
+    /**
+     *
+     * @return path to a current user profile folder
+     */
+    public static Path getUserHomePath() {
+        return Workspace.getUserManager().getCurrentProfilePath(getBasePath());
     }
 
     /**

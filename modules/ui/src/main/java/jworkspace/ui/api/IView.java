@@ -1,4 +1,5 @@
-package jworkspace.ui;
+package jworkspace.ui.api;
+
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin
@@ -27,33 +28,28 @@ package jworkspace.ui;
 
 import java.io.IOException;
 
-import jworkspace.ui.cpanel.CButton;
+import javax.swing.JMenu;
+
+import jworkspace.ui.views.PropertiesPanel;
 
 /**
- * User gui shell - a collection of user views.
+ * User gui view. Such shell have to load itself, restore state
+ * or save itself on disk. It also have to provide option panels,
+ * menus and buttons to manage state of view.
  *
  * @author Anton Troshin
  */
-public interface IShell {
+public interface IView {
     /**
-     * Get all Control Panel buttons for this shell
+     * View activated or deactivated
      */
-    CButton[] getButtons();
+    void activated(boolean flag);
 
     /**
-     * Load shell from disk
+     * Create component from the scratch. Used for
+     * default assemble of ui components.
      */
-    void load() throws IOException;
-
-    /**
-     * Reset the state of shell
-     */
-    void reset();
-
-    /**
-     * Save all settings to default path
-     */
-    void save() throws IOException;
+    void create();
 
     /**
      * Returns path for saving component data.
@@ -64,4 +60,47 @@ public interface IShell {
      * Sets path for saving component data.
      */
     void setPath(String path);
+
+    /**
+     * Get all option panels for this shell
+     */
+    PropertiesPanel[] getOptionPanels();
+
+    /**
+     * Get menu set for this View.
+     * This menu set will be swithed off
+     * every time view becomes inactive.
+     */
+    JMenu[] getMenu();
+
+    /**
+     * Returns modified flag for the view
+     */
+    boolean isModified();
+
+    /**
+     * Set this flag to true, if you want component
+     * to be unique among all workspace views.
+     */
+    boolean isUnique();
+
+    /**
+     * Load view from disk
+     */
+    void load() throws IOException;
+
+    /**
+     * Reset the state of view
+     */
+    void reset();
+
+    /**
+     * Save all settings to default path
+     */
+    void save() throws IOException;
+
+    /**
+     * Update view
+     */
+    void update();
 }

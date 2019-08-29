@@ -1,5 +1,4 @@
-package jworkspace.ui.action;
-
+package jworkspace.ui.api;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin
@@ -26,24 +25,44 @@ package jworkspace.ui.action;
   ----------------------------------------------------------------------------
 */
 
-import javax.swing.Action;
+import java.io.IOException;
+
+import jworkspace.ui.cpanel.CButton;
 
 /**
- * State action has two states - SELECTED and UNSELECTED, and a property SELECTABLE.
+ * User gui shell - a collection of user views.
  *
  * @author Anton Troshin
  */
-public interface StateAction extends Action {
+public interface IShell {
 
-    String SELECTED = "SELECTED";
+    /**
+     * Get all Control Panel buttons for this shell
+     */
+    CButton[] getButtons();
 
-    String SELECTABLE = "SELECTABLE";
+    /**
+     * Load shell from disk
+     */
+    void load() throws IOException;
 
-    boolean isSelected();
+    /**
+     * Reset the state of shell
+     */
+    void reset();
 
-    void setSelected(boolean selected);
+    /**
+     * Save all settings to default path
+     */
+    void save() throws IOException;
 
-    boolean isSelectable();
+    /**
+     * Returns a relative path for saving component data.
+     */
+    String getPath();
 
-    void setSelectable(boolean selected);
+    /**
+     * Sets a relative path for saving component data.
+     */
+    void setPath(String path);
 }

@@ -38,7 +38,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import jworkspace.kernel.*;
 import jworkspace.ui.installer.dialog.*;
 import jworkspace.util.*;
-import jworkspace.ui.action.*;
+import jworkspace.ui.api.action.*;
 
 /**
  * Tabbed viewer holds several components plus makes searches to show

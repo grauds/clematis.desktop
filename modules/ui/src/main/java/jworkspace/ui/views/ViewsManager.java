@@ -70,10 +70,11 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.AbstractViewsManager;
-import jworkspace.ui.IView;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.IView;
+import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.widgets.WorkspaceError;
@@ -480,8 +481,8 @@ public class ViewsManager extends AbstractViewsManager {
             if (menus != null) {
                 Map<String, Object> lparam = new HashMap<>();
                 List<JMenu> vmenus = new Vector<>(Arrays.asList(menus));
-                lparam.put(WorkspaceGUI.MENUS_PARAMETER, vmenus);
-                lparam.put(WorkspaceGUI.FLAG_PARAMETER, Boolean.FALSE);
+                lparam.put(Constants.MENUS_PARAMETER, vmenus);
+                lparam.put(Constants.FLAG_PARAMETER, Boolean.FALSE);
                 Workspace.fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
             }
         }
@@ -510,8 +511,8 @@ public class ViewsManager extends AbstractViewsManager {
                 List<JMenu> vmenus = new Vector<>();
                 Collections.addAll(vmenus, menus);
 
-                lparam.put(WorkspaceGUI.MENUS_PARAMETER, vmenus);
-                lparam.put(WorkspaceGUI.FLAG_PARAMETER, Boolean.TRUE);
+                lparam.put(Constants.MENUS_PARAMETER, vmenus);
+                lparam.put(Constants.FLAG_PARAMETER, Boolean.TRUE);
                 Workspace.fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
             }
         }
@@ -809,7 +810,7 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Read header panel orientation and visibility.
          */
-        File file = Workspace.getUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
+        File file = Workspace.ensureUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
 
         try (FileInputStream inputFile = new FileInputStream(file);
              DataInputStream dataStream = new DataInputStream(inputFile)) {
@@ -862,7 +863,7 @@ public class ViewsManager extends AbstractViewsManager {
      */
     public void save() throws IOException {
 
-        File file = Workspace.getUserHomePath().resolve(getPath()).toFile();
+        File file = Workspace.ensureUserHomePath().resolve(getPath()).toFile();
         if (!file.exists()) {
             if (!file.mkdirs()) {
                 LOG.error("Can't create directories, not saving: " + file.getAbsolutePath());
@@ -872,7 +873,7 @@ public class ViewsManager extends AbstractViewsManager {
             KiwiUtils.deleteTree(file);
         }
 
-        file = Workspace.getUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
+        file = Workspace.ensureUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
 
         try (FileOutputStream outputFile = new FileOutputStream(file);
             DataOutputStream outputStream = new DataOutputStream(outputFile)) {
@@ -887,7 +888,7 @@ public class ViewsManager extends AbstractViewsManager {
 
                     File viewSavePath = Paths.get(getPath(), VIEW, String.valueOf(counter)).toFile();
 
-                    Path file1 = Workspace.getUserHomePath().resolve(getPath()).resolve(VIEW)
+                    Path file1 = Workspace.ensureUserHomePath().resolve(getPath()).resolve(VIEW)
                         .resolve(String.valueOf(counter));
                     if (!Files.exists(file1)) {
                         Files.createDirectories(file1);

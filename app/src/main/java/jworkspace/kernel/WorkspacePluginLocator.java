@@ -25,16 +25,26 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
@@ -55,6 +65,31 @@ public class WorkspacePluginLocator extends PluginLocator {
         super(new WorkspacePluginContext());
 
         addRestrictedPackage("jworkspace.kernel.*");
+    }
+
+    public static void writePluginJarFile(File pluginFileLocation,
+                                          String pluginClass,
+                                          String pluginClassPackage,
+                                          Manifest manifest,
+                                          File jarPath,
+                                          String jarFileName)
+            throws IOException {
+
+        Files.createDirectories(jarPath.toPath());
+
+        try (InputStream is = Files.newInputStream(Paths.get(pluginFileLocation.getAbsolutePath(), pluginClass));
+             OutputStream os = new FileOutputStream(getPluginFile(jarPath, jarFileName));
+             JarOutputStream target = new JarOutputStream(os, manifest)) {
+
+            JarEntry entry = new JarEntry(pluginClassPackage + pluginClass);
+            target.putNextEntry(entry);
+            target.write(StreamUtils.readStreamToByteArray(is));
+            target.closeEntry();
+        }
+    }
+
+    public static File getPluginFile(File folder, String file) {
+        return new File(folder, file);
     }
 
     /**

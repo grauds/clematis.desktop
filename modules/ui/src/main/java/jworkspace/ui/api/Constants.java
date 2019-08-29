@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.api;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -27,12 +27,11 @@ package jworkspace.ui.desktop;
 */
 
 import jworkspace.WorkspaceResourceAnchor;
-
 /**
- * Java Desktop constants
+ *
  * @author Anton Troshin
  */
-interface DesktopConstants {
+public interface Constants {
     /**
      * Tile image
      */
@@ -197,4 +196,64 @@ interface DesktopConstants {
      *
      */
     String DOTS = "...";
+    /**
+     *
+     */
+    String LIB_PATH = "lib";
+    /**
+     *
+     */
+    String RES_PATH = "res";
+    /**
+     *
+     */
+    String TEXTURES_JAR = "textures.jar";
+    /**
+     *
+     */
+    String DESKTOP_JAR = "desktop.jar";
+    /**
+     *
+     */
+    String CONFIG_FILE = "jwxwin.cfg";
+    /**
+     *
+     */
+    String DATA_FILE = "jwxwin.dat";
+    /**
+     *
+     */
+    String LOADING_LAF_MESSAGE = " Loading laf ";
+    /**
+     *
+     */
+    String FRAME_PARAMETER = "frame";
+    /**
+     *
+     */
+    String MENUS_PARAMETER = "menus";
+    /**
+     *
+     */
+    String FLAG_PARAMETER = "flag";
+    /**
+     *
+     */
+    String LOG_FINISH = DOTS;
+    /**
+     *
+     */
+    String LOG_SPACE = " ";
+    /**
+     *
+     */
+    String PROMPT = "> ";
+    /**
+     *
+     */
+    String DEFAULT_LAF = "system";
+    /**
+     *
+     */
+    String USER_DIR_PROPERTY = "user.dir";
 }

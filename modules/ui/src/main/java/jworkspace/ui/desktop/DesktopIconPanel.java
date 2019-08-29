@@ -57,6 +57,7 @@ import jworkspace.installer.ApplicationDataSource;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.Constants;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 import jworkspace.ui.widgets.ImageRenderer;
 import jworkspace.ui.widgets.ResourceExplorerDialog;
@@ -78,7 +79,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
     private ImageRenderer lImage;
 
-    private int mode = DesktopConstants.JAVA_APP_MODE;
+    private int mode = Constants.JAVA_APP_MODE;
 
     private JRadioButton rb1, rb2, rb3, rb4;
 
@@ -142,7 +143,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
             }
         } else if (o == bNativeBrowse) {
             JFileChooser chooser = ClassCache.getFileChooser(
-                WorkspaceResourceAnchor.getString(DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE),
+                WorkspaceResourceAnchor.getString(Constants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE),
                     null, WorkspaceResourceAnchor.getString("DesktopIconPanel.native.command")
                 );
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -155,21 +156,21 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
             callResourceBrowser(resBrowser);
         } else if (o == rb1) {
             disableAllOnModesPanel();
-            mode = DesktopConstants.SCRIPTED_METHOD_MODE;
+            mode = Constants.SCRIPTED_METHOD_MODE;
             tScriptedMethod.setEnabled(true);
         } else if (o == rb2) {
             disableAllOnModesPanel();
-            mode = DesktopConstants.SCRIPTED_FILE_MODE;
+            mode = Constants.SCRIPTED_FILE_MODE;
             tSourceScript.setEnabled(true);
             bScriptBrowse.setEnabled(true);
         } else if (o == rb3) {
             disableAllOnModesPanel();
-            mode = DesktopConstants.JAVA_APP_MODE;
+            mode = Constants.JAVA_APP_MODE;
             tJavaApp.setEnabled(true);
             bAppBrowse.setEnabled(true);
         } else if (o == rb4) {
             disableAllOnModesPanel();
-            mode = DesktopConstants.NATIVE_COMMAND_MODE;
+            mode = Constants.NATIVE_COMMAND_MODE;
             tNativeCommand.setEnabled(true);
             field.setEnabled(true);
             bNativeBrowse.setEnabled(true);
@@ -181,12 +182,14 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
         resBrowser.setHint(false);
         String path = Workspace.getUserManager().getParameters().
-            getString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
+            getString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
 
         if (path == null && Workspace.getUi() instanceof WorkspaceGUI) {
-            path = ((WorkspaceGUI) Workspace.getUi()).getDesktopIconsPath();
+
+            path = ((WorkspaceGUI) Workspace.getUi()).getDesktopIconsPath()
+                .toFile().getAbsolutePath();
             Workspace.getUserManager().getParameters().
-                putString(DesktopConstants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
+                putString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
         }
         resBrowser.setData(path);
         resBrowser.setVisible(true);
@@ -232,7 +235,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         lImage = new jworkspace.ui.widgets.ImageRenderer();
         JScrollPane sp = new JScrollPane(lImage);
         sp.setPreferredSize(new Dimension(200, 200));
-        p1.add(DesktopConstants.CENTER, sp);
+        p1.add(Constants.CENTER, sp);
         /*
          * Buttons panel
          */
@@ -259,9 +262,9 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
         KPanel p5 = new KPanel();
         p5.setLayout(new BorderLayout(5, 5));
-        p5.add(DesktopConstants.NORTH, bp);
+        p5.add(Constants.NORTH, bp);
 
-        p1.add(DesktopConstants.EAST, p5);
+        p1.add(Constants.EAST, p5);
 
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -302,13 +305,13 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         tJavaApp.setOpaque(false);
         tJavaApp.setEditable(false);
 
-        p1.add(DesktopConstants.CENTER, tJavaApp);
+        p1.add(Constants.CENTER, tJavaApp);
 
-        bAppBrowse = new KButton(DesktopConstants.DOTS);
+        bAppBrowse = new KButton(Constants.DOTS);
         bAppBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browse.javaApp"));
         bAppBrowse.addActionListener(this);
         bAppBrowse.setDefaultCapable(false);
-        p1.add(DesktopConstants.EAST, bAppBrowse);
+        p1.add(Constants.EAST, bAppBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -349,13 +352,13 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         tSourceScript.setOpaque(false);
         tSourceScript.setEditable(false);
 
-        p0.add(DesktopConstants.CENTER, tSourceScript);
+        p0.add(Constants.CENTER, tSourceScript);
 
-        bScriptBrowse = new KButton(DesktopConstants.DOTS);
+        bScriptBrowse = new KButton(Constants.DOTS);
         bScriptBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browse.bshFile"));
         bScriptBrowse.addActionListener(this);
         bScriptBrowse.setDefaultCapable(false);
-        p0.add(DesktopConstants.EAST, bScriptBrowse);
+        p0.add(Constants.EAST, bScriptBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -380,14 +383,14 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         tNativeCommand.setOpaque(false);
         tNativeCommand.setEditable(true);
 
-        p1.add(DesktopConstants.CENTER, tNativeCommand);
+        p1.add(Constants.CENTER, tNativeCommand);
 
-        bNativeBrowse = new KButton(DesktopConstants.DOTS);
+        bNativeBrowse = new KButton(Constants.DOTS);
         bNativeBrowse.setToolTipText(WorkspaceResourceAnchor.getString(
-            DesktopConstants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
+            Constants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
         bNativeBrowse.addActionListener(this);
         bNativeBrowse.setDefaultCapable(false);
-        p1.add(DesktopConstants.EAST, bNativeBrowse);
+        p1.add(Constants.EAST, bNativeBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -410,13 +413,13 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         field.setOpaque(false);
         field.setEditable(true);
 
-        p1.add(DesktopConstants.CENTER, field);
+        p1.add(Constants.CENTER, field);
 
-        bWdBrowse = new KButton(DesktopConstants.DOTS);
+        bWdBrowse = new KButton(Constants.DOTS);
         bWdBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.native.wd.browse"));
         bWdBrowse.addActionListener(this);
         bWdBrowse.setDefaultCapable(false);
-        p1.add(DesktopConstants.EAST, bWdBrowse);
+        p1.add(Constants.EAST, bWdBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -436,27 +439,27 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         tDesc.setText(data.getComments());
         mode = desktopIcon.getMode();
 
-        if (mode == DesktopConstants.SCRIPTED_METHOD_MODE) {
+        if (mode == Constants.SCRIPTED_METHOD_MODE) {
 
             tScriptedMethod.setEnabled(true);
             tScriptedMethod.setText(desktopIcon.getCommandLine());
             rb1.setSelected(true);
 
-        } else if (mode == DesktopConstants.SCRIPTED_FILE_MODE) {
+        } else if (mode == Constants.SCRIPTED_FILE_MODE) {
 
             tSourceScript.setEnabled(true);
             tSourceScript.setText(desktopIcon.getCommandLine());
             bScriptBrowse.setEnabled(true);
             rb2.setSelected(true);
 
-        } else if (mode == DesktopConstants.JAVA_APP_MODE) {
+        } else if (mode == Constants.JAVA_APP_MODE) {
 
             tJavaApp.setEnabled(true);
             tJavaApp.setText(desktopIcon.getCommandLine());
             bAppBrowse.setEnabled(true);
             rb3.setSelected(true);
 
-        } else if (mode == DesktopConstants.NATIVE_COMMAND_MODE) {
+        } else if (mode == Constants.NATIVE_COMMAND_MODE) {
 
             tNativeCommand.setEnabled(true);
             tNativeCommand.setText(desktopIcon.getCommandLine());
@@ -487,19 +490,19 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         desktopIcon.setComments(tDesc.getText());
         desktopIcon.setMode(this.mode);
 
-        if (mode == DesktopConstants.SCRIPTED_METHOD_MODE) {
+        if (mode == Constants.SCRIPTED_METHOD_MODE) {
 
             desktopIcon.setCommandLine(tScriptedMethod.getText());
 
-        } else if (mode == DesktopConstants.SCRIPTED_FILE_MODE) {
+        } else if (mode == Constants.SCRIPTED_FILE_MODE) {
 
             desktopIcon.setCommandLine(tSourceScript.getText());
 
-        } else if (mode == DesktopConstants.JAVA_APP_MODE) {
+        } else if (mode == Constants.JAVA_APP_MODE) {
 
             desktopIcon.setCommandLine(tJavaApp.getText());
 
-        } else if (mode == DesktopConstants.NATIVE_COMMAND_MODE) {
+        } else if (mode == Constants.NATIVE_COMMAND_MODE) {
 
             desktopIcon.setCommandLine(tNativeCommand.getText());
             desktopIcon.setWorkingDirectory(field.getText());

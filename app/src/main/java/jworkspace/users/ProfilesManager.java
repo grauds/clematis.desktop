@@ -135,12 +135,21 @@ public class ProfilesManager implements Comparator {
     }
 
     /**
-     * Returns current profiles folder path relative to "user.home" system property.
+     * Returns current profiles folder path relative to "user.home" system property and ensures it exists
      *
      * @return java.lang.String
      */
     Path ensureCurrentProfilePath(Path basePath) throws IOException {
         return getCurrentProfile().ensureProfilePath(basePath);
+    }
+
+    /**
+     * Returns current profiles folder path relative to "user.home" system property.
+     *
+     * @return java.lang.String
+     */
+    Path getCurrentProfilePath(Path basePath) {
+        return getCurrentProfile().getProfilePath(basePath);
     }
 
     /**

@@ -43,7 +43,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import jworkspace.ui.action.UISwitchListener;
+import jworkspace.ui.api.action.UISwitchListener;
 
 /**
  * Check list control is combining JCheckBox boxes with JList via column and row headers
