@@ -69,7 +69,6 @@ class UserDetailsPanel extends KPanel {
         add(l, gbc);
 
         tNick = new JTextField(20);
-  //      tNick.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -82,7 +81,6 @@ class UserDetailsPanel extends KPanel {
         add(l, gbc);
 
         tName = new JTextField(20);
- //       tName.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -95,7 +93,6 @@ class UserDetailsPanel extends KPanel {
         add(l, gbc);
 
         tSurname = new JTextField(20);
-  //      tSurname.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -108,7 +105,6 @@ class UserDetailsPanel extends KPanel {
         add(l, gbc);
 
         tMail = new JTextField(20);
- //       tMail.setPreferredSize(new Dimension(150, 20));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;

@@ -55,6 +55,7 @@ import com.hyperrealm.kiwi.ui.KFrame;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.kernel.Workspace;
+import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;

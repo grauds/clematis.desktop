@@ -69,9 +69,9 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.kernel.Workspace;
-import jworkspace.ui.AbstractViewsManager;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.action.UISwitchListener;

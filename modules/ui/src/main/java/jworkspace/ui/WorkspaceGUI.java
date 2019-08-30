@@ -274,6 +274,8 @@ public class WorkspaceGUI implements UI {
      */
     public void setTextureVisible(boolean isTextureVisible) {
 
+        uiConfig.setTextureVisible(isTextureVisible);
+
         if (isTextureVisible && uiConfig.getTexture() != null) {
 
             UIChangeManager.getInstance().setDefaultTexture(uiConfig.getTexture());

@@ -1,4 +1,4 @@
-package jworkspace.ui;
+package jworkspace.ui.api;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -33,7 +33,6 @@ import javax.swing.JPanel;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
-import jworkspace.ui.api.IView;
 import jworkspace.ui.cpanel.CButton;
 /**
  * Views switcher and manager

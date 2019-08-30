@@ -29,12 +29,11 @@ package jworkspace.ui.dialog;
 import java.awt.Frame;
 
 import javax.swing.JComponent;
-import javax.swing.JTabbedPane;
 
+import com.hyperrealm.kiwi.ui.KTabbedPane;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.logging.LoggingPanel;
 
 /**
  * Settings dialog shows a list of general workspace options.
@@ -55,16 +54,13 @@ public class SettingsDialog extends ComponentDialog {
     protected JComponent buildDialogUI() {
         setComment(null);
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        KTabbedPane tabbedPane = new KTabbedPane();
 
         texturePanel = new TexturePanel();
         plafPanel = new PlafPanel();
 
-        LoggingPanel loggingPanel = new LoggingPanel();
-
         tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.textureTab"), texturePanel);
         tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.lafTab"), plafPanel);
-        tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.loggingTab"), loggingPanel);
 
         return (tabbedPane);
     }

@@ -35,7 +35,8 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.ButtonModel;
 import javax.swing.Icon;
-import javax.swing.JButton;
+
+import com.hyperrealm.kiwi.ui.KButton;
 
 /**
  * A special kind of buttons that are to be inserted into control panel. This pecularity is expressed in
@@ -44,7 +45,7 @@ import javax.swing.JButton;
  *
  * @author Anton Troshin
  */
-public class CButton extends JButton {
+public class CButton extends KButton {
     /**
      * The highlighted color.
      */
