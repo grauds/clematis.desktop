@@ -143,6 +143,10 @@ public final class JavaProcess {
         }
     }
 
+    public Date getStartTime() {
+        return new Date(startTime.getTime());
+    }
+
     /**
      * Returns time, elapsed from process start.
      */
@@ -175,7 +179,7 @@ public final class JavaProcess {
     /**
      * Kills this process.
      */
-    void kill() {
+    public void kill() {
         if (process != null) {
             process.destroy();
         }
@@ -187,7 +191,7 @@ public final class JavaProcess {
      *
      * @return boolean
      */
-    boolean isAlive() {
+    public boolean isAlive() {
         return alive;
     }
 

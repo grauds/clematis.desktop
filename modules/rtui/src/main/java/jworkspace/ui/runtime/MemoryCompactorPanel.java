@@ -24,63 +24,46 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
-import kiwi.util.*;
-import kiwi.ui.*;
 
-class MemoryCompactorPanel extends KPanel
-{
- /**
-  * Default quantity of free memory (%)
-  */
- private int free = 50;
- /**
-  * Use compactor or not
-  */
- private boolean use = true;
- /**
-  * Widget for memory compactor
-  */
- private KPanel widget = new KPanel();
- /**
-  * Memory compactor thread.
-  */
- private MemoryCompactor mc = new MemoryCompactor(free, new boolean[1]);
+@SuppressWarnings("checkstyle:MagicNumber")
+class MemoryCompactorPanel extends KPanel {
 
-  public MemoryCompactorPanel()
-  {
-   super();
+    private static final int DEFAULT_PERCENT_OF_FREE_MEMORY = 50;
 
-   GridBagLayout gb = new GridBagLayout();
-   GridBagConstraints gbc = new GridBagConstraints();
-   setLayout(gb);
-   setOpaque(false);
+    MemoryCompactorPanel() {
+        super();
 
-   gbc.anchor = gbc.NORTHWEST;
-   gbc.fill = gbc.HORIZONTAL;
-   gbc.weightx = 0;
+        GridBagLayout gb = new GridBagLayout();
+        GridBagConstraints gbc = new GridBagConstraints();
+        setLayout(gb);
+        setOpaque(false);
 
-   if (use)
-   {
-     mc.start();
-   }
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 0;
 
-   mc.setStatusArea(widget);
+        MemoryCompactor mc = new MemoryCompactor(DEFAULT_PERCENT_OF_FREE_MEMORY, new boolean[1]);
+        mc.start();
 
-   widget.setPreferredSize(new Dimension(150, 40));
-   widget.setOpaque(false);
-   gbc.weightx = 1;
-   gbc.insets = KiwiUtils.lastInsets;
-   gbc.gridwidth = gbc.REMAINDER;
-   add(widget, gbc);
-  }
-  public Dimension getPreferredSize()
-  {
-    return new Dimension(200,130);
-  }
+        KPanel widget = new KPanel();
+        mc.setStatusArea(widget);
+
+        widget.setPreferredSize(new Dimension(150, 40));
+        widget.setOpaque(false);
+        gbc.weightx = 1;
+        gbc.insets = KiwiUtils.LAST_INSETS;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        add(widget, gbc);
+    }
+
+    public Dimension getPreferredSize() {
+        return new Dimension(200, 130);
+    }
 }

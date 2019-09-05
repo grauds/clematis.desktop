@@ -154,6 +154,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         super();
         setLayout(new BorderLayout());
         setName(WorkspaceResourceAnchor.getString("DesktopBgPanel.title"));
+        setOpaque(false);
 
         bgColor = desktop.getBackground();
         bgColor2 = desktop.getSecondBackground();
@@ -279,6 +280,8 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
     @SuppressWarnings({"CyclomaticComplexity", "MethodLength"})
     private KPanel createControlsPanel() {
         KPanel controls = new KPanel();
+        controls.setOpaque(false);
+
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         controls.setLayout(gb);

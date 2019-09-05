@@ -42,7 +42,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -73,10 +72,10 @@ import jworkspace.api.IConstants;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.UI;
 import jworkspace.kernel.Workspace;
-import jworkspace.kernel.WorkspacePluginLocator;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.IView;
+import jworkspace.ui.api.ViewPluginLocator;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.UIConfig;
 import jworkspace.ui.config.plaf.PlafFactory;
@@ -135,13 +134,9 @@ public class WorkspaceGUI implements UI {
     public WorkspaceGUI() {
         super();
 
-        UIChangeManager.getInstance().setDefaultFrameIcon(
-            new WorkspaceResourceManager(WorkspaceGUI.class).getImage("jw_16x16.png"));
-
+        UIChangeManager.getInstance().setDefaultFrameIcon(getResourceManager().getImage("jw_16x16.png"));
         registerListeners();
-
-        uiConfig
-            = new UIConfig(Workspace.getUserHomePath().resolve(Constants.CONFIG_FILE).toFile());
+        uiConfig = new UIConfig(Workspace.getUserHomePath().resolve(Constants.CONFIG_FILE).toFile());
     }
 
     /**
@@ -550,14 +545,8 @@ public class WorkspaceGUI implements UI {
 
         public void run() {
 
-            String fileName;
-            try {
-                fileName = Workspace.ensureUserHomePath().resolve("shells").toFile().getAbsolutePath();
-            } catch (IOException e) {
-                LOG.error(e.getMessage(), e);
-                return;
-            }
-            List<Plugin> plugins = new WorkspacePluginLocator().loadPlugins(Paths.get(fileName));
+            List<Plugin> plugins = new ViewPluginLocator().
+                loadPlugins(Workspace.getUserHomePath().resolve("shells"));
 
             if (plugins == null || plugins.size() == 0) {
                 pr.setMessage(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));
@@ -567,16 +556,15 @@ public class WorkspaceGUI implements UI {
                 for (int i = 0; i < plugins.size(); i++) {
                     pr.setMessage(WorkspaceResourceAnchor.getString("WorkspaceGUI.shell.loading")
                         + Constants.LOG_SPACE + plugins.get(i).getName());
-                    LOG.info(Constants.PROMPT + "Loading " +  plugins.get(i).getName() + Constants.LOG_FINISH);
+                    LOG.info("Loading " +  plugins.get(i).getName() + Constants.LOG_FINISH);
                     if (plugins.get(i).getIcon() != null) {
                         pr.setIcon(plugins.get(i).getIcon());
                     }
                     try {
                         installShell(plugins.get(i));
-                        LOG.info(Constants.PROMPT + "Installed " +  plugins.get(i).getName() + Constants.LOG_FINISH);
+                        LOG.info("Installed " +  plugins.get(i).getName() + Constants.LOG_FINISH);
                     } catch (Exception | Error ex) {
-                        LOG.warn(Constants.PROMPT + "GUI Shell " +  plugins.get(i).getName()
-                            + " failed to load " + ex.toString());
+                        LOG.warn("GUI Shell " +  plugins.get(i).getName() + " failed to load " + ex.toString());
                     }
                     pr.setProgress(i * PROGRESS_COMPLETED / plugins.size());
                 }

@@ -34,12 +34,12 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.KTabbedPane;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -58,7 +58,7 @@ public class PropertiesHolderDlg extends ComponentDialog {
      */
     private static final Logger LOG = LoggerFactory.getLogger(PropertiesHolderDlg.class);
 
-    private JTabbedPane tabbedPane;
+    private KTabbedPane tabbedPane;
 
     private List<PropertiesPanel> propertiesPanelList = new ArrayList<>();
     /**
@@ -126,8 +126,7 @@ public class PropertiesHolderDlg extends ComponentDialog {
 
     protected JComponent buildDialogUI() {
         setComment(null);
-        tabbedPane = new JTabbedPane();
-        tabbedPane.setOpaque(false);
+        tabbedPane = new KTabbedPane();
         return tabbedPane;
     }
 }

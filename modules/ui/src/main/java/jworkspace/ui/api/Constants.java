@@ -223,10 +223,6 @@ public interface Constants {
     /**
      *
      */
-    String LOADING_LAF_MESSAGE = " Loading laf ";
-    /**
-     *
-     */
     String FRAME_PARAMETER = "frame";
     /**
      *
@@ -247,13 +243,5 @@ public interface Constants {
     /**
      *
      */
-    String PROMPT = "> ";
-    /**
-     *
-     */
     String DEFAULT_LAF = "system";
-    /**
-     *
-     */
-    String USER_DIR_PROPERTY = "user.dir";
 }

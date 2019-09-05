@@ -72,11 +72,22 @@ public class PluginClassLoader extends ClassLoader {
 
     PluginClassLoader(ArrayList<String> forbiddenPackages,
                       ArrayList<String> restrictedPackages) {
+        this(forbiddenPackages, restrictedPackages, getSystemClassLoader());
+    }
+
+    /*
+     */
+
+    PluginClassLoader(ArrayList<String> forbiddenPackages,
+                      ArrayList<String> restrictedPackages,
+                      ClassLoader parent) {
+        super(parent);
         this.forbiddenPackages = forbiddenPackages;
         this.restrictedPackages = restrictedPackages;
 
         jars = new ArrayList<>();
     }
+
 
     /*
      */
@@ -106,7 +117,7 @@ public class PluginClassLoader extends ClassLoader {
     /**
      *
      */
-    @SuppressWarnings({"NestedIfDepth", "ReturnCount"})
+    @SuppressWarnings({"NestedIfDepth", "ReturnCount", "checkstyle:CyclomaticComplexity"})
     public synchronized Class loadClass(String className, boolean resolve)
         throws ClassNotFoundException {
 
@@ -133,8 +144,17 @@ public class PluginClassLoader extends ClassLoader {
             // not from a forbidden package
 
             if (!isForbiddenPackage(classPackage)) {
+
                 try {
-                    return (findSystemClass(className));
+                    return findSystemClass(className);
+                } catch (ClassNotFoundException ex) {
+                    /* ignore & continue */
+                }
+
+                try {
+                    if (getParent() != null) {
+                        return getParent().loadClass(className);
+                    }
                 } catch (ClassNotFoundException ex) {
                     /* ignore & continue */
                 }

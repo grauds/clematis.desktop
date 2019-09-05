@@ -19,15 +19,17 @@ processResources {
 ext {
     codecVersion = '1.11'
     jdomVersion = '2.0.6'
+    jodaVersion = '2.10.3'
 }
 
 dependencies {
 
     compileOnly project(':jworkspace')
-    testCompile project(':jworkspace')
+    compileOnly project(':ui')
+    testCompile project(':ui')
 
-    compile "commons-codec:commons-codec:$codecVersion"
-    compile "org.jdom:jdom2:$jdomVersion"
+    compileOnly "org.jdom:jdom2:$jdomVersion"
+    compile "joda-time:joda-time:$jodaVersion"
 }
 
 jar {
@@ -39,7 +41,7 @@ jar {
                  "PluginIcon": "",
                  "PluginVersion": jar.archiveVersion.get(),
                  "PluginHelpURL": ""
-         ], "jworkspace.ui.WorkspaceGUI.class")
+         ], "jworkspace.ui.runtime.RuntimeManagerWindow.class")
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
@@ -48,7 +50,7 @@ jar {
 
 task deployToPlugins(type: Copy) {
     from jar
-    into "${System.getProperty("user.home")}/.jworkspace/plugins/"
+    into "${System.getProperty("user.home")}/.jworkspace/users/default/shells/"
 }
 
 deployToPlugins.dependsOn(assemble)

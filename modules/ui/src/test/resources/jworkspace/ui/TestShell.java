@@ -12,7 +12,6 @@ public class TestShell implements ITestShell {
     /**
      * Get all Control Panel buttons for this shell
      */
-    @Override
     public CButton[] getButtons() {
         return new CButton[0];
     }
@@ -20,15 +19,13 @@ public class TestShell implements ITestShell {
     /**
      * Load shell from disk
      */
-    @Override
-    public void load() throws IOException {
+    public void load() {
 
     }
 
     /**
      * Reset the state of shell
      */
-    @Override
     public void reset() {
 
     }
@@ -36,7 +33,6 @@ public class TestShell implements ITestShell {
     /**
      * Save all settings to default path
      */
-    @Override
     public void save() throws IOException {
 
     }
@@ -44,7 +40,6 @@ public class TestShell implements ITestShell {
     /**
      * Returns a relative path for saving component data.
      */
-    @Override
     public String getPath() {
         return null;
     }
@@ -54,7 +49,6 @@ public class TestShell implements ITestShell {
      *
      * @param path
      */
-    @Override
     public void setPath(String path) {
 
     }

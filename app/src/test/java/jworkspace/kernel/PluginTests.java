@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import static org.junit.Assert.assertNotEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +43,6 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 import com.hyperrealm.kiwi.util.plugin.PluginLocator;
-
 /**
  * @author Anton Troshin
  */
@@ -69,9 +70,11 @@ public class PluginTests {
 
         testPlugin.reload();
         Object obj = testPlugin.newInstance();
-        assert obj instanceof TestPlugin;
+        assert obj instanceof ITestPlugin;
 
-        TestPlugin plugin = (TestPlugin) obj;
+        assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
+
+        ITestPlugin plugin = (ITestPlugin) obj;
         assert plugin.doPluginWork() == 2;
     }
 
@@ -86,10 +89,10 @@ public class PluginTests {
         assert !plugins.get(0).equals(plugins.get(1));
 
         Object obj1 = plugins.get(0).newInstance();
-        assert obj1 instanceof TestPlugin;
+        assert obj1 instanceof ITestPlugin;
 
         Object obj2 = plugins.get(1).newInstance();
-        assert obj2 instanceof TestPlugin;
+        assert obj2 instanceof ITestPlugin;
 
         assert !obj1.equals(obj2);
     }
@@ -102,24 +105,27 @@ public class PluginTests {
 // create version one
         Plugin testPlugin = pluginLocator
             .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
-                    PluginHelper.PLUGIN_JAR), PluginDTO.PLUGIN_TYPE_ANY);
+                PluginHelper.PLUGIN_JAR),
+                PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj1 = testPlugin.newInstance();
-        assert obj1 instanceof TestPlugin;
+        assert obj1 instanceof ITestPlugin;
 
 // update the archive by any means (may be a download from Internet)
         Manifest manifest2 = PluginHelper.getManifest2();
         PluginHelper.writePluginJarFile(testFolder.getRoot(),
-                PluginHelper.TEST_PLUGIN_CLASS_2, manifest2, PluginHelper.PLUGIN_JAR);
+            new String[] {PluginHelper.TEST_PLUGIN_CLASS_2},
+            manifest2,
+            PluginHelper.PLUGIN_JAR);
 
 // create version two from the same archive
         testPlugin = pluginLocator
             .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
-                    PluginHelper.PLUGIN_JAR), PluginDTO.PLUGIN_TYPE_ANY);
+                PluginHelper.PLUGIN_JAR),
+                PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj2 = testPlugin.newInstance();
-        assert !(obj2 instanceof TestPlugin);
-        assert obj2 instanceof TestPlugin2;
+        assert obj2 instanceof ITestPlugin;
 
 // version one is still in memory
         assert !obj1.equals(obj2);
@@ -132,24 +138,25 @@ public class PluginTests {
 
 // create version one
         Plugin testPlugin = pluginLocator
-                .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR),
-                        PluginDTO.PLUGIN_TYPE_ANY);
+            .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR),
+                PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj1 = testPlugin.newInstance();
-        assert obj1 instanceof TestPlugin;
+        assert obj1 instanceof ITestPlugin;
 
 // create version one
         Plugin testPlugin2 = pluginLocator
-                .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR_2),
-                        PluginDTO.PLUGIN_TYPE_ANY);
+            .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR_2),
+                PluginDTO.PLUGIN_TYPE_ANY);
 
         Object obj2 = testPlugin2.newInstance();
-        assert obj2 instanceof TestPlugin2;
+        assert obj2 instanceof ITestPlugin;
 
-        assert ((TestPlugin2) obj2).doPluginWork() == 3;
-        assert ((TestPlugin) obj1).doPluginWork() == 2;
-        assert ((TestPlugin2) obj2).doPluginWork() == 8;
+        assert ((ITestPlugin) obj2).doPluginWork() == 3;
+        assert ((ITestPlugin) obj1).doPluginWork() == 2;
+        assert ((ITestPlugin) obj2).doPluginWork() == 8;
     }
+
     @After
     public void after() {
         testFolder.delete();

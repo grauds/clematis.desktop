@@ -1,7 +1,7 @@
 package jworkspace.ui.runtime;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2002 Anton Troshin
+   Copyright (C) 1999-2002, 2019 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,222 +24,202 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.util.*;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
-import jworkspace.kernel.*;
-import kiwi.ui.*;
-import kiwi.util.*;
-import kiwi.util.plugin.*;
+import com.hyperrealm.kiwi.util.plugin.Plugin;
 
-public class PropertiesPanel extends KPanel
-{
-  JLabel l = null;
-  JComponent log = null;
-  public PropertiesPanel()
-  {
-    super();
-    setLayout(new BorderLayout(5,5));
-    l = createDefaultLabel();
-    add(l, BorderLayout.CENTER);
-  }
-  /**
-   * Get performance label
-   */
-  protected JLabel createDefaultLabel()
-  {
-    JLabel l = new JLabel();
+import jworkspace.kernel.JavaProcess;
+import jworkspace.kernel.Workspace;
 
-    l.setBackground(Color.white);
-    l.setOpaque(true);
-    l.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-    l.setHorizontalAlignment(JLabel.CENTER);
-    l.setVerticalAlignment(JLabel.CENTER);
-    l.setHorizontalTextPosition(JLabel.CENTER);
-    l.setVerticalTextPosition(JLabel.BOTTOM);
-    l.setIconTextGap(10);
+/**
+ * @author Anton Troshin
+ */
+@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals"})
+public class PropertiesPanel extends KPanel {
 
-    Font font = l.getFont();
-    l.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
+    private JLabel l;
 
-    l.setBorder(new EmptyBorder(15, 10, 3, 10));
-    StringBuffer sb = new StringBuffer();
-    sb.append("<html><b>");
-    sb.append(LangResource.getString("No_messages"));
-    sb.append("</b><br>");
-    sb.append("<br>");
-    sb.append("</html>");
-    l.setText(sb.toString());
-    return l;
-  }
-  /**
-   * Get performance label
-   */
-  protected JLabel createPluginsLabel(String text)
-  {
-    JLabel l = new JLabel();
+    private JComponent log = null;
 
-    l.setBackground(Color.white);
-    l.setOpaque(true);
-    l.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-    l.setHorizontalAlignment(JLabel.CENTER);
-    l.setVerticalAlignment(JLabel.CENTER);
-
-    Font font = l.getFont();
-    l.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
-
-    l.setText(text);
-    return l;
-  }
-  /**
-   * Create process report
-   */
-  public void createProcessReport(JavaProcess pr)
-  {
-     if (log != null)
-     {
-        remove(log);
-        log = null;
-     }
-     StringBuffer sb = new StringBuffer();
-     sb.append("<html><font color=black>");
-     sb.append("<b>");
-     sb.append(LangResource.getString("Name") + ": ");
-     sb.append("</b>");
-     sb.append(pr.getName());
-     sb.append("<br>");
-     sb.append("<b>");
-     sb.append(LangResource.getString("Started_at") + ": ");
-     sb.append("</b>");
-     sb.append(pr.getStartTime().toString());
-     sb.append("<br>");
-     sb.append("</html>");
-     log = pr.getVLog();
-     log.setPreferredSize( new Dimension(200, 200));
-     layoutReport(sb.toString(), new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-      .getResourceAsImage("images/process.png")));
-  }
-  /**
-   * Create plugin report
-   */
-  public void createPluginReport(Plugin plugin)
-  {
-     if (log != null)
-     {
-        remove(log);
-        log = null;
-     }
-     StringBuffer sb = new StringBuffer();
-     sb.append("<html><font color=\"black\">");
-     sb.append("<br><br>");
-     sb.append("<b>");
-     sb.append(LangResource.getString("Name") + ": ");
-     sb.append("</b>");
-     sb.append(plugin.getName());
-     sb.append("<br>");
-     sb.append("<b>");
-     sb.append(LangResource.getString("Type") + ": ");
-     sb.append("</b>");
-     sb.append(plugin.getType());
-     sb.append("<br>");
-     sb.append("<b>");
-     sb.append(LangResource.getString("Version") + ": ");
-     sb.append("</b>");
-     sb.append(plugin.getVersion());
-     sb.append("<br>");
-     sb.append("<b>");
-     sb.append(LangResource.getString("Class_Name") + ": ");
-     sb.append("</b>");
-     sb.append(plugin.getClassName());
-     sb.append("<br>");
-     sb.append("<b>");
-     sb.append(LangResource.getString("Loaded") + ": ");
-     sb.append("</b>");
-     sb.append(plugin.isLoaded());
-     sb.append("<br>");
-     sb.append("<b>");
-     if (!plugin.getProperties().isEmpty())
-     {
-         sb.append(LangResource.getString("Properties") + ": ");
-         sb.append("</b><br>");
-         sb.append("--------------------");
-
-         Enumeration en = plugin.getProperties().keys();
-
-         while (en.hasMoreElements())
-         {
-           String key = (String) en.nextElement();
-           sb.append("<br>");
-           sb.append("<b>");
-           sb.append(key);
-           sb.append("</b>");
-           sb.append(plugin.getProperty(key, "none"));
-           sb.append("</b>");
-         }
-         sb.append("<br>");
-         sb.append("--------------------");
-     }
-     sb.append("</font></html>");
-
-     Icon icon = plugin.getBigIcon();
-     if (icon == null && plugin.getType().equals("XShell"))
-     {
-       icon = new ImageIcon(Workspace.getResourceManager().
-                            getImage("shell_big.png") );
-     }
-     else if (icon == null && plugin.getType().equals("XPlugin"))
-     {
-       icon = new ImageIcon(Workspace.getResourceManager().
-                            getImage("plugin_big.png") );
-     }
-     else if (icon == null)
-     {
-       icon = new ImageIcon(Workspace.getResourceManager().
-                               getImage("unknown_big.png"));
-     }
-     layoutReport(sb.toString(), icon);
-  }
-  public void createDefaultReport()
-  {
-     if (log != null)
-     {
-        remove(log);
-        log = null;
-     }
-    remove(l);
-    l = createDefaultLabel();
-    add(l, BorderLayout.CENTER);
-    revalidate();
-    repaint();
-  }
-  protected void layoutReport(String text, Icon icon)
-  {
-     l.setHorizontalAlignment(JLabel.CENTER);
-     l.setVerticalAlignment(JLabel.CENTER);
-     l.setHorizontalTextPosition(JLabel.CENTER);
-     l.setVerticalTextPosition(JLabel.BOTTOM);
-     if (icon != null)
-     {
-        l.setIcon(icon);
-     }
-     l.setText(text);
-     if (log != null)
-     {
-        remove(l);
-        add(l, BorderLayout.NORTH);
-        add(log, BorderLayout.CENTER);
-     }
-     else
-     {
-        remove(l);
+    PropertiesPanel() {
+        super();
+        setLayout(new BorderLayout(5, 5));
+        l = createDefaultLabel();
         add(l, BorderLayout.CENTER);
-     }
-     revalidate();
-     repaint();
-  }
+    }
+
+    /**
+     * Get performance label
+     */
+    private JLabel createDefaultLabel() {
+
+        JLabel label = new JLabel();
+
+        label.setBackground(Color.white);
+        label.setOpaque(true);
+        label.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setVerticalAlignment(JLabel.CENTER);
+        label.setHorizontalTextPosition(JLabel.CENTER);
+        label.setVerticalTextPosition(JLabel.BOTTOM);
+        label.setIconTextGap(10);
+
+        Font font = label.getFont();
+        label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
+
+        label.setBorder(new EmptyBorder(15, 10, 3, 10));
+        String sb = "<html><b>" + LangResource.getString("No_messages") + "</b><br><br></html>";
+        label.setText(sb);
+        return label;
+    }
+
+    /**
+     * Get performance label
+     */
+    protected JLabel createPluginsLabel(String text) {
+        JLabel label = new JLabel();
+
+        label.setBackground(Color.white);
+        label.setOpaque(true);
+        label.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setVerticalAlignment(JLabel.CENTER);
+
+        Font font = label.getFont();
+        label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
+
+        label.setText(text);
+        return label;
+    }
+
+    /**
+     * Create process report
+     */
+    void createProcessReport(JavaProcess pr) {
+        if (log != null) {
+            remove(log);
+            log = null;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><font color=black><b>");
+        sb.append(LangResource.getString("Name")).append(": ");
+        sb.append("</b>");
+        sb.append(pr.getName());
+        sb.append("<br><b>");
+        sb.append(LangResource.getString("Started_at")).append(": ");
+        sb.append("</b>");
+        sb.append(pr.getStartTime().toString());
+        sb.append("<br></html>");
+//        log = pr.getVLog();
+//        log.setPreferredSize(new Dimension(200, 200));
+        layoutReport(sb.toString(), new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
+            .getResourceAsImage("images/process.png")));
+    }
+
+    /**
+     * Create plugin report
+     */
+    void createPluginReport(Plugin plugin) {
+        if (log != null) {
+            remove(log);
+            log = null;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><font color=\"black\">");
+        sb.append("<br><br><b>");
+        sb.append(LangResource.getString("Name")).append(": ");
+        sb.append("</b>");
+        sb.append(plugin.getName());
+        sb.append("<br><b>");
+        sb.append(LangResource.getString("Type")).append(": ");
+        sb.append("</b>");
+        sb.append(plugin.getType());
+        sb.append("<br><b>");
+        sb.append(LangResource.getString("Version")).append(": ");
+        sb.append("</b>");
+        sb.append(plugin.getVersion());
+        sb.append("<br><b>");
+        sb.append(LangResource.getString("Class_Name")).append(": ");
+        sb.append("</b>");
+        sb.append(plugin.getClassName());
+        sb.append("<br><b>");
+        sb.append(LangResource.getString("Loaded")).append(": ");
+        sb.append("</b>");
+        sb.append(plugin.isLoaded());
+        sb.append("<br><b>");
+//        if (!plugin.getProperties().isEmpty()) {
+//            sb.append(LangResource.getString("Properties") + ": ");
+//            sb.append("</b><br>");
+//            sb.append("--------------------");
+//
+//            Enumeration en = plugin.getProperties().keys();
+//
+//            while (en.hasMoreElements()) {
+//                String key = (String) en.nextElement();
+//                sb.append("<br><b>");
+//                sb.append(key);
+//                sb.append("</b>");
+//                sb.append(plugin.getProperty(key, "none"));
+//                sb.append("</b>");
+//            }
+//            sb.append("<br>");
+//            sb.append("--------------------");
+//        }
+        sb.append("</font></html>");
+
+        Icon icon = plugin.getIcon();
+        if (icon == null && plugin.getType().equals("XShell")) {
+            icon = new ImageIcon(Workspace.getResourceManager().getImage("shell_big.png"));
+        } else if (icon == null && plugin.getType().equals("XPlugin")) {
+            icon = new ImageIcon(Workspace.getResourceManager().getImage("plugin_big.png"));
+        } else if (icon == null) {
+            icon = new ImageIcon(Workspace.getResourceManager().getImage("unknown_big.png"));
+        }
+        layoutReport(sb.toString(), icon);
+    }
+
+    void createDefaultReport() {
+        if (log != null) {
+            remove(log);
+            log = null;
+        }
+        remove(l);
+        l = createDefaultLabel();
+        add(l, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    private void layoutReport(String text, Icon icon) {
+        l.setHorizontalAlignment(JLabel.CENTER);
+        l.setVerticalAlignment(JLabel.CENTER);
+        l.setHorizontalTextPosition(JLabel.CENTER);
+        l.setVerticalTextPosition(JLabel.BOTTOM);
+        if (icon != null) {
+            l.setIcon(icon);
+        }
+        l.setText(text);
+        if (log != null) {
+            remove(l);
+            add(l, BorderLayout.NORTH);
+            add(log, BorderLayout.CENTER);
+        } else {
+            remove(l);
+            add(l, BorderLayout.CENTER);
+        }
+        revalidate();
+        repaint();
+    }
 }

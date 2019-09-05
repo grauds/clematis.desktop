@@ -80,7 +80,7 @@ public class KFrame extends JFrame {
         getContentPane().setLayout(new GridLayout(1, 0));
         main = new KPanel(UIChangeManager.getInstance()
             .getDefaultTexture());
-        main.setOpaque(true);
+        main.setOpaque(false);
         main.setLayout(new BorderLayout(0, 0));
         getContentPane().add(main);
         Image frameIcon = UIChangeManager.getInstance().getDefaultFrameIcon();

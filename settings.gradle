@@ -24,9 +24,9 @@ project(':weather').projectDir = file('modules/weather')
 //
 //include 'net'
 //project(':net').projectDir = file('plugins/net')
-//
-//include 'rtui'
-//project(':rtui').projectDir = file('plugins/rtui')
+
+include 'rtui'
+project(':rtui').projectDir = file('modules/rtui')
 //
 //include 'sed'
 //project(':sed').projectDir = file('plugins/sed')

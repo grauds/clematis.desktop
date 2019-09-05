@@ -26,6 +26,9 @@ import java.util.ArrayList;
 
 import com.hyperrealm.kiwi.util.ResourceDecoder;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A utility class for locating plugins in JAR files. This class is the
  * heart of the Kiwi plugin API.
@@ -68,6 +71,10 @@ public class PluginLocator {
     private final ArrayList<String> forbiddenPackages;
 
     private final ArrayList<String> restrictedPackages;
+
+    @Getter
+    @Setter
+    private boolean excludeParentClassLoader = false;
 
     private PluginContext context;
 
@@ -171,7 +178,7 @@ public class PluginLocator {
 
     PluginClassLoader createClassLoader() {
         return AccessController.doPrivileged((PrivilegedAction<PluginClassLoader>) ()
-            -> new PluginClassLoader(forbiddenPackages, restrictedPackages));
+            -> new PluginClassLoader(forbiddenPackages, restrictedPackages,
+            isExcludeParentClassLoader() ? null : getClass().getClassLoader()));
     }
-
 }

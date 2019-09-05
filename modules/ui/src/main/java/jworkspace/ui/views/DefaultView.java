@@ -39,7 +39,7 @@ public class DefaultView extends KPanel implements IView {
     /**
      * Show this window
      */
-    static final String SHOW = "SHOW";
+    protected static final String SHOW = "SHOW";
     /**
      * Save path. Relative to user.home
      */

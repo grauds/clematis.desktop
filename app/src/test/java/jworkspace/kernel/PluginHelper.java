@@ -2,13 +2,11 @@ package jworkspace.kernel;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.jar.Manifest;
 
-import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginDTO;
-
 
 /**
  * @author Anton Troshin
@@ -17,12 +15,13 @@ public class PluginHelper {
 
     static final String PLUGIN_JAR = "plugin.jar";
     static final String PLUGIN_JAR_2 = "plugin2.jar";
+    static final String ANOTHER_PLUGIN_JAR = "another_plugin.jar";
 
-    static final String TEST_PLUGIN_CLASS_2 = "TestPlugin2.class";
+    static final String BASE_PLUGIN_CLASS = "jworkspace/kernel/ITestPlugin.class";
+    static final String TEST_PLUGIN_CLASS = "jworkspace/kernel/TestPlugin.class";
+    static final String TEST_PLUGIN_CLASS_2 = "jworkspace/kernel/TestPlugin2.class";
 
-    private static final String ANOTHER_PLUGIN_JAR = "another_plugin.jar";
     private static final String TEST_PLUGIN_CLASS_PACKAGE = "jworkspace.kernel.";
-    private static final String TEST_PLUGIN_CLASS = "TestPlugin.class";
     private static final String TEST_PLUGIN = "jworkspace.kernel.TestPlugin";
 
     private static final String TEST_PLUGIN_NAME = "Test plugin";
@@ -41,14 +40,13 @@ public class PluginHelper {
     }
 
     static void writePluginJarFile(File testPluginClassPath,
-                                   String testPluginClass,
+                                   String[] classes,
                                    Manifest manifest,
                                    String pluginJar)
-            throws IOException {
+        throws IOException {
 
         WorkspacePluginLocator.writePluginJarFile(testPluginClassPath,
-            testPluginClass,
-            TEST_PLUGIN_CLASS_PACKAGE,
+            classes,
             manifest,
             testPluginClassPath,
             pluginJar);
@@ -56,7 +54,7 @@ public class PluginHelper {
 
     private static Manifest getManifest() {
 
-        PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS,
+        PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS,
             TEST_PLUGIN_NAME,
             PluginDTO.PLUGIN_TYPE_ANY,
             TEST_PLUGIN_DESCRIPTION,
@@ -69,7 +67,7 @@ public class PluginHelper {
 
     static Manifest getManifest2() {
 
-        PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS_PACKAGE + TEST_PLUGIN_CLASS_2,
+        PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS_2,
             TEST_PLUGIN_NAME_2,
             PluginDTO.PLUGIN_TYPE_ANY,
             TEST_PLUGIN_DESCRIPTION_2,
@@ -94,39 +92,34 @@ public class PluginHelper {
         preparePlugins(folder, folder);
     }
 
-    static void preparePlugins(File testPluginClassPath, File target) throws IOException {
+    static void preparePlugins(File source, File target) throws IOException {
 
-        File sourceFile = WorkspacePluginLocator.getPluginFile(testPluginClassPath, TEST_PLUGIN_CLASS);
-        Files.write(sourceFile.toPath(),
-            StreamUtils.readStreamToByteArray(PluginTests.class.getResourceAsStream(TEST_PLUGIN_CLASS)));
-
-        File sourceFile2 = WorkspacePluginLocator.getPluginFile(testPluginClassPath, TEST_PLUGIN_CLASS_2);
-        Files.write(sourceFile2.toPath(),
-            StreamUtils.readStreamToByteArray(PluginTests.class.getResourceAsStream(TEST_PLUGIN_CLASS_2)));
+        WorkspacePluginLocator.compile(new File[] {
+            Paths.get(PluginTests.class.getResource("ITestPlugin.java").getPath()).toFile(),
+            Paths.get(PluginTests.class.getResource("TestPlugin2.java").getPath()).toFile(),
+            Paths.get(PluginTests.class.getResource("TestPlugin.java").getPath()).toFile()
+        }, source);
 
         Manifest manifest = getManifest();
-
-        WorkspacePluginLocator.writePluginJarFile(testPluginClassPath,
-            TEST_PLUGIN_CLASS,
-            TEST_PLUGIN_CLASS_PACKAGE,
+        WorkspacePluginLocator.writePluginJarFile(source.toPath().toFile(),
+            new String[]{TEST_PLUGIN_CLASS, BASE_PLUGIN_CLASS},
             manifest,
             target,
             PLUGIN_JAR);
 
-        WorkspacePluginLocator.writePluginJarFile(testPluginClassPath,
-            TEST_PLUGIN_CLASS,
-            TEST_PLUGIN_CLASS_PACKAGE,
+        WorkspacePluginLocator.writePluginJarFile(source.toPath().toFile(),
+            new String[]{TEST_PLUGIN_CLASS, TEST_PLUGIN_CLASS_2, BASE_PLUGIN_CLASS},
             manifest,
             target,
             ANOTHER_PLUGIN_JAR);
 
         Manifest manifest2 = getManifest2();
 
-        WorkspacePluginLocator.writePluginJarFile(testPluginClassPath,
-            TEST_PLUGIN_CLASS_2,
-            TEST_PLUGIN_CLASS_PACKAGE,
+        WorkspacePluginLocator.writePluginJarFile(source.toPath().toFile(),
+            new String[]{TEST_PLUGIN_CLASS_2, BASE_PLUGIN_CLASS},
             manifest2,
             target,
             PLUGIN_JAR_2);
     }
+
 }

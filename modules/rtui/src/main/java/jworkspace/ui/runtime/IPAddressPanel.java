@@ -24,45 +24,47 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.net.UnknownHostException;
+
+import javax.swing.JTextField;
+
 import com.hyperrealm.kiwi.ui.KPanel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.net.*;
 /**
  * Shows machine name and ip address.
+ *
+ * @author Anton Troshin
  */
-public class IPAddressPanel extends KPanel
-{
+public class IPAddressPanel extends KPanel {
 
-  public IPAddressPanel()
-  {
-    super();
-    JTextField tf = new JTextField()
-    {
-       public void updateUI()
-       {
-         super.updateUI();
-         setFont( getFont().deriveFont(Font.BOLD) );
-         setBackground(Color.black);
-         setForeground(Color.green);
-       }
-    };
-    setLayout(new BorderLayout());
-    add(tf, BorderLayout.CENTER);
-    tf.setEditable(false);
-    tf.setHorizontalAlignment(JTextField.CENTER);
-    try
-    {
-      tf.setText(java.net.InetAddress.getLocalHost().toString());
+    IPAddressPanel() {
+        super();
+        JTextField tf = new JTextField() {
+            public void updateUI() {
+                super.updateUI();
+                setFont(getFont().deriveFont(Font.BOLD));
+                setBackground(Color.black);
+                setForeground(Color.green);
+            }
+        };
+        setLayout(new BorderLayout());
+        add(tf, BorderLayout.CENTER);
+        tf.setEditable(false);
+        tf.setHorizontalAlignment(JTextField.CENTER);
+        try {
+            tf.setText(java.net.InetAddress.getLocalHost().toString());
+        } catch (UnknownHostException ex) {
+            tf.setText(LangResource.getString("message#239"));
+        }
     }
-    catch(UnknownHostException ex)
-    {
-       tf.setText(LangResource.getString("message#239"));
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public Dimension getPreferredSize() {
+        return new Dimension(200, 60);
     }
-  }
-  public Dimension getPreferredSize()
-  {
-    return new Dimension(200,60);
-  }
 }

@@ -27,6 +27,9 @@ package jworkspace.ui;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +39,8 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
-import jworkspace.kernel.WorkspacePluginLocator;
 import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.ViewPluginLocator;
 import jworkspace.ui.config.UIConfig;
 
 /**
@@ -57,18 +60,34 @@ public class ShellsTests {
     @Test
     public void testIsLoading() throws PluginException {
 
-        Plugin testPlugin = new WorkspacePluginLocator()
-            .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
+        Plugin testPlugin = new ViewPluginLocator()
+            .loadPlugin(ViewPluginLocator.getPluginFile(testFolder.getRoot(),
                 ShellHelper.SHELL_JAR), PluginDTO.PLUGIN_TYPE_ANY);
+        Object obj = testPlugin.newInstance();
+
+        assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
 
         ShellHelper.assertPluginEqualsManifest(testPlugin);
 
         testPlugin.reload();
-        Object obj = testPlugin.newInstance();
-        assert obj instanceof TestShell;
+        assertEquals("jworkspace.ui.TestShell", obj.getClass().getName());
+    }
 
-        TestShell plugin = (TestShell) obj;
-        assert plugin.getButtons().length == 0;
+    @Test
+    public void testChildIsLoading() throws PluginException {
+
+        Plugin testPlugin = new ViewPluginLocator()
+            .loadPlugin(ViewPluginLocator.getPluginFile(testFolder.getRoot(),
+                ShellHelper.CHILD_SHELL_JAR),
+                PluginDTO.PLUGIN_TYPE_ANY);
+        Object obj = testPlugin.newInstance();
+
+        assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
+
+        ShellHelper.assertPluginEqualsChildManifest(testPlugin);
+
+        testPlugin.reload();
+        assertEquals("jworkspace.ui.ChildTestShell", obj.getClass().getName());
     }
 
     @Test

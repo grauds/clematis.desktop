@@ -136,7 +136,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Creates default frame.
      */
     public void create() {
-        LOG.info(Constants.PROMPT + "Building gui" + Constants.LOG_FINISH);
+        LOG.info("Building gui" + Constants.LOG_FINISH);
         try {
             Class clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
@@ -146,8 +146,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             }
 
             content = (AbstractViewsManager) object;
-            LOG.info(Constants.PROMPT + "Loaded content manager"
-                + Constants.LOG_SPACE + MainFrame.CONTENT_MANAGER);
+            LOG.info("Loaded content manager" + Constants.LOG_SPACE + MainFrame.CONTENT_MANAGER);
         } catch (Exception e) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.load.CM.failed"), e);
             return;
@@ -183,7 +182,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
         assemble();
         setVisible(true);
-        LOG.info(Constants.PROMPT + "Frame is loaded with default configuration");
+        LOG.info("Frame is loaded with default configuration");
     }
 
     /*
@@ -381,7 +380,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * is from file jwxwin.dat.
      */
     public void load(DataInputStream inputStream) {
-        LOG.info(Constants.PROMPT + "Loading workspace frame");
+        LOG.info("Loading workspace frame");
         try {
             Class clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
@@ -466,7 +465,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          * End of Main Frame config.
          */
         assemble();
-        LOG.info(Constants.PROMPT + "Loaded workspace frame");
+        LOG.info("Loaded workspace frame");
         setVisible(true);
     }
 
@@ -556,7 +555,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Saves profile data.
      */
     public void save(DataOutputStream outputStream) {
-        LOG.info(Constants.PROMPT + "Saving workspace frame");
+        LOG.info("Saving workspace frame");
         /*
          * Write out Main Frame configuration.
          */
@@ -579,7 +578,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         } catch (IOException e) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.save.failed"), e);
         }
-        LOG.info(Constants.PROMPT + "Saved workspace frame");
+        LOG.info("Saved workspace frame");
     }
 
     /**

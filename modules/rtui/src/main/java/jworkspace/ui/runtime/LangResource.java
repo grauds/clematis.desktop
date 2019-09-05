@@ -24,44 +24,47 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.util.*;
 
-import jworkspace.kernel.*;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * International resources for runtime manager.
+ *
+ * @author Anton Troshin
  */
-public class LangResource
-{
-  static ResourceBundle resources = null;
-  static Locale locale;
-  static public String getString(String id)
-  {
+public class LangResource {
     /**
-     * Try to find a bundle
+     * Default logger
      */
-    try
-    {
-      if(resources == null) resources =
-               ResourceBundle.getBundle ("i18n/rmstrings");
+    private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
+
+    private static final String I18N_RESOURCES = "i18n/rmstrings";
+
+    private static ResourceBundle resources = null;
+
+    private LangResource() {
     }
-    /**
-     * If bundle is not found, use english strings
-     */
-    catch(MissingResourceException ex)
-    {
-      resources = ResourceBundle.getBundle ("i18n/rmstrings", Locale.ENGLISH);
+
+    static String getString(String id) {
+        try {
+            if (resources == null) {
+                resources = ResourceBundle.getBundle(I18N_RESOURCES);
+            }
+        } catch (MissingResourceException ex) {
+            resources = ResourceBundle.getBundle(I18N_RESOURCES, Locale.ENGLISH);
+        }
+        String message;
+        try {
+            message = resources.getString(id);
+        } catch (MissingResourceException ex) {
+            message = id;
+            LOG.debug("Cannot find resource string " + id + " in file rmstrings");
+        }
+        return message;
     }
-    String message = null;
-    try
-    {
-      message = resources.getString (id);
-    }
-    catch(MissingResourceException ex)
-    {
-      message = id;
-      Workspace.logException("Cannot find resource string " + id +
-                " in file rmstrings");
-    }
-    return message;
-  }
 }

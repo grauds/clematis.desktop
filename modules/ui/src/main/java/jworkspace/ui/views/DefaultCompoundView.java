@@ -47,7 +47,7 @@ public class DefaultCompoundView extends DefaultView
      */
     private boolean buttonsLoaded = false;
 
-    DefaultCompoundView() {
+    protected DefaultCompoundView() {
         super();
     }
 

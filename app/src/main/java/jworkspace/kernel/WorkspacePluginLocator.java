@@ -41,6 +41,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,9 +72,8 @@ public class WorkspacePluginLocator extends PluginLocator {
         addRestrictedPackage("jworkspace.kernel.*");
     }
 
-    public static void writePluginJarFile(File pluginFileLocation,
-                                          String pluginClass,
-                                          String pluginClassPackage,
+    public static void writePluginJarFile(File classesLocation,
+                                          String[] classes,
                                           Manifest manifest,
                                           File jarPath,
                                           String jarFileName)
@@ -77,19 +81,40 @@ public class WorkspacePluginLocator extends PluginLocator {
 
         Files.createDirectories(jarPath.toPath());
 
-        try (InputStream is = Files.newInputStream(Paths.get(pluginFileLocation.getAbsolutePath(), pluginClass));
-             OutputStream os = new FileOutputStream(getPluginFile(jarPath, jarFileName));
+        try (OutputStream os = new FileOutputStream(getPluginFile(jarPath, jarFileName));
              JarOutputStream target = new JarOutputStream(os, manifest)) {
 
-            JarEntry entry = new JarEntry(pluginClassPackage + pluginClass);
-            target.putNextEntry(entry);
-            target.write(StreamUtils.readStreamToByteArray(is));
-            target.closeEntry();
+            for (String cl : classes) {
+
+                try (InputStream is = Files.newInputStream(Paths.get(classesLocation.getAbsolutePath(), cl))) {
+
+                    JarEntry entry = new JarEntry(cl);
+                    target.putNextEntry(entry);
+                    target.write(StreamUtils.readStreamToByteArray(is));
+                    target.closeEntry();
+                }
+            }
         }
     }
 
     public static File getPluginFile(File folder, String file) {
         return new File(folder, file);
+    }
+
+    public static void compile(@NonNull File[] files, @NonNull File dest) {
+
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+        StandardJavaFileManager fileManager = compiler.
+            getStandardFileManager(null, null, null);
+        Iterable<? extends JavaFileObject> compUnit =
+            fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));
+
+        Iterable<String> options = Arrays.asList("-d", dest.getAbsolutePath(), "-proc:none");
+        if (!compiler
+            .getTask(null, fileManager, null, options, null, compUnit).call()) {
+            throw new IllegalStateException("Couldn't compile the sources");
+        }
     }
 
     /**

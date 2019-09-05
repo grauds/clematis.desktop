@@ -25,7 +25,6 @@ package jworkspace.ui;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-//CHECKSTYLE:OFF
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import bsh.EvalError;
 import bsh.Interpreter;
-//CHECKSTYLE:ON
 /**
  * @author Anton Troshin
  */

@@ -2,10 +2,9 @@ package jworkspace.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.jar.Manifest;
 
-import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 
@@ -14,12 +13,13 @@ import jworkspace.kernel.WorkspacePluginLocator;
 /**
  * @author Anton Troshin
  */
-public class ShellHelper {
+class ShellHelper {
 
     static final String SHELL_JAR = "shell.jar";
-    
-    private static final String TEST_SHELL_CLASS_PACKAGE = "jworkspace.ui.";
-    private static final String TEST_SHELL_CLASS = "TestShell.class";
+    static final String CHILD_SHELL_JAR = "child_shell.jar";
+
+    private static final String TEST_SHELL_CLASS = "jworkspace/ui/TestShell.class";
+    private static final String BASE_SHELL_CLASS = "jworkspace/ui/ITestShell.class";
     private static final String TEST_SHELL = "jworkspace.ui.TestShell";
 
     private static final String TEST_SHELL_NAME = "Test shell";
@@ -28,18 +28,22 @@ public class ShellHelper {
     private static final String TEST_SHELL_HELP_URL = "http://test.com";
     private static final String TEST_SHELL_ICON = "/dummy/path.png";
 
+    private static final String CHILD_TEST_SHELL_CLASS = "jworkspace/ui/ChildTestShell.class";
+    private static final String CHILD_TEST_SHELL = "jworkspace.ui.ChildTestShell";
+
+    private static final String CHILD_TEST_SHELL_NAME = "Child test shell";
+
     private ShellHelper() {
     }
 
     static void writePluginJarFile(File testPluginClassPath,
-                                   String testPluginClass,
+                                   String[] classes,
                                    Manifest manifest,
                                    String pluginJar)
-            throws IOException {
+        throws IOException {
 
         WorkspacePluginLocator.writePluginJarFile(testPluginClassPath,
-            testPluginClass,
-            TEST_SHELL_CLASS_PACKAGE,
+            classes,
             manifest,
             testPluginClassPath,
             pluginJar);
@@ -47,8 +51,21 @@ public class ShellHelper {
 
     private static Manifest getManifest() {
 
-        PluginDTO plugin = new PluginDTO(TEST_SHELL_CLASS_PACKAGE + TEST_SHELL_CLASS,
+        PluginDTO plugin = new PluginDTO(TEST_SHELL_CLASS,
             TEST_SHELL_NAME,
+            PluginDTO.PLUGIN_TYPE_ANY,
+            TEST_SHELL_DESCRIPTION,
+            TEST_SHELL_ICON,
+            TEST_SHELL_VERSION,
+            TEST_SHELL_HELP_URL);
+
+        return PluginDTO.getManifest(plugin);
+    }
+
+    private static Manifest getChildManifest() {
+
+        PluginDTO plugin = new PluginDTO(CHILD_TEST_SHELL_CLASS,
+            CHILD_TEST_SHELL_NAME,
             PluginDTO.PLUGIN_TYPE_ANY,
             TEST_SHELL_DESCRIPTION,
             TEST_SHELL_ICON,
@@ -68,22 +85,39 @@ public class ShellHelper {
         assert testPlugin.getType().equals(PluginDTO.PLUGIN_TYPE_ANY);
     }
 
+    static void assertPluginEqualsChildManifest(Plugin testPlugin) {
+
+        assert testPlugin.getName().equals(CHILD_TEST_SHELL_NAME);
+        assert testPlugin.getDescription().equals(TEST_SHELL_DESCRIPTION);
+        assert testPlugin.getClassName().equals(CHILD_TEST_SHELL);
+        assert testPlugin.getVersion().equals(TEST_SHELL_VERSION);
+        assert testPlugin.getHelpURL().toString().equals(TEST_SHELL_HELP_URL);
+        assert testPlugin.getType().equals(PluginDTO.PLUGIN_TYPE_ANY);
+    }
+
     static void preparePlugins(File folder) throws IOException {
         preparePlugins(folder, folder);
     }
 
-    static void preparePlugins(File testPluginClassPath, File target) throws IOException {
+    private static void preparePlugins(File source, File target) throws IOException {
 
-        File sourceFile = WorkspacePluginLocator.getPluginFile(testPluginClassPath, TEST_SHELL_CLASS);
-        Files.write(sourceFile.toPath(),
-            StreamUtils.readStreamToByteArray(ShellsTests.class.getResourceAsStream(TEST_SHELL_CLASS)));
+        WorkspacePluginLocator.compile(new File[] {
+            Paths.get(ShellsTests.class.getResource("TestShell.java").getPath()).toFile(),
+            Paths.get(ShellsTests.class.getResource("ChildTestShell.java").getPath()).toFile()
+        }, source);
+
         Manifest manifest = getManifest();
-
-        WorkspacePluginLocator.writePluginJarFile(testPluginClassPath,
-            TEST_SHELL_CLASS,
-            TEST_SHELL_CLASS_PACKAGE,
+        WorkspacePluginLocator.writePluginJarFile(source.toPath().toFile(),
+            new String[]{TEST_SHELL_CLASS, BASE_SHELL_CLASS},
             manifest,
             target,
             SHELL_JAR);
+
+        manifest = getChildManifest();
+        WorkspacePluginLocator.writePluginJarFile(source.toPath().toFile(),
+            new String[]{CHILD_TEST_SHELL_CLASS, TEST_SHELL_CLASS, BASE_SHELL_CLASS},
+            manifest,
+            target,
+            CHILD_SHELL_JAR);
     }
 }

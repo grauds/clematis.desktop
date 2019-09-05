@@ -25,75 +25,143 @@ package jworkspace.ui.runtime;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hyperrealm.kiwi.util.ResourceLoader;
+
+import jworkspace.api.WorkspaceException;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 /**
  * All plugin actions
+ * @author Anton Troshin
  */
-public class RuntimeManagerActions {
+class RuntimeManagerActions {
+    /**
+     * Action property - this action work for editor
+     */
+    static final String PROCESS_ALIVE_ACTION = "PROCESS_ALIVE_ACTION";
     /**
      * Action property label
      */
-    public static final String ACTION_TYPE = "ACTION_TYPE";
+    static final String ACTION_TYPE = "ACTION_TYPE";
     /**
      * Action property - this action work for editor
      */
-    public static final String PROCESS_ALIVE_ACTION = "PROCESS_ALIVE_ACTION";
-    /**
-     * Action property - this action work for editor
-     */
-    public static final String PERSISTENT_ACTION = "PERSISTENT_ACTION";
-    /**
-     * Runtime manager window
-     */
-    protected RuntimeManagerWindow manager = null;
-    /**
-     * All actions
-     */
-    protected Hashtable actions = new Hashtable();
+    static final String PERSISTENT_ACTION = "PERSISTENT_ACTION";
     /**
      * Kill application action name
      */
-    public final static String killActionName = "Kill";
+    static final String KILL_ACTION_NAME = "Kill";
     /**
      * Kill all applications action name
      */
-    public final static String killAllActionName = "Kill All";
+    static final String KILL_ALL_ACTION_NAME = "Kill All";
     /**
      * Kill and remove application action name
      */
-    public final static String killAndRemoveActionName = "Kill And Remove";
+    static final String KILL_AND_REMOVE_ACTION_NAME = "Kill And Remove";
     /**
      * Kill all and remove all applications action name
      */
-    public final static String killAndRemoveAllActionName = "Kill And Remove All";
+    static final String KILL_AND_REMOVE_ALL_ACTION_NAME = "Kill And Remove All";
     /**
      * Copy log of selected applications action name
      */
-    public final static String copyLogActionName = "Copy Log";
+    static final String COPY_LOG_ACTION_NAME = "Copy Log";
     /**
      * Start a new application action name
      */
-    public final static String startActionName = "Start";
+    static final String START_ACTION_NAME = "Start";
     /**
-     * Kill application action
+     * Default logger
      */
-    public static Action killAction;
+    private static final Logger LOG = LoggerFactory.getLogger(RuntimeManagerActions.class);
+    /**
+     * Runtime manager window
+     */
+    private RuntimeManagerWindow manager;
+    /**
+     * All actions
+     */
+    private Map<String, Action> actions = new HashMap<>();
+
+    /**
+     * Default public constructor
+     */
+    RuntimeManagerActions(RuntimeManagerWindow manager) {
+        super();
+        this.manager = manager;
+        createActions();
+        enableActions(false);
+    }
+
+    public Action getAction(String name) {
+        return actions.get(name);
+    }
+
+    /**
+     * Enable actions of specified type
+     */
+    void enableActions(boolean flag, String type) {
+        for (Action action : actions.values()) {
+            String stype = (String) action.getValue(ACTION_TYPE);
+            if (stype != null && stype.equals(type)) {
+                action.setEnabled(flag);
+            }
+        }
+    }
+
+    void enableActions(boolean flag) {
+        for (Action action : actions.values()) {
+            if (!action.getValue(Action.NAME).
+                equals(START_ACTION_NAME)) {
+                action.setEnabled(flag);
+            } else {
+                action.setEnabled(true);
+            }
+        }
+    }
+
+    /**
+     * Create actions
+     */
+    private void createActions() {
+
+        Action killAction = new KillAction();
+        Action killAllAction = new KillAllAction();
+        Action killAndRemoveAction = new KillAndRemoveAction();
+        Action killAndRemoveAllAction = new KillAndRemoveAllAction();
+        Action copyLogAction = new CopyLogAction();
+        Action startAction = new StartAction();
+
+        actions.put(KILL_ACTION_NAME, killAction);
+        actions.put(KILL_ALL_ACTION_NAME, killAllAction);
+        actions.put(KILL_AND_REMOVE_ACTION_NAME, killAndRemoveAction);
+        actions.put(KILL_AND_REMOVE_ALL_ACTION_NAME, killAndRemoveAllAction);
+        actions.put(COPY_LOG_ACTION_NAME, copyLogAction);
+        actions.put(START_ACTION_NAME, startAction);
+
+    }
 
     protected class KillAction extends AbstractAction {
-        public KillAction() {
-            super(killActionName);
+        KillAction() {
+            super(KILL_ACTION_NAME);
             putValue(Action.SMALL_ICON,
-                    new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                            .getResourceAsImage("images/stop.png")));
-            putValue(Action.SHORT_DESCRIPTION, LangResource.getString("Kill"));
+                new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
+                    .getResourceAsImage("images/stop.png")));
+            putValue(Action.SHORT_DESCRIPTION, LangResource.getString(KILL_ACTION_NAME));
             putValue(ACTION_TYPE, PROCESS_ALIVE_ACTION);
         }
 
@@ -103,14 +171,9 @@ public class RuntimeManagerActions {
         }
     }
 
-    /**
-     * Kill all applications action
-     */
-    public static Action killAllAction;
-
     protected class KillAllAction extends AbstractAction {
-        public KillAllAction() {
-            super(killAllActionName);
+        KillAllAction() {
+            super(KILL_ALL_ACTION_NAME);
             putValue(Action.SHORT_DESCRIPTION, LangResource.getString("message#249"));
             putValue(ACTION_TYPE, PROCESS_ALIVE_ACTION);
         }
@@ -121,14 +184,9 @@ public class RuntimeManagerActions {
         }
     }
 
-    /**
-     * Kill and remove application action
-     */
-    public static Action killAndRemoveAction;
-
     protected class KillAndRemoveAction extends AbstractAction {
-        public KillAndRemoveAction() {
-            super(killAndRemoveActionName);
+        KillAndRemoveAction() {
+            super(KILL_AND_REMOVE_ACTION_NAME);
             putValue(Action.SHORT_DESCRIPTION, LangResource.getString("message#250"));
             putValue(ACTION_TYPE, PROCESS_ALIVE_ACTION);
         }
@@ -139,14 +197,9 @@ public class RuntimeManagerActions {
         }
     }
 
-    /**
-     * Kill all and remove all applications action
-     */
-    public static Action killAndRemoveAllAction;
-
     protected class KillAndRemoveAllAction extends AbstractAction {
-        public KillAndRemoveAllAction() {
-            super(killAndRemoveAllActionName);
+        KillAndRemoveAllAction() {
+            super(KILL_AND_REMOVE_ALL_ACTION_NAME);
             putValue(Action.SHORT_DESCRIPTION, LangResource.getString("message#238"));
             putValue(ACTION_TYPE, PROCESS_ALIVE_ACTION);
         }
@@ -157,17 +210,12 @@ public class RuntimeManagerActions {
         }
     }
 
-    /**
-     * Copy log of selected applications action
-     */
-    public static Action copyLogAction;
-
     protected class CopyLogAction extends AbstractAction {
-        public CopyLogAction() {
-            super(copyLogActionName);
+        CopyLogAction() {
+            super(COPY_LOG_ACTION_NAME);
             putValue(Action.SMALL_ICON,
-                    new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                            .getResourceAsImage("images/save.gif")));
+                new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
+                    .getResourceAsImage("images/save.gif")));
             putValue(Action.SHORT_DESCRIPTION, LangResource.getString("message#253"));
             putValue(ACTION_TYPE, PERSISTENT_ACTION);
         }
@@ -177,99 +225,27 @@ public class RuntimeManagerActions {
         }
     }
 
-    /**
-     * Start a new application action
-     */
-    public static Action startAction;
-
     protected class StartAction extends AbstractAction {
-        public StartAction() {
-            super(startActionName);
+        StartAction() {
+            super(START_ACTION_NAME);
             putValue(Action.SMALL_ICON,
-                    new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                            .getResourceAsImage("images/go.png")));
-            putValue(Action.SHORT_DESCRIPTION, LangResource.getString("Start"));
+                new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
+                    .getResourceAsImage("images/go.png")));
+            putValue(Action.SHORT_DESCRIPTION, LangResource.getString(START_ACTION_NAME));
             putValue(ACTION_TYPE, PERSISTENT_ACTION);
         }
 
         public void actionPerformed(ActionEvent evt) {
-            ApplicationChooserDialog dlg =
-                    new ApplicationChooserDialog(Workspace.getUI().getFrame());
+            ApplicationChooserDialog dlg = new ApplicationChooserDialog(Workspace.getUi().getFrame());
             dlg.setVisible(true);
             if (dlg.getSelectedApplication() != null) {
-                Workspace.getRuntimeManager().
-                        run(dlg.getSelectedApplication().getLinkString());
+                try {
+                    Workspace.getRuntimeManager().run(dlg.getSelectedApplication().getLinkString());
+                } catch (WorkspaceException | IOException e) {
+                    LOG.error(e.getMessage(), e);
+                }
             }
             manager.update();
         }
-    }
-
-    /**
-     * Default public constructor
-     */
-    public RuntimeManagerActions(RuntimeManagerWindow manager) {
-        super();
-        this.manager = manager;
-        createActions();
-        enableActions(false);
-    }
-
-    public Action getAction(String name) {
-        return (Action) actions.get(name);
-    }
-
-    public Action[] getActions() {
-        Enumeration e=actions.elements();
-        Action[] temp = new Action[actions.size()];
-        for (int i = 0; i < temp.length; i++) {
-            temp[i] = (Action) e.nextElement();
-        }
-        return temp;
-    }
-
-    /**
-     * Enable actions of specified type
-     */
-    public void enableActions(boolean flag, String type) {
-        Action[] actions = getActions();
-        for (int i = 0; i < actions.length; i++) {
-            String stype = (String) actions[i].getValue(ACTION_TYPE);
-            if (stype == null) continue;
-            else if (stype.equals(type)) {
-                actions[i].setEnabled(flag);
-            }
-        }
-    }
-
-    public void enableActions(boolean flag) {
-        Action[] actions = getActions();
-        for (int i = 0; i < actions.length; i++) {
-            if (!actions[i].getValue(Action.NAME).
-                    equals(startActionName))
-                actions[i].setEnabled(flag);
-            else
-                actions[i].setEnabled(true);
-        }
-    }
-
-    /**
-     * Create actions
-     */
-    protected Hashtable createActions() {
-        killAction = new KillAction();
-        killAllAction = new KillAllAction();
-        killAndRemoveAction = new KillAndRemoveAction();
-        killAndRemoveAllAction = new KillAndRemoveAllAction();
-        copyLogAction = new CopyLogAction();
-        startAction = new StartAction();
-
-        actions.put(killActionName, killAction);
-        actions.put(killAllActionName, killAllAction);
-        actions.put(killAndRemoveActionName, killAndRemoveAction);
-        actions.put(killAndRemoveAllActionName, killAndRemoveAllAction);
-        actions.put(copyLogActionName, copyLogAction);
-        actions.put(startActionName, startAction);
-
-        return actions;
     }
 }
