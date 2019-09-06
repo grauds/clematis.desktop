@@ -58,7 +58,7 @@ public class ShellsTests {
     }
 
     @Test
-    public void testIsLoading() throws PluginException {
+    public void testIsLoading() throws PluginException, IOException {
 
         Plugin testPlugin = new ViewPluginLocator()
             .loadPlugin(ViewPluginLocator.getPluginFile(testFolder.getRoot(),
@@ -71,6 +71,9 @@ public class ShellsTests {
 
         testPlugin.reload();
         assertEquals("jworkspace.ui.TestShell", obj.getClass().getName());
+
+        ((ITestShell) obj).setPath(testFolder.getRoot().getPath());
+        ((ITestShell) obj).load();
     }
 
     @Test

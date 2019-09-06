@@ -176,24 +176,17 @@ public class PluginClassLoader extends ClassLoader {
 
                             // found it! so let's load it...
 
-                            BufferedInputStream ins = null;
                             int r, size = 0;
                             byte[] b = null;
 
-                            try {
-                                ins = new BufferedInputStream(jar.getInputStream(entry));
+                            try (BufferedInputStream ins = new BufferedInputStream(jar.getInputStream(entry))){
+
                                 size = (int) entry.getSize();
 
                                 b = new byte[size];
                                 r = ins.read(b, 0, size);
                             } catch (IOException ex) {
                                 r = -1;
-                            }
-
-                            if (ins != null) {
-                                try {
-                                    ins.close();
-                                } catch (IOException ex) { /* ignore */ }
                             }
 
                             if (r != size) {

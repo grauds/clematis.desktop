@@ -13,7 +13,7 @@ import jworkspace.kernel.WorkspacePluginLocator;
 /**
  * @author Anton Troshin
  */
-class ShellHelper {
+public class ShellHelper {
 
     static final String SHELL_JAR = "shell.jar";
     static final String CHILD_SHELL_JAR = "child_shell.jar";
@@ -30,6 +30,8 @@ class ShellHelper {
 
     private static final String CHILD_TEST_SHELL_CLASS = "jworkspace/ui/ChildTestShell.class";
     private static final String CHILD_TEST_SHELL = "jworkspace.ui.ChildTestShell";
+
+    private static final String PLUGIN_LOCATOR_CLASS = "jworkspace/ui/TestPluginLocator.class";
 
     private static final String CHILD_TEST_SHELL_NAME = "Child test shell";
 
@@ -103,19 +105,20 @@ class ShellHelper {
 
         WorkspacePluginLocator.compile(new File[] {
             Paths.get(ShellsTests.class.getResource("TestShell.java").getPath()).toFile(),
-            Paths.get(ShellsTests.class.getResource("ChildTestShell.java").getPath()).toFile()
+            Paths.get(ShellsTests.class.getResource("ChildTestShell.java").getPath()).toFile(),
+            Paths.get(ShellsTests.class.getResource("TestPluginLocator.java").getPath()).toFile()
         }, source);
 
         Manifest manifest = getManifest();
         WorkspacePluginLocator.writePluginJarFile(source.toPath().toFile(),
-            new String[]{TEST_SHELL_CLASS, BASE_SHELL_CLASS},
+            new String[]{TEST_SHELL_CLASS, PLUGIN_LOCATOR_CLASS},
             manifest,
             target,
             SHELL_JAR);
 
         manifest = getChildManifest();
         WorkspacePluginLocator.writePluginJarFile(source.toPath().toFile(),
-            new String[]{CHILD_TEST_SHELL_CLASS, TEST_SHELL_CLASS, BASE_SHELL_CLASS},
+            new String[]{CHILD_TEST_SHELL_CLASS, TEST_SHELL_CLASS},
             manifest,
             target,
             CHILD_SHELL_JAR);
