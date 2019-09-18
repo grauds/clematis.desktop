@@ -46,6 +46,8 @@ import java.io.IOException;
 @SuppressWarnings("unused")
 public class BackupFileWriter extends FileWriter {
 
+    public static final String BAK = ".bak";
+
     private static final String TMP = ".tmp";
 
     private File tempFile, backupFile;
@@ -69,7 +71,7 @@ public class BackupFileWriter extends FileWriter {
 
         String path = file.getAbsolutePath();
         tempFile = new File(path + TMP);
-        backupFile = new File(path + ".bak");
+        backupFile = new File(path + BAK);
     }
 
     /**

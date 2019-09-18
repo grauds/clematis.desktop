@@ -47,6 +47,8 @@ import java.io.IOException;
 
 public class BackupFileOutputStream extends FileOutputStream {
 
+    public static final String BAK = ".bak";
+
     private static final String TMP = ".tmp";
 
     private File tempFile, backupFile;
@@ -70,7 +72,7 @@ public class BackupFileOutputStream extends FileOutputStream {
 
         String path = file.getAbsolutePath();
         tempFile = new File(path + TMP);
-        backupFile = new File(path + ".bak");
+        backupFile = new File(path + BAK);
     }
 
     /**

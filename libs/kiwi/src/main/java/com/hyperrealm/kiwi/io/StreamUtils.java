@@ -81,9 +81,8 @@ public final class StreamUtils {
      *                             the stream.
      */
 
-    public static String readStreamToString(InputStream input)
-            throws IOException {
-        return (readStream(input).toString(StandardCharsets.UTF_8.name()));
+    public static String readStreamToString(InputStream input) throws IOException {
+        return readStream(input).toString(StandardCharsets.UTF_8.name());
     }
 
     /**
@@ -91,15 +90,14 @@ public final class StreamUtils {
      *
      * @param s      The string to write.
      * @param output The stream to write it to.
-     * @throws java.io.IOException If an error occurred while writing to the
-     *                             stream.
+     * @throws java.io.IOException If an error occurred while writing to the stream.
      */
 
-    public static void writeStringToStream(String s, OutputStream output)
-            throws IOException {
-        InputStream input = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
+    public static void writeStringToStream(String s, OutputStream output) throws IOException {
 
-        readStreamToStream(input, output);
+        try (InputStream input = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))) {
+            readStreamToStream(input, output);
+        }
     }
 
     /**
@@ -112,22 +110,19 @@ public final class StreamUtils {
      *                             the stream.
      */
 
-    public static byte[] readStreamToByteArray(InputStream input)
-            throws IOException {
-        return (readStream(input).toByteArray());
+    public static byte[] readStreamToByteArray(InputStream input) throws IOException {
+        return readStream(input).toByteArray();
     }
 
     /* Fully read an <code>InputStream</code>, writing the data read to a
      * <code>ByteArrayOutputStream. Returns a reference to the resulting stream.
      */
 
-    private static ByteArrayOutputStream readStream(InputStream input)
-            throws IOException {
+    private static ByteArrayOutputStream readStream(InputStream input) throws IOException {
+
         ByteArrayOutputStream output = new ByteArrayOutputStream(BLOCK_SIZE);
-
         readStreamToStream(input, output);
-
-        return (output);
+        return output;
     }
 
 }

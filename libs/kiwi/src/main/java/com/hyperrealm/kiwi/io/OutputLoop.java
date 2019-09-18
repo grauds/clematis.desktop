@@ -45,10 +45,8 @@ public class OutputLoop {
     /**
      * Construct a new <code>OutputLoop</code>.
      *
-     * @throws java.io.IOException If an error occurred while creating the
-     *                             pipe.
+     * @throws java.io.IOException If an error occurred while creating the pipe.
      */
-
     public OutputLoop() throws IOException {
 
         pipeout = new PipedOutputStream();
