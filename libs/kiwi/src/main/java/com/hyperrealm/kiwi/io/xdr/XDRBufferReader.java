@@ -33,7 +33,7 @@ import java.io.IOException;
  * @since Kiwi 2.0
  * @link https://en.wikipedia.org/wiki/External_Data_Representation
  */
-@SuppressWarnings({"unused", "checkstyle:magicnumber", "CheckStyle"})
+@SuppressWarnings({"unused", "magicnumber"})
 public class XDRBufferReader implements XDRDataInput {
 
     private byte[] buffer;

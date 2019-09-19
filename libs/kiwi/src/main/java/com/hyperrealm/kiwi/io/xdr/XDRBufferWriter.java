@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
  * @link https://en.wikipedia.org/wiki/External_Data_Representation
  * @since Kiwi 2.0
  */
-@SuppressWarnings({"unused", "checkstyle:magicnumber", "CheckStyle"})
+@SuppressWarnings({"unused", "magicnumber"})
 public class XDRBufferWriter implements XDRDataOutput {
     private byte[] buffer;
     private int left;
