@@ -30,12 +30,11 @@ package com.hyperrealm.kiwi.util;
  * overhead to sort the map if it is not sorted at the time of lookup. The
  * map becomes "unsorted" whenever new items are added to it.
  *
- * @param <T>
  * @author Mark Lindner
  * @since Kiwi 2.1
  */
 
-public class IDMap<T> {
+public class IDMap {
     /**
      * The default initial capacity.
      */
@@ -43,7 +42,7 @@ public class IDMap<T> {
 
     private long[] keys;
 
-    private T[] values;
+    private Object[] values;
 
     private int length = 0;
 
@@ -72,7 +71,7 @@ public class IDMap<T> {
         capacity = initialCapacity;
 
         keys = new long[capacity];
-        values = (T[]) new Object[capacity];
+        values = new Object[capacity];
     }
 
     /**
@@ -84,7 +83,7 @@ public class IDMap<T> {
      * @param value The value.
      */
 
-    public void put(long key, T value) {
+    public void put(long key, Object value) {
         if (length == capacity) {
             capacity += initialCapacity;
 
@@ -94,7 +93,7 @@ public class IDMap<T> {
 
             Object[] newValues = new Object[capacity];
             System.arraycopy(values, 0, newValues, 0, length);
-            values = (T[]) newValues;
+            values = newValues;
         }
 
         keys[length] = key;
@@ -112,7 +111,7 @@ public class IDMap<T> {
      * value associated with the given key.
      */
 
-    public T get(long key) {
+    public Object get(long key) {
         if (!sorted) {
             sort();
         }
@@ -132,7 +131,7 @@ public class IDMap<T> {
      * value associated with the given key.
      */
 
-    public T remove(long key) {
+    public Object remove(long key) {
         if (!sorted) {
             sort();
         }
@@ -142,7 +141,7 @@ public class IDMap<T> {
             return (null);
         }
 
-        T v = values[x];
+        Object v = values[x];
         length--;
 
         for (int i = x; i < length; i++) {
@@ -188,7 +187,7 @@ public class IDMap<T> {
      * @return The value at the specified index.
      */
 
-    public T getValueAt(int index) {
+    public Object getValueAt(int index) {
         if ((index < 0) || (index >= length)) {
             throw (new IndexOutOfBoundsException());
         }
@@ -322,7 +321,7 @@ public class IDMap<T> {
         keys[a] = keys[b];
         keys[b] = k;
 
-        T v = values[a];
+        Object v = values[a];
         values[a] = values[b];
         values[b] = v;
     }

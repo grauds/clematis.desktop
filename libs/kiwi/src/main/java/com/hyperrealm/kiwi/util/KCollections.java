@@ -124,7 +124,13 @@ public final class KCollections {
 
         add(list, l1);
 
-        return getList(l2, list, sorted, comparator, list);
+        for (Object o : l2) {
+            if (search(l1, o, sorted, comparator) < 0) {
+                list.add(o);
+            }
+        }
+
+        return list;
     }
 
     /**
@@ -142,11 +148,6 @@ public final class KCollections {
     public static List intersection(List l1, List l2, boolean sorted,
                                     Comparator comparator) {
         List list = new ArrayList();
-
-        return getList(l1, l2, sorted, comparator, list);
-    }
-
-    private static List getList(List l1, List l2, boolean sorted, Comparator comparator, List list) {
 
         for (Object o : l1) {
             if (search(l2, o, sorted, comparator) >= 0) {
@@ -174,7 +175,13 @@ public final class KCollections {
                                   Comparator comparator) {
         List list = new ArrayList();
 
-        return getList(l2, list, sorted, comparator, list);
+        for (Object o : l1) {
+            if (search(l2, o, sorted, comparator) < 0) {
+                list.add(o);
+            }
+        }
+
+        return (list);
     }
 
     /**

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import org.junit.After;
@@ -67,6 +68,8 @@ public class PluginTests {
                 PluginHelper.PLUGIN_JAR), PluginDTO.PLUGIN_TYPE_ANY);
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
+
+        testPlugin.addPluginReloadListener(event -> assertEquals(testPlugin, event.getSource()));
 
         testPlugin.reload();
         Object obj = testPlugin.newInstance();

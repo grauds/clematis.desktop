@@ -21,6 +21,7 @@ package com.hyperrealm.kiwi.util;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,7 +39,7 @@ import java.util.Set;
 
 public class RefSet<K> {
 
-    private HashMap<K, Counter> map = new HashMap<K, Counter>();
+    private Map<K, Counter> map = new HashMap<K, Counter>();
 
     /**
      * Construct a new, empty <code>RefSet</code>.
