@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -608,12 +609,11 @@ public class WorkspaceGUI implements UI {
 
         public void processEvent(Integer event, Object lparam, Object rparam) {
 
-            if (lparam instanceof Hashtable
-                && ((Hashtable) lparam).get(IWorkspaceListener.VIEW_PARAMETER) instanceof IView
-                && ((Hashtable) lparam).get(IWorkspaceListener.DISPLAY_PARAMETER) instanceof Boolean
-                && ((Hashtable) lparam).get(IWorkspaceListener.REGISTER_PARAMETER) instanceof Boolean) {
+            if (lparam instanceof Map
+                && ((Map) lparam).get(IWorkspaceListener.VIEW_PARAMETER) instanceof IView
+                && ((Map) lparam).get(IWorkspaceListener.DISPLAY_PARAMETER) instanceof Boolean) {
 
-                Hashtable lhparam = (Hashtable) lparam;
+                Map lhparam = (Map) lparam;
                 IView view = (IView) lhparam.get(IWorkspaceListener.VIEW_PARAMETER);
                 Boolean display = (Boolean) lhparam.get(IWorkspaceListener.DISPLAY_PARAMETER);
                 Boolean register = (Boolean) lhparam.get(IWorkspaceListener.REGISTER_PARAMETER);

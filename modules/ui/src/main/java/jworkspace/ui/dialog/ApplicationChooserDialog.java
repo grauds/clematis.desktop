@@ -51,6 +51,7 @@ import jworkspace.ui.WorkspaceGUI;
 @SuppressFBWarnings("UR_UNINIT_READ")
 public class ApplicationChooserDialog extends ComponentDialog {
 
+    private static final String TITLE = WorkspaceResourceAnchor.getString("ApplicationChooser.title");
     private KTreeTable treeTable;
 
     private Application application = null;
@@ -60,10 +61,9 @@ public class ApplicationChooserDialog extends ComponentDialog {
      * this package.
      */
     public ApplicationChooserDialog(Frame parent) {
-        super(parent, WorkspaceResourceAnchor.getString("ApplicationChooser.title"), true);
+        super(parent, TITLE, true);
         treeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().
-            getImage("application_big.png")));
+        setComment(new ImageIcon(WorkspaceGUI.getResourceManager().getImage("application_big.png")), TITLE);
     }
 
     protected boolean accept() {
