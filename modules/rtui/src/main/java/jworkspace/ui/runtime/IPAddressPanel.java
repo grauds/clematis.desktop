@@ -40,7 +40,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
  *
  * @author Anton Troshin
  */
-public class IPAddressPanel extends KPanel {
+class IPAddressPanel extends KPanel {
 
     IPAddressPanel() {
         super();
@@ -65,6 +65,6 @@ public class IPAddressPanel extends KPanel {
 
     @SuppressWarnings("checkstyle:MagicNumber")
     public Dimension getPreferredSize() {
-        return new Dimension(200, 60);
+        return new Dimension(300, 100);
     }
 }

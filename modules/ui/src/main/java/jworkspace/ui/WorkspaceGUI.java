@@ -93,7 +93,7 @@ import jworkspace.ui.widgets.WorkspaceError;
 public class WorkspaceGUI implements UI {
 
     /**
-     *
+     * Logger
      */
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceGUI.class);
     /**
@@ -115,7 +115,7 @@ public class WorkspaceGUI implements UI {
     /**
      * Plugin shells
      */
-    private Set<IShell> shells = new HashSet<>();
+    private Set<Plugin> shells = new HashSet<>();
     /**
      * GUI actions
      */
@@ -179,7 +179,7 @@ public class WorkspaceGUI implements UI {
      */
     @Override
     public Clipboard getClipboard() {
-        return ((jworkspace.ui.MainFrame) getFrame()).getClipboard();
+        return ((MainFrame) getFrame()).getClipboard();
     }
 
     @Override
@@ -306,6 +306,8 @@ public class WorkspaceGUI implements UI {
      */
     private synchronized void installShell(Plugin plugin) throws PluginException {
 
+        Workspace.addUserPlugin(plugin);
+        // todo: this is a second initialization!
         Object obj = plugin.newInstance();
         if (obj instanceof IShell) {
             IShell shell = (IShell) obj;
@@ -314,10 +316,6 @@ public class WorkspaceGUI implements UI {
             } catch (IOException ex) {
                 LOG.warn("> System error: Shell cannot be loaded:" + ex.toString());
             }
-            /*
-             * Add view to the list of shells
-             */
-            shells.add(shell);
             /*
              * Ask for buttons and fill control panel.
              */
@@ -423,10 +421,6 @@ public class WorkspaceGUI implements UI {
         ((MainFrame) getFrame()).reset();
         frame = null;
         /*
-         * Empty the list of UI plugins
-         */
-        shells.clear();
-        /*
          * Set title
          */
         getFrame().setTitle(IConstants.VERSION);
@@ -451,10 +445,6 @@ public class WorkspaceGUI implements UI {
          * Save the workspace configuration
          */
         uiConfig.save();
-        /*
-         * Save all other info
-         */
-        saveShells();
         /*
          * Save look and feel infos
          */
@@ -482,19 +472,6 @@ public class WorkspaceGUI implements UI {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
             LOG.warn(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * Save all graphic UI plugins (shells)
-     */
-    private void saveShells() {
-        for (IShell shell : shells) {
-            try {
-                shell.save();
-            } catch (IOException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
         }
     }
 

@@ -136,7 +136,7 @@ class MemoryMonitor extends KPanel implements Runnable {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(200, 130);
+        return new Dimension(300, 230);
     }
 
     public void paint(Graphics g) {

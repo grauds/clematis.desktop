@@ -30,7 +30,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Box;
@@ -62,6 +64,7 @@ import jworkspace.kernel.JavaProcess;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.WorkspaceResourceManager;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.views.DefaultCompoundView;
 
@@ -80,6 +83,8 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     private static final String RUNTIME_MANAGER = LangResource.getString("message#240");
 
     private static RuntimeManagerActions actions;
+
+    private static WorkspaceResourceManager resourceManager;
 
     private Vector<Monitor> monitors = new Vector<>();
 
@@ -464,22 +469,10 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         JavaProcess[] p = Workspace.getRuntimeManager().getAllProcesses();
         processes.setListData(p);
 
-/* HashSet hplugins = (HashSet)Workspace.getSystemPlugins().clone();
-   hplugins.addAll((HashSet)Workspace.getUserPlugins().clone());
-
-   if (Workspace.getUI() instanceof WorkspaceGUI)
-   {
-     WorkspaceGUI wgui = (WorkspaceGUI) Workspace.getUI();
-     hplugins.addAll((HashSet)wgui.getShells().clone());
-   }*/
-//        HashSet hplugins = Workspace.getSystemPlugins();
-//        hplugins.addAll(Workspace.getUserPlugins());
-//
-//        if (Workspace.getUi() instanceof WorkspaceGUI) {
-//            WorkspaceGUI wgui = (WorkspaceGUI) Workspace.getUi();
-//            hplugins.addAll(wgui.getShells());
-//        }
-//        plugins.setListData(hplugins.toArray());
+        Set<Plugin> listData = new HashSet<>();
+        listData.addAll(Workspace.getSystemPlugins());
+        listData.addAll(Workspace.getUserPlugins());
+        plugins.setListData(listData.toArray(new Plugin[] {}));
 
         if (processes.isSelectionEmpty()) {
             getActions().enableActions(false);
@@ -488,6 +481,18 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         }
 
         super.update();
+    }
+
+    /**
+     * Returns resource manager for the GUI.
+     *
+     * @return kiwi.util.WorkspaceResourceManager
+     */
+    public static synchronized WorkspaceResourceManager getResourceManager() {
+        if (resourceManager == null) {
+            resourceManager = new WorkspaceResourceManager(RuntimeManagerWindow.class);
+        }
+        return resourceManager;
     }
 
     /**
@@ -536,11 +541,11 @@ public class RuntimeManagerWindow extends DefaultCompoundView
                         setText(value.toString());
                         Icon icon = plugin.getIcon();
                         if (icon == null && plugin.getType().equals("XShell")) {
-                            setIcon(new ImageIcon(Workspace.getResourceManager().getImage("shell.png")));
+                            setIcon(new ImageIcon(getResourceManager().getImage("shell.png")));
                         } else if (icon == null && plugin.getType().equals("XPlugin")) {
-                            setIcon(new ImageIcon(Workspace.getResourceManager().getImage("plugin.png")));
+                            setIcon(new ImageIcon(getResourceManager().getImage("plugin.png")));
                         } else if (icon == null) {
-                            setIcon(new ImageIcon(Workspace.getResourceManager().getImage("unknown.png")));
+                            setIcon(new ImageIcon(getResourceManager().getImage("unknown.png")));
                         } else {
                             setIcon(icon);
                         }

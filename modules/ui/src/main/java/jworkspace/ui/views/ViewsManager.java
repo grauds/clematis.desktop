@@ -740,16 +740,6 @@ public class ViewsManager extends AbstractViewsManager {
             throw new IllegalArgumentException(WorkspaceResourceAnchor.getString("View should be a JComponent"));
         }
 
-       // if (register) {
-            /*
-             * Check if there is a registered but not necessarily displayed component.
-             */
-        //    Object existing = Workspace.getUi().isRegistered(view.getClass().getName());
-
-          //  if (existing == null) {
-//                Workspace.getUi().register(view);
-         //   }
-      //  }
         if (getView(view) == null || !view.isUnique()) {
             /*
              * If view is not added to collection.

@@ -40,8 +40,9 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 
+import static jworkspace.ui.runtime.RuntimeManagerWindow.getResourceManager;
+
 import jworkspace.kernel.JavaProcess;
-import jworkspace.kernel.Workspace;
 
 /**
  * @author Anton Troshin
@@ -181,11 +182,11 @@ public class PropertiesPanel extends KPanel {
 
         Icon icon = plugin.getIcon();
         if (icon == null && plugin.getType().equals("XShell")) {
-            icon = new ImageIcon(Workspace.getResourceManager().getImage("shell_big.png"));
+            icon = new ImageIcon(getResourceManager().getImage("shell_big.png"));
         } else if (icon == null && plugin.getType().equals("XPlugin")) {
-            icon = new ImageIcon(Workspace.getResourceManager().getImage("plugin_big.png"));
+            icon = new ImageIcon(getResourceManager().getImage("plugin_big.png"));
         } else if (icon == null) {
-            icon = new ImageIcon(Workspace.getResourceManager().getImage("unknown_big.png"));
+            icon = new ImageIcon(getResourceManager().getImage("unknown_big.png"));
         }
         layoutReport(sb.toString(), icon);
     }

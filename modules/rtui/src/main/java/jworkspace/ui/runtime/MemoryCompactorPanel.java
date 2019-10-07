@@ -55,7 +55,6 @@ class MemoryCompactorPanel extends KPanel {
         KPanel widget = new KPanel();
         mc.setStatusArea(widget);
 
-        widget.setPreferredSize(new Dimension(150, 40));
         widget.setOpaque(false);
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -64,6 +63,6 @@ class MemoryCompactorPanel extends KPanel {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(200, 130);
+        return new Dimension(300, 130);
     }
 }

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -139,7 +140,7 @@ public class Workspace {
     /**
      * Adds system plugin
      */
-    public static void addSystemPlugin(Plugin pl) throws PluginException, IOException {
+    public static void addSystemPlugin(Plugin pl) throws PluginException {
         addPlugin(pl, systemPlugins, workspaceComponents);
     }
 
@@ -155,6 +156,13 @@ public class Workspace {
      */
     public static void addUserPlugins(List<Plugin> pls) {
         addPlugins(pls, userPlugins, workspaceUserComponents);
+    }
+
+    /**
+     * Adds user plugin
+     */
+    public static void addUserPlugin(Plugin plugin) {
+        addPlugins(Collections.singletonList(plugin), userPlugins, workspaceUserComponents);
     }
 
     /**
@@ -180,6 +188,14 @@ public class Workspace {
             }
         }
         return null;
+    }
+
+    public static Set<Plugin> getSystemPlugins() {
+        return new HashSet<>(systemPlugins);
+    }
+
+    public static Set<Plugin> getUserPlugins() {
+        return new HashSet<>(userPlugins);
     }
 
     /**
