@@ -41,7 +41,7 @@ subprojects {
 
     compileJava {
        // options.compilerArgs << '-Xlint:unchecked' << "-Xlint:deprecation"
-        options.compilerArgs << '-Xlint:sunapi' << '-XDenableSunApiLintControl'
+        options.compilerArgs << '-XDenableSunApiLintControl'
     }
 
     repositories {

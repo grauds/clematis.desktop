@@ -41,12 +41,6 @@ import java.net.URL;
 @SuppressWarnings("sunapi")
 public class KiwiAudioClip implements java.applet.AudioClip {
 
-    private sun.audio.AudioData audioData;
-
-    private sun.audio.AudioDataStream audioStream = null;
-
-    private sun.audio.ContinuousAudioDataStream cAudioStream = null;
-
     private String name = "Untitled";
 
     /**
@@ -57,10 +51,8 @@ public class KiwiAudioClip implements java.applet.AudioClip {
      *                             specified URL.
      */
 
-    public KiwiAudioClip(URL url) throws IOException {
-        try (sun.audio.AudioStream as = new sun.audio.AudioStream(url.openStream())) {
-            audioData = as.getData();
-        }
+    public KiwiAudioClip(URL url) {
+
     }
 
     /**
@@ -79,12 +71,10 @@ public class KiwiAudioClip implements java.applet.AudioClip {
      * Construct a new <code>AudioClip</code>.
      *
      * @param stream The stream to read the audio data from.
-     * @throws java.io.IOException If there is a problem reading from the
-     *                             specified stream.
      */
 
-    public KiwiAudioClip(InputStream stream) throws IOException {
-        audioData = new sun.audio.AudioStream(stream).getData();
+    public KiwiAudioClip(InputStream stream) {
+
     }
 
     /**
@@ -92,8 +82,7 @@ public class KiwiAudioClip implements java.applet.AudioClip {
      */
 
     public void play() {
-        audioStream = new sun.audio.AudioDataStream(audioData);
-        sun.audio.AudioPlayer.player.start(audioStream);
+
     }
 
     /**
@@ -101,8 +90,7 @@ public class KiwiAudioClip implements java.applet.AudioClip {
      */
 
     public void loop() {
-        cAudioStream = new sun.audio.ContinuousAudioDataStream(audioData);
-        sun.audio.AudioPlayer.player.start(cAudioStream);
+
     }
 
     /**
@@ -110,12 +98,7 @@ public class KiwiAudioClip implements java.applet.AudioClip {
      */
 
     public void stop() {
-        if (audioStream != null) {
-            sun.audio.AudioPlayer.player.stop(audioStream);
-        }
-        if (cAudioStream != null) {
-            sun.audio.AudioPlayer.player.stop(cAudioStream);
-        }
+
     }
 
     /**
