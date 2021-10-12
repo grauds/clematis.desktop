@@ -1,7 +1,6 @@
 # jWorkspace - Desktop for Java
   
 [![License](https://img.shields.io/badge/License-GPLv2%202.0-blue.svg)](libs/kiwi/src/main/resources/com/hyperrealm/kiwi/html/gpl.html)
-[![Build Status](https://travis-ci.com/grauds/clematis.desktop.svg?token=TexcHfhzFr21pQNJbxcm&branch=master)](https://travis-ci.com/grauds/clematis.desktop)
 [![codecov](https://codecov.io/gh/grauds/clematis.desktop/branch/master/graph/badge.svg?token=YdupUNe6dl)](https://codecov.io/gh/grauds/clematis.desktop)
 
 ## Introduction
