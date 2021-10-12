@@ -24,14 +24,16 @@ package jworkspace.weather;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 
 /**
  * A weather observation in accordance with Moscow VDNH station logs.
@@ -40,8 +42,9 @@ import lombok.EqualsAndHashCode;
  * @author Anton Troshin
  */
 @Entity
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@ToString
 public class Observation extends BaseEntity<Long> {
     /**
      * Weather station unique id (27612 for VDNH)
@@ -76,6 +79,7 @@ public class Observation extends BaseEntity<Long> {
      * Mean wind direction (compass points) at a height of 10-12 metres
      * above the earth’s surface over the 10-minute period immediately preceding the observation
      */
+    @Enumerated
     private WindDirection dd;
     /**
      * Mean wind speed at a height of 10-12 metres above the earth’s surface over the

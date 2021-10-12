@@ -41,7 +41,7 @@ import org.junit.Test;
  */
 public class ImportPipelineTest {
 
-    private static final int TEST_DATA_SIZE = 52018;
+    private static final int TEST_DATA_SIZE = 58725;
 
     private SessionFactory sessionFactory;
 
@@ -66,7 +66,8 @@ public class ImportPipelineTest {
         List<Observation> result = new CsvReader(true, "27612.01.02.2005.01.02.2006.1.0.0.en.unic.00000000.csv").read();
         result.addAll(new CsvReader(true, "27612.01.02.2006.01.02.2010.1.0.0.en.unic.00000000.csv").read());
         result.addAll(new CsvReader(true, "27612.01.02.2010.01.02.2015.1.0.0.en.unic.00000000.csv").read());
-        result.addAll(new CsvReader(true, "27612.01.02.2015.28.07.2019.1.0.0.en.unic.00000000.csv").read());
+        result.addAll(new CsvReader(true, "27612.01.02.2015.01.02.2021.1.0.0.en.unic.00000000.csv").read());
+        result.addAll(new CsvReader(true, "27612.01.01.2021.12.10.2021.1.0.0.en.unic.00000000.csv").read());
         assertEquals(result.size(), TEST_DATA_SIZE);
 
         for (Observation observation : result) {

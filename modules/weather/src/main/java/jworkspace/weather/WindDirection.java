@@ -54,7 +54,9 @@ public enum WindDirection {
     SOUTH_EAST("Wind blowing from the south-east"),
     SOUTH_WEST("Wind blowing from the south-west"),
     SOUTH_SOUTHEAST("Wind blowing from the south-southeast"),
-    SOUTH_SOUTHWEST("Wind blowing from the south-southwest");
+    SOUTH_SOUTHWEST("Wind blowing from the south-southwest"),
+
+    VARIABLE_WIND("variable wind direction");
 
     private final String description;
 

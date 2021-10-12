@@ -13,6 +13,7 @@ processResources {
     }
 
     into 'build/main/resources'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 }
 
@@ -26,10 +27,10 @@ dependencies {
 
     compileOnly project(':jworkspace')
     compileOnly project(':ui')
-    testCompile project(':ui')
-
     compileOnly "org.jdom:jdom2:$jdomVersion"
-    compile "joda-time:joda-time:$jodaVersion"
+    implementation "joda-time:joda-time:$jodaVersion"
+
+    testImplementation project(':ui')
 }
 
 jar {
@@ -44,8 +45,9 @@ jar {
          ], "jworkspace.ui.runtime.RuntimeManagerWindow.class")
     }
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 task deployToPlugins(type: Copy) {

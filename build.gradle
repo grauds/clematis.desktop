@@ -1,24 +1,27 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
-        jcenter()
-	    maven {
-            url 'http://central.maven.org/maven2/'
-        }
     }
 }
+
 plugins {
+    id 'com.github.spotbugs' version '4.7.1'
     id 'jacoco'
 }
 
 group 'name.troshin.anton.clematis'
 version '2.0.0-SNAPSHOT'
 
+import com.github.spotbugs.snom.SpotBugsReport
+import com.github.spotbugs.snom.SpotBugsTask
+
 subprojects {
 
+    repositories {
+        mavenCentral()
+    }
+
     apply plugin: 'java'
-    apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
     apply plugin: 'jacoco'
 
@@ -33,19 +36,13 @@ subprojects {
 
     test {
         jacoco {
-            append = false
             destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
             classDumpDir = file("$buildDir/jacoco/classpathdumps")
         }
     }
 
     compileJava {
-       // options.compilerArgs << '-Xlint:unchecked' << "-Xlint:deprecation"
         options.compilerArgs << '-XDenableSunApiLintControl'
-    }
-
-    repositories {
-        jcenter()
     }
 
     task codeCoverageReport(type: JacocoReport) {
@@ -79,16 +76,17 @@ subprojects {
         }
     }
 
-    findbugs {
-        toolVersion = findbugsVersion
-        sourceSets = [sourceSets.main]
-    }
-
-    findbugsMain {
-        reports {
-            html.enabled = true
-            xml.enabled = false
-        }
+    tasks.withType(SpotBugsTask) {
+        excludeFilter = file("$rootProject.projectDir/tool/findbugs/exclude.xml")
+        reports({
+            html {
+                enabled = !findbugsXml
+                destination file("${buildDir}/reports/findbugs/findbugs.html")
+            }
+            xml {
+                enabled = findbugsXml
+            }
+        } as Closure<NamedDomainObjectContainer<? extends SpotBugsReport>>)
     }
 
     checkstyle {
@@ -104,10 +102,6 @@ subprojects {
                         out: "${buildDir}/reports/checkstyle/checkstyle_${project.ext.checkType}.html")
             }
         }
-    }
-
-    tasks.withType(FindBugs) {
-        exclude '**/*Test*'
     }
 
     tasks.withType(Checkstyle) {

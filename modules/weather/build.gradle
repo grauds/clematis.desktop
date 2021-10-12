@@ -23,18 +23,20 @@ ext {
 
 dependencies {
     // for groovy
-    compile "org.codehaus.groovy:groovy-all:$groovyVersion"
-    compile "org.spockframework:spock-core:$spockVersion"
-    compile "org.apache.ivy:ivy:$ivyVersion"
-    compile "org.apache.poi:poi-ooxml:$poiOoxmlVersion"
-    compile "org.apache.commons:commons-csv:$commonsCsvVersion"
-    compile "com.google.guava:guava:$guavaVersion"
+    implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+    implementation "org.spockframework:spock-core:$spockVersion"
+    implementation "org.apache.ivy:ivy:$ivyVersion"
+    implementation "org.apache.poi:poi-ooxml:$poiOoxmlVersion"
+    implementation "org.apache.commons:commons-csv:$commonsCsvVersion"
+    implementation "com.google.guava:guava:$guavaVersion"
 
     // for persistence
-    compile "org.flywaydb:flyway-core:$flywayVersion"
-    compile "org.hibernate:hibernate-java8:$hibernateVersion"
-    compile "org.hsqldb:hsqldb:$hsqldbVersion"
+    implementation "org.flywaydb:flyway-core:$flywayVersion"
+    implementation "org.hibernate:hibernate-java8:$hibernateVersion"
+    implementation "org.hsqldb:hsqldb:$hsqldbVersion"
 
     // for testing persistence
-    testCompile "com.h2database:h2:$h2Version"
+    testImplementation "com.h2database:h2:$h2Version"
+    testImplementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    testImplementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
 }

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -21,6 +22,7 @@ import jworkspace.kernel.Workspace;
  */
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 @PrepareForTest(Workspace.class)
 public class LoginTest {
 

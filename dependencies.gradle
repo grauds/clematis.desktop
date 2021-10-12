@@ -2,16 +2,16 @@ apply from: file("${project.rootDir}/libraries.gradle")
 
 dependencies {
 
-    //compile libs.javaTools
+    //implementation libs.javaTools
 
-    compile libs.slf4j
-    compile libs.slf4jSimple
-    compile libs.log4j
-    compile libs.commonsLogging
+    implementation libs.slf4j
+    implementation libs.slf4jSimple
+    implementation libs.log4j
+    implementation libs.commonsLogging
 
-    compile libs.commonsLang3
-    compile libs.commonsIO
-    compile libs.beanshell
+    implementation libs.commonsLang3
+    implementation libs.commonsIO
+    implementation libs.beanshell
 
     annotationProcessor libs.lombok
     compileOnly libs.lombok
@@ -20,14 +20,14 @@ dependencies {
     testCompileOnly libs.lombok
     checkstyle libs.checkstyle
 
-    testCompile libs.assertJCore
-    testCompile libs.mustache
-    testCompile libs.mockito
-    testCompile libs.junit4
-    testCompile libs.assertJCore
+    testImplementation libs.assertJCore
+    testImplementation libs.mustache
+    testImplementation libs.mockito
+    testImplementation libs.junit4
+    testImplementation libs.assertJCore
 
     // drop-in replacement for commons-logging, jul and log4j, so logs will be handled by slf4j
-    compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}@jar"
-    compile "org.slf4j:jul-to-slf4j:${slf4jVersion}@jar"
-    compile "org.slf4j:log4j-over-slf4j:${slf4jVersion}@jar"
+    implementation "org.slf4j:jcl-over-slf4j:${slf4jVersion}@jar"
+    implementation "org.slf4j:jul-to-slf4j:${slf4jVersion}@jar"
+    implementation "org.slf4j:log4j-over-slf4j:${slf4jVersion}@jar"
 }

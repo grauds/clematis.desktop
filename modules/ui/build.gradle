@@ -13,7 +13,7 @@ processResources {
     }
 
     into 'build/main/resources'
-
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 ext {
@@ -24,10 +24,10 @@ ext {
 dependencies {
 
     compileOnly project(':jworkspace')
-    testCompile project(':jworkspace')
+    testImplementation project(':jworkspace')
 
-    compile "commons-codec:commons-codec:$codecVersion"
-    compile "org.jdom:jdom2:$jdomVersion"
+    implementation "commons-codec:commons-codec:$codecVersion"
+    implementation "org.jdom:jdom2:$jdomVersion"
 }
 
 jar {
@@ -42,8 +42,9 @@ jar {
          ], "jworkspace.ui.WorkspaceGUI.class")
     }
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 task deployToPlugins(type: Copy) {
