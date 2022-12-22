@@ -12,9 +12,6 @@ project(':kiwi').projectDir = file('libs/kiwi')
 include 'ui'
 project(':ui').projectDir = file('modules/ui')
 
-include 'weather'
-project(':weather').projectDir = file('modules/weather')
-
 //
 //include 'instui'
 //project(':instui').projectDir = file('plugins/instui')
