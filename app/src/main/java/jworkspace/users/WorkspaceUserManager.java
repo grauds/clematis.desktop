@@ -313,7 +313,7 @@ public class WorkspaceUserManager implements IUserManager {
     }
 
     /**
-     * returns whether user is logged.
+     * Is the user logged in
      */
     @Override
     public boolean userLogged() {
@@ -322,7 +322,7 @@ public class WorkspaceUserManager implements IUserManager {
     }
 
     /**
-     * Set user name
+     * Set username
      */
     @Override
     public void setUserName(String name) {

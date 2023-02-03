@@ -270,11 +270,9 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         l.setIcon(new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
             .getResourceAsImage("images/plugin.png")));
 
-        String sb = "<html><font color=black>" +
-                PLUGINS +
-                "</font><br><font size=\"-2\" color=black><i>" +
-                LangResource.getString("hint2") +
-                "</i></font></html>";
+        String sb = "<html><font color=black>"
+                + PLUGINS + "</font><br><font size=\"-2\" color=black><i>"
+                + LangResource.getString("hint2") + "</i></font></html>";
 
         l.setText(sb);
 
@@ -524,7 +522,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
                             setIcon(new ImageIcon(getResourceManager().getImage("plugin.png")));
                         } else {
                             setIcon(Objects.requireNonNullElseGet(icon,
-                                    () -> new ImageIcon(getResourceManager().getImage("unknown.png"))));
+                                () -> new ImageIcon(getResourceManager().getImage("unknown.png"))));
                         }
                     }
                     return comp;
