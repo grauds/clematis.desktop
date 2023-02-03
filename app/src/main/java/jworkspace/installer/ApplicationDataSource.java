@@ -44,7 +44,7 @@ public class ApplicationDataSource extends DefinitionDataSource {
 
     public static final String ROOT = "programs";
 
-    private String rootName;
+    private final String rootName;
 
     /**
      * Construct new application data source with given file as a root.

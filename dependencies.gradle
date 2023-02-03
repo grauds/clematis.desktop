@@ -1,4 +1,63 @@
-apply from: file("${project.rootDir}/libraries.gradle")
+ext {
+
+    log4jVersion = '1.2.16'
+    slf4jVersion = '1.7.12'
+    logbackVersion = '1.1.11'
+
+    lombokVersion = '1.18.4'
+
+    apacheCommonsVersion = '3.0.1'
+    commonsLang3Version = '3.5'
+    commonsIoVersion = '2.6'
+    commonsLoggingVersion = '1.1.1'
+
+    bshVersion = '2.0b6'
+
+    checkstyleVersion = '7.6'
+    findbugsVersion = '3.0.1'
+
+    junitVersion = '4.12'
+    junitParamsVersion = '1.0.4'
+    assertjCoreVersion = '3.6.1'
+    mustacheJavaVersion = '0.9.4'
+    mockitoVersion = '1.6.4'
+    mockitoJunit4Version = '1.6.6'
+
+    libs = [
+
+            javaTools             : "jdk.tools:jdk.tools:jdk1.8.0_212",
+
+// loggers
+            slf4j                 : "org.slf4j:slf4j-api:$slf4jVersion",
+            slf4jSimple           : "org.slf4j:slf4j-simple:$slf4jVersion",
+            log4j                 : "log4j:log4j:$log4jVersion",
+            commonsLogging        : "commons-logging:commons-logging:$commonsLoggingVersion",
+
+// code patterns
+            commonsLang3          : "org.apache.commons:commons-lang3:$commonsLang3Version",
+            commonsIO             : "commons-io:commons-io:$commonsIoVersion",
+            guava                 : "com.google.guava:guava:18.0",
+
+// command line parser
+            args4j                : "args4j:args4j:2.0.16",
+
+// code interpreter
+            beanshell             : "org.apache-extras.beanshell:bsh:$bshVersion",
+
+// code generation
+            lombok                : "org.projectlombok:lombok:${lombokVersion}",
+
+// code quality
+            checkstyle            : "com.puppycrawl.tools:checkstyle:$checkstyleVersion",
+            findbugs              : "com.google.code.findbugs:findbugs-annotations:$findbugsVersion",
+
+// tests
+            assertJCore           : "org.assertj:assertj-core:$assertjCoreVersion",
+            mustache              : "com.github.spullara.mustache.java:mustache.java:$mustacheJavaVersion",
+            mockito               : "org.powermock:powermock-mockito-release-full:$mockitoVersion",
+            junit4                : "org.powermock:powermock-module-junit4-rule-agent:$mockitoJunit4Version"
+    ]
+}
 
 dependencies {
 

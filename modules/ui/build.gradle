@@ -17,17 +17,19 @@ processResources {
 }
 
 ext {
-    codecVersion = '1.11'
-    jdomVersion = '2.0.6'
+    codecVersion = '1.13'
+    jdomVersion = '2.0.6.1'
 }
 
 dependencies {
 
     compileOnly project(':jworkspace')
-    testImplementation project(':jworkspace')
 
+    implementation project(':kiwi')
     implementation "commons-codec:commons-codec:$codecVersion"
     implementation "org.jdom:jdom2:$jdomVersion"
+
+    testImplementation project(':jworkspace')
 }
 
 jar {

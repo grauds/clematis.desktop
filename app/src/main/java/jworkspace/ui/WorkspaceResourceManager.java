@@ -29,6 +29,8 @@ package jworkspace.ui;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -52,7 +54,7 @@ public class WorkspaceResourceManager extends ResourceManager {
     /**
      * Cache for images
      */
-    private HashMap<String, Image> images = new HashMap<String, Image>();
+    private final Map<String, Image> images = new HashMap<String, Image>();
 
     /**
      * Empty default constructor
@@ -90,7 +92,7 @@ public class WorkspaceResourceManager extends ResourceManager {
         if (image == null) {
             try {
 
-                image = ImageIO.read(getClass().getResourceAsStream(imagePath + name));
+                image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(imagePath + name)));
             } catch (IllegalArgumentException | IOException ex) {
                 /*
                  * May also occur if Apache Advanced Imaging does not support image format

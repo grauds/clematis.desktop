@@ -25,7 +25,6 @@ package jworkspace.kernel;
   ----------------------------------------------------------------------------
 */
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -81,7 +80,7 @@ public class WorkspacePluginLocator extends PluginLocator {
 
         Files.createDirectories(jarPath.toPath());
 
-        try (OutputStream os = new FileOutputStream(getPluginFile(jarPath, jarFileName));
+        try (OutputStream os = Files.newOutputStream(getPluginFile(jarPath, jarFileName).toPath());
              JarOutputStream target = new JarOutputStream(os, manifest)) {
 
             for (String cl : classes) {

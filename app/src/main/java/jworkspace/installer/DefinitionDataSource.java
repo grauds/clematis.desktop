@@ -57,7 +57,7 @@ public abstract class DefinitionDataSource implements TreeDataSource<DefinitionN
 
     private static final DefinitionNode[] EMPTY_ARRAY = new DefinitionNode[0];
 
-    private DefinitionNode root;
+    private final DefinitionNode root;
 
     /**
      * Public constuctor. Definition data source is based on file

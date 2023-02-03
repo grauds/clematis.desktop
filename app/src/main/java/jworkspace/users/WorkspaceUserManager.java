@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +54,10 @@ public class WorkspaceUserManager implements IUserManager {
 
     private static WorkspaceUserManager instance = null;
 
-    private ProfilesManager profilesManager;
+    private final ProfilesManager profilesManager;
 
     /**
      * Default public constructor.
-     * @param basePath
      */
     private WorkspaceUserManager(Path basePath) {
         super();
@@ -224,7 +223,7 @@ public class WorkspaceUserManager implements IUserManager {
      *  Returns all users in system
      */
     @Override
-    public Vector getUsersList() {
+    public List<String> getUsersList() {
         return profilesManager.getProfilesList();
     }
 

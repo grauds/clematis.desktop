@@ -202,9 +202,9 @@ public final class JavaProcess {
 
         static final int BUFFER_SIZE = 360;
 
-        private InputStream stream;
+        private final InputStream stream;
 
-        private byte[] buf = new byte[BUFFER_SIZE];
+        private final byte[] buf = new byte[BUFFER_SIZE];
 
         ReaderThread(InputStream stream) {
             this.stream = stream;

@@ -28,7 +28,6 @@ package jworkspace.ui.views;
 import javax.swing.JMenu;
 
 import com.hyperrealm.kiwi.ui.KPanel;
-
 import jworkspace.ui.api.IView;
 
 /**

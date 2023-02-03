@@ -30,9 +30,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,9 +171,9 @@ public class ProfilesManager implements Comparator {
      * Returns sorted list of profiles.
      * This actually traverses /users directory.
      */
-    Vector getProfilesList() {
+    List<String> getProfilesList() {
 
-        Vector<String> list = new Vector<>();
+        List<String> list = new ArrayList<>();
 
         File file = Paths.get(getBasePath().toString(), USERS).toFile();
         File[] dirs = file.listFiles();
@@ -180,7 +181,7 @@ public class ProfilesManager implements Comparator {
         if (dirs != null) {
             for (File dir : dirs) {
                 if (dir.isDirectory()) {
-                    list.addElement(dir.getName());
+                    list.add(dir.getName());
                 }
             }
         }

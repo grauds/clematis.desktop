@@ -29,7 +29,7 @@ package jworkspace.api;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Vector;
+import java.util.List;
 
 import com.hyperrealm.kiwi.util.Config;
 
@@ -119,7 +119,7 @@ public interface IUserManager extends WorkspaceComponent {
     /**
      * Get users list.
      */
-    Vector getUsersList();
+    List<String> getUsersList();
 
     /**
      * Get description

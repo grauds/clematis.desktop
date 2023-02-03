@@ -85,20 +85,20 @@ public class Workspace {
      * unloaded on finish. These services are for all users in system and must implement WorkspaceComponent
      * interface to be plugged into workspace lifecycle.
      */
-    private static Set<Plugin> systemPlugins = new HashSet<>();
+    private static final Set<Plugin> SYSTEM_PLUGINS = new HashSet<>();
     /**
      * These are actually invisible services, that are loaded by user at login or later manually
      * and unloaded on logout. These services are NOT for all users in system.
      */
-    private static Set<Plugin> userPlugins = new HashSet<>();
+    private static final Set<Plugin> USER_PLUGINS = new HashSet<>();
     /**
      * Workspace components list
      */
-    private static Collection<WorkspaceComponent> workspaceComponents = new Vector<>();
+    private static final Collection<WorkspaceComponent> WORKSPACE_COMPONENTS = new Vector<>();
     /**
      * Workspace user components list
      */
-    private static Collection<WorkspaceComponent> workspaceUserComponents = new Vector<>();
+    private static final Collection<WorkspaceComponent> WORKSPACE_USER_COMPONENTS = new Vector<>();
     /**
      * Resource manager
      */
@@ -106,7 +106,7 @@ public class Workspace {
     /**
      * Listeners for service events.
      */
-    private static List<IWorkspaceListener> workspaceListeners = new Vector<>();
+    private static final List<IWorkspaceListener> WORKSPACE_LISTENERS = new Vector<>();
     /**
      * Installer
      */
@@ -141,28 +141,28 @@ public class Workspace {
      * Adds system plugin
      */
     public static void addSystemPlugin(Plugin pl) throws PluginException {
-        addPlugin(pl, systemPlugins, workspaceComponents);
+        addPlugin(pl, SYSTEM_PLUGINS, WORKSPACE_COMPONENTS);
     }
 
     /**
      * Adds system plugins
      */
     public static void addSystemPlugins(List<Plugin> pls) {
-        addPlugins(pls, systemPlugins, workspaceComponents);
+        addPlugins(pls, SYSTEM_PLUGINS, WORKSPACE_COMPONENTS);
     }
 
     /**
      * Adds user plugins
      */
     public static void addUserPlugins(List<Plugin> pls) {
-        addPlugins(pls, userPlugins, workspaceUserComponents);
+        addPlugins(pls, USER_PLUGINS, WORKSPACE_USER_COMPONENTS);
     }
 
     /**
      * Adds user plugin
      */
     public static void addUserPlugin(Plugin plugin) {
-        addPlugins(Collections.singletonList(plugin), userPlugins, workspaceUserComponents);
+        addPlugins(Collections.singletonList(plugin), USER_PLUGINS, WORKSPACE_USER_COMPONENTS);
     }
 
     /**
@@ -191,11 +191,11 @@ public class Workspace {
     }
 
     public static Set<Plugin> getSystemPlugins() {
-        return new HashSet<>(systemPlugins);
+        return new HashSet<>(SYSTEM_PLUGINS);
     }
 
     public static Set<Plugin> getUserPlugins() {
-        return new HashSet<>(userPlugins);
+        return new HashSet<>(USER_PLUGINS);
     }
 
     /**
@@ -217,8 +217,8 @@ public class Workspace {
      * Add listener for service events.
      */
     public static boolean addListener(IWorkspaceListener l) {
-        if (l != null && !workspaceListeners.contains(l)) {
-            return workspaceListeners.add(l);
+        if (l != null && !WORKSPACE_LISTENERS.contains(l)) {
+            return WORKSPACE_LISTENERS.add(l);
         }
         return false;
     }
@@ -227,7 +227,7 @@ public class Workspace {
      * Remove workspace listener
      */
     public static boolean removeListener(IWorkspaceListener l) {
-        return workspaceListeners.remove(l);
+        return WORKSPACE_LISTENERS.remove(l);
     }
 
     /**
@@ -235,7 +235,7 @@ public class Workspace {
      */
     public static synchronized void fireEvent(Integer event, Object lparam, Object rparam) {
 
-        for (IWorkspaceListener listener : workspaceListeners) {
+        for (IWorkspaceListener listener : WORKSPACE_LISTENERS) {
             if (event == listener.getCode()) {
                 listener.processEvent(event, lparam, rparam);
             }
@@ -387,7 +387,7 @@ public class Workspace {
         /*
          * Load all system components
          */
-        for (WorkspaceComponent workspaceComponent : workspaceComponents) {
+        for (WorkspaceComponent workspaceComponent : WORKSPACE_COMPONENTS) {
             workspaceComponent.load();
         }
 
@@ -399,7 +399,7 @@ public class Workspace {
         /*
          * Load all user components
          */
-        for (WorkspaceComponent workspaceComponent : workspaceUserComponents) {
+        for (WorkspaceComponent workspaceComponent : WORKSPACE_USER_COMPONENTS) {
             workspaceComponent.load();
         }
     }
@@ -419,11 +419,11 @@ public class Workspace {
         /*
          * Save and clear all user components loaded as plugins
          */
-        for (WorkspaceComponent workspaceComponent : workspaceUserComponents) {
+        for (WorkspaceComponent workspaceComponent : WORKSPACE_USER_COMPONENTS) {
             workspaceComponent.save();
             workspaceComponent.reset();
         }
-        workspaceUserComponents.clear();
+        WORKSPACE_USER_COMPONENTS.clear();
 
         /*
          * Remove installer
@@ -434,7 +434,7 @@ public class Workspace {
         /*
          * Save and clear all system components user specific data
          */
-        for (WorkspaceComponent workspaceComponent : workspaceComponents) {
+        for (WorkspaceComponent workspaceComponent : WORKSPACE_COMPONENTS) {
             workspaceComponent.save();
             workspaceComponent.reset();
         }

@@ -26,13 +26,12 @@ subprojects {
     apply plugin: 'jacoco'
 
     apply from: file("${project.rootDir}/dependencies.gradle")
-    apply from: file("${project.rootDir}/libraries.gradle")
 
     apply plugin: 'idea'
     apply plugin: 'eclipse'
 
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
 
     test {
         jacoco {

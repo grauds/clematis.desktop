@@ -145,7 +145,7 @@ public class Application extends DefinitionNode {
     }
 
     /**
-     * Sets human readable name of application.
+     * Sets human-readable name of application.
      */
     public void setName(@NonNull String name) {
         this.name = name;

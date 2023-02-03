@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
@@ -200,13 +201,9 @@ public class Profile {
 
     public void setPassword(String newPassword) {
         if (this.messageDigest != null) {
-            if (newPassword != null) {
-                this.password = new String(this.messageDigest.digest(newPassword.getBytes(StandardCharsets.UTF_8)),
-                    StandardCharsets.UTF_8);
-            } else {
-                this.password = new String(this.messageDigest.digest("".getBytes(StandardCharsets.UTF_8)),
-                    StandardCharsets.UTF_8);
-            }
+            this.password = new String(this.messageDigest
+                    .digest(Objects.requireNonNullElse(newPassword, "").getBytes(StandardCharsets.UTF_8)),
+                StandardCharsets.UTF_8);
         }
     }
 

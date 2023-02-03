@@ -32,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
@@ -69,7 +70,8 @@ import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.views.DefaultCompoundView;
 
 /**
- * Runtime Manager window shows information about loaded shells, processes, available memory, etc.
+ * Runtime Manager window shows information about loaded shells,
+ * processes, available memory, etc.
  *
  * @author Anton Troshin
  */
@@ -86,9 +88,9 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
     private static WorkspaceResourceManager resourceManager;
 
-    private Vector<Monitor> monitors = new Vector<>();
+    private final List<Monitor> monitors = new Vector<>();
 
-    private PropertiesPanel propPanel = new PropertiesPanel();
+    private final PropertiesPanel propPanel = new PropertiesPanel();
 
     private JList<JavaProcess> processes = null;
 
@@ -244,19 +246,15 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         l.setIcon(new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
             .getResourceAsImage("images/process.png")));
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><font color=black>");
-        sb.append(PROCESSES);
-        sb.append("</font>");
-        sb.append("</html>");
+        String sb = "<html><font color=black>" + PROCESSES + "</font></html>";
 
-        l.setText(sb.toString());
-
+        l.setText(sb);
         l.setForeground(Color.black);
         l.setPreferredSize(new Dimension(250, 70));
         l.setMinimumSize(l.getPreferredSize());
         l.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         l.setHorizontalAlignment(JLabel.CENTER);
+
         return l;
     }
 
@@ -272,20 +270,20 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         l.setIcon(new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
             .getResourceAsImage("images/plugin.png")));
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><font color=black>");
-        sb.append(PLUGINS);
-        sb.append("</font><br><font size=\"-2\" color=black><i>");
-        sb.append(LangResource.getString("hint2"));
-        sb.append("</i></font></html>");
+        String sb = "<html><font color=black>" +
+                PLUGINS +
+                "</font><br><font size=\"-2\" color=black><i>" +
+                LangResource.getString("hint2") +
+                "</i></font></html>";
 
-        l.setText(sb.toString());
+        l.setText(sb);
 
         l.setForeground(Color.black);
         l.setPreferredSize(new Dimension(250, 70));
         l.setMinimumSize(l.getPreferredSize());
         l.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         l.setHorizontalAlignment(JLabel.CENTER);
+
         return l;
     }
 
@@ -293,16 +291,14 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      * Copy log
      */
     void copyLog() {
-        Object[] p = processes.getSelectedValues();
-        if (p == null || p.length == 0) {
+        List<JavaProcess> p = processes.getSelectedValuesList();
+        if (p == null || p.size() == 0) {
             return;
         }
-        if (p.length > 1) {
+        if (p.size() > 1) {
             JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
                 LangResource.getString("message#252"));
-         //   return;
         }
-      //  KiwiUtils.setClipboardText(((JavaProcess) p[0]).getLog().toString());
     }
 
     /**
@@ -318,15 +314,12 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         if (gui != null) {
             JButton b = Utils.createButtonFromAction(getActions().getAction(RuntimeManagerActions.START_ACTION_NAME));
             tb.add(b);
-           // RuntimeManagerActions.startAction.addPropertyChangeListener(gui.createActionChangeListener(b));
 
             b = Utils.createButtonFromAction(getActions().getAction(RuntimeManagerActions.KILL_ACTION_NAME));
             tb.add(b);
-        //    RuntimeManagerActions.killAction.addPropertyChangeListener(gui.createActionChangeListener(b));
 
             b = Utils.createButtonFromAction(getActions().getAction(RuntimeManagerActions.COPY_LOG_ACTION_NAME));
             tb.add(b);
-         //   RuntimeManagerActions.copyLogAction.addPropertyChangeListener(gui.createActionChangeListener(b));
         }
         return tb;
     }
@@ -355,9 +348,9 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      */
     void kill() {
         List<JavaProcess> p = processes.getSelectedValuesList();
-        for (Object o : p) {
-            if (o instanceof JavaProcess) {
-                ((JavaProcess) o).kill();
+        for (JavaProcess o : p) {
+            if (o != null) {
+                o.kill();
             }
         }
         processes.repaint();
@@ -367,10 +360,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      * Kill all processes
      */
     void killAll() {
-        JavaProcess[] p = Workspace.getRuntimeManager().getAllProcesses();
-        for (JavaProcess javaProcess : p) {
-            javaProcess.kill();
-        }
+        Workspace.getRuntimeManager().getAllProcesses().forEach(JavaProcess::kill);
         processes.repaint();
     }
 
@@ -379,13 +369,14 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      */
     void killAndRemove() {
         List<JavaProcess> p = processes.getSelectedValuesList();
-        for (Object o : p) {
-            if (o instanceof JavaProcess) {
-                ((JavaProcess) o).kill();
-                Workspace.getRuntimeManager().remove((JavaProcess) o);
+        for (JavaProcess o : p) {
+            if (o != null) {
+                o.kill();
+                Workspace.getRuntimeManager().remove(o);
             }
         }
-        processes.setListData(Workspace.getRuntimeManager().getAllProcesses());
+        processes.setListData(Workspace.getRuntimeManager()
+                .getAllProcesses().toArray(JavaProcess[]::new));
         processes.repaint();
     }
 
@@ -404,20 +395,16 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      * Kill all processes and remove them from list
      */
     void killAllAndRemove() {
-        JavaProcess[] p = Workspace.getRuntimeManager().getAllProcesses();
-        for (JavaProcess javaProcess : p) {
-            javaProcess.kill();
-        }
+        Workspace.getRuntimeManager().getAllProcesses().forEach(JavaProcess::kill);
         Workspace.getRuntimeManager().removeTerminated();
-        processes.setListData(Workspace.getRuntimeManager().getAllProcesses());
+        processes.setListData(Workspace.getRuntimeManager()
+                .getAllProcesses().toArray(JavaProcess[]::new));
         processes.repaint();
     }
 
     public void activated(boolean flag) {
         if (flag) {
             update();
-            revalidate();
-            repaint();
         }
     }
 
@@ -447,11 +434,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
             JavaProcess pr = processes.getSelectedValue();
             propPanel.createProcessReport(pr);
             actions.enableActions(true);
-            if (pr.isAlive()) {
-                actions.enableActions(true, RuntimeManagerActions.PROCESS_ALIVE_ACTION);
-            } else {
-                actions.enableActions(false, RuntimeManagerActions.PROCESS_ALIVE_ACTION);
-            }
+            actions.enableActions(pr.isAlive(), RuntimeManagerActions.PROCESS_ALIVE_ACTION);
         } else {
             actions.enableActions(false);
         }
@@ -466,20 +449,15 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     }
 
     public void update() {
-        JavaProcess[] p = Workspace.getRuntimeManager().getAllProcesses();
-        processes.setListData(p);
+        List<JavaProcess> p = Workspace.getRuntimeManager().getAllProcesses();
+        processes.setListData(p.toArray(JavaProcess[]::new));
 
         Set<Plugin> listData = new HashSet<>();
         listData.addAll(Workspace.getSystemPlugins());
         listData.addAll(Workspace.getUserPlugins());
         plugins.setListData(listData.toArray(new Plugin[] {}));
 
-        if (processes.isSelectionEmpty()) {
-            getActions().enableActions(false);
-        } else {
-            getActions().enableActions(true);
-        }
-
+        getActions().enableActions(!processes.isSelectionEmpty());
         super.update();
     }
 
@@ -516,8 +494,8 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         Nest() {
             super(BoxLayout.Y_AXIS);
             setOpaque(false);
-            for (int i = 0; i < monitors.size(); i++) {
-                add(monitors.elementAt(i));
+            for (Monitor monitor : monitors) {
+                add(monitor);
             }
         }
     }
@@ -544,10 +522,9 @@ public class RuntimeManagerWindow extends DefaultCompoundView
                             setIcon(new ImageIcon(getResourceManager().getImage("shell.png")));
                         } else if (icon == null && plugin.getType().equals("XPlugin")) {
                             setIcon(new ImageIcon(getResourceManager().getImage("plugin.png")));
-                        } else if (icon == null) {
-                            setIcon(new ImageIcon(getResourceManager().getImage("unknown.png")));
                         } else {
-                            setIcon(icon);
+                            setIcon(Objects.requireNonNullElseGet(icon,
+                                    () -> new ImageIcon(getResourceManager().getImage("unknown.png"))));
                         }
                     }
                     return comp;

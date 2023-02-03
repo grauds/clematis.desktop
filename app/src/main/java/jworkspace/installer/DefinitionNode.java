@@ -79,6 +79,8 @@ public class DefinitionNode extends DomainObject {
 
     private KTreeModelSupport hsupport;
 
+    public DefinitionNode() {}
+
     /**
      * Public constructor of definition node.
      *

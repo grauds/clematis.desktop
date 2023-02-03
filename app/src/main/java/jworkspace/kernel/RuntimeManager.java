@@ -28,9 +28,11 @@ package jworkspace.kernel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +63,7 @@ public final class RuntimeManager {
     /**
      * The list of all external processes in Java Workspace.
      */
-    private Vector<JavaProcess> processes = new Vector<>();
+    private final List<JavaProcess> processes = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -165,7 +167,7 @@ public final class RuntimeManager {
             /*
              * Add new element to process
              */
-            processes.addElement(process);
+            processes.add(process);
 
         } catch (IOException | Error e) {
             Workspace.getUi().showError(CANNOT_START_APPLICATION, e);
@@ -230,9 +232,9 @@ public final class RuntimeManager {
      *
      * @return jworkspace.kernel.JavaProcess[]
      */
-    public JavaProcess[] getAllProcesses() {
-        JavaProcess[] prs = new JavaProcess[processes.size()];
-        processes.copyInto(prs);
+    public List<JavaProcess> getAllProcesses() {
+        List<JavaProcess> prs = new ArrayList<>();
+        Collections.copy(prs, processes);
         return prs;
     }
 
@@ -257,6 +259,6 @@ public final class RuntimeManager {
      * Removes terminated process.
      */
     public void remove(JavaProcess pr) {
-        processes.removeElement(pr);
+        processes.remove(pr);
     }
 }

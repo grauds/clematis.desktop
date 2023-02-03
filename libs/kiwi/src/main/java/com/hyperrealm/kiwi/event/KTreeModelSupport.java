@@ -33,7 +33,7 @@ public class KTreeModelSupport {
 
     private final ArrayList<KTreeModelListener> listeners;
 
-    private Object source;
+    private final Object source;
 
     /**
      * Construct a new <code>KTreeModelSupport</code> object.
