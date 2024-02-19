@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
-import com.hyperrealm.kiwi.event.DialogDismissEvent;
-import com.hyperrealm.kiwi.event.DialogDismissListener;
+import com.hyperrealm.kiwi.event.dialog.DialogDismissEvent;
+import com.hyperrealm.kiwi.event.dialog.DialogDismissListener;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.UIChangeManager;
 import com.hyperrealm.kiwi.util.KiwiUtils;
@@ -59,7 +59,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  * @see com.hyperrealm.kiwi.ui.KPanel
  * @see com.hyperrealm.kiwi.ui.KFrame
  * @see com.hyperrealm.kiwi.ui.dialog.ComponentDialog
- * @see com.hyperrealm.kiwi.event.DialogDismissEvent
+ * @see DialogDismissEvent
  */
 @SuppressWarnings("unused")
 public class KDialog extends JDialog {

@@ -34,10 +34,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import jworkspace.api.IConstants;
+import jworkspace.api.ProfileOperationException;
 import jworkspace.installer.Application;
-import jworkspace.installer.DefinitionDataSource;
-import jworkspace.installer.DefinitionNode;
-import jworkspace.users.ProfileOperationException;
+import jworkspace.api.DefinitionDataSource;
+import jworkspace.api.DefinitionNode;
 
 /**
  * @author Anton Troshin

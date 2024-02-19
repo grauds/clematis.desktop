@@ -28,7 +28,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class WorkspaceLauncherTest {
 
     private static final String LIB_DIR = "lib";
-    private static final String JWORKSPACE_2_0_0_SNAPSHOT_JAR = "jworkspace-2.0.0-SNAPSHOT.jar";
+    private static final String ARTIFACT = "jworkspace-2.0.0-SNAPSHOT.jar";
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @Before
@@ -40,7 +40,7 @@ public class WorkspaceLauncherTest {
         Files.createDirectories(Paths.get(testFolder.getRoot().getAbsolutePath(), LIB_DIR));
 
         try (OutputStream os = new FileOutputStream(Paths.get(testFolder.getRoot().getAbsolutePath(),
-            LIB_DIR, JWORKSPACE_2_0_0_SNAPSHOT_JAR).toFile())) {
+            LIB_DIR, ARTIFACT).toFile())) {
 
             os.write(1);
         }
@@ -52,7 +52,7 @@ public class WorkspaceLauncherTest {
         String cmd = "java -Djava.library.path="
             + Paths.get(testFolder.getRoot().getAbsolutePath(), LIB_DIR)
             + " -classpath "
-            + Paths.get(testFolder.getRoot().getAbsolutePath(), LIB_DIR, JWORKSPACE_2_0_0_SNAPSHOT_JAR);
+            + Paths.get(testFolder.getRoot().getAbsolutePath(), LIB_DIR, ARTIFACT);
         assertEquals(WorkspaceLauncher.getCommandLine().toString(), cmd);
     }
 

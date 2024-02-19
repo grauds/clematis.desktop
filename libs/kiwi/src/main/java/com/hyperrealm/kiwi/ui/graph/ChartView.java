@@ -33,9 +33,9 @@ import javax.swing.JComponent;
 import static com.hyperrealm.kiwi.ui.graph.Chart.DEFAULT_TICK_INTERVAL;
 import static com.hyperrealm.kiwi.ui.graph.Chart.MAXIMUM_PRECISION;
 
-import com.hyperrealm.kiwi.event.ChartModelEvent;
-import com.hyperrealm.kiwi.event.ChartModelListener;
-import com.hyperrealm.kiwi.ui.model.ChartModel;
+import com.hyperrealm.kiwi.event.chart.ChartModelEvent;
+import com.hyperrealm.kiwi.event.chart.ChartModelListener;
+import com.hyperrealm.kiwi.ui.model.chart.ChartModel;
 import com.hyperrealm.kiwi.util.LocaleManager;
 
 /**

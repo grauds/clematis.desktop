@@ -41,7 +41,7 @@ import com.hyperrealm.kiwi.ui.KTreeTable;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.installer.DefinitionNode;
+import jworkspace.api.DefinitionNode;
 import jworkspace.installer.Library;
 import jworkspace.ui.WorkspaceGUI;
 

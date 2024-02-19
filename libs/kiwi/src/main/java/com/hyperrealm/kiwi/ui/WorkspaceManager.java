@@ -32,8 +32,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import com.hyperrealm.kiwi.event.WorkspaceEvent;
-import com.hyperrealm.kiwi.event.WorkspaceListener;
+import com.hyperrealm.kiwi.event.workspace.WorkspaceEvent;
+import com.hyperrealm.kiwi.event.workspace.WorkspaceListener;
 import com.hyperrealm.kiwi.ui.dialog.DialogSet;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;

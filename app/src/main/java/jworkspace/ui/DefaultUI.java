@@ -30,14 +30,14 @@ import java.awt.datatransfer.Clipboard;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
-import jworkspace.api.UI;
+import jworkspace.api.IWorkspaceUI;
 
 /**
  * Default graphic user interface
  *
  * @author Anton Troshin
  */
-public class DefaultUI implements UI {
+public class DefaultUI implements IWorkspaceUI {
 
     /**
      * Returns own clipboard

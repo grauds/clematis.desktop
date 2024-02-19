@@ -39,6 +39,8 @@ import com.hyperrealm.kiwi.util.Config;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IUserManager;
+import jworkspace.api.Profile;
+import jworkspace.api.ProfileOperationException;
 import jworkspace.kernel.Workspace;
 import lombok.NonNull;
 
@@ -210,14 +212,6 @@ public class WorkspaceUserManager implements IUserManager {
      */
     @Override
     public void reset() {}
-
-    /**
-     * Get path to specified user folder.
-     */
-    @Override
-    public Path ensureProfilePath(String name, Path basePath) throws IOException {
-        return new Profile(name).ensureProfilePath(basePath);
-    }
 
     /**
      *  Returns all users in system

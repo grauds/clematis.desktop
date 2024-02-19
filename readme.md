@@ -7,7 +7,7 @@
 
 jWorkspace is a pet project started back in 1999 and being developed at spare time. It includes 
 and is build upon Kiwi and Springboard - the other great hobby projects of Mark Lindner, both gave
-a significant contribution. Also it includes a number of other packages I've been experimenting with 
+a significant contribution. Also, it includes a number of other packages I've been experimenting with 
 and some prototypes too.  
    
 ## License

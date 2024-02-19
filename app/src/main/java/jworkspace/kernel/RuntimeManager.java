@@ -113,10 +113,10 @@ public final class RuntimeManager {
      */
     private synchronized void executeExternalProcess(String path) throws WorkspaceException, IOException {
 
-        String[] args = Workspace.getWorkspaceInstaller().getInvocationArgs(path);
-        String workingDir = Workspace.getWorkspaceInstaller().getApplicationWorkingDir(path);
+       // String[] args = Workspace.getWorkspaceInstaller().getInvocationArgs(path);
+      //  String workingDir = Workspace.getWorkspaceInstaller().getApplicationWorkingDir(path);
 
-        executeExternalProcess(args, workingDir, trimPath(path));
+       // executeExternalProcess(args, workingDir, trimPath(path));
     }
 
     /**

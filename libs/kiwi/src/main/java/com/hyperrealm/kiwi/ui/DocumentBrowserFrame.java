@@ -26,8 +26,8 @@ import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
 
-import com.hyperrealm.kiwi.ui.model.DocumentDataSource;
-import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
+import com.hyperrealm.kiwi.ui.model.datasource.DocumentDataSource;
+import com.hyperrealm.kiwi.ui.model.tree.ExternalKTreeModel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;

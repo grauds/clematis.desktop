@@ -24,13 +24,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static jworkspace.utils.StreamUtils.withCounter;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.api.IConstants;
+
 /**
  * Starts the application.
  * <p>
@@ -131,19 +135,17 @@ public class WorkspaceLauncher {
             }
             File[] jars = lib.listFiles((dir, name) -> name.toLowerCase().endsWith("jar"));
             if (jars != null) {
-                int i = 0;
-                for (File jar : jars) {
+                Arrays.stream(jars).forEach(withCounter((i, jar) -> {
 
                     String classpathChunk = Paths.get(lib.getAbsolutePath(), jar.getName()).toAbsolutePath()
-                        + (i + 1 == jars.length ? "" : File.pathSeparator);
+                        + ((i == jars.length - 1) ? "" : File.pathSeparator);
 
                     if (jar.getName().startsWith("_")) {
                         sb.insert(0, classpathChunk);
                     } else {
                         sb.append(classpathChunk);
                     }
-                    i++;
-                }
+                }));
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);

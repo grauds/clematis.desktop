@@ -41,7 +41,7 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.installer.Application;
-import jworkspace.installer.DefinitionNode;
+import jworkspace.api.DefinitionNode;
 import jworkspace.ui.WorkspaceGUI;
 
 /**

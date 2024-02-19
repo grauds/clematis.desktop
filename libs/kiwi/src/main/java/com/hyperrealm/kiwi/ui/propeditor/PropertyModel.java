@@ -21,7 +21,7 @@ package com.hyperrealm.kiwi.ui.propeditor;
 
 import javax.swing.Icon;
 
-import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
+import com.hyperrealm.kiwi.ui.model.tree.DefaultKTreeModel;
 
 /**
  * A data model for the PropertyEditor component.

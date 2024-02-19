@@ -47,15 +47,11 @@ import com.hyperrealm.kiwi.util.plugin.PluginException;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IConstants;
 import jworkspace.api.IUserManager;
-import jworkspace.api.IWorkspaceInstaller;
+import jworkspace.api.IWorkspaceComponent;
 import jworkspace.api.IWorkspaceListener;
-import jworkspace.api.UI;
-import jworkspace.api.WorkspaceComponent;
-import jworkspace.installer.WorkspaceInstaller;
+import jworkspace.api.IWorkspaceUI;
 import jworkspace.ui.DefaultUI;
 import jworkspace.ui.WorkspaceResourceManager;
-import jworkspace.users.Profile;
-import jworkspace.users.ProfileOperationException;
 import jworkspace.users.WorkspaceUserManager;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -94,11 +90,11 @@ public class Workspace {
     /**
      * Workspace components list
      */
-    private static final Collection<WorkspaceComponent> WORKSPACE_COMPONENTS = new Vector<>();
+    private static final Collection<IWorkspaceComponent> WORKSPACE_COMPONENTS = new Vector<>();
     /**
      * Workspace user components list
      */
-    private static final Collection<WorkspaceComponent> WORKSPACE_USER_COMPONENTS = new Vector<>();
+    private static final Collection<IWorkspaceComponent> WORKSPACE_USER_COMPONENTS = new Vector<>();
     /**
      * Resource manager
      */
@@ -110,11 +106,11 @@ public class Workspace {
     /**
      * Installer
      */
-    private static IWorkspaceInstaller workspaceInstaller = null;
+   // private static IWorkspaceInstaller workspaceInstaller = null;
     /**
      * Java Workspace UI - a plugin extension point
      */
-    private static UI ui = new DefaultUI();
+    private static IWorkspaceUI ui = new DefaultUI();
 
     /**
      * Private constructor
@@ -168,21 +164,21 @@ public class Workspace {
     /**
      * Adds user plugin.
      */
-    public static WorkspaceComponent addPlugin(Plugin pl,
-                                     Set<Plugin> plugins,
-                                     Collection<WorkspaceComponent> components)
+    public static IWorkspaceComponent addPlugin(Plugin pl,
+                                                Set<Plugin> plugins,
+                                                Collection<IWorkspaceComponent> components)
             throws PluginException {
 
         if (pl != null && plugins != null && components != null) {
             plugins.add(pl);
             Object instance = pl.newInstance();
             // initialize ui
-            if (instance instanceof UI) {
-                Workspace.ui = (UI) instance;
+            if (instance instanceof IWorkspaceUI) {
+                Workspace.ui = (IWorkspaceUI) instance;
             }
             // collect all components
-            if (instance instanceof WorkspaceComponent) {
-                WorkspaceComponent workspaceComponent = (WorkspaceComponent) instance;
+            if (instance instanceof IWorkspaceComponent) {
+                IWorkspaceComponent workspaceComponent = (IWorkspaceComponent) instance;
                 components.add(workspaceComponent);
                 return workspaceComponent;
             }
@@ -203,7 +199,7 @@ public class Workspace {
      */
     private static void addPlugins(List<Plugin> pls,
                                   Set<Plugin> plugins,
-                                  Collection<WorkspaceComponent> components) {
+                                  Collection<IWorkspaceComponent> components) {
         for (Plugin pl : pls) {
             try {
                 addPlugin(pl, plugins, components);
@@ -260,14 +256,14 @@ public class Workspace {
      * Returns class, implemented interface
      * <code>jworkspace.api.InstallEngine</code>
      */
-    public static synchronized IWorkspaceInstaller getWorkspaceInstaller() throws IOException {
+  /*  public static synchronized IWorkspaceInstaller getWorkspaceInstaller() throws IOException {
         if (workspaceInstaller == null) {
             workspaceInstaller = new WorkspaceInstaller(
                 getUserManager().ensureCurrentProfilePath(getBasePath()).toFile());
         }
         return workspaceInstaller;
     }
-
+*/
     /**
      * Get base path for workspace properties. It is commonly an operating system's user's directory
      */
@@ -318,7 +314,7 @@ public class Workspace {
     /**
      * Returns class of interface <code>jworkspace.api.UI</code>
      */
-    public static UI getUi() {
+    public static IWorkspaceUI getUi() {
         return ui;
     }
 
@@ -333,16 +329,16 @@ public class Workspace {
         /*
          * Login procedure
          */
-        try {
+        //try {
 
-            getUserManager().login(candidate);
+           // getUserManager().login(candidate);
 
-        } catch (ProfileOperationException ex) {
+       // } catch (ProfileOperationException ex) {
             /*
              * Mark the error and let user go with default profile
              */
-            LOG.error(ex.toString(), ex);
-        }
+          //  LOG.error(ex.toString(), ex);
+       // }
         /*
          * Add system plugins
          */
@@ -387,19 +383,19 @@ public class Workspace {
         /*
          * Load all system components
          */
-        for (WorkspaceComponent workspaceComponent : WORKSPACE_COMPONENTS) {
+        for (IWorkspaceComponent workspaceComponent : WORKSPACE_COMPONENTS) {
             workspaceComponent.load();
         }
 
         /*
          * Load the installer database
          */
-        getWorkspaceInstaller().load();
+        //getWorkspaceInstaller().load();
 
         /*
          * Load all user components
          */
-        for (WorkspaceComponent workspaceComponent : WORKSPACE_USER_COMPONENTS) {
+        for (IWorkspaceComponent workspaceComponent : WORKSPACE_USER_COMPONENTS) {
             workspaceComponent.load();
         }
     }
@@ -419,7 +415,7 @@ public class Workspace {
         /*
          * Save and clear all user components loaded as plugins
          */
-        for (WorkspaceComponent workspaceComponent : WORKSPACE_USER_COMPONENTS) {
+        for (IWorkspaceComponent workspaceComponent : WORKSPACE_USER_COMPONENTS) {
             workspaceComponent.save();
             workspaceComponent.reset();
         }
@@ -428,13 +424,13 @@ public class Workspace {
         /*
          * Remove installer
          */
-        getWorkspaceInstaller().save();
-        workspaceInstaller = null;
+        //getWorkspaceInstaller().save();
+        //workspaceInstaller = null;
 
         /*
          * Save and clear all system components user specific data
          */
-        for (WorkspaceComponent workspaceComponent : WORKSPACE_COMPONENTS) {
+        for (IWorkspaceComponent workspaceComponent : WORKSPACE_COMPONENTS) {
             workspaceComponent.save();
             workspaceComponent.reset();
         }
@@ -464,7 +460,7 @@ public class Workspace {
             /*
              * Login procedure
              */
-            getUserManager().login(candidate);
+            //getUserManager().login(candidate);
         } catch (ProfileOperationException ex) {
             /*
              * Mark the error and let user go with default profile

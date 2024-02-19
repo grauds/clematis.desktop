@@ -30,6 +30,9 @@ import java.util.Properties;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hyperrealm.kiwi.ui.ColorTheme;
 import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
@@ -40,7 +43,7 @@ import com.hyperrealm.kiwi.ui.KiwiAudioClip;
  * retrieved relative to an <i>anchor class</i>. The resource manager assumes
  * that images will be within an "images" directory, textures within a
  * "textures" directory, sounds within a "sounds" directory, URL-based
- * references within an "html" directory, properties within a "properties"
+ * references within a "html" directory, properties within a "properties"
  * directory, resource bundles within a "locale" directory, and color theme
  * definitions within a "themes" directory. All of these paths, however, are
  * configurable.
@@ -63,6 +66,10 @@ import com.hyperrealm.kiwi.ui.KiwiAudioClip;
  */
 @SuppressWarnings("unused")
 public class ResourceManager {
+    /**
+     * Default logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
     /**
      * The default base path for images.
      */
@@ -90,11 +97,11 @@ public class ResourceManager {
     /**
      * The default base path for message bundles.
      */
-    private static final String RESBUNDLE_PATH = "locale";
+    private static final String BUNDLE_PATH = "locale";
     /**
      * The file extension for resource bundles.
      */
-    private static final String RESBUNDLE_EXT = ".msg";
+    private static final String BUNDLE_EXT = ".msg";
     /**
      * The file extension for color themes.
      */
@@ -134,19 +141,19 @@ public class ResourceManager {
     /**
      * The base path for message bundles.
      */
-    private String resbundlePath;
+    private String bundlePath;
 
-    private HashMap<String, Image> images;
+    private final HashMap<String, Image> images;
 
-    private HashMap<String, Icon> icons;
+    private final HashMap<String, Icon> icons;
 
-    private HashMap<String, KiwiAudioClip> sounds;
+    private final HashMap<String, KiwiAudioClip> sounds;
 
-    private HashMap<String, Image> textures;
+    private final HashMap<String, Image> textures;
 
-    private HashMap<String, LocaleData> bundles;
+    private final HashMap<String, LocaleData> bundles;
 
-    private ResourceLoader loader;
+    private final ResourceLoader loader;
 
     /**
      * Construct a new <code>ResourceManager</code>.
@@ -154,7 +161,7 @@ public class ResourceManager {
      * @param clazz The resource anchor class.
      */
 
-    public ResourceManager(Class clazz) {
+    public ResourceManager(Class<?> clazz) {
 
         loader = new ResourceLoader(clazz);
         images = new HashMap<>();
@@ -169,11 +176,8 @@ public class ResourceManager {
         setThemePath(THEME_PATH);
         setTexturePath(TEXTURE_PATH);
         setPropertyPath(PROPERTY_PATH);
-        setResourceBundlePath(RESBUNDLE_PATH);
+        setResourceBundlePath(BUNDLE_PATH);
     }
-
-    /*
-     */
 
     /**
      * Get a reference to the internal Kiwi resource manager.
@@ -277,7 +281,7 @@ public class ResourceManager {
      */
 
     public void setResourceBundlePath(String path) {
-        resbundlePath = checkPath(path);
+        bundlePath = checkPath(path);
     }
 
     /**
@@ -513,24 +517,29 @@ public class ResourceManager {
         throws ResourceNotFoundException {
         checkResourceName(name);
 
-        String path = resbundlePath + name, cpath = null;
-        LocaleData bundle = null;
+        String path = bundlePath + name;
+        String cpath = null;
+
+        LocaleData bundle;
         LocaleData baseBundle = null;
         LocaleData prevBundle = null;
 
         com.hyperrealm.kiwi.util.Stack<String> paths
             = new com.hyperrealm.kiwi.util.Stack<>(INITIAL_CAPACITY);
-        paths.push(path + RESBUNDLE_EXT);
+
+        paths.push(path + BUNDLE_EXT);
         path += NAME_DIVIDER + locale.getLanguage();
-        paths.push(path + RESBUNDLE_EXT);
+        paths.push(path + BUNDLE_EXT);
+
         String country = locale.getCountry();
-        if ((country != null) && (country.length() > 0)) {
+        if ((country != null) && (!country.isEmpty())) {
             path += NAME_DIVIDER + country;
-            paths.push(path + RESBUNDLE_EXT);
+            paths.push(path + BUNDLE_EXT);
+
             String variant = locale.getVariant();
-            if ((variant != null) && (variant.length() > 0)) {
+            if ((variant != null) && (!variant.isEmpty())) {
                 path += NAME_DIVIDER + variant;
-                paths.push(variant + RESBUNDLE_EXT);
+                paths.push(path + BUNDLE_EXT);
             }
         }
 
@@ -544,7 +553,7 @@ public class ResourceManager {
                     bundle = new LocaleData(is);
                     bundles.put(cpath, bundle);
                 } catch (IOException ex) {
-                    bundle = null;
+                    LOG.error(ex.getMessage(), ex);
                 }
             }
 
@@ -580,7 +589,7 @@ public class ResourceManager {
         checkResourceName(name);
 
         String path = themePath + name + THEME_EXT;
-        ColorTheme theme = null;
+        ColorTheme theme;
 
         try {
             InputStream is = loader.getResourceAsStream(path);
@@ -622,7 +631,7 @@ public class ResourceManager {
      */
 
     private void checkResourceName(String name) throws IllegalArgumentException {
-        if ((name == null) || name.equals("")) {
+        if ((name == null) || name.isEmpty()) {
             throw (new IllegalArgumentException("Null or empty resource name"));
         }
     }

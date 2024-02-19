@@ -27,7 +27,7 @@ import java.util.Iterator;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-import com.hyperrealm.kiwi.event.ListItemMouseAdapter;
+import com.hyperrealm.kiwi.event.list.ListItemMouseAdapter;
 import com.hyperrealm.kiwi.ui.KScrollPane;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;
