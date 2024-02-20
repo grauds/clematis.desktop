@@ -41,9 +41,9 @@ import javax.swing.tree.TreePath;
 
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_ROW_HEIGHT;
 
-import com.hyperrealm.kiwi.ui.model.KTreeModel;
-import com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter;
-import com.hyperrealm.kiwi.ui.model.KTreeModelTreeTableAdapter;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModel;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeTableAdapter;
 
 /* This class incorporates ideas from Sun's TreeTable example code, as
  * well as from the Texas Instruments TreeTable implementation, which is

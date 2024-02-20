@@ -29,9 +29,9 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
-import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
-import com.hyperrealm.kiwi.ui.model.FilesystemDataSource;
-import com.hyperrealm.kiwi.ui.model.KTreeModel;
+import com.hyperrealm.kiwi.ui.model.tree.ExternalKTreeModel;
+import com.hyperrealm.kiwi.ui.model.datasource.FilesystemDataSource;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModel;
 
 /**
  * This class represents a filesystem table component. It displays
@@ -46,7 +46,7 @@ import com.hyperrealm.kiwi.ui.model.KTreeModel;
  * </center>
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.ui.model.FilesystemDataSource
+ * @see FilesystemDataSource
  * @see com.hyperrealm.kiwi.ui.KTreeTable
  */
 @SuppressWarnings({"MagicNumber"})

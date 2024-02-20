@@ -32,10 +32,10 @@ import javax.swing.tree.TreeSelectionModel;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_ROW_HEIGHT;
 
-import com.hyperrealm.kiwi.ui.model.DefaultKTreeModel;
-import com.hyperrealm.kiwi.ui.model.ExternalKTreeModel;
-import com.hyperrealm.kiwi.ui.model.FilesystemDataSource;
-import com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter;
+import com.hyperrealm.kiwi.ui.model.tree.DefaultKTreeModel;
+import com.hyperrealm.kiwi.ui.model.tree.ExternalKTreeModel;
+import com.hyperrealm.kiwi.ui.model.datasource.FilesystemDataSource;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;
 
 /**
  * This class represents a filesystem tree component. It displays hierarchical
@@ -49,7 +49,7 @@ import com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter;
  * </center>
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.ui.model.FilesystemDataSource
+ * @see FilesystemDataSource
  * @see javax.swing.JTree
  */
 

@@ -23,8 +23,8 @@ import java.util.EmptyStackException;
 
 import javax.swing.JList;
 
-import com.hyperrealm.kiwi.ui.model.DefaultStackModel;
-import com.hyperrealm.kiwi.ui.model.StackModel;
+import com.hyperrealm.kiwi.ui.model.list.DefaultStackModel;
+import com.hyperrealm.kiwi.ui.model.list.StackModel;
 
 /**
  * A component that displays the contents of a <code>Stack</code> data
@@ -33,7 +33,7 @@ import com.hyperrealm.kiwi.ui.model.StackModel;
  *
  * @param <T>
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.ui.model.StackModel
+ * @see StackModel
  * @see java.util.Stack
  */
 

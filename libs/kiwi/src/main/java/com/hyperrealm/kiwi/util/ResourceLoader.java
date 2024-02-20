@@ -94,7 +94,7 @@ public class ResourceLoader {
         InputStream is = clazz.getResourceAsStream(path);
 
         if (is == null) {
-            throw (new IOException("Resource not found"));
+            throw (new IOException(String.format("Resource not found %s", path)));
         }
 
         return (is);

@@ -22,7 +22,8 @@ package com.hyperrealm.kiwi.ui;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import com.hyperrealm.kiwi.ui.model.KListModel;
+import com.hyperrealm.kiwi.ui.model.list.KListModel;
+import com.hyperrealm.kiwi.ui.model.list.KListModelAdapter;
 
 /**
  * An implementation of <code>ListCellRenderer</code> for use with
@@ -33,8 +34,8 @@ import com.hyperrealm.kiwi.ui.model.KListModel;
  * @param <T>
  * @author Mark Lindner
  * @see javax.swing.JList
- * @see com.hyperrealm.kiwi.ui.model.KListModel
- * @see com.hyperrealm.kiwi.ui.model.KListModelAdapter
+ * @see KListModel
+ * @see KListModelAdapter
  */
 
 public class KListModelListCellRenderer<T> extends AbstractCellRenderer<T> {

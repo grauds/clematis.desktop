@@ -33,9 +33,9 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 
-import com.hyperrealm.kiwi.ui.model.DocumentDataSource;
-import com.hyperrealm.kiwi.ui.model.KTreeModel;
-import com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter;
+import com.hyperrealm.kiwi.ui.model.datasource.DocumentDataSource;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModel;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;
 
 /**
  * This class represents a general-purpose browser component for viewing a

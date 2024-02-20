@@ -69,9 +69,9 @@ import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.IBasicUI;
 import jworkspace.api.IConstants;
 import jworkspace.api.IWorkspaceListener;
-import jworkspace.api.UI;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
@@ -90,7 +90,7 @@ import jworkspace.ui.widgets.WorkspaceError;
  *
  * @author Anton Troshin
  */
-public class WorkspaceGUI implements UI {
+public class WorkspaceGUI implements IBasicUI {
 
     /**
      * Logger

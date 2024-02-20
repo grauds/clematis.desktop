@@ -25,7 +25,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.table.TableColumn;
 
-import com.hyperrealm.kiwi.ui.model.KTableColumnModel;
+import com.hyperrealm.kiwi.ui.model.table.KTableColumnModel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;
@@ -63,7 +63,7 @@ import com.hyperrealm.kiwi.util.LocaleManager;
  *
  * @author Mark Lindner
  * @see com.hyperrealm.kiwi.ui.KTable
- * @see com.hyperrealm.kiwi.ui.model.KTableColumnModel
+ * @see KTableColumnModel
  * @since Kiwi 2.1
  */
 

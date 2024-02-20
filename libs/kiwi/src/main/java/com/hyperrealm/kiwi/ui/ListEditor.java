@@ -37,7 +37,7 @@ import javax.swing.ListCellRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hyperrealm.kiwi.ui.model.MutableListModel;
+import com.hyperrealm.kiwi.ui.model.list.MutableListModel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;

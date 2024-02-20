@@ -1,16 +1,28 @@
 rootProject.name = 'clematis'
 
-include 'app'
-project(':app').name = 'jworkspace'
+//include 'app'
+//project(':app').name = 'jworkspace'
 
-include 'launcher'
-project(':launcher').projectDir = file('modules/launcher')
+//include 'launcher'
+//project(':launcher').projectDir = file('modules/launcher')
+
+include 'api'
+project(':api').projectDir = file('libs/api')
+
+//include 'installer'
+//project(':installer').projectDir = file('libs/installer')
+
+//include 'profiles'
+//project(':profiles').projectDir = file('libs/profiles')
 
 include 'kiwi'
 project(':kiwi').projectDir = file('libs/kiwi')
 
-include 'ui'
-project(':ui').projectDir = file('modules/ui')
+//include 'ui'
+//project(':ui').projectDir = file('modules/ui')
+
+//include 'rtui'
+//project(':rtui').projectDir = file('modules/rtui')
 
 //
 //include 'instui'
@@ -21,9 +33,6 @@ project(':ui').projectDir = file('modules/ui')
 //
 //include 'net'
 //project(':net').projectDir = file('plugins/net')
-
-include 'rtui'
-project(':rtui').projectDir = file('modules/rtui')
 //
 //include 'sed'
 //project(':sed').projectDir = file('plugins/sed')

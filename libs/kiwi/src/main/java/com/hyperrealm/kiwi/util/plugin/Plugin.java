@@ -36,8 +36,8 @@ import java.util.jar.Manifest;
 import javax.swing.ImageIcon;
 import javax.swing.event.EventListenerList;
 
-import com.hyperrealm.kiwi.event.PluginReloadEvent;
-import com.hyperrealm.kiwi.event.PluginReloadListener;
+import com.hyperrealm.kiwi.event.plugin.PluginReloadEvent;
+import com.hyperrealm.kiwi.event.plugin.PluginReloadListener;
 
 import lombok.EqualsAndHashCode;
 

@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.Profile;
+import jworkspace.api.ProfileOperationException;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;

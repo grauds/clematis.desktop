@@ -27,7 +27,8 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.TreeCellRenderer;
 
-import com.hyperrealm.kiwi.ui.model.KTreeModel;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModel;
+import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;
 
 /**
  * An implementation of <code>TreeCellRenderer</code> for use with
@@ -37,8 +38,8 @@ import com.hyperrealm.kiwi.ui.model.KTreeModel;
  *
  * @author Mark Lindner
  * @see javax.swing.JTree
- * @see com.hyperrealm.kiwi.ui.model.KTreeModel
- * @see com.hyperrealm.kiwi.ui.model.KTreeModelTreeAdapter
+ * @see KTreeModel
+ * @see KTreeModelTreeAdapter
  */
 
 public class KTreeModelTreeCellRenderer extends JLabel

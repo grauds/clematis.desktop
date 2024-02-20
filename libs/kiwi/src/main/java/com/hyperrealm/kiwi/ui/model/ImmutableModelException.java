@@ -33,7 +33,7 @@ public class ImmutableModelException extends RuntimeException {
      * Construct a new <code>ImmutableModelException</code>.
      */
 
-    ImmutableModelException() {
+    public ImmutableModelException() {
         super();
     }
 
