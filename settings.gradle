@@ -9,8 +9,8 @@ rootProject.name = 'clematis'
 include 'api'
 project(':api').projectDir = file('libs/api')
 
-//include 'installer'
-//project(':installer').projectDir = file('libs/installer')
+include 'installer'
+project(':installer').projectDir = file('libs/installer')
 
 //include 'profiles'
 //project(':profiles').projectDir = file('libs/profiles')

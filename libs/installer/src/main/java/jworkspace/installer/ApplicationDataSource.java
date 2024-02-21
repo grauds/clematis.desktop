@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -33,6 +33,7 @@ import java.io.File;
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * Data source for application.
@@ -40,11 +41,15 @@ import lombok.EqualsAndHashCode;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class ApplicationDataSource extends DefinitionDataSource {
 
     public static final String ROOT = "programs";
 
+    /**
+     *  Returns root name for applications hierarchy.
+     */
     private final String rootName;
 
     /**
@@ -55,13 +60,6 @@ public class ApplicationDataSource extends DefinitionDataSource {
     ApplicationDataSource(File root) {
         super(root);
         rootName = root != null ? root.getName() : ApplicationDataSource.ROOT;
-    }
-
-    /**
-     * Returns root name for applications hierarchy.
-     */
-    public String getRootName() {
-        return (rootName);
     }
 
     /**

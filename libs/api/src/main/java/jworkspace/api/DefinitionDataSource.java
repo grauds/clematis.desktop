@@ -3,7 +3,7 @@ package jworkspace.api;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+          2000, 2024 Anton Troshin
 
    This file is part of Java Workspace.
 

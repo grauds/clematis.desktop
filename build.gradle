@@ -87,7 +87,7 @@ allprojects {
             }
             html {
                 enabled = true
-                destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+                destination = file("${layout.buildDirectory}/reports/spotbugs/main/spotbugs.html")
             }
         }
     }
@@ -99,7 +99,7 @@ allprojects {
             }
             html {
                 enabled = true
-                destination = file("$buildDir/reports/spotbugs/test/spotbugs.html")
+                destination = file("${layout.buildDirectory}/reports/spotbugs/test/spotbugs.html")
             }
         }
     }
@@ -112,10 +112,10 @@ allprojects {
 
     tasks.register('checkstyleReport') {
         doLast {
-            if (file("${buildDir}/reports/checkstyle/${project.ext.checkType}.xml").exists()) {
-                ant.xslt(in: "${buildDir}/reports/checkstyle/${project.ext.checkType}.xml",
+            if (file("${layout.buildDirectory}/reports/checkstyle/${project.ext.checkType}.xml").exists()) {
+                ant.xslt(in: "${layout.buildDirectory}/reports/checkstyle/${project.ext.checkType}.xml",
                         style: "${project.rootDir}/config/checkstyle/checkstyle.xsl",
-                        out: "${buildDir}/reports/checkstyle/checkstyle_${project.ext.checkType}.html")
+                        out: "${layout.buildDirectory}/reports/checkstyle/checkstyle_${project.ext.checkType}.html")
             }
         }
     }

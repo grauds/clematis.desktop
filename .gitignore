@@ -60,3 +60,5 @@ target/
 Network Trash Folder
 Temporary Items
 .apdisk
+/libs/api/jacoco/
+/libs/installer/jacoco/

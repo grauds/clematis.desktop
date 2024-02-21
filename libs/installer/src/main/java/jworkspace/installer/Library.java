@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -34,22 +34,22 @@ import java.io.IOException;
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
-//
+
 import jworkspace.api.DefinitionNode;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Library entry is a definition node, that stores
- * its data in file on disk, which is in file hierarchy
+ * Library entry is a definition node, that stores its data in file, which is in file hierarchy
  * inside libraries root directory.
- *
  *
  * @author Anton Troshin
  * @author Mark Lindner
  */
 @EqualsAndHashCode(callSuper = false)
-@Data
+@Getter
+@Setter
 public class Library extends DefinitionNode {
 
     public static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("installer/library.gif");

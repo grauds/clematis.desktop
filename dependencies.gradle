@@ -3,27 +3,22 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:1.18.28"
     checkstyle "com.puppycrawl.tools:checkstyle:10.9.1"
 
-    implementation "org.slf4j:slf4j-api:2.0.5"
-    implementation "org.slf4j:slf4j-simple:2.0.5"
-
-    implementation "org.apache.commons:commons-lang3:3.12.0"
-    implementation "commons-io:commons-io:2.11.0"
-    implementation "org.apache-extras.beanshell:bsh:2.0b6"
-
     compileOnly "com.github.spotbugs:spotbugs:4.7.3"
     compileOnly "com.google.code.findbugs:annotations:3.0.1u2"
     compileOnly "org.projectlombok:lombok:1.18.26"
+
+    implementation "org.slf4j:slf4j-api:2.0.5"
+    implementation "org.slf4j:slf4j-simple:2.0.5"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation "commons-io:commons-io:2.11.0"
+    implementation "org.apache-extras.beanshell:bsh:2.0b6"
 
     testCompileOnly "com.github.spotbugs:spotbugs:4.7.3"
     testCompileOnly "com.google.code.findbugs:annotations:3.0.1u2"
     testCompileOnly "org.projectlombok:lombok:1.18.26"
 
-    testImplementation "org.powermock:powermock-mockito-release-full:1.6.4"
-    testImplementation "org.junit.jupiter:junit-jupiter:5.9.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.9.2"
-
-    // drop-in replacement for commons-logging, jul and log4j, so logs will be handled by slf4j
-    implementation "org.slf4j:jcl-over-slf4j:2.0.5@jar"
-    implementation "org.slf4j:jul-to-slf4j:2.0.5@jar"
-    implementation "org.slf4j:log4j-over-slf4j:2.0.5@jar"
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.10.0"
+    testImplementation "org.mockito:mockito-core:5.4.0"
 }

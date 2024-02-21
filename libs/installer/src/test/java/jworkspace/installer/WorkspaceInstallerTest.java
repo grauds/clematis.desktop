@@ -6,31 +6,23 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Anton Troshin
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"jdk.internal.reflect.*"})
-@PrepareForTest(WorkspaceInstaller.class)
 public class WorkspaceInstallerTest {
 
     private static final String ARGUMENT_TEST = "--argument test";
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         testFolder.create();
-        mockStatic(WorkspaceInstaller.class);
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
@@ -134,10 +126,5 @@ public class WorkspaceInstallerTest {
 
         workspaceInstaller.save();
         workspaceInstaller.load();
-    }
-
-    @After
-    public void after() {
-        testFolder.delete();
     }
 }

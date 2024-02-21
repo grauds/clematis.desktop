@@ -22,14 +22,22 @@ public class DefinitionDataSourceTest {
 
     public static final String APPLICATIONS = "Applications";
 
+    private static final String NESTED_1_FOLDER = "Nested 1";
+
     private static final String NESTED_2_FOLDER = "Nested 2";
+
+    private static final String NESTED_3_FOLDER = "Nested 3";
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @BeforeEach
     public void before() throws IOException {
         testFolder.create();
-        File folder3 = testFolder.newFolder(APPLICATIONS, "Nested 1", NESTED_2_FOLDER, "Nested 3");
+        File folder3 = testFolder.newFolder(APPLICATIONS,
+            NESTED_1_FOLDER,
+            NESTED_2_FOLDER,
+            NESTED_3_FOLDER
+        );
         File file = new File(folder3, "Test file 1");
         file.createNewFile();
     }
