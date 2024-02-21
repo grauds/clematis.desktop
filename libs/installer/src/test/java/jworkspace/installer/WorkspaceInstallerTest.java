@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
 import org.junit.rules.TemporaryFolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
