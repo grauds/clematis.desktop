@@ -61,7 +61,7 @@ public class JVM extends DefinitionNode {
         CK_DOCDIR = "jvm.documentation_dir",
         CK_DESCRIPTION = "jvm.description";
 
-    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("installer/jvm.gif");
+    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("jvm.gif");
 
     private static final String JAVA_VIRTUAL_MACHINE_DEFINITION = "Java Virtual Machine Definition";
 
@@ -94,7 +94,7 @@ public class JVM extends DefinitionNode {
     /**
      * Public jvm constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param file   to hold jvm data java.io.File
      */
     public JVM(DefinitionNode parent, File file) {
@@ -105,7 +105,7 @@ public class JVM extends DefinitionNode {
     /**
      * Public jvm constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param name   of file to hold jvm data java.lang.String
      */
     public JVM(DefinitionNode parent, String name) {

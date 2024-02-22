@@ -52,7 +52,7 @@ import lombok.Setter;
 @Setter
 public class Library extends DefinitionNode {
 
-    public static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("installer/library.gif");
+    public static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("library.gif");
 
     public static final String CK_NAME = "library.name",
         CK_VERSION = "library.version",
@@ -74,7 +74,7 @@ public class Library extends DefinitionNode {
     /**
      * Public library constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param file   to hold library data java.io.File
      */
     public Library(DefinitionNode parent, File file) {
@@ -85,7 +85,7 @@ public class Library extends DefinitionNode {
     /**
      * Public library constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode}
      * @param name   of file to hold library data java.lang.String
      */
     public Library(DefinitionNode parent, String name) {

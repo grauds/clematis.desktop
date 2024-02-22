@@ -66,7 +66,7 @@ public class Application extends DefinitionNode {
         CK_WORKINGDIR = "application.working_dir",
         CK_DOCDIR = "application.documentation_dir";
 
-    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("installer/application.gif");
+    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("application.gif");
 
     private static final String APPLICATION_DEFINITION_CONFIG_HEADER = "Application Definition";
 
@@ -97,7 +97,7 @@ public class Application extends DefinitionNode {
     /**
      * Public application constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param file   to hold application data java.io.File
      */
     public Application(DefinitionNode parent, File file) {
@@ -108,7 +108,7 @@ public class Application extends DefinitionNode {
     /**
      * Public application constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param name   of file to hold application data java.lang.String
      */
     public Application(DefinitionNode parent, String name) {

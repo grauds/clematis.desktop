@@ -5,13 +5,18 @@ buildscript {
 }
 
 plugins {
+    id 'jacoco-report-aggregation'
+
     id 'com.github.spotbugs' version '4.7.1'
     id 'org.asciidoctor.jvm.convert' version '3.1.0'
 }
 
+repositories {
+    mavenCentral()
+}
+
 group 'org.clematis.desktop'
 version '2.0.0-SNAPSHOT'
-
 
 subprojects {
 
@@ -127,4 +132,22 @@ subprojects {
             exclude '**/*Test*'
         }
     }
+}
+
+dependencies {
+    jacocoAggregation project(':api')
+    jacocoAggregation project(':kiwi')
+    jacocoAggregation project(':installer')
+}
+
+reporting {
+    reports {
+        testCodeCoverageReport(JacocoCoverageReport) {
+            testType = TestSuiteType.UNIT_TEST
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
 }
