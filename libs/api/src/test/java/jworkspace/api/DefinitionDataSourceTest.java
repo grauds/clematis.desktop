@@ -1,6 +1,5 @@
 package jworkspace.api;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 
@@ -15,6 +14,8 @@ import static jworkspace.api.DefinitionDataSource.LABEL_PROPERTY;
 import static jworkspace.api.DefinitionNode.CLOSED_ICON;
 import static jworkspace.api.DefinitionNode.LEAF_ICON;
 import static jworkspace.api.DefinitionNode.OPEN_ICON;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Definition data source tests
@@ -45,7 +46,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceCreationAndSearch() throws IOException {
+    public void testDataSourceCreationAndSearch() {
 
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(testFolder.getRoot().getName()
@@ -59,7 +60,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceMethods() throws IOException {
+    public void testDataSourceMethods() {
 
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(testFolder.getRoot().getName()
@@ -74,7 +75,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourcePropertiesMethods() throws IOException {
+    public void testDataSourcePropertiesMethods() {
 
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(testFolder.getRoot().getName()
@@ -91,7 +92,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testLinkString() throws IOException {
+    public void testLinkString() {
         String link = testFolder.getRoot().getName() + "/Applications/Nested 1/Nested 2";
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(link);
@@ -99,7 +100,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceTestFileSearch() throws IOException {
+    public void testDataSourceTestFileSearch() {
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode file = definitionDataSource.findNode(testFolder.getRoot().getName()
             + "/Applications/Nested 1/Nested 2/Nested 3/Test file 1"
