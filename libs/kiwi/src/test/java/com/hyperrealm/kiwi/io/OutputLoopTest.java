@@ -32,9 +32,9 @@ import static junit.framework.TestCase.assertEquals;
  */
 public class OutputLoopTest {
 
-    private final TemporaryFolder testFolder = new TemporaryFolder();
+    private static final String TEXT = "This is a test string, Ceci est une chaîne de test, Это тестовая строка";
 
-    private final String text = "This is a test string, Ceci est une chaîne de test, Это тестовая строка";
+    private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @Before
     public void before() throws IOException {
@@ -51,14 +51,14 @@ public class OutputLoopTest {
             try (InputStream is = outputLoop.getInputStream()) {
                 final String string = StreamUtils.readStreamToString(is);
                 outputLoop.dispose();
-                assertEquals(text, string);
+                assertEquals(TEXT, string);
 
             } catch (Exception | Error e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
         });
         thread.start();
-        System.out.print(text);
+        System.out.print(TEXT);
         System.out.close();
         thread.join();
     }

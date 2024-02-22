@@ -43,7 +43,6 @@ import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.EAST_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.NORTH_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.WEST_POSITION;
-
 import com.hyperrealm.kiwi.event.ActionSupport;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleManager;

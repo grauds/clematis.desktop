@@ -29,8 +29,8 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
-import com.hyperrealm.kiwi.ui.model.tree.ExternalKTreeModel;
 import com.hyperrealm.kiwi.ui.model.datasource.FilesystemDataSource;
+import com.hyperrealm.kiwi.ui.model.tree.ExternalKTreeModel;
 import com.hyperrealm.kiwi.ui.model.tree.KTreeModel;
 
 /**

@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JComponent;
 
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_PADDING;
-
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceManager;
 

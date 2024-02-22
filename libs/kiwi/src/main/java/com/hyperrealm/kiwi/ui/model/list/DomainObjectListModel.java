@@ -25,7 +25,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import com.hyperrealm.kiwi.ui.model.DomainObjectFieldAdapter;
-import com.hyperrealm.kiwi.ui.model.list.DefaultKListModel;
 
 /**
  * A <code>KListModel</code> that utilizes a

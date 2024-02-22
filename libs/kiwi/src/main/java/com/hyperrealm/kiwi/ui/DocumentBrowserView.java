@@ -134,7 +134,7 @@ public class DocumentBrowserView extends KPanel {
 
     private void showNode(DocumentDataSource.DocumentNode node) {
         try {
-            html.setPage(node.getURL());
+            html.setPage(node.getUrl());
         } catch (java.io.IOException ex) {
             // more graceful way to handle this?
         }

@@ -97,9 +97,8 @@ public class JVM extends DefinitionNode {
      * @param parent node jworkspace.api.DefinitionNode
      * @param file   to hold jvm data java.io.File
      */
-    public JVM(DefinitionNode parent, File file) throws IOException {
+    public JVM(DefinitionNode parent, File file) {
         super(parent, file);
-        load();
         this.name = getNodeName();
     }
 
@@ -175,8 +174,7 @@ public class JVM extends DefinitionNode {
     }
 
     /**
-     * Returns brief jvm info, that is used
-     * in installer configuration dialogs.
+     * Returns brief jvm info, that is used in installer configuration dialogs.
      */
     public String toString() {
         return name + " " + version;

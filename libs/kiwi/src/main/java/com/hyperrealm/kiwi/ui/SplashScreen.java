@@ -28,7 +28,6 @@ import java.awt.Image;
 import java.awt.Window;
 
 import static com.hyperrealm.kiwi.ui.KPanel.DEFAULT_DELAY;
-
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 /**

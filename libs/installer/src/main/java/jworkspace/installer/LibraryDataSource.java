@@ -29,7 +29,6 @@ package jworkspace.installer;
 */
 
 import java.io.File;
-import java.io.IOException;
 
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
@@ -64,7 +63,7 @@ class LibraryDataSource extends DefinitionDataSource {
     /**
      * Make node with hierarchical support, the node itself is a library.
      */
-    protected DefinitionNode makeNode(DefinitionNode parent, File file) throws IOException {
-        return (new Library(parent, file));
+    protected DefinitionNode makeNode(DefinitionNode parent, File file) {
+        return new Library(parent, file);
     }
 }

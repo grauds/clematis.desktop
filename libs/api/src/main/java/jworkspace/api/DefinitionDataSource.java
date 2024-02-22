@@ -29,6 +29,7 @@ package jworkspace.api;
 */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -140,41 +141,68 @@ public class DefinitionDataSource implements TreeDataSource<DefinitionNode> {
     /**
      * Returns ordered list of child nodes.
      */
-    private DefinitionNode[] getChildNodes(DefinitionNode node) {
+    private DefinitionNode[] getChildNodes(DefinitionNode parent) {
 
         File[] files;
+        ArrayList<DefinitionNode> nodes = new ArrayList<>();
 
-        if (node == null
-            || !node.isExpandable()
-            || !node.getFile().exists()
-            || node.getFile().listFiles() == null
+        if (parent == null
+            || !parent.isExpandable()
+            || !parent.getFile().exists()
+            || parent.getFile().listFiles() == null
         ) {
             return EMPTY_ARRAY;
         }
 
-        files = node.getFile().listFiles();
+        files = parent.getFile().listFiles();
 
-        ArrayList<File> dirs = new ArrayList<>();
-        ArrayList<File> sfiles = new ArrayList<>();
+        if (files != null) {
 
-        Arrays.stream(files).forEach((file) -> {
-            if (file.isDirectory()) {
-                dirs.add(file);
-            } else {
-                sfiles.add(file);
+            ArrayList<File> dirs = new ArrayList<>();
+            ArrayList<File> sfiles = new ArrayList<>();
+
+            Arrays.stream(files).forEach((file) -> {
+                if (file.isDirectory()) {
+                    dirs.add(file);
+                } else {
+                    sfiles.add(file);
+                }
+            });
+
+            Collections.sort(dirs);
+            Collections.sort(sfiles);
+            dirs.addAll(sfiles);
+
+            for (File file : dirs) {
+                if (file.isDirectory()) {
+                    nodes.add(DefinitionNode.makeFolderNode(parent, file));
+                } else {
+                    try {
+                        var node = makeNode(parent, file);
+                        node.load();
+                        nodes.add(node);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
             }
-        });
-
-        Collections.sort(dirs);
-        Collections.sort(sfiles);
-        dirs.addAll(sfiles);
-
-        ArrayList<DefinitionNode> v = new ArrayList<>();
-        for (File file : dirs) {
-            v.add(DefinitionNode.makeFolderNode(node, file));
         }
 
-        return v.toArray(DefinitionNode[]::new);
+        return nodes.toArray(DefinitionNode[]::new);
+    }
+
+    protected DefinitionNode makeNode(DefinitionNode parent, File file) {
+        return new DefinitionNode(parent, file) {
+            @Override
+            public void load() {
+                // empty node
+            }
+
+            @Override
+            public void save() {
+               // empty node
+            }
+        };
     }
 
     @Override

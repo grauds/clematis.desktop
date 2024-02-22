@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.nio.charset.StandardCharsets;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
@@ -36,10 +37,9 @@ import org.junit.rules.TemporaryFolder;
  */
 public class StreamUtilsTest {
 
+    private static final String TEXT = "This is a test string, Ceci est une chaîne de test, Это тестовая строка";
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
-
-    private final String text = "This is a test string, Ceci est une chaîne de test, Это тестовая строка";
 
     @Before
     public void before() throws IOException {
@@ -51,7 +51,7 @@ public class StreamUtilsTest {
         final File file = testFolder.newFile();
 
         try (FileOutputStream os = new FileOutputStream(file)) {
-            StreamUtils.writeStringToStream(text, os);
+            StreamUtils.writeStringToStream(TEXT, os);
         }
 
         try (FileInputStream is = new FileInputStream(file);
@@ -59,7 +59,7 @@ public class StreamUtilsTest {
 
             StreamUtils.readStreamToStream(is, bos);
             byte[] bytes = StreamUtils.readStreamToByteArray(new ByteArrayInputStream(bos.toByteArray()));
-            assertEquals(text, new String(bytes));
+            assertEquals(TEXT, new String(bytes, StandardCharsets.UTF_8));
         }
     }
 
@@ -69,11 +69,11 @@ public class StreamUtilsTest {
         final File file = testFolder.newFile();
 
         try (FileOutputStream os = new FileOutputStream(file)) {
-            StreamUtils.writeStringToStream(text, os);
+            StreamUtils.writeStringToStream(TEXT, os);
         }
 
         try (FileInputStream is = new FileInputStream(file)) {
-            assertEquals(text, StreamUtils.readStreamToString(is));
+            assertEquals(TEXT, StreamUtils.readStreamToString(is));
         }
     }
 
@@ -82,12 +82,12 @@ public class StreamUtilsTest {
         final File file = testFolder.newFile();
 
         try (FileOutputStream os = new FileOutputStream(file)) {
-            StreamUtils.writeStringToStream(text, os);
+            StreamUtils.writeStringToStream(TEXT, os);
         }
 
         try (FileInputStream is = new FileInputStream(file)) {
             byte[] bytes = StreamUtils.readStreamToByteArray(is);
-            assertEquals(text, new String(bytes));
+            assertEquals(TEXT, new String(bytes, StandardCharsets.UTF_8));
         }
 
     }

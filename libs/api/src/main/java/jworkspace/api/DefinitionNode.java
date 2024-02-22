@@ -111,7 +111,6 @@ public abstract class DefinitionNode {
         } else {
             this.parent = null;
         }
-
     }
 
     /**
@@ -147,17 +146,10 @@ public abstract class DefinitionNode {
      * @return the added node
      */
     public DefinitionNode add(DefinitionNode node) {
-        try {
-            if (node != null) {
-                node.setParent(this);
-                children.add(node);
-                hsupport.fireNodeAdded(this, children.indexOf(node));
-                node.save();
-            }
-        } catch (IOException ex) {
-            // do not throw the error out this method in a hope that the node
-            // will be saved later, with cascade save operation for instance
-            LOG.error(ex.getMessage(), ex);
+        if (node != null) {
+            node.setParent(this);
+            children.add(node);
+            hsupport.fireNodeAdded(this, children.indexOf(node));
         }
         return node;
     }

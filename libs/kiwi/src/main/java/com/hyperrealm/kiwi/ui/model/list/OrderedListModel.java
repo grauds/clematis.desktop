@@ -25,8 +25,6 @@ import java.util.Comparator;
 
 import javax.swing.ListModel;
 
-import com.hyperrealm.kiwi.ui.model.list.MutableListModel;
-
 /**
  * An implementation of <code>ListModel</code> that keeps its
  * elements ordered, and rejects duplicate elements.

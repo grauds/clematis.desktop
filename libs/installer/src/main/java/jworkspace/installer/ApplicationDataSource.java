@@ -67,7 +67,6 @@ public class ApplicationDataSource extends DefinitionDataSource {
      * itself is an application.
      */
     protected DefinitionNode makeNode(DefinitionNode parent, File file) {
-
         return new Application(parent, file);
     }
 }

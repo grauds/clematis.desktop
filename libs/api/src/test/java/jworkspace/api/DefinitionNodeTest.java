@@ -1,5 +1,6 @@
 package jworkspace.api;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -116,6 +117,7 @@ public class DefinitionNodeTest {
             .stream().filter((node) -> node.getNodeName().equals(APPLICATIONS)).toList();
     }
 
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     private List<DefinitionNode> getTopFolders() {
         return Arrays
             .stream(Objects.requireNonNull(testFolder.getRoot().listFiles()))

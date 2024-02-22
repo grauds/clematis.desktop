@@ -38,11 +38,11 @@ import org.junit.rules.TemporaryFolder;
  */
 public class BackupFileWriterTest {
 
+    private static final String TEXT = "This is a test string, Ceci est une chaîne de test, Это тестовая строка";
+
+    private static final String TEXT2 = "This is a test string 2, Ceci est une chaîne de test 2, Это тестовая строка 2";
+
     private final TemporaryFolder testFolder = new TemporaryFolder();
-
-    private final String text = "This is a test string, Ceci est une chaîne de test, Это тестовая строка";
-
-    private final String text2 = "This is a test string 2, Ceci est une chaîne de test 2, Это тестовая строка 2";
 
     @Before
     public void before() throws IOException {
@@ -55,17 +55,17 @@ public class BackupFileWriterTest {
         File test = testFolder.newFile();
 // create the first version of the file
         try (BackupFileOutputStream outputStream = new BackupFileOutputStream(test)) {
-            outputStream.write(text.getBytes(StandardCharsets.UTF_8));
+            outputStream.write(TEXT.getBytes(StandardCharsets.UTF_8));
         }
 // the second version
         try (BackupFileOutputStream outputStream = new BackupFileOutputStream(test)) {
-            outputStream.write(text2.getBytes(StandardCharsets.UTF_8));
+            outputStream.write(TEXT2.getBytes(StandardCharsets.UTF_8));
         }
 // validate the backup file exists
         Path backup = Paths.get(test.getAbsolutePath() + BackupFileOutputStream.BAK);
         assertTrue(Files.exists(backup));
         try (FileInputStream is = new FileInputStream(backup.toFile())) {
-            assertEquals(text, StreamUtils.readStreamToString(is));
+            assertEquals(TEXT, StreamUtils.readStreamToString(is));
         }
     }
 
@@ -75,17 +75,17 @@ public class BackupFileWriterTest {
         File test = testFolder.newFile();
 // create the first version of the file
         try (BackupFileWriter backupFileWriter = new BackupFileWriter(test)) {
-            backupFileWriter.append(text);
+            backupFileWriter.append(TEXT);
         }
 // the second version
         try (BackupFileWriter backupFileWriter = new BackupFileWriter(test)) {
-            backupFileWriter.append(text2);
+            backupFileWriter.append(TEXT2);
         }
 // validate the backup file exists
         Path backup = Paths.get(test.getAbsolutePath() + BackupFileWriter.BAK);
         assertTrue(Files.exists(backup));
         try (FileInputStream is = new FileInputStream(backup.toFile())) {
-            assertEquals(text, StreamUtils.readStreamToString(is));
+            assertEquals(TEXT, StreamUtils.readStreamToString(is));
         }
     }
 

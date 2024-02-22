@@ -1,5 +1,6 @@
 package jworkspace.api;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 
@@ -31,6 +32,7 @@ public class DefinitionDataSourceTest {
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @BeforeEach
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     public void before() throws IOException {
         testFolder.create();
         File folder3 = testFolder.newFolder(APPLICATIONS,
@@ -43,7 +45,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceCreationAndSearch() {
+    public void testDataSourceCreationAndSearch() throws IOException {
 
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(testFolder.getRoot().getName()
@@ -57,7 +59,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceMethods() {
+    public void testDataSourceMethods() throws IOException {
 
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(testFolder.getRoot().getName()
@@ -72,7 +74,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourcePropertiesMethods() {
+    public void testDataSourcePropertiesMethods() throws IOException {
 
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(testFolder.getRoot().getName()
@@ -89,7 +91,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testLinkString() {
+    public void testLinkString() throws IOException {
         String link = testFolder.getRoot().getName() + "/Applications/Nested 1/Nested 2";
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested2 = definitionDataSource.findNode(link);
@@ -97,7 +99,7 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceTestFileSearch() {
+    public void testDataSourceTestFileSearch() throws IOException {
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode file = definitionDataSource.findNode(testFolder.getRoot().getName()
             + "/Applications/Nested 1/Nested 2/Nested 3/Test file 1"
@@ -107,13 +109,18 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceAddNotSavedNode() {
+    public void testDataSourceAddNotSavedNode() throws IOException {
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested3 = definitionDataSource.findNode(testFolder.getRoot().getName()
             + "/Applications/Nested 1/Nested 2/Nested 3"
         );
         Assertions.assertNotNull(nested3);
+
+        // add the node to virtual hierarchy
         DefinitionNode nested4 = DefinitionNode.makeFolderNode(nested3, new File("Nested 4"));
+        // explicitly store the node, otherwise datasource won't find it
+        nested4.save();
+
         DefinitionNode nested4found = definitionDataSource.findNode(testFolder.getRoot().getName()
             + "/Applications/Nested 1/Nested 2/Nested 3/Nested 4"
         );

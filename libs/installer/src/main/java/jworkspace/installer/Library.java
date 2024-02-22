@@ -77,9 +77,8 @@ public class Library extends DefinitionNode {
      * @param parent node jworkspace.api.DefinitionNode
      * @param file   to hold library data java.io.File
      */
-    public Library(DefinitionNode parent, File file) throws IOException {
+    public Library(DefinitionNode parent, File file) {
         super(parent, file);
-        load();
         this.name = getNodeName();
     }
 

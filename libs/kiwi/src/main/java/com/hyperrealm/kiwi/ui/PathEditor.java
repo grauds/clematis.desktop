@@ -54,7 +54,6 @@ import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOU
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_ROW_HEIGHT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.EAST_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.NORTH_POSITION;
-
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
 import com.hyperrealm.kiwi.util.DirectoryPath;
 import com.hyperrealm.kiwi.util.KiwiUtils;

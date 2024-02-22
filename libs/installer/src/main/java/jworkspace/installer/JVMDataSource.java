@@ -29,7 +29,6 @@ package jworkspace.installer;
 */
 
 import java.io.File;
-import java.io.IOException;
 
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
@@ -68,7 +67,7 @@ class JVMDataSource extends DefinitionDataSource {
     /**
      * Make node with hierarchical support, the node itself is a jvm.
      */
-    protected DefinitionNode makeNode(DefinitionNode parent, File file) throws IOException {
+    protected DefinitionNode makeNode(DefinitionNode parent, File file) {
         return new JVM(parent, file);
     }
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.rules.TemporaryFolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,9 @@ public class WorkspaceInstallerTest {
 
         Application testApplicationCopy = new Application(applicationData.getRoot(), testApplication.getName());
         testApplicationCopy.load();
-        assert testApplication.equals(testApplicationCopy);
+
+// configuration nodes are equal
+        Assertions.assertEquals(testApplication, testApplicationCopy);
 
 // add applications to root
         applicationData.getRoot().add(testApplication);
@@ -84,28 +87,35 @@ public class WorkspaceInstallerTest {
         ApplicationDataSource applicationDataSourceCopy
             = new ApplicationDataSource(new File(dataRoot, ApplicationDataSource.ROOT));
         applicationDataSourceCopy.getRoot().load();
-        assert applicationData.equals(applicationDataSourceCopy);
+
+// datasources are different, even though loaded from the same data, normally we don't compare them
+        Assertions.assertNotEquals(applicationData, applicationDataSourceCopy);
 
         Library testLibraryCopy = new Library(libraryData.getRoot(), testLibrary.getName());
         testLibraryCopy.load();
-        assert testLibraryCopy.equals(testLibrary);
+
+        Assertions.assertEquals(testLibraryCopy, testLibrary);
+
         libraryData.getRoot().add(testLibraryCopy);
         libraryData.getRoot().save();
 
         LibraryDataSource libraryDataCopy = new LibraryDataSource(new File(dataRoot, LibraryDataSource.ROOT));
         libraryDataCopy.getRoot().load();
 
-        assert libraryData.equals(libraryDataCopy);
+        Assertions.assertNotEquals(libraryData, libraryDataCopy);
 
         JVM jvmCopy = new JVM(jvmData.getRoot(), jvm.getName());
         jvmCopy.load();
-        assert jvm.equals(jvmCopy);
+
+        Assertions.assertEquals(jvm, jvmCopy);
+
         jvmData.getRoot().add(jvmCopy);
         jvmData.getRoot().save();
 
         JVMDataSource jvmDataCopy = new JVMDataSource(new File(dataRoot, JVMDataSource.ROOT));
         libraryDataCopy.getRoot().load();
-        assert jvmDataCopy.equals(jvmData);
+
+        Assertions.assertNotEquals(jvmDataCopy, jvmData);
 
         WorkspaceInstaller workspaceInstaller = new WorkspaceInstaller(dataRoot);
 

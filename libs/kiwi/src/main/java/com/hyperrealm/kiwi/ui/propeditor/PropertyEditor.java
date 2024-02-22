@@ -27,7 +27,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
-
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.KScrollPane;
 import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;

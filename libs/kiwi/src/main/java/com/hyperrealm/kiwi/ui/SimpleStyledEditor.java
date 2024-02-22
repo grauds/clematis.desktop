@@ -33,7 +33,6 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import static com.hyperrealm.kiwi.ui.ConsolePanel.DEFAULT_FONT_SIZE;
-
 import com.hyperrealm.kiwi.text.XMLElement;
 import com.hyperrealm.kiwi.text.XMLParser;
 
