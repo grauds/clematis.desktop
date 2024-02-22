@@ -168,7 +168,7 @@ public class DocumentDataSource implements TreeDataSource<DocumentDataSource.Doc
     public DocumentNode[] getChildren(DocumentNode node) {
         ArrayList<DocumentNode> children = new ArrayList<DocumentNode>();
 
-        try (InputStream is = node.getURL().openStream();
+        try (InputStream is = node.getUrl().openStream();
              BufferedReader reader = new BufferedReader(new InputStreamReader(is,
                  StandardCharsets.UTF_8))) {
 
@@ -244,7 +244,7 @@ public class DocumentDataSource implements TreeDataSource<DocumentDataSource.Doc
 
             try {
 
-                String parentURL = parent.getURL().toString();
+                String parentURL = parent.getUrl().toString();
                 int idx = parentURL.lastIndexOf(SUFFIX_SLASH);
                 file = st.nextToken();
                 String temp = parentURL.substring(0, idx) + SUFFIX_SLASH + file;
@@ -273,7 +273,7 @@ public class DocumentDataSource implements TreeDataSource<DocumentDataSource.Doc
         private final String file;
         private final Icon icon;
         private final Icon altIcon;
-        private final URL URL;
+        private final URL url;
         private final boolean expandable;
         private DocumentNode parent = null;
 
@@ -282,7 +282,7 @@ public class DocumentDataSource implements TreeDataSource<DocumentDataSource.Doc
             this.label = label;
             this.icon = ((icon != null) ? icon : UNKNOWN_ICON);
             this.altIcon = ((altIcon != null) ? altIcon : this.icon);
-            this.URL = url;
+            this.url = url;
             this.expandable = expandable;
             this.file = file;
         }

@@ -32,7 +32,6 @@ import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.WEST_POSITION;
-
 import com.hyperrealm.kiwi.event.ActionSupport;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;

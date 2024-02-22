@@ -195,7 +195,6 @@ public final class Plugin extends PluginDTO {
 
             // load the ICON
 
-            GraphicsEnvironment.getLocalGraphicsEnvironment();
             if (iconFile != null && !GraphicsEnvironment.isHeadless()) {
                 JarEntry entry = (JarEntry) jar.getEntry(iconFile);
                 if (entry != null) {

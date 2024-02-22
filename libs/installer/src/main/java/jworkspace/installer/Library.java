@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -34,25 +34,25 @@ import java.io.IOException;
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
-//
+
 import jworkspace.api.DefinitionNode;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Library entry is a definition node, that stores
- * its data in file on disk, which is in file hierarchy
+ * Library entry is a definition node, that stores its data in file, which is in file hierarchy
  * inside libraries root directory.
- *
  *
  * @author Anton Troshin
  * @author Mark Lindner
  */
 @EqualsAndHashCode(callSuper = false)
-@Data
+@Getter
+@Setter
 public class Library extends DefinitionNode {
 
-    public static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("installer/library.gif");
+    public static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("library.gif");
 
     public static final String CK_NAME = "library.name",
         CK_VERSION = "library.version",
@@ -74,19 +74,18 @@ public class Library extends DefinitionNode {
     /**
      * Public library constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param file   to hold library data java.io.File
      */
-    public Library(DefinitionNode parent, File file) throws IOException {
+    public Library(DefinitionNode parent, File file) {
         super(parent, file);
-        load();
         this.name = getNodeName();
     }
 
     /**
      * Public library constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode}
      * @param name   of file to hold library data java.lang.String
      */
     public Library(DefinitionNode parent, String name) {

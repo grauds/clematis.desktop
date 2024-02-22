@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-1999 Mark A. Lindner,
-          2000-2018 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -29,16 +29,17 @@ package jworkspace.installer;
 */
 
 import java.io.File;
-import java.io.IOException;
 
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
  * Data source for library.
+ *
+ * @author Anton Troshin
+ * @author Mark Lindner
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
@@ -60,10 +61,9 @@ class LibraryDataSource extends DefinitionDataSource {
     }
 
     /**
-     * Make node with hierarchical support, the node
-     * itself is a library.
+     * Make node with hierarchical support, the node itself is a library.
      */
-    protected DefinitionNode makeNode(DefinitionNode parent, File file) throws IOException {
-        return (new Library(parent, file));
+    protected DefinitionNode makeNode(DefinitionNode parent, File file) {
+        return new Library(parent, file);
     }
 }

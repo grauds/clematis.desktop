@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-1999 Mark A. Lindner,
-          2000-2018 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -34,10 +34,11 @@ import java.io.IOException;
 import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
-//
+
 import jworkspace.api.DefinitionNode;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * JVM entry is a definition node, that stores
@@ -48,12 +49,11 @@ import lombok.EqualsAndHashCode;
  * @author Mark Lindner
  */
 @EqualsAndHashCode(callSuper = false)
-@Data
+@Getter
+@Setter
 public class JVM extends DefinitionNode {
 
-    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("installer/jvm.gif");
-
-    private static final String CK_NAME = "jvm.name",
+    public static final String CK_NAME = "jvm.name",
         CK_VERSION = "jvm.version",
         CK_PATH = "jvm.path",
         CK_SOURCE = "jvm.source",
@@ -61,11 +61,29 @@ public class JVM extends DefinitionNode {
         CK_DOCDIR = "jvm.documentation_dir",
         CK_DESCRIPTION = "jvm.description";
 
+    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("jvm.gif");
+
     private static final String JAVA_VIRTUAL_MACHINE_DEFINITION = "Java Virtual Machine Definition";
 
     private String name;
     private String version = "";
     private String path = "";
+    /**
+     *  Sets java virtual machine arguments. This can
+     *  be everything supported by VM.
+     *  Note, that next parameters are required by
+     *  Java Workspace Installer to launch application
+     *  with all options:
+     *  <b>-cp %c %m %a</b>.
+     *  <ol>
+     *  <li>%c - include classpath
+     *  <li>%m - include main class
+     *  <li>%a - include application command line parameters
+     *  </li>
+     *  If any of these three parameters are missing,
+     *  corresponding part of full command line, nessesary
+     *  to launch application, will be omitted.
+     */
     private String arguments = "-cp %c %m %a";
     private String description = "";
     private String docs = "";
@@ -76,44 +94,23 @@ public class JVM extends DefinitionNode {
     /**
      * Public jvm constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param file   to hold jvm data java.io.File
      */
-    public JVM(DefinitionNode parent, File file) throws IOException {
+    public JVM(DefinitionNode parent, File file) {
         super(parent, file);
-        load();
         this.name = getNodeName();
     }
 
     /**
      * Public jvm constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param name   of file to hold jvm data java.lang.String
      */
     public JVM(DefinitionNode parent, String name) {
         super(parent, name + DefinitionNode.FILE_EXTENSION);
         this.name = name;
-    }
-
-    /**
-     * Sets java virtual machine arguments. This can
-     * be everything supported by VM.
-     * Note, that next parameters are required by
-     * Java Workspace Installer to launch application
-     * with all options:
-     * <b>-cp %c %m %a</b>.
-     * <ol>
-     * <li>%c - include classpath
-     * <li>%m - include main class
-     * <li>%a - include application command line parameters
-     * </li>
-     * If any of these three parameters are missing,
-     * corresponding part of full command line, nessesary
-     * to launch application, will be omitted.
-     */
-    public void setArguments(String arguments) {
-        this.arguments = arguments;
     }
 
     /**
@@ -177,8 +174,7 @@ public class JVM extends DefinitionNode {
     }
 
     /**
-     * Returns brief jvm info, that is used
-     * in installer configuration dialogs.
+     * Returns brief jvm info, that is used in installer configuration dialogs.
      */
     public String toString() {
         return name + " " + version;

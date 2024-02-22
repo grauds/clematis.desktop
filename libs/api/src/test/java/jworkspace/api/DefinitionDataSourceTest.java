@@ -15,6 +15,8 @@ import static jworkspace.api.DefinitionNode.CLOSED_ICON;
 import static jworkspace.api.DefinitionNode.LEAF_ICON;
 import static jworkspace.api.DefinitionNode.OPEN_ICON;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Definition data source tests
  */
@@ -22,14 +24,23 @@ public class DefinitionDataSourceTest {
 
     public static final String APPLICATIONS = "Applications";
 
+    private static final String NESTED_1_FOLDER = "Nested 1";
+
     private static final String NESTED_2_FOLDER = "Nested 2";
+
+    private static final String NESTED_3_FOLDER = "Nested 3";
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @BeforeEach
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     public void before() throws IOException {
         testFolder.create();
-        File folder3 = testFolder.newFolder(APPLICATIONS, "Nested 1", NESTED_2_FOLDER, "Nested 3");
+        File folder3 = testFolder.newFolder(APPLICATIONS,
+            NESTED_1_FOLDER,
+            NESTED_2_FOLDER,
+            NESTED_3_FOLDER
+        );
         File file = new File(folder3, "Test file 1");
         file.createNewFile();
     }
@@ -99,13 +110,18 @@ public class DefinitionDataSourceTest {
     }
 
     @Test
-    public void testDataSourceAddNotSavedNode() {
+    public void testDataSourceAddNotSavedNode() throws IOException {
         DefinitionDataSource definitionDataSource = new DefinitionDataSource(testFolder.getRoot());
         DefinitionNode nested3 = definitionDataSource.findNode(testFolder.getRoot().getName()
             + "/Applications/Nested 1/Nested 2/Nested 3"
         );
         Assertions.assertNotNull(nested3);
+
+        // add the node to virtual hierarchy
         DefinitionNode nested4 = DefinitionNode.makeFolderNode(nested3, new File("Nested 4"));
+        // explicitly store the node, otherwise datasource won't find it
+        nested4.save();
+
         DefinitionNode nested4found = definitionDataSource.findNode(testFolder.getRoot().getName()
             + "/Applications/Nested 1/Nested 2/Nested 3/Nested 4"
         );

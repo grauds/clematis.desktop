@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-1999 Mark A. Lindner,
-          2000-2018 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -29,7 +29,6 @@ package jworkspace.installer;
 */
 
 import java.io.File;
-import java.io.IOException;
 
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
@@ -58,7 +57,7 @@ class JVMDataSource extends DefinitionDataSource {
      * Construct new jvm data source
      * with given file as a root.
      *
-     * @param root java.io.File
+     * @param root {@link File}
      */
     JVMDataSource(File root) {
         super(root);
@@ -68,7 +67,7 @@ class JVMDataSource extends DefinitionDataSource {
     /**
      * Make node with hierarchical support, the node itself is a jvm.
      */
-    protected DefinitionNode makeNode(DefinitionNode parent, File file) throws IOException {
+    protected DefinitionNode makeNode(DefinitionNode parent, File file) {
         return new JVM(parent, file);
     }
 }

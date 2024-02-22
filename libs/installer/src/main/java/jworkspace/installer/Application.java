@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -37,27 +37,24 @@ import javax.swing.Icon;
 import com.hyperrealm.kiwi.io.ConfigFile;
 
 import jworkspace.api.DefinitionNode;
-
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Application entry is a definition node, that stores
- * its data in file on disk, which is in file hierarchy
- * inside applications root directory. This class
- * also calculates proper classpath for java application
+ * Application entry is a definition node, that stores its data in a file, which is in file hierarchy
+ * inside applications root directory. This class also calculates proper classpath for java application
  * its presenting.
  *
  * @author Anton Troshin
  * @author Mark Lindner
  */
 @EqualsAndHashCode(callSuper = false)
-@Data
+@Getter
+@Setter
 public class Application extends DefinitionNode {
 
-    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("installer/application.gif");
-
-    private static final String CK_NAME = "application.name",
+    public static final String CK_NAME = "application.name",
         CK_VERSION = "application.version",
         CK_ARCHIVE = "application.archive",
         CK_SOURCE = "application.source",
@@ -68,6 +65,8 @@ public class Application extends DefinitionNode {
         CK_DESCRIPTION = "application.description",
         CK_WORKINGDIR = "application.working_dir",
         CK_DOCDIR = "application.documentation_dir";
+
+    private static final Icon ICON = WorkspaceInstaller.getResourceManager().getIcon("application.gif");
 
     private static final String APPLICATION_DEFINITION_CONFIG_HEADER = "Application Definition";
 
@@ -98,7 +97,7 @@ public class Application extends DefinitionNode {
     /**
      * Public application constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param file   to hold application data java.io.File
      */
     public Application(DefinitionNode parent, File file) {
@@ -109,7 +108,7 @@ public class Application extends DefinitionNode {
     /**
      * Public application constructor.
      *
-     * @param parent node jworkspace.api.DefinitionNode
+     * @param parent node {@link DefinitionNode
      * @param name   of file to hold application data java.lang.String
      */
     public Application(DefinitionNode parent, String name) {

@@ -45,7 +45,6 @@ import javax.swing.tree.TreeCellRenderer;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.WEST_POSITION;
-
 import com.hyperrealm.kiwi.ui.KLabel;
 import com.hyperrealm.kiwi.ui.KPanel;
 

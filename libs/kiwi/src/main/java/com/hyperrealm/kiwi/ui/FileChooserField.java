@@ -27,7 +27,6 @@ import javax.swing.event.ChangeListener;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.EAST_POSITION;
-
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
 import com.hyperrealm.kiwi.util.KiwiUtils;

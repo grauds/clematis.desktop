@@ -5,41 +5,46 @@ buildscript {
 }
 
 plugins {
+    id 'jacoco-report-aggregation'
+
     id 'com.github.spotbugs' version '4.7.1'
     id 'org.asciidoctor.jvm.convert' version '3.1.0'
-    id 'jacoco'
+}
+
+repositories {
+    mavenCentral()
 }
 
 group 'org.clematis.desktop'
 version '2.0.0-SNAPSHOT'
 
-allprojects {
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.github.spotbugs'
+    apply plugin: 'org.asciidoctor.jvm.convert'
 
     repositories {
         mavenCentral()
     }
 
-    apply plugin: 'java'
-    apply plugin: 'checkstyle'
-    apply plugin: 'jacoco'
-    apply plugin: 'idea'
+    apply from: file("${project.rootDir}/dependencies.gradle")
 
     sourceCompatibility = '17'
     targetCompatibility = '17'
 
-    // ------------ JaCoCo test coverage + ascii doctor as a post processor
+
+// ------------ JaCoCo configuration  ---------
     ext {
         setProperty('snippetsDir', file("build/generated-snippets"))
     }
 
-    apply from: file("${project.rootDir}/dependencies.gradle")
-
-    // ------------ JaCoCo configuration  ---------
     test {
         outputs.dir snippetsDir
         useJUnitPlatform()
         testLogging.showStandardStreams = true
-        finalizedBy jacocoTestReport
         jacoco {
             destinationFile = file("jacoco/jacocoTest.exec")
             classDumpDir = file("jacoco/classpathdumps")
@@ -47,7 +52,6 @@ allprojects {
     }
 
     jacocoTestReport {
-        dependsOn test // tests are required to run before generating the report
         reports {
             xml.required = true
             csv.required = false
@@ -59,6 +63,9 @@ allprojects {
         }
         executionData fileTree(project.rootDir.absolutePath).include("jacoco/*.exec")
     }
+
+    jacocoTestReport.dependsOn test
+    test.finalizedBy jacocoTestReport
 
     asciidoctor {
         inputs.dir snippetsDir
@@ -87,7 +94,7 @@ allprojects {
             }
             html {
                 enabled = true
-                destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+                destination = file("${project.buildDir}/reports/spotbugs/main/spotbugs.html")
             }
         }
     }
@@ -99,7 +106,7 @@ allprojects {
             }
             html {
                 enabled = true
-                destination = file("$buildDir/reports/spotbugs/test/spotbugs.html")
+                destination = file("${project.buildDir}/reports/spotbugs/test/spotbugs.html")
             }
         }
     }
@@ -112,10 +119,10 @@ allprojects {
 
     tasks.register('checkstyleReport') {
         doLast {
-            if (file("${buildDir}/reports/checkstyle/${project.ext.checkType}.xml").exists()) {
-                ant.xslt(in: "${buildDir}/reports/checkstyle/${project.ext.checkType}.xml",
+            if (file("${project.buildDir}/reports/checkstyle/${project.ext.checkType}.xml").exists()) {
+                ant.xslt(in: "${project.buildDir}/reports/checkstyle/${project.ext.checkType}.xml",
                         style: "${project.rootDir}/config/checkstyle/checkstyle.xsl",
-                        out: "${buildDir}/reports/checkstyle/checkstyle_${project.ext.checkType}.html")
+                        out: "${project.buildDir}/reports/checkstyle/checkstyle_${project.ext.checkType}.html")
             }
         }
     }
@@ -125,4 +132,22 @@ allprojects {
             exclude '**/*Test*'
         }
     }
+}
+
+dependencies {
+    jacocoAggregation project(':api')
+    jacocoAggregation project(':kiwi')
+    jacocoAggregation project(':installer')
+}
+
+reporting {
+    reports {
+        testCodeCoverageReport(JacocoCoverageReport) {
+            testType = TestSuiteType.UNIT_TEST
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
 }

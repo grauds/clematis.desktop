@@ -6,17 +6,17 @@ rootProject.name = 'clematis'
 //include 'launcher'
 //project(':launcher').projectDir = file('modules/launcher')
 
+include 'kiwi'
+project(':kiwi').projectDir = file('libs/kiwi')
+
 include 'api'
 project(':api').projectDir = file('libs/api')
 
-//include 'installer'
-//project(':installer').projectDir = file('libs/installer')
+include 'installer'
+project(':installer').projectDir = file('libs/installer')
 
 //include 'profiles'
 //project(':profiles').projectDir = file('libs/profiles')
-
-include 'kiwi'
-project(':kiwi').projectDir = file('libs/kiwi')
 
 //include 'ui'
 //project(':ui').projectDir = file('modules/ui')

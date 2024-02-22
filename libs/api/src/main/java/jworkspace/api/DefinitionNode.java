@@ -3,7 +3,7 @@ package jworkspace.api;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+          2000, 2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -30,7 +30,6 @@ package jworkspace.api;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -38,7 +37,6 @@ import java.util.Stack;
 import javax.swing.Icon;
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,15 +58,14 @@ import lombok.Setter;
  * @author Mark Lindner
  */
 @Getter
-@Setter
 @EqualsAndHashCode
 public abstract class DefinitionNode {
 
     public static final Icon OPEN_ICON, CLOSED_ICON, LOCKED_ICON, ROOT_ICON, LEAF_ICON;
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefinitionNode.class);
+    public static final String FILE_EXTENSION = ".cfg";
 
-    private static final String FILE_EXTENSION = ".cfg";
+    private static final Logger LOG = LoggerFactory.getLogger(DefinitionNode.class);
 
     private static final String FOLDER_CLOSED_GIF = "folder-closed.gif";
 
@@ -90,15 +87,14 @@ public abstract class DefinitionNode {
     @EqualsAndHashCode.Exclude
     protected File file;
 
+    @Setter
     private DefinitionNode parent;
 
     @EqualsAndHashCode.Exclude
-    private List<DefinitionNode> children = new ArrayList<>();
+    private final List<DefinitionNode> children = new ArrayList<>();
 
     @EqualsAndHashCode.Exclude
-    private KTreeModelSupport hsupport;
-
-    public DefinitionNode() {}
+    private final KTreeModelSupport hsupport;
 
     /**
      * Public constructor of definition node.
@@ -115,7 +111,6 @@ public abstract class DefinitionNode {
         } else {
             this.parent = null;
         }
-
     }
 
     /**
@@ -141,46 +136,20 @@ public abstract class DefinitionNode {
     }
 
     public static DefinitionNode makeFolderNode(DefinitionNode parent, File file) {
-        return new DefinitionNode(parent, file) {
-            @Override
-            public void load() {
-                // directory doesn't load anything
-            }
-
-            @Override
-            public void save() throws IOException {
-
-                // create a directory if it doesn't exist in the parent's folder if the parent exists
-                if (getFile() != null && !getFile().exists()) {
-
-                    File dir = this.getParent() != null
-                        ? Path.of(getParent().getFile().getAbsolutePath()
-                              + File.separator
-                              + getFile().getName()
-                           ).toFile()
-                        : getFile();
-
-                    FileUtils.forceMkdir(dir);
-                }
-            }
-        };
+        return new FolderNode(parent, file);
     }
 
     /**
      * Add child node
      *
      * @param node is a number in array of children int
+     * @return the added node
      */
     public DefinitionNode add(DefinitionNode node) {
-        try {
-            if (node != null) {
-                node.setParent(this);
-                children.add(node);
-                hsupport.fireNodeAdded(this, children.indexOf(node));
-                node.save();
-            }
-        } catch (IOException ex) {
-            LOG.error(ex.getMessage(), ex);
+        if (node != null) {
+            node.setParent(this);
+            children.add(node);
+            hsupport.fireNodeAdded(this, children.indexOf(node));
         }
         return node;
     }
@@ -202,15 +171,27 @@ public abstract class DefinitionNode {
 
     /**
      * Delete this node if it not write-protected or locked.
+     *
+     * @return true if this node has been a child of its parent
      */
     public boolean delete() throws IOException {
-        if (file.canRead()) {
-            if (file.delete()) {
-                hsupport.fireNodeRemoved(getParent(), getIndex());
-                return this.parent.getChildren().remove(this);
-            }
+        if (file.canRead() && file.delete()) {
+            hsupport.fireNodeRemoved(getParent(), getIndex());
+            return this.parent.getChildren().remove(this);
         }
         throw new IOException("The folder is locked or non-empty.");
+    }
+
+    /**
+     * Moves the node to the new parent directory
+     * @param parent {@link DefinitionNode}
+     * @throws IOException if this node can't be deleted before move
+     */
+    public void move(DefinitionNode parent) throws IOException {
+        if (parent != null && parent.getFile() != null && parent.getFile().isDirectory()) {
+            delete();
+            parent.add(this);
+        }
     }
 
     /**
@@ -336,4 +317,5 @@ public abstract class DefinitionNode {
      * thus it does not save itself to disk.
      */
     public abstract void save() throws IOException;
+
 }

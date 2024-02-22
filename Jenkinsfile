@@ -50,12 +50,6 @@ pipeline {
             }
         }
 
-        stage('Update demo database from GitHub') {
-            steps {
-                sh 'wget "https://github.com/grauds/money.tracker.api/raw/master/src/test/resources/mt.fdb" -O /home/firebird/demo/db/mt.fdb'
-            }
-        }
-
         stage("Build and start docker compose services") {
           environment {
                 KEYCLOAK_SECRET = credentials('MT_API_KEYCLOAK_SECRET')

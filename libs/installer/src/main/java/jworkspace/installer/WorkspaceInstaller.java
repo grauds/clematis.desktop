@@ -3,7 +3,7 @@ package jworkspace.installer;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1998-99 Mark A. Lindner,
-          2000 Anton Troshin
+          2000-2024 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -29,6 +29,7 @@ package jworkspace.installer;
 */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -43,30 +44,27 @@ import com.hyperrealm.kiwi.util.StringUtils;
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
 import jworkspace.api.IWorkspaceComponent;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Install engine is one of required by kernel.
- *
- * @author Anton Troshin
  */
-@Data
+@Getter
+@Setter
 public class WorkspaceInstaller implements IWorkspaceComponent {
 
     static final String JVM_ARGS_DELIMITER = " ";
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInstaller.class);
 
-    /**
-     * Root folder for the data
-     */
-    private File dataRoot;
     /**
      * Resource manager for installer resources
      */
     private static ResourceManager resourceManager = null;
+
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInstaller.class);
+    /**
+     * Root folder for the data
+     */
+    private File dataRoot;
     /**
      * JVM datasource
      */
@@ -94,7 +92,6 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
         if (resourceManager == null) {
             resourceManager = new ResourceManager(WorkspaceInstaller.class);
         }
-
         return resourceManager;
     }
 
@@ -102,37 +99,33 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      * Load profile data.
      */
     @Override
-    public void load() {
+    public void load() throws IOException {
 
-        try {
-            LOG.info("> Loading installer");
-            /*
-             * Load data sources
-             */
-            applicationData.getRoot().load();
-            libraryData.getRoot().load();
-            jvmData.getRoot().load();
-            /*
-             * Install default virtual machine
-             */
-            if (jvmData.getChildren(jvmData.getRoot()).length == 0) {
-                JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
+        LOG.info("> Loading installer");
+        /*
+         * Load data sources
+         */
+        applicationData.getRoot().load();
+        libraryData.getRoot().load();
+        jvmData.getRoot().load();
+        /*
+         * Install default virtual machine
+         */
+        if (jvmData.getChildren(jvmData.getRoot()).length == 0) {
 
-                jvm.setName("default jvm");
-                jvm.setDescription("the jvm this instance of workspace is currently running");
-                jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
-                jvm.setVersion(System.getProperty("java.version"));
-                jvm.setArguments("-cp %c %m %a");
-                jvm.save();
+            JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
 
-                jvmData.getRoot().add(jvm);
-            }
+            jvm.setName("default jvm");
+            jvm.setDescription("the jvm this instance of workspace is currently running");
+            jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
+            jvm.setVersion(System.getProperty("java.version"));
+            jvm.setArguments("-cp %c %m %a");
+            jvm.save();
 
-            LOG.info("> Installer is loaded");
-
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
+            jvmData.getRoot().add(jvm);
         }
+
+        LOG.info("> Installer is loaded");
     }
 
     /**
@@ -141,7 +134,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
     @Override
     public void reset() {
         /*
-         * (Re)set data sources
+         * Reset data
          */
         applicationData = new ApplicationDataSource(new File(dataRoot, ApplicationDataSource.ROOT));
         libraryData = new LibraryDataSource(new File(dataRoot, LibraryDataSource.ROOT));
@@ -152,21 +145,18 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      * Saves data state
      */
     @Override
-    public void save() {
-        try {
-            LOG.info("> Saving installer");
-            /*
-             * Load data sources
-             */
-            applicationData.getRoot().save();
-            libraryData.getRoot().save();
-            jvmData.getRoot().save();
+    public void save() throws IOException {
 
-            LOG.info("> Installer is saved");
+        LOG.info("> Saving installer");
+        /*
+         * Load data sources
+         */
+        applicationData.getRoot().save();
+        libraryData.getRoot().save();
+        jvmData.getRoot().save();
 
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
+        LOG.info("> Installer is saved");
+
     }
 
     /**
@@ -179,7 +169,6 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      * @return String
      */
     public String[] getInvocationArgs(String path) {
-
         DefinitionNode node = findApplicationNode(path);
         return getInvocationArgs(((Application) node));
     }
@@ -215,13 +204,13 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
         v.addElement(jvmProg.getPath());
 
         // next, construct the classpath
-        String pathSeparator = System.getProperty("path.separator");
+        String pathSeparator = File.pathSeparator;
         StringBuilder sb = new StringBuilder();
         sb.append('"');
         sb.append('.');
         List<Library> libraries = getApplicationLibraries(application);
         for (Library library : libraries) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(pathSeparator);
             }
             sb.append(library.getPath());
@@ -229,7 +218,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
 
         // append the library for the program itself to the classpath
 
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             sb.append(pathSeparator);
         }
         sb.append(application.getArchive());

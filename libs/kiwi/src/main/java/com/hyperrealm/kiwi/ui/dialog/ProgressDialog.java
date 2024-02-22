@@ -30,7 +30,6 @@ import javax.swing.WindowConstants;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_PADDING;
-
 import com.hyperrealm.kiwi.ui.KLabel;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;

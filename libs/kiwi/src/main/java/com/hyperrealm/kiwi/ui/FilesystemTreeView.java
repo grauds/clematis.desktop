@@ -31,10 +31,9 @@ import javax.swing.tree.TreeSelectionModel;
 
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_ROW_HEIGHT;
-
+import com.hyperrealm.kiwi.ui.model.datasource.FilesystemDataSource;
 import com.hyperrealm.kiwi.ui.model.tree.DefaultKTreeModel;
 import com.hyperrealm.kiwi.ui.model.tree.ExternalKTreeModel;
-import com.hyperrealm.kiwi.ui.model.datasource.FilesystemDataSource;
 import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;
 
 /**
@@ -55,11 +54,11 @@ import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;
 
 public class FilesystemTreeView extends KPanel {
 
-    private JTree tree;
+    private final JTree tree;
 
-    private KTreeModelTreeAdapter adapter;
+    private final KTreeModelTreeAdapter adapter;
 
-    private boolean ignoreFiles;
+    private final boolean ignoreFiles;
 
     /**
      * Construct a new <code>FilesystemTreeView</code>. The tree initially has

@@ -40,7 +40,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_ROW_HEIGHT;
-
 import com.hyperrealm.kiwi.ui.model.tree.KTreeModel;
 import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeAdapter;
 import com.hyperrealm.kiwi.ui.model.tree.KTreeModelTreeTableAdapter;

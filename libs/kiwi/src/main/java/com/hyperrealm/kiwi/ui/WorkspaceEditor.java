@@ -39,7 +39,6 @@ import javax.swing.text.JTextComponent;
 
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
-
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;

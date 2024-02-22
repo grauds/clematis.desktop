@@ -148,7 +148,7 @@ public class ValueFormatter {
         float v;
 
         try {
-            v = new Float(s);
+            v = Float.parseFloat(s);
         } catch (NumberFormatException ex) {
             throw new ParsingException(ex.getMessage());
         }
@@ -176,10 +176,10 @@ public class ValueFormatter {
      */
 
     public double parseDouble(String s) throws ParsingException {
-        float v;
+        double v;
 
         try {
-            v = new Float(s);
+            v = Double.parseDouble(s);
         } catch (NumberFormatException ex) {
             throw (new ParsingException(ex.getMessage()));
         }
