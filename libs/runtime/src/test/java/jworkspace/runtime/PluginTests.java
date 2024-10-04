@@ -57,8 +57,11 @@ public class  PluginTests {
     public void testLoadPlugin() throws PluginException {
 
         Plugin testPlugin = new WorkspacePluginLocator()
-            .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
-                PluginHelper.PLUGIN_JAR), PluginDTO.PLUGIN_TYPE_ANY);
+            .loadPlugin(
+                WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
+                PluginHelper.PLUGIN_JAR),
+                PluginDTO.PLUGIN_TYPE_ANY
+            );
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
 
