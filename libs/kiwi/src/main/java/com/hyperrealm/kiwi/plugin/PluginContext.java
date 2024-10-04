@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util.plugin;
+package com.hyperrealm.kiwi.plugin;
 
 /**
  * The application context for a plugin. This interface provides a means for

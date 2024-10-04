@@ -182,8 +182,7 @@ public class ResourceManager {
     /**
      * Get a reference to the internal Kiwi resource manager.
      */
-
-    public static ResourceManager getKiwiResourceManager() {
+    public static synchronized ResourceManager getKiwiResourceManager() {
         if (kiwiResourceManager == null) {
             kiwiResourceManager = new ResourceManager(com.hyperrealm.kiwi.ResourceAnchor.class);
         }

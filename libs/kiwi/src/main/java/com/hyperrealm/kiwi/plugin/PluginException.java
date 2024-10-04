@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util.plugin;
+package com.hyperrealm.kiwi.plugin;
 
 /**
  * General-purpose plugin exception.

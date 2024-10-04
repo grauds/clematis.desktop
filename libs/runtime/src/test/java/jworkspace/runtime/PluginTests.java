@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace.runtime;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -30,31 +30,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.jar.Manifest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginDTO;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
-import com.hyperrealm.kiwi.util.plugin.PluginLocator;
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.PluginException;
+import com.hyperrealm.kiwi.plugin.PluginLocator;
 /**
  * @author Anton Troshin
  */
-public class PluginTests {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+public class  PluginTests {
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         testFolder.create();
         PluginHelper.preparePlugins(testFolder.getRoot());
@@ -69,13 +62,13 @@ public class PluginTests {
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
 
-        testPlugin.addPluginReloadListener(event -> assertEquals(testPlugin, event.getSource()));
+        testPlugin.addPluginReloadListener(event -> Assertions.assertEquals(testPlugin, event.getSource()));
 
         testPlugin.reload();
         Object obj = testPlugin.newInstance();
         assert obj instanceof ITestPlugin;
 
-        assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
+        Assertions.assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
 
         ITestPlugin plugin = (ITestPlugin) obj;
         assert plugin.doPluginWork() == 2;
@@ -160,7 +153,7 @@ public class PluginTests {
         assert ((ITestPlugin) obj2).doPluginWork() == 8;
     }
 
-    @After
+    @AfterEach
     public void after() {
         testFolder.delete();
     }

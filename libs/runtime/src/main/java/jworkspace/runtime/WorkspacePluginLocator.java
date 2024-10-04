@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace.runtime;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2019 Anton Troshin
@@ -49,10 +49,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginDTO;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
-import com.hyperrealm.kiwi.util.plugin.PluginLocator;
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.PluginException;
+import com.hyperrealm.kiwi.plugin.PluginLocator;
 
 import lombok.NonNull;
 /**
@@ -100,14 +100,19 @@ public class WorkspacePluginLocator extends PluginLocator {
         return new File(folder, file);
     }
 
-    public static void compile(@NonNull File[] files, @NonNull File dest) {
+    /**
+     * Compiles input files and stores the output class files in the destination folder
+     * @param input files including all dependencies
+     * @param dest folder to store class files in
+     */
+    public static void compile(@NonNull File[] input, @NonNull File dest) {
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
         StandardJavaFileManager fileManager = compiler.
             getStandardFileManager(null, null, null);
         Iterable<? extends JavaFileObject> compUnit =
-            fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));
+            fileManager.getJavaFileObjectsFromFiles(Arrays.asList(input));
 
         Iterable<String> options = Arrays.asList("-d", dest.getAbsolutePath(), "-proc:none");
         if (!compiler

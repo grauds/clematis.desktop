@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace.runtime;
 
 /**
  * @author Anton Troshin

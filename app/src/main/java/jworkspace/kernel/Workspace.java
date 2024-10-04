@@ -100,10 +100,6 @@ public class Workspace {
      */
     private static WorkspaceResourceManager resourceManager = null;
     /**
-     * Listeners for service events.
-     */
-    private static final List<IWorkspaceListener> WORKSPACE_LISTENERS = new Vector<>();
-    /**
      * Installer
      */
    // private static IWorkspaceInstaller workspaceInstaller = null;
@@ -209,22 +205,6 @@ public class Workspace {
         }
     }
 
-    /**
-     * Add listener for service events.
-     */
-    public static boolean addListener(IWorkspaceListener l) {
-        if (l != null && !WORKSPACE_LISTENERS.contains(l)) {
-            return WORKSPACE_LISTENERS.add(l);
-        }
-        return false;
-    }
-
-    /**
-     * Remove workspace listener
-     */
-    public static boolean removeListener(IWorkspaceListener l) {
-        return WORKSPACE_LISTENERS.remove(l);
-    }
 
     /**
      * Deliver event to all the listeners

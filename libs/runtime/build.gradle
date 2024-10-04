@@ -1,0 +1,17 @@
+version '2.0.0-SNAPSHOT'
+
+dependencies {
+
+    implementation project(':api')
+    implementation project(':kiwi')
+
+    testImplementation project(':api')
+    testImplementation project(':kiwi')
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

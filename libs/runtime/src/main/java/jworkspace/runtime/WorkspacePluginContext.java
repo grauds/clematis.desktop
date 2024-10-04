@@ -1,8 +1,8 @@
-package jworkspace.api;
+package jworkspace.runtime;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2024 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -26,24 +26,11 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 
+import com.hyperrealm.kiwi.plugin.PluginContext;
+
 /**
  * @author Anton Troshin
  */
-public interface IConstants {
-    /**
-     * Small menu ICON
-     */
-    String MENU_ICON = "MENU_ICON";
-    /**
-     * The directory where Workspace will be looking for plugins
-     */
-    String PLUGINS_DIRECTORY = "plugins";
-    /**
-     * Version
-     */
-    String VERSION = "Clematis 2.0";
-    /**
-     * Whitespace for logging purposes
-     */
-    String WHITESPACE = " ";
+public class WorkspacePluginContext implements PluginContext {
+
 }

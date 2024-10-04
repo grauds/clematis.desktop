@@ -17,11 +17,9 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util.plugin;
+package com.hyperrealm.kiwi.plugin;
 
 import java.io.File;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 
 import com.hyperrealm.kiwi.util.ResourceDecoder;
@@ -44,7 +42,7 @@ import lombok.Setter;
  * PluginName: Blur Filter
  * PluginType: Image Filter
  * PluginIcon: com/foo/imaging/icons/BlurFilter.gif
- * PluginHelpURL: http://dystance.net/filters/blur.html
+ * PluginHelpURL: <a href="http://dystance.net/filters/blur.html">...</a>
  * PluginVersion: 1.1.2
  * </pre>
  * <p>
@@ -73,12 +71,14 @@ public class PluginLocator {
     private final ArrayList<String> restrictedPackages;
 
     @Getter
+    private final PluginContext context;
+
+    @Getter
+    private final ResourceDecoder decoder;
+
+    @Getter
     @Setter
     private boolean excludeParentClassLoader = false;
-
-    private PluginContext context;
-
-    private ResourceDecoder decoder;
 
     /**
      * Construct a new <code>PluginLocator</code> with the specified plugin
@@ -86,7 +86,6 @@ public class PluginLocator {
      *
      * @param context The <code>PluginContext</code> for this plugin locator.
      */
-
     public PluginLocator(PluginContext context) {
 
         decoder = new ResourceDecoder();
@@ -108,7 +107,6 @@ public class PluginLocator {
      *
      * @param pkg The package name.
      */
-
     public void addRestrictedPackage(String pkg) {
         synchronized (restrictedPackages) {
             if (!restrictedPackages.contains(pkg)) {
@@ -124,7 +122,6 @@ public class PluginLocator {
      *
      * @param pkg The package name.
      */
-
     public void addForbiddenPackage(String pkg) {
         synchronized (forbiddenPackages) {
             if (!forbiddenPackages.contains(pkg)) {
@@ -143,7 +140,6 @@ public class PluginLocator {
 
     private Plugin loadPlugin(String jarFile, String type)
         throws PluginException {
-
         return new Plugin(this, jarFile, type);
     }
 
@@ -159,26 +155,9 @@ public class PluginLocator {
         return loadPlugin(jarFile.getAbsolutePath(), type);
     }
 
-    /*
-     */
-
-    PluginContext getContext() {
-        return context;
-    }
-
-    /*
-     */
-
-    ResourceDecoder getDecoder() {
-        return decoder;
-    }
-
-    /*
-     */
-
     PluginClassLoader createClassLoader() {
-        return AccessController.doPrivileged((PrivilegedAction<PluginClassLoader>) ()
-            -> new PluginClassLoader(forbiddenPackages, restrictedPackages,
-            isExcludeParentClassLoader() ? null : getClass().getClassLoader()));
+        return new PluginClassLoader(forbiddenPackages, restrictedPackages,
+            isExcludeParentClassLoader() ? null : getClass().getClassLoader()
+        );
     }
 }

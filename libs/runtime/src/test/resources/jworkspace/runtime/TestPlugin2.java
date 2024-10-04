@@ -1,6 +1,8 @@
 package jworkspace.kernel;
 
 import jworkspace.api.IWorkspaceListener;
+import jworkspace.runtime.ITestPlugin;
+import jworkspace.runtime.TestWorkspace;
 
 /**
  * @author Anton Troshin
@@ -12,7 +14,7 @@ public class TestPlugin2 implements ITestPlugin, IWorkspaceListener {
     @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public int doPluginWork() {
-        Workspace.addListener(this);
+        TestWorkspace.EVENTS_DISPATCHER.addListener(this);
         return value;
     }
 

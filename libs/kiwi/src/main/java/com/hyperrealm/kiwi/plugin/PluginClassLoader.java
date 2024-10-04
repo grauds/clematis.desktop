@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util.plugin;
+package com.hyperrealm.kiwi.plugin;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,22 +31,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-/** The internal class loader for plugins.
- *
+/**
+ * The internal class loader for plugins.
+ * <p>
  * The plugin will be loaded in its own namespace. It will have access to all
  * classes in its own namespace, AND access to any class that belongs to any
  * of the _restrictedPackages_ list, BUT NOT access to any class that belongs
  * to any of the _forbiddenPackages_ list.
- *
+ * <p>
  * - If asked to load a class that is from a restricted package, the class
  * loader delegates to the system class loader. Packages "java.*' and 'javax.*'
  * are automatically added to the restricted package list. This prevents the
  * plugin from loading classes into those packages, or replacing system classes
  * with its own in its namespace.
- *
+ * <p>
  * - If asked to load a class that is from a forbidden package, the class
  * loader throws a ClassNotFoundException.
- *
+ * <p>
  * - If asked to load any other class other than those listed above, the class
  * loader attempts to load the class by searching for it in the registered JAR
  * files.
@@ -54,18 +55,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Mark Lindner
  */
 public class PluginClassLoader extends ClassLoader {
-    /**
-     * Default logger
-     */
+
     private static final Logger LOG = LoggerFactory.getLogger(PluginClassLoader.class);
 
     private static final int PATH_EXTRA_LENGTH = 6;
 
     private final ArrayList<String> jars;
 
-    private ArrayList<String> forbiddenPackages;
+    private final ArrayList<String> forbiddenPackages;
 
-    private ArrayList<String> restrictedPackages;
+    private final ArrayList<String> restrictedPackages;
 
     /*
      */
@@ -111,17 +110,14 @@ public class PluginClassLoader extends ClassLoader {
         }
     }
 
-    /*
-     */
-
     /**
      *
      */
     @SuppressWarnings({"NestedIfDepth", "ReturnCount", "checkstyle:CyclomaticComplexity"})
-    public synchronized Class loadClass(String className, boolean resolve)
+    public synchronized Class<?> loadClass(String className, boolean resolve)
         throws ClassNotFoundException {
 
-        Class result;
+        Class<?> result;
 
         // extract package name
 
@@ -215,9 +211,6 @@ public class PluginClassLoader extends ClassLoader {
         return (result);
     }
 
-    /*
-     */
-
     private boolean isForbiddenPackage(String packageName) {
         return findPackage(packageName, forbiddenPackages);
     }
@@ -226,9 +219,9 @@ public class PluginClassLoader extends ClassLoader {
         return findPackage(packageName, restrictedPackages);
     }
 
-    /* convert a class name to its corresponding JAR entry name
+    /**
+     * Convert a class name to its corresponding JAR entry name
      */
-
     private synchronized boolean findPackage(String packageName,
                                              ArrayList<String> packageList) {
         boolean ret = false;
@@ -249,20 +242,13 @@ public class PluginClassLoader extends ClassLoader {
         return ret;
     }
 
-    /* convert a JAR entry name to its corresponding class name
-     */
-
-    /**
-     *
-     */
     @SuppressFBWarnings("OS_OPEN_STREAM")
     public synchronized InputStream getResourceAsStream(String name) {
         /* Scan through JAR files looking for the resource */
 
         for (String jarPath : jars) {
 
-            try {
-                JarFile jar = new JarFile(new File(jarPath));
+            try (JarFile jar = new JarFile(new File(jarPath))) {
                 JarEntry entry = jar.getJarEntry(name);
                 if (entry != null) {
                     try {

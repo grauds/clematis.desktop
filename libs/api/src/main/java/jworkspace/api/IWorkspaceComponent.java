@@ -30,7 +30,7 @@ package jworkspace.api;
 import java.io.IOException;
 
 /**
- * User aware component which lifecycle is simply to load and save the data from the disk
+ * A component which lifecycle is simply to load and save the data from the disk
  * and be able to come back to initial state by resetting and clearing all the data.
  */
 public interface IWorkspaceComponent {

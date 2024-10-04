@@ -19,7 +19,7 @@
 
 package com.hyperrealm.kiwi.event.plugin;
 
-import com.hyperrealm.kiwi.util.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.Plugin;
 
 /**
  * A class that represents a plugin reload event.

@@ -30,11 +30,6 @@ package jworkspace.api;
  */
 public interface IWorkspaceListener {
 
-    String VIEW_PARAMETER = "view";
-
-    String DISPLAY_PARAMETER = "display";
-
-    String REGISTER_PARAMETER = "register";
     /**
      * Returns the integer this listener is bound to
      */

@@ -55,12 +55,11 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
 
     static final String JVM_ARGS_DELIMITER = " ";
 
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInstaller.class);
     /**
      * Resource manager for installer resources
      */
     private static ResourceManager resourceManager = null;
-
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInstaller.class);
     /**
      * Root folder for the data
      */
@@ -109,7 +108,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
         libraryData.getRoot().load();
         jvmData.getRoot().load();
         /*
-         * Install default virtual machine
+         * Register the current virtual machine as a default
          */
         if (jvmData.getChildren(jvmData.getRoot()).length == 0) {
 

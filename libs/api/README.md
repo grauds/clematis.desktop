@@ -5,8 +5,6 @@ The accent is set on DefinitionNode class, its hierarchy and its data source.
 
 <img src="./doc/api.png" alt="drawing" width="100%"/>
 
-**This app is beta, API is subject to change in the next updates**
-
 ## Quick Start: Definition Node
 
 DefinitionNode class is the base class for different classes which deal with textual 
@@ -28,16 +26,16 @@ The basic definition node doesn't do anything, it is abstract, but we can create
 an anonymous class for example and add it to parent node right in the constructor:
 ```
 DefinitionNode emptyNode = new DefinitionNode(folderNode, new File("Test file") {
-                                @Override
-                                public void load() {
-                                    // implement storage
-                                }
-                    
-                                @Override
-                                public void save() {
-                                   // implement storage
-                                }
-                            }
+    @Override
+    public void load() {
+        // implement storage
+    }
+
+    @Override
+    public void save() {
+       // implement storage
+    }
+}
 emptyNode.save();                           
 ```
 Please note that every new definition node created has to be explicitly saved in order to sync up 

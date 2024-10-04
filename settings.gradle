@@ -15,6 +15,9 @@ project(':api').projectDir = file('libs/api')
 include 'installer'
 project(':installer').projectDir = file('libs/installer')
 
+include 'runtime'
+project(':runtime').projectDir = file('libs/runtime')
+
 //include 'profiles'
 //project(':profiles').projectDir = file('libs/profiles')
 

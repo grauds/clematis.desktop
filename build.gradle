@@ -7,8 +7,7 @@ buildscript {
 plugins {
     id 'jacoco-report-aggregation'
 
-    id 'com.github.spotbugs' version '4.7.1'
-    id 'org.asciidoctor.jvm.convert' version '3.1.0'
+    id 'com.github.spotbugs' version '6.0.7'
 }
 
 repositories {
@@ -24,7 +23,6 @@ subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.spotbugs'
-    apply plugin: 'org.asciidoctor.jvm.convert'
 
     repositories {
         mavenCentral()
@@ -67,11 +65,6 @@ subprojects {
     jacocoTestReport.dependsOn test
     test.finalizedBy jacocoTestReport
 
-    asciidoctor {
-        inputs.dir snippetsDir
-        dependsOn test
-    }
-
     jar {
         //archiveFileName = "${archiveBaseName}.${archiveExtension}"
         manifest {
@@ -90,11 +83,10 @@ subprojects {
     spotbugsMain {
         reports {
             xml {
-                enabled = false
+                required = false
             }
             html {
-                enabled = true
-                destination = file("${project.buildDir}/reports/spotbugs/main/spotbugs.html")
+                required = true
             }
         }
     }
@@ -102,16 +94,16 @@ subprojects {
     spotbugsTest {
         reports {
             xml {
-                enabled = false
+                required = false
             }
             html {
-                enabled = true
-                destination = file("${project.buildDir}/reports/spotbugs/test/spotbugs.html")
+                required = true
             }
         }
     }
 
 // ------------ Checkstyle configuration  ---------
+
     checkstyle {
         configProperties.configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
         configProperties.checkstyleSuppressionFile = file("${project.rootDir}/config/checkstyle/suppressions.xml")
@@ -138,16 +130,8 @@ dependencies {
     jacocoAggregation project(':api')
     jacocoAggregation project(':kiwi')
     jacocoAggregation project(':installer')
+    jacocoAggregation project(':runtime')
 }
 
-reporting {
-    reports {
-        testCodeCoverageReport(JacocoCoverageReport) {
-            testType = TestSuiteType.UNIT_TEST
-        }
-    }
-}
 
-tasks.named('check') {
-    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
-}
+

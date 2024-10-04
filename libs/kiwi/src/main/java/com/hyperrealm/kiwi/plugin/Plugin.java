@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util.plugin;
+package com.hyperrealm.kiwi.plugin;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -40,6 +39,7 @@ import com.hyperrealm.kiwi.event.plugin.PluginReloadEvent;
 import com.hyperrealm.kiwi.event.plugin.PluginReloadListener;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * A class that represents a plugin. A <code>Plugin</code> object encapsulates
@@ -55,17 +55,18 @@ public final class Plugin extends PluginDTO {
 
     private static final String FAILED_TO_INSTANTIATE_PLUGIN = "failed to instantiate plugin ";
 
-    private Class pluginClass = null;
+    private Class<?> pluginClass = null;
 
-    private Properties props = new Properties();
+    private final Properties props = new Properties();
 
+    private final PluginLocator locator;
+
+    private final EventListenerList listeners = new EventListenerList();
+
+    @Getter
     private boolean loaded = false;
 
     private PluginClassLoader loader;
-
-    private PluginLocator locator;
-
-    private EventListenerList listeners = new EventListenerList();
 
     /* Construct a new plugin. A plugin is uniquely identified by a jar file
      * and a class name. It's initially created by the PluginLocator which scans
@@ -91,21 +92,11 @@ public final class Plugin extends PluginDTO {
     }
 
     /**
-     * Determine if the plugin is loaded.
-     *
-     * @return <b>true</b> if the plugin is loaded and <b>false</b> otherwise.
-     */
-
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    /**
      * Load the plugin. This method attempts to load the plugin entry-point
      * class and create an instance of it. The entry-point class must have a
      * default public constructor.
      *
-     * @throws com.hyperrealm.kiwi.util.plugin.PluginException If the plugin
+     * @throws PluginException If the plugin
      *                                                         could not be loaded.
      */
     @SuppressWarnings({"CyclomaticComplexity", "NestedIfDepth"})
@@ -125,12 +116,11 @@ public final class Plugin extends PluginDTO {
             Attributes attrs = null;
             boolean found = false;
 
-            Map map = mf.getEntries();
-            Iterator iter = map.keySet().iterator();
+            Map<String, Attributes> map = mf.getEntries();
 
-            while (iter.hasNext()) {
+            for (String s : map.keySet()) {
 
-                classFile = (String) iter.next();
+                classFile = s;
                 attrs = mf.getAttributes(classFile);
 
                 if (attrs.getValue(PLUGIN_NAME) != null) {
@@ -147,11 +137,9 @@ public final class Plugin extends PluginDTO {
 
             // read in the attributes
 
-            iter = attrs.keySet().iterator();
+            for (Object o : attrs.keySet()) {
 
-            while (iter.hasNext()) {
-
-                Attributes.Name nm = (Attributes.Name) iter.next();
+                Attributes.Name nm = (Attributes.Name) o;
                 String a = nm.toString();
                 String v = attrs.getValue(nm);
 
@@ -255,7 +243,7 @@ public final class Plugin extends PluginDTO {
      * thereof) as its only argument. If no such constructor exists, the method
      * tries instantiate the object using the default constructor.
      *
-     * @throws com.hyperrealm.kiwi.util.plugin.PluginException If a problem
+     * @throws PluginException If a problem
      *                                                         occurs during class instantiation.
      * @since Kiwi 2.0
      */
@@ -270,11 +258,11 @@ public final class Plugin extends PluginDTO {
         try {
             // try to find a c'tor that takes a PluginContext first
 
-            Constructor ctor = null;
-            Constructor[] ctors = pluginClass.getConstructors();
+            Constructor<?> ctor = null;
+            Constructor<?>[] ctors = pluginClass.getConstructors();
 
-            for (Constructor actor : ctors) {
-                Class[] args = actor.getParameterTypes();
+            for (Constructor<?> actor : ctors) {
+                Class<?>[] args = actor.getParameterTypes();
                 if (args.length != 1) {
                     continue;
                 }
@@ -295,7 +283,7 @@ public final class Plugin extends PluginDTO {
 
         if (obj == null) {
             try {
-                obj = pluginClass.newInstance();
+                obj = pluginClass.getDeclaredConstructor().newInstance();
             } catch (Exception ex) {
                 throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN + pluginClass.getName(), ex));
             }

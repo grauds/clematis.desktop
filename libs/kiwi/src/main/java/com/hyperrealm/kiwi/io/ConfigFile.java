@@ -45,7 +45,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ConfigFile extends Config {
 
-    private File file;
+    private final File file;
 
     /**
      * Construct a new <code>ConfigFile</code>. Note that the object has to be

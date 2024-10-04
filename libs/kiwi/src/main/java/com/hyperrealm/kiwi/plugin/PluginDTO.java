@@ -16,7 +16,7 @@
    along with this library; if not, see <http://www.gnu.org/licenses/>.
    ----------------------------------------------------------------------------
 */
-package com.hyperrealm.kiwi.util.plugin;
+package com.hyperrealm.kiwi.plugin;
 
 import java.net.MalformedURLException;
 import java.net.URL;
