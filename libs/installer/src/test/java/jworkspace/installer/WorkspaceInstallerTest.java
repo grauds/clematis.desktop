@@ -37,11 +37,7 @@ public class WorkspaceInstallerTest {
         JVMDataSource jvmData = new JVMDataSource(new File(dataRoot, JVMDataSource.ROOT));
 
 // create jvm node
-        JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
-        jvm.setDescription("the jvm this instance of workspace is currently running");
-        jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
-        jvm.setVersion(System.getProperty("java.version"));
-        jvm.setArguments("-cp %c %m %a");
+        JVM jvm = JVM.getCurrentJvm(jvmData.getRoot());
         jvm.save();
 
 // add jvm node to root

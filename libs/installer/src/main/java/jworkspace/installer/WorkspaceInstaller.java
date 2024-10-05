@@ -30,10 +30,11 @@ package jworkspace.installer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
+ * Software installer workspace component
  */
 @Getter
 @Setter
@@ -112,14 +114,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
          */
         if (jvmData.getChildren(jvmData.getRoot()).length == 0) {
 
-            JVM jvm = new JVM(jvmData.getRoot(), "current_jvm");
-
-            jvm.setName("default jvm");
-            jvm.setDescription("the jvm this instance of workspace is currently running");
-            jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
-            jvm.setVersion(System.getProperty("java.version"));
-            jvm.setArguments("-cp %c %m %a");
-            jvm.save();
+            JVM jvm = JVM.getCurrentJvm(jvmData.getRoot());
 
             jvmData.getRoot().add(jvm);
         }
@@ -132,9 +127,6 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      */
     @Override
     public void reset() {
-        /*
-         * Reset data
-         */
         applicationData = new ApplicationDataSource(new File(dataRoot, ApplicationDataSource.ROOT));
         libraryData = new LibraryDataSource(new File(dataRoot, LibraryDataSource.ROOT));
         jvmData = new JVMDataSource(new File(dataRoot, JVMDataSource.ROOT));
@@ -192,7 +184,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      */
     public String[] getInvocationArgs(Application application) {
 
-        Vector<String> v = new Vector<>();
+        List<String> v = new ArrayList<>();
 
         // first get the VM information
 
@@ -200,7 +192,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
         if (jvmProg == null) {
             return null;
         }
-        v.addElement(jvmProg.getPath());
+        v.add(jvmProg.getPath());
 
         // next, construct the classpath
         String pathSeparator = File.pathSeparator;
@@ -233,26 +225,23 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
             String arg = st.nextToken();
             switch (arg) {
                 case "%c":
-                    v.addElement(classpath);
+                    v.add(classpath);
                     break;
                 case "%m":
-                    v.addElement(application.getMainClass());
+                    v.add(application.getMainClass());
                     break;
                 case "%a":
-                    String[] a = StringUtils.split(application.getArguments(),
-                        JVM_ARGS_DELIMITER);
-                    for (String s : a) {
-                        v.addElement(s);
-                    }
+                    String[] a = StringUtils.split(
+                        application.getArguments(), JVM_ARGS_DELIMITER
+                    );
+                    v.addAll(Arrays.asList(a));
                     break;
                 default:
-                    v.addElement(arg); // other stuff copies literally
+                    v.add(arg); // other stuff copies literally
                     break;
             }
         }
-        String[] argList = new String[v.size()];
-        v.copyInto(argList);
-        return argList;
+        return v.toArray(new String[0]);
     }
 
     private DefinitionNode findApplicationNode(String path) {
@@ -270,6 +259,6 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      * Get human-readable name for installer
      */
     public String getName() {
-        return "Java Workspace Installer";
+        return "Software Installer";
     }
 }

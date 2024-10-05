@@ -46,20 +46,14 @@ import lombok.Getter;
 public class ApplicationDataSource extends DefinitionDataSource {
 
     public static final String ROOT = "programs";
-
-    /**
-     *  Returns root name for applications hierarchy.
-     */
-    private final String rootName;
-
     /**
      * Construct new application data source with given file as a root.
      *
      * @param root java.io.File
      */
-    ApplicationDataSource(File root) {
+    public ApplicationDataSource(File root) {
         super(root);
-        rootName = root != null ? root.getName() : ApplicationDataSource.ROOT;
+        setName(root != null ? root.getName() : ApplicationDataSource.ROOT);
     }
 
     /**

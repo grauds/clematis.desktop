@@ -43,11 +43,9 @@ import lombok.Getter;
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-class LibraryDataSource extends DefinitionDataSource {
+public class LibraryDataSource extends DefinitionDataSource {
 
-    static final String ROOT = "libraries";
-
-    private final String rootName;
+    public static final String ROOT = "libraries";
 
     /**
      * Construct new library data source
@@ -55,9 +53,9 @@ class LibraryDataSource extends DefinitionDataSource {
      *
      * @param root java.io.File
      */
-    LibraryDataSource(File root) {
+    public LibraryDataSource(File root) {
         super(root);
-        rootName = root != null ? root.getName() : LibraryDataSource.ROOT;
+        setName(root != null ? root.getName() : LibraryDataSource.ROOT);
     }
 
     /**

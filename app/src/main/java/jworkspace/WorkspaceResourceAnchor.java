@@ -40,15 +40,9 @@ import org.slf4j.LoggerFactory;
 public class WorkspaceResourceAnchor {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceResourceAnchor.class);
-
     private static ResourceBundle resources = null;
 
-    /**
-     * This class is never supposed to be instantiated.
-     * Therefore, it has a private constructor.
-     */
-    private WorkspaceResourceAnchor() {
-    }
+    private WorkspaceResourceAnchor() {}
 
     public static void printAvailableLocales() {
 
@@ -67,13 +61,10 @@ public class WorkspaceResourceAnchor {
 
         String message = "null";
         try {
-
             message = resources.getString(id);
         } catch (MissingResourceException ex) {
-
             LOG.warn("Cannot find resource:" + id);
         }
-
 
         return message;
     }

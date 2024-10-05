@@ -1,17 +1,20 @@
 package jworkspace.runtime;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import jworkspace.api.EventsDispatcher;
+import jworkspace.api.IWorkspaceComponent;
 import jworkspace.api.IWorkspaceListener;
 
 /**
- *
+ * Runtime manager workspace component
  */
-public class RuntimeManager {
+public class RuntimeManager implements IWorkspaceComponent {
     /**
      * After execution event number
      */
@@ -64,5 +67,33 @@ public class RuntimeManager {
 
     public boolean removeListener(IWorkspaceListener l) {
         return this.eventsDispatcher.removeListener(l);
+    }
+
+    public List<Runnable> getTasks() {
+        return this.poolExecutor.getQueue().stream().toList();
+    }
+
+    @Override
+    public void load() throws IOException {
+
+    }
+
+    @Override
+    public void save() throws IOException {
+
+    }
+
+    @Override
+    public void reset() {
+        this.poolExecutor.shutdownNow();
+    }
+
+    @Override
+    public String getName() {
+        return "Runtime Manager";
+    }
+
+    public int getActiveCount() {
+        return this.poolExecutor.getActiveCount();
     }
 }

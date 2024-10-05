@@ -44,14 +44,9 @@ import lombok.Getter;
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-class JVMDataSource extends DefinitionDataSource {
+public class JVMDataSource extends DefinitionDataSource {
 
-    static final String ROOT = "JVMs";
-
-    /**
-     *  Returns root name for the hierarchy.
-     */
-    private final String rootName;
+    public static final String ROOT = "JVMs";
 
     /**
      * Construct new jvm data source
@@ -59,9 +54,9 @@ class JVMDataSource extends DefinitionDataSource {
      *
      * @param root {@link File}
      */
-    JVMDataSource(File root) {
+    public JVMDataSource(File root) {
         super(root);
-        rootName = root != null ? root.getName() : JVMDataSource.ROOT;
+        setName(root != null ? root.getName() : JVMDataSource.ROOT);
     }
 
     /**

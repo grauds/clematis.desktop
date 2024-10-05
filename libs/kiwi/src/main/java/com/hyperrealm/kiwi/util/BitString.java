@@ -19,7 +19,10 @@
 
 package com.hyperrealm.kiwi.util;
 
+import java.util.Arrays;
+
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * A class representing a string of bits, useful for maintaining a set of flags
@@ -27,21 +30,23 @@ import lombok.EqualsAndHashCode;
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
- * @deprecated ?
  */
 @EqualsAndHashCode
 @SuppressWarnings({"LocalVariableName"})
 public final class BitString {
 
     private static final int WORD_LENGTH = 8;
+
     /**
      * The bit string data.
      */
-    protected byte[] array;
+    private final byte[] array;
+
     /**
      * The length of the bit string, in bits.
      */
-    protected int length;
+    @Getter
+    private final int length;
 
     /**
      * Construct a new <code>BitString</code> of the specified length.
@@ -84,21 +89,11 @@ public final class BitString {
     }
 
     /**
-     * Get the length of the <code>BitString</code>.
-     */
-
-    public int getLength() {
-        return (length);
-    }
-
-    /**
      * Clear all of the bits.
      */
 
     public void clearAll() {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = 0;
-        }
+        Arrays.fill(array, (byte) 0);
     }
 
     /**
@@ -106,9 +101,7 @@ public final class BitString {
      */
 
     public void setAll() {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = ~0;
-        }
+        Arrays.fill(array, (byte) ~0);
     }
 
     /**
@@ -131,7 +124,7 @@ public final class BitString {
             throw (new IllegalArgumentException());
         }
 
-        array[_byte] |= (1 << _bit);
+        array[_byte] |= (byte) (1 << _bit);
     }
 
     /**
@@ -227,7 +220,7 @@ public final class BitString {
      */
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         int _byte = 0;
         int _bit = 0;

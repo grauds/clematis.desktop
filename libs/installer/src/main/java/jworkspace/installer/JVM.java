@@ -113,6 +113,20 @@ public class JVM extends DefinitionNode {
         this.name = name;
     }
 
+    public static JVM getCurrentJvm(DefinitionNode parent) throws IOException {
+
+        JVM jvm = new JVM(parent, "current_jvm");
+
+        jvm.setName("default jvm");
+        jvm.setDescription("the jvm this instance of workspace is currently running");
+        jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
+        jvm.setVersion(System.getProperty("java.version"));
+        jvm.setArguments("-cp %c %m %a");
+        jvm.save();
+
+        return jvm;
+    }
+
     /**
      * Returns closed ICON to represent
      * jvm in tree control.

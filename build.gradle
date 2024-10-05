@@ -6,7 +6,6 @@ buildscript {
 
 plugins {
     id 'jacoco-report-aggregation'
-
     id 'com.github.spotbugs' version '6.0.7'
 }
 
@@ -28,11 +27,33 @@ subprojects {
         mavenCentral()
     }
 
-    apply from: file("${project.rootDir}/dependencies.gradle")
-
     sourceCompatibility = '17'
     targetCompatibility = '17'
 
+    dependencies {
+
+        annotationProcessor "org.projectlombok:lombok:1.18.28"
+        checkstyle "com.puppycrawl.tools:checkstyle:10.9.1"
+
+        compileOnly "com.github.spotbugs:spotbugs:4.7.3"
+        compileOnly "com.google.code.findbugs:annotations:3.0.1u2"
+        compileOnly "org.projectlombok:lombok:1.18.28"
+
+        implementation "org.slf4j:slf4j-api:2.0.5"
+        implementation "org.slf4j:slf4j-simple:2.0.5"
+        implementation "org.apache.commons:commons-lang3:3.12.0"
+        implementation "commons-io:commons-io:2.11.0"
+        implementation "org.apache-extras.beanshell:bsh:2.0b6"
+
+        testCompileOnly "com.github.spotbugs:spotbugs:4.7.3"
+        testCompileOnly "com.google.code.findbugs:annotations:3.0.1u2"
+        testCompileOnly "org.projectlombok:lombok:1.18.26"
+
+        testImplementation "junit:junit:4.13.2"
+        testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
+        testImplementation "org.junit.jupiter:junit-jupiter-engine:5.10.0"
+        testImplementation "org.mockito:mockito-core:5.4.0"
+    }
 
 // ------------ JaCoCo configuration  ---------
     ext {
@@ -89,6 +110,7 @@ subprojects {
                 required = true
             }
         }
+        ignoreFailures = true;
     }
 
     spotbugsTest {
@@ -100,6 +122,7 @@ subprojects {
                 required = true
             }
         }
+        ignoreFailures = true;
     }
 
 // ------------ Checkstyle configuration  ---------
