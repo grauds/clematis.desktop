@@ -18,13 +18,18 @@ public class RuntimeManager implements IWorkspaceComponent {
     /**
      * After execution event number
      */
-    public static final int AFTER_EXECUTE_EVENT = 1001;
+    public static final int AFTER_EXECUTE_EVENT = 1000;
     /**
      * Before execution event number
      */
-    public static final int BEFORE_EXECUTE_EVENT = 1000;
-
+    public static final int BEFORE_EXECUTE_EVENT = 1001;
+    /**
+     * Thread pool executor for plugins and Java programs
+     */
     private final ThreadPoolExecutor poolExecutor;
+    /**
+     * Dispatcher for lifecycle events of the threads in the pool
+     */
     private final EventsDispatcher eventsDispatcher = new EventsDispatcher();
 
     public RuntimeManager(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit) {
@@ -69,7 +74,7 @@ public class RuntimeManager implements IWorkspaceComponent {
         return this.eventsDispatcher.removeListener(l);
     }
 
-    public List<Runnable> getTasks() {
+    public List<Runnable> getQueueTasks() {
         return this.poolExecutor.getQueue().stream().toList();
     }
 

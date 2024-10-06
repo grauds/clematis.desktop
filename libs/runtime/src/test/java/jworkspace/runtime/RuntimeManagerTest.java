@@ -2,18 +2,14 @@ package jworkspace.runtime;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import jworkspace.installer.Application;
-import jworkspace.installer.ApplicationDataSource;
-import jworkspace.installer.JVM;
-import jworkspace.installer.JVMDataSource;
-import jworkspace.installer.LibraryDataSource;
-import jworkspace.installer.WorkspaceInstaller;
 import static jworkspace.runtime.RuntimeManager.AFTER_EXECUTE_EVENT;
 import static jworkspace.runtime.RuntimeManager.BEFORE_EXECUTE_EVENT;
 import jworkspace.api.IWorkspaceListener;
+import jworkspace.installer.Application;
+import jworkspace.installer.JVM;
+import jworkspace.installer.WorkspaceInstaller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -161,7 +161,7 @@ public class WorkspacePluginLocator extends PluginLocator {
                 plugins.add(plugin);
             }
         } catch (PluginException ex) {
-            LOG.warn("Cannot load plugins from " + dir.getAbsolutePath() + " - " + ex.toString());
+            LOG.warn("Cannot load plugins from " + dir.getAbsolutePath() + " - " + ex.getMessage());
         }
         return plugins;
     }
