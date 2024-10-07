@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util;
+package com.hyperrealm.kiwi.logging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,28 +30,25 @@ import java.util.List;
  * may send messages to both a console and a file.
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.util.LoggingEndpoint
+ * @see LoggingEndpoint
  */
-
 public class LoggingMux implements LoggingEndpoint {
 
     private static final int INITIAL_CAPACITY = 5;
 
-    private List<LoggingEndpoint> v;
+    private final List<LoggingEndpoint> v;
 
     /**
      * Construct a new <code>LoggingMux</code>.
      */
-
     public LoggingMux() {
-        v = new ArrayList<LoggingEndpoint>(INITIAL_CAPACITY);
+        v = new ArrayList<>(INITIAL_CAPACITY);
     }
 
     /**
      * Log a message to all endpoints in this set.
      */
-
-    public void logMessage(int type, String message) {
+    public void logMessage(Types type, String message) {
         for (LoggingEndpoint loggingEndpoint : v) {
             loggingEndpoint.logMessage(type, message);
         }
@@ -60,7 +57,6 @@ public class LoggingMux implements LoggingEndpoint {
     /**
      * Close this set of endpoints. Equivalent to <code>close(false)</code>.
      */
-
     public void close() {
         close(false);
     }
@@ -73,7 +69,6 @@ public class LoggingMux implements LoggingEndpoint {
      *                       closes each <code>LoggingEndpoint</code> explicitly via a call to its
      *                       <code>close()</code> method.
      */
-
     public void close(boolean closeEndpoints) {
         if (closeEndpoints) {
             for (LoggingEndpoint loggingEndpoint : v) {
@@ -89,7 +84,6 @@ public class LoggingMux implements LoggingEndpoint {
      *
      * @param endpoint The <code>LoggingEndpoint</code> to add.
      */
-
     public void addLoggingEndpoint(LoggingEndpoint endpoint) {
         v.add(endpoint);
     }
@@ -99,7 +93,6 @@ public class LoggingMux implements LoggingEndpoint {
      *
      * @param endpoint The <code>LoggingEndpoint</code> to remove.
      */
-
     public void removeLoggingEndpoint(LoggingEndpoint endpoint) {
         v.remove(endpoint);
     }
@@ -107,7 +100,6 @@ public class LoggingMux implements LoggingEndpoint {
     /**
      * Remove all <code>LoggingEndpoint</code>s from the set.
      */
-
     public void removeAllLoggingEndpoints() {
         v.clear();
     }

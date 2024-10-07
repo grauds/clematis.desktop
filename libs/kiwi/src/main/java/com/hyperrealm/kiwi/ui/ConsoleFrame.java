@@ -25,10 +25,11 @@ import java.awt.event.ActionListener;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
+import com.hyperrealm.kiwi.logging.LoggingEndpoint;
+import com.hyperrealm.kiwi.logging.Types;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;
-import com.hyperrealm.kiwi.util.LoggingEndpoint;
 
 /**
  * A GUI console window. This class implements the
@@ -135,17 +136,17 @@ public class ConsoleFrame extends KFrame implements LoggingEndpoint {
      *
      * @param type    The message type
      * @param message The message proper.
-     * @see com.hyperrealm.kiwi.util.LoggingEndpoint
+     * @see LoggingEndpoint
      */
 
-    public void logMessage(int type, String message) {
+    public void logMessage(Types type, String message) {
         console.logMessage(type, message);
     }
 
     /**
      * Close the console.
      *
-     * @see com.hyperrealm.kiwi.util.LoggingEndpoint
+     * @see LoggingEndpoint
      */
 
     public void close() {

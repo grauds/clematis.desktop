@@ -46,7 +46,7 @@ public class IDMap {
 
     private int length = 0;
 
-    private int initialCapacity;
+    private final int initialCapacity;
 
     private int capacity;
 

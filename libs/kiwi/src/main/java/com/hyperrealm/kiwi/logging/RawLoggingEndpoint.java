@@ -17,50 +17,34 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util;
+package com.hyperrealm.kiwi.logging;
 
 /**
- * An implementation of <code>LoggingEndpoint</code> for standard error.
+ * An implementation of <{@link LoggingEndpoint} for standard error.
  *
  * @author Mark Lindner
  */
 public class RawLoggingEndpoint implements LoggingEndpoint {
 
-    private static final String[] TYPES = {"INFO   ", "STATUS ", "WARNING", "ERROR  "};
-
     /**
-     * Construct a new <code>RawLoggingEndpoint</code>.
+     * Construct a new {@link RawLoggingEndpoint}
      */
-
-    public RawLoggingEndpoint() {
-    }
+    public RawLoggingEndpoint() {}
 
     /**
      * Write a message to standard error.
      *
-     * @param type    The message type; one of the constants defined in
-     *                <code>LoggingEndpoint</code>.
+     * @param type    The message type; one of the constants defined in {@link LoggingEndpoint}
      * @param message The message.
      */
-
     @SuppressWarnings("MagicNumber")
-    public void logMessage(int type, String message) {
-
-        int typeInt = type;
-
-        if ((typeInt < 0) || (typeInt > 3)) {
-            typeInt = 1;
-        }
-
-        System.err.println(TYPES[typeInt] + " - " + message);
+    public void logMessage(Types type, String message) {
+        System.err.println(type + " - " + message);
     }
 
     /**
      * Close the logging endpoint. This method is effectively a no-op, since it
      * is usually undesirable to close the standard error stream.
      */
-
-    public void close() {
-    }
-
+    public void close() {}
 }

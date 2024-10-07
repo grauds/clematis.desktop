@@ -117,11 +117,10 @@ public class JVM extends DefinitionNode {
 
         JVM jvm = new JVM(parent, "current_jvm");
 
-        jvm.setName("default jvm");
         jvm.setDescription("the jvm this instance of workspace is currently running");
         jvm.setPath(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
         jvm.setVersion(System.getProperty("java.version"));
-        jvm.setArguments("-cp %c %m %a");
+        jvm.setArguments(jvm.getArguments());
         jvm.save();
 
         return jvm;

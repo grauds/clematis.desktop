@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.ui;
+package com.hyperrealm.kiwi.logging;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import com.hyperrealm.kiwi.io.OutputLoop;
-import com.hyperrealm.kiwi.util.LoggingEndpoint;
 
 /**
  * Adapter for using a logging endpoint with the standard output stream.
@@ -57,9 +56,9 @@ public class ConsoleAdapter {
 
     private static final String WARNING = "warning:";
 
-    private LoggingEndpoint log;
+    private final LoggingEndpoint log;
 
-    private BufferedReader reader;
+    private final BufferedReader reader;
 
     /**
      * Construct a new <code>ConsoleAdapter</code> for the specified logging
@@ -87,24 +86,25 @@ public class ConsoleAdapter {
 
     private void run() {
         String s;
-        int type;
+        Types type;
 
         try {
             while ((s = reader.readLine()) != null) {
-                type = log.STATUS;
 
                 if (s.startsWith(STATUS)) {
                     s = s.substring(STATUS.length());
-                    type = log.STATUS;
+                    type = Types.STATUS;
                 } else if (s.startsWith(ERROR)) {
                     s = s.substring(ERROR.length());
-                    type = log.ERROR;
+                    type = Types.ERROR;
                 } else if (s.startsWith(INFO)) {
                     s = s.substring(INFO.length());
-                    type = log.INFO;
+                    type = Types.INFO;
                 } else if (s.startsWith(WARNING)) {
                     s = s.substring(WARNING.length());
-                    type = log.WARNING;
+                    type = Types.WARNING;
+                } else {
+                    type = Types.STATUS;
                 }
 
                 log.logMessage(type, s);

@@ -17,51 +17,29 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util;
+package com.hyperrealm.kiwi.logging;
 
 /**
- * Logging endpoint interface. A logging endpoint accepts messages and writes
- * them to a file, a graphical console window, or some other type of data
- * sink.
+ * An implementation of {@link LoggingEndpoint} that serves as a "bit
+ * bucket," discarding all messages.
  *
  * @author Mark Lindner
  */
-
-public interface LoggingEndpoint {
-
-    /**
-     * Informational message type.
-     */
-    int INFO = 0;
+public class NullLoggingEndpoint implements LoggingEndpoint {
 
     /**
-     * Status message type.
+     * Construct a new {@link NullLoggingEndpoint}
      */
-    int STATUS = 1;
+    public NullLoggingEndpoint() {}
 
     /**
-     * Warning message type.
+     * Accept (and discard) a message. This method is effectively a no-op.
      */
-    int WARNING = 2;
+    public void logMessage(Types type, String s) {}
 
     /**
-     * Error condition message type.
+     * Close the logging endpoint. This method is effectively a no-op.
      */
-    int ERROR = 3;
+    public void close() {}
 
-    /**
-     * Accept a new message. Writes the message to the data sink.
-     *
-     * @param type    The message type; one of the static constants defined above.
-     * @param message The message.
-     */
-
-    void logMessage(int type, String message);
-
-    /**
-     * Close the logging endpoint. The logging endpoint is closed. Once a
-     * logging endpoint is closed, it cannot accept any more messages.
-     */
-
-    void close();
 }

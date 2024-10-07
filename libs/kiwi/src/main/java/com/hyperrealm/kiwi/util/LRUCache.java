@@ -37,7 +37,7 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     private static final int INITIAL_CAPACITY = 100;
 
-    private int maxSize;
+    private final int maxSize;
 
     /**
      * Construct a new <code>LRUCache</code> with the given initial capacity
@@ -69,7 +69,6 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
     /**
      *
      */
-
     protected final boolean removeEldestEntry(Map.Entry<K, V> oldest) {
         if (size() > maxSize) {
             itemDropped(oldest.getValue());
@@ -87,7 +86,6 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
      * @param item The item that was removed.
      */
 
-    protected void itemDropped(V item) {
-    }
+    protected void itemDropped(V item) {}
 
 }

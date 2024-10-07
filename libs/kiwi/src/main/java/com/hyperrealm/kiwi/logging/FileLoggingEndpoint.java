@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util;
+package com.hyperrealm.kiwi.logging;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -26,14 +26,11 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * An implementation of <code>LoggingEndpoint</code> for ordinary files.
+ * An implementation of {@link LoggingEndpoint} for ordinary files.
  *
  * @author Mark Lindner
  */
-
 public class FileLoggingEndpoint implements LoggingEndpoint {
-
-    private static final String[] TYPES = {"INFO   ", "STATUS ", "WARNING", "ERROR  "};
 
     private static final int MAX_TYPE = 3;
 
@@ -57,20 +54,13 @@ public class FileLoggingEndpoint implements LoggingEndpoint {
      * Write a message to the log file.
      *
      * @param type    The message type; one of the static constants defined in
-     *                <code>LoggingEndpoint</code>.
+     *                {@link LoggingEndpoint}
      * @param message The message to be written.
      */
 
-    public void logMessage(int type, String message) {
-
-        int typeInt = type;
-
-        if ((type < 0) || (type > MAX_TYPE)) {
-            typeInt = 1;
-        }
-
+    public void logMessage(Types type, String message) {
         try {
-            out.write(TYPES[typeInt] + " - " + message);
+            out.write(type + " - " + message);
             out.newLine();
             out.flush();
         } catch (IOException ignored) {
@@ -81,7 +71,6 @@ public class FileLoggingEndpoint implements LoggingEndpoint {
      * Close the log file. Once the file is closed, this logging endpoint can no
      * longer be used.
      */
-
     public void close() {
         try {
             out.close();

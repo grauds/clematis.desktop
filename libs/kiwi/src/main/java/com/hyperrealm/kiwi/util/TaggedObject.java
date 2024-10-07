@@ -33,7 +33,7 @@ package com.hyperrealm.kiwi.util;
 
 public class TaggedObject<T, O> {
 
-    private O obj;
+    private final O obj;
 
     private T tag = null;
 

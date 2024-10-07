@@ -32,8 +32,12 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import com.hyperrealm.kiwi.logging.LoggingEndpoint;
+import com.hyperrealm.kiwi.logging.Types;
+import com.hyperrealm.kiwi.text.FormatConstants;
 import com.hyperrealm.kiwi.util.LocaleManager;
-import com.hyperrealm.kiwi.util.LoggingEndpoint;
+
+import lombok.Setter;
 
 /**
  * A GUI console panel. This class implements the
@@ -53,21 +57,20 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
 
     private static final String CR = "\n";
 
-    private Color[] colors = {Color.green, Color.yellow, Color.orange, Color.red};
+    private final JTextPane tBuffer;
 
-    private JTextPane tBuffer;
+    private final SimpleAttributeSet[] attrs;
 
-    private SimpleAttributeSet[] attrs;
-
-    private DefaultStyledDocument doc;
+    private final DefaultStyledDocument doc;
 
     private int bufSize = DEFAULT_BUFFER_SIZE;
 
-    private Segment segment;
+    private final Segment segment;
 
+    @Setter
     private boolean timestamps = false;
 
-    private LocaleManager lm = LocaleManager.getDefault();
+    private final LocaleManager lm = LocaleManager.getDefault();
 
     /**
      * Construct a new <code>ConsolePanel</code>.
@@ -91,6 +94,7 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
         doc = new DefaultStyledDocument(sc);
         tBuffer.setDocument(doc);
 
+        Color[] colors = {Color.green, Color.yellow, Color.orange, Color.red};
         attrs = new SimpleAttributeSet[colors.length];
         for (int i = 0; i < colors.length; i++) {
             attrs[i] = new SimpleAttributeSet();
@@ -120,7 +124,6 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
     /**
      * Get all of the text currently in the console's buffer.
      */
-
     public String getText() {
         String s = null;
 
@@ -135,7 +138,6 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
     /**
      * Clear the console panel. All messages displayed in the panel are removed.
      */
-
     public void clear() {
         try {
             doc.remove(0, doc.getLength());
@@ -148,7 +150,6 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
      *
      * @return The buffer size, in characters.
      */
-
     public int getBufferSize() {
         return (bufSize);
     }
@@ -158,38 +159,18 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
      *
      * @param bufSize The buffer size, in characters.
      */
-
     public void setBufferSize(int bufSize) {
         this.bufSize = bufSize;
     }
-
-    /**
-     * Enable or disable message timestamps.
-     *
-     * @param flag A flag indicating whether timestamps should be enabled.
-     * @since Kiwi 2.1.1
-     */
-
-    public void setTimestamps(boolean flag) {
-        timestamps = flag;
-    }
-
 
     /**
      * Log a message to the console.
      *
      * @param type    The message type
      * @param message The message proper.
-     * @see com.hyperrealm.kiwi.util.LoggingEndpoint
+     * @see LoggingEndpoint
      */
-
-    public void logMessage(int type, String message) {
-
-        int typeInt = type;
-
-        if (type < 0 || type >= colors.length) {
-            typeInt = 0;
-        }
+    public void logMessage(Types type, String message) {
 
         try {
             int len = doc.getLength();
@@ -230,12 +211,14 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
             }
 
             if (timestamps) {
-                String timestamp = ('[' + lm.formatDateTime(new Date(), lm.SHORT)
-                    + "] ");
-                doc.insertString(doc.getLength(), timestamp, attrs[typeInt]);
+                String timestamp = ('['
+                    + lm.formatDateTime(new Date(), FormatConstants.SHORT)
+                    + "] "
+                );
+                doc.insertString(doc.getLength(), timestamp, attrs[type.ordinal()]);
             }
 
-            doc.insertString(doc.getLength(), message, attrs[typeInt]);
+            doc.insertString(doc.getLength(), message, attrs[type.ordinal()]);
             if (!message.endsWith(CR)) {
                 doc.insertString(doc.getLength(), CR, null);
             }
@@ -246,7 +229,7 @@ public class ConsolePanel extends KPanel implements LoggingEndpoint {
     /**
      * Close the console.
      *
-     * @see com.hyperrealm.kiwi.util.LoggingEndpoint
+     * @see LoggingEndpoint
      */
 
     public void close() {

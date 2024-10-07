@@ -34,8 +34,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -47,29 +45,20 @@ import lombok.Setter;
  * @author Mark Lindner
  */
 @Getter
-public final class JavaProcess implements Runnable {
+public final class JavaProcess extends AbstractTask {
 
-    /**
-     * Process name
-     */
-    @Setter
-    private String name = "Untitled";
     /**
      * Native process
      */
     @Setter
     private Process process;
     /**
-     * Start time
-     */
-    private Date startTime;
-    /**
      * Output stream for process logs
      */
     private final OutputStream logs = new BufferedOutputStream(new ByteArrayOutputStream());
 
     public JavaProcess(@NonNull Process process, @NonNull String name) {
-        setName(name);
+        super(name);
         setProcess(process);
     }
 
@@ -80,7 +69,7 @@ public final class JavaProcess implements Runnable {
     @Override
     public void run() {
         if (process != null && process.isAlive()) {
-            startTime = new Date();
+            setStartTime(new Date());
 
             new ReaderThread(process.getInputStream(), this.logs).start();
             new ReaderThread(process.getErrorStream(), this.logs).start();
@@ -95,13 +84,6 @@ public final class JavaProcess implements Runnable {
 
     public boolean isAlive() {
         return process != null && process.isAlive();
-    }
-
-    /**
-     * Returns time, elapsed from process start.
-     */
-    private long getElapsedTime() {
-        return (System.currentTimeMillis() - startTime.getTime()) / MILLISEC_IN_SECOND;
     }
 
     /**
