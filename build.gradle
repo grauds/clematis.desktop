@@ -45,6 +45,8 @@ subprojects {
         implementation "commons-io:commons-io:2.11.0"
         implementation "org.apache-extras.beanshell:bsh:2.0b6"
 
+        testAnnotationProcessor "org.projectlombok:lombok:1.18.28"
+
         testCompileOnly "com.github.spotbugs:spotbugs:4.7.3"
         testCompileOnly "com.google.code.findbugs:annotations:3.0.1u2"
         testCompileOnly "org.projectlombok:lombok:1.18.26"

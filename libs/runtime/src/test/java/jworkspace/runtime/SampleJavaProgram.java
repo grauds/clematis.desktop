@@ -1,8 +1,12 @@
 package jworkspace.runtime;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public class SampleJavaProgram {
 
     public static void main(String[] args) {
-        System.out.println(1);
+        log.info(String.valueOf(1));
     }
 }

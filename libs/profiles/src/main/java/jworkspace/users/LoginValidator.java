@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace.users;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -34,17 +34,23 @@ import java.io.File;
  *
  * @author Anton Troshin
  */
-public class WorkspaceLoginValidator {
+public class LoginValidator {
+
+    private final ProfilesManager profilesManager;
+
+    public LoginValidator(ProfilesManager profilesManager) {
+        this.profilesManager = profilesManager;
+    }
 
     /**
-     * Validates input parameters.
+     * Validates user name candidate and tries to log it in with profiles manager
      */
     public boolean validate(String name, String password) {
-        if (name != null && !name.trim().equals("")) {
+        if (name != null && !name.trim().isEmpty()) {
             try {
                 File file = File.createTempFile(name + "_check", "tmp");
-                if (file.delete()) {
-                    Workspace.getUserManager().login(name, password);
+                if (file.delete() && profilesManager != null) {
+                    profilesManager.login(name, password);
                 }
             } catch (Exception ex) {
                 return false;
