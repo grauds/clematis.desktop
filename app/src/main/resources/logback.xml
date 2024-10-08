@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <property resource="jworkspace/config/properties/logback.properties" />
-    <include resource="jworkspace/config/log/bce-logback-base.xml"/>
-</configuration>
