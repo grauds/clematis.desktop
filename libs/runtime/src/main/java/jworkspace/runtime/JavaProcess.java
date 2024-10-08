@@ -39,7 +39,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 /**
- * This class represent a single java runtime process, with all required means for diagnostics and management.
+ * This class represent a single java runtime process
  *
  * @author Anton Troshin
  * @author Mark Lindner
