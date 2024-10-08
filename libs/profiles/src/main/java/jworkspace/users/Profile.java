@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.Config;
 
-import jworkspace.api.ProfileOperationException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -61,6 +60,8 @@ import lombok.NonNull;
 @SuppressWarnings("unused")
 public class Profile {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Profile.class);
+
     private static final String VAR_CFG = "var.cfg";
 
     private static final String PWD_DAT = "pwd.dat";
@@ -70,22 +71,12 @@ public class Profile {
     private static final String USERS = "users";
 
     private static final String PROFILE_PASSWD_CHECK_FAILED = "Profile.passwd.check.failed";
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Profile.class);
-    /**
-     * Algorithm name to cipher passwords
-     */
+
     private static final String ALGORITHM = "MD5";
-    /**
-     * User name
-     */
+
     @Option(name = "-username")
     private String userName = "default";
-    /**
-     * Password is encrypted using DMD5
-     */
+
     @Option(name = "-password")
     private String password = "";
 
@@ -101,17 +92,11 @@ public class Profile {
 
     private String description = "";
 
-    /**
-     * Empty constructor
-     */
     public Profile() {
         super();
         setPasswordAndDigest("");
     }
 
-    /**
-     * Profile cannot be created directly.
-     */
     public Profile(String userName,
                    String password,
                    String userFirstName,
@@ -146,11 +131,11 @@ public class Profile {
         throws ProfileOperationException {
 
         if (userName == null) {
-            throw new ProfileOperationException("Profile.userName.null");
+            throw new ProfileOperationException("Username is blank");
         }
 
         if (password == null) {
-            throw new ProfileOperationException("Profile.passwd.null");
+            throw new ProfileOperationException("Password is blank");
         }
 
         return new Profile(userName, password, firstName, secondName, email);
@@ -252,7 +237,9 @@ public class Profile {
         /*
          * Read user variables
          */
-        try (FileInputStream inputFile = new FileInputStream(getProfilePath(basePath).resolve(VAR_CFG).toFile())) {
+        try (FileInputStream inputFile
+                 = new FileInputStream(getProfilePath(basePath).resolve(VAR_CFG).toFile())
+        ) {
             getParameters().load(inputFile);
         } catch (FileNotFoundException ex) {
             LOG.warn("Configuration is not found for " + userName);
@@ -321,13 +308,6 @@ public class Profile {
     }
 
     /**
-     * Set user name.
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    /**
      * Check whether if supplied plain password is correct.
      */
     public boolean checkPassword(String passwordCandidate) {
@@ -339,8 +319,7 @@ public class Profile {
                 getPassword());
         } else {
             return passwordCandidate != null
-                && Arrays.equals(passwordCandidate.getBytes(StandardCharsets.UTF_8),
-                getPassword());
+                && Arrays.equals(passwordCandidate.getBytes(StandardCharsets.UTF_8), getPassword());
         }
     }
 

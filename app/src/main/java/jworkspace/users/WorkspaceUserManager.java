@@ -308,6 +308,7 @@ public class WorkspaceUserManager implements IUserManager {
 
     /**
      * Is the user logged in
+     * Is the user logged in
      */
     @Override
     public boolean userLogged() {

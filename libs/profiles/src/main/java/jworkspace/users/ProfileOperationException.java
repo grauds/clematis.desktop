@@ -1,4 +1,4 @@
-package jworkspace.api;
+package jworkspace.users;
 
 /* ----------------------------------------------------------------------------
    Java Workspace

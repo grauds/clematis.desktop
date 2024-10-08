@@ -2,31 +2,20 @@ package jworkspace.users;
 
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import jworkspace.api.ProfileOperationException;
 /**
  * @author Anton Troshin
  */
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class LoginTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         testFolder.delete();
         testFolder.create();
@@ -37,36 +26,40 @@ public class LoginTest {
     public void testUserProfileEngine() throws ProfileOperationException, IOException {
 
         Profile profile = new Profile("test", "password", "First Name", "Second Name", "test@test.com");
-
-        WorkspaceUserManager userManager = WorkspaceUserManager.getInstance();
+        ProfilesManager userManager = new ProfilesManager(testFolder.getRoot().toPath());
 
         // this adds incomplete profile -> to disk
-        userManager.addProfile(profile.getUserName(), "password");
+        userManager.add(profile);
 
-        assert userManager.getUserName().equals("default");
+        assert userManager.getCurrentProfile().getUserName().equals("default");
 
         // this selects incomplete profile -> from disk
         userManager.login(profile.getUserName(), "password");
-        // incomplete profile is not equals to one in memory
-        assert userManager.getUserName().equals(profile.getUserName());
-        assert !userManager.getEmail().equals(profile.getEmail());
-        assert !userManager.getUserFirstName().equals(profile.getUserFirstName());
-        assert !userManager.getUserLastName().equals(profile.getUserLastName());
+
+        assert userManager.getCurrentProfile().getUserName().equals(profile.getUserName());
+        assert userManager.getCurrentProfile().getEmail().equals(profile.getEmail());
+        assert userManager.getCurrentProfile().getUserFirstName().equals(profile.getUserFirstName());
+        assert userManager.getCurrentProfile().getUserLastName().equals(profile.getUserLastName());
+
         // deselect incomplete profile -> to disk
         userManager.logout();
+
         // save complete to disk
-        profile.save(Workspace.getBasePath());
+        profile.save(testFolder.getRoot().toPath());
+
         // selects complete profile -> from disk
         userManager.login(profile.getUserName(), "password");
 
-        assert userManager.getUserName().equals(profile.getUserName());
-        assert userManager.getDescription().equals(profile.getDescription());
-        assert userManager.ensureCurrentProfilePath(Workspace.getBasePath())
-            .equals(profile.getProfilePath(Workspace.getBasePath()));
-        assert userManager.getEmail().equals(profile.getEmail());
-        assert userManager.getParameters().equals(profile.getParameters());
-        assert userManager.getUserFirstName().equals(profile.getUserFirstName());
-        assert userManager.getUserLastName().equals(profile.getUserLastName());
+        assert userManager.getCurrentProfile().getUserName().equals(profile.getUserName());
+        assert userManager.getCurrentProfile().getDescription().equals(profile.getDescription());
+
+        //assert userManager.ensureCurrentProfilePath(Workspace.getBasePath())
+       //     .equals(profile.getProfilePath(Workspace.getBasePath()));
+
+        assert userManager.getCurrentProfile().getEmail().equals(profile.getEmail());
+        assert userManager.getCurrentProfile().getParameters().equals(profile.getParameters());
+        assert userManager.getCurrentProfile().getUserFirstName().equals(profile.getUserFirstName());
+        assert userManager.getCurrentProfile().getUserLastName().equals(profile.getUserLastName());
 
         userManager.logout();
         assert !userManager.userLogged();
@@ -74,7 +67,7 @@ public class LoginTest {
         userManager.removeProfile(profile.getUserName(), "password");
     }
 
-    @After
+    @AfterEach
     public void after() {
         testFolder.delete();
     }

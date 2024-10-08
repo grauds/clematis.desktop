@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace.runtime;
 
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.runtime.ITestPlugin;

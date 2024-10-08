@@ -26,11 +26,6 @@ package jworkspace.users;
   ----------------------------------------------------------------------------
 */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.hyperrealm.kiwi.util.KiwiUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -39,11 +34,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.ProfileOperationException;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hyperrealm.kiwi.util.KiwiUtils;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -54,13 +55,13 @@ import lombok.Setter;
 @Setter(AccessLevel.PACKAGE)
 @Getter(AccessLevel.PACKAGE)
 @SuppressWarnings("unused")
-public class ProfilesManager implements Comparator {
-
-    private static final String DEFAULT_USER_NAME = "root";
+public class ProfilesManager implements Comparator<Profile> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProfilesManager.class);
 
     private static final String PROFILES_MANAGER_PROFILE_NULL = "ProfilesManager.profile.null";
+
+    private static final String DEFAULT_USER_NAME = "root";
 
     private static final String USERS = "users";
 
@@ -78,26 +79,18 @@ public class ProfilesManager implements Comparator {
     /**
      * Adds previously constructed profile to database.
      */
-    public void add(Profile profile) throws ProfileOperationException, IOException {
-
-        if (profile == null) {
-            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILES_MANAGER_PROFILE_NULL));
+    public void add(Profile profile) throws IOException {
+        if (profile != null && !getProfilesList().contains(profile.getUserName())) {
+            saveProfile(profile);
         }
-        if (getProfilesList().contains(profile.getUserName())) {
-            throw new ProfileOperationException(
-                WorkspaceResourceAnchor.getString("ProfilesManager.profile.alreadyExists"));
-        }
-
-        saveProfile(profile);
     }
 
     /**
      * Compare profiles routine.
      */
-    public int compare(Object obj1, Object obj2) {
-
-        if (obj1 instanceof Profile && obj2 instanceof Profile) {
-            return (((Profile) obj1).getUserName()).compareTo(((Profile) obj2).getUserName());
+    public int compare(Profile profile, Profile otherProfile) {
+        if (profile != null && otherProfile != null) {
+            return (profile.getUserName()).compareTo(otherProfile.getUserName());
         }
         return 0;
     }
@@ -105,19 +98,12 @@ public class ProfilesManager implements Comparator {
     /**
      * Delete profile.
      */
-    public void delete(Profile profile, String password) throws ProfileOperationException {
-
-        if (profile == null) {
-            throw new ProfileOperationException(WorkspaceResourceAnchor.getString(PROFILES_MANAGER_PROFILE_NULL));
-        }
-        if (!profile.checkPassword(password)) {
-            throw new ProfileOperationException(
-                WorkspaceResourceAnchor.getString("ProfilesManager.passwd.check.failed"));
-        }
-
-        File file = profile.getProfilePath(getBasePath()).toFile();
-        if (KiwiUtils.deleteTree(file) == 0) {
-            LOG.warn("No files were deleted for " + profile.getUserName());
+    public void delete(Profile profile, String password) {
+        if (profile != null && profile.checkPassword(password)) {
+            File file = profile.getProfilePath(getBasePath()).toFile();
+            if (KiwiUtils.deleteTree(file) == 0) {
+                LOG.warn("No files were deleted for {}", profile.getUserName());
+            }
         }
     }
 
@@ -158,9 +144,6 @@ public class ProfilesManager implements Comparator {
      * Returns profile by its name.
      */
     Profile loadProfile(String name) throws ProfileOperationException {
-        if (name == null) {
-            throw new ProfileOperationException(WorkspaceResourceAnchor.getString("ProfilesManager.name.null"));
-        }
         try {
             return readProfile(name);
         } catch (IOException e) {
@@ -198,7 +181,6 @@ public class ProfilesManager implements Comparator {
      * @return jworkspace.users.Profile
      */
     private Profile readProfile(String userName) throws IOException {
-
         Profile profile = new Profile();
         profile.setUserName(userName);
         profile.load(getBasePath());
@@ -218,23 +200,51 @@ public class ProfilesManager implements Comparator {
      * @param profile to save
      */
     private void saveProfile(Profile profile) throws IOException {
-
         if (profile == null) {
             return;
         }
-
         profile.save(getBasePath());
     }
 
     Profile getCurrentProfile() {
-        if (currentProfile == null) {
-            return defaultProfile;
-        } else {
-            return currentProfile;
-        }
+        return Objects.requireNonNullElse(currentProfile, defaultProfile);
     }
 
     Profile getDefaultProfile() {
         return defaultProfile;
+    }
+
+    public void login(String name, String password) throws ProfileOperationException {
+        login(Profile.create(name, password, "", "", ""));
+    }
+
+    public void login(@NonNull Profile candidate) throws ProfileOperationException {
+        Profile profile = loadProfile(candidate.getUserName());
+        if (!profile.checkPassword(candidate)) {
+            throw new ProfileOperationException("Login has failed");
+        }
+        setCurrentProfile(profile);
+    }
+
+    public void logout() {
+        try {
+            saveCurrentProfile();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
+        clearCurrentProfile();
+    }
+
+    public boolean userLogged() {
+        return getCurrentProfile() != null && getCurrentProfile() != getDefaultProfile();
+    }
+
+    public void removeProfile(String name, String password) {
+        try {
+            Profile profile = loadProfile(name);
+            delete(profile, password);
+        } catch (ProfileOperationException ex) {
+            LOG.error("Cannot remove the profile: {} due to {}", name, ex.getMessage());
+        }
     }
 }

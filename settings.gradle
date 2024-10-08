@@ -18,8 +18,8 @@ project(':installer').projectDir = file('libs/installer')
 include 'runtime'
 project(':runtime').projectDir = file('libs/runtime')
 
-//include 'profiles'
-//project(':profiles').projectDir = file('libs/profiles')
+include 'profiles'
+project(':profiles').projectDir = file('libs/profiles')
 
 //include 'ui'
 //project(':ui').projectDir = file('modules/ui')

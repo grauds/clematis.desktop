@@ -1,41 +1,25 @@
 package jworkspace.users;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
-
 import java.io.IOException;
-import jworkspace.api.ProfileOperationException;
-import jworkspace.kernel.Workspace;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Anton Troshin
  */
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class ProfileTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private ProfilesManager profilesManager;
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         testFolder.create();
-
-        mockStatic(Workspace.class);
-        when(Workspace.getBasePath()).thenReturn(testFolder.getRoot().toPath());
         profilesManager = new ProfilesManager(testFolder.getRoot().toPath());
     }
 
@@ -71,7 +55,7 @@ public class ProfileTest {
 
     @SuppressWarnings("checkstyle:MagicNumber")
     @Test
-    public void testFactoryCreation() throws ProfileOperationException, IOException {
+    public void testFactoryCreation() throws IOException, ProfileOperationException {
 
         Profile profile = Profile.create("test", "password", "First Name", "Second Name", "test@test.com");
         Profile anotherCopy = Profile.create("test", "password", "First Name", "Second Name", "test@test.com");
@@ -83,7 +67,7 @@ public class ProfileTest {
         profilesManager.add(anotherCopy);
     }
 
-    @After
+    @AfterEach
     public void after() {
         testFolder.delete();
     }

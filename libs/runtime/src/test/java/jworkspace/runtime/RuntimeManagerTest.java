@@ -2,6 +2,7 @@ package jworkspace.runtime;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static jworkspace.runtime.RuntimeManager.AFTER_EXECUTE_EVENT;
@@ -14,6 +15,9 @@ import jworkspace.installer.WorkspaceInstaller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
+
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginException;
 
 public class RuntimeManagerTest {
 
@@ -52,6 +56,7 @@ public class RuntimeManagerTest {
         });
         runtimeManager.take(thread1);
         runtimeManager.take(thread2);
+
     }
 
     @Test
@@ -89,5 +94,28 @@ public class RuntimeManagerTest {
         });
         runtimeManager.take(new JavaProcess(args, "Test process"));
         Assertions.assertEquals(1, runtimeManager.getActiveCount());
+        testFolder.delete();
+    }
+
+    @Test
+    public void testPluginsLoadingForExecution() throws IOException, PluginException {
+
+        TemporaryFolder testFolder = new TemporaryFolder();
+        testFolder.create();
+
+        PluginHelper.preparePlugins(testFolder.getRoot());
+
+        final WorkspacePluginLocator pluginLocator = new WorkspacePluginLocator();
+        List<Plugin> plugins = pluginLocator.loadPlugins(testFolder.getRoot().toPath());
+        assert plugins.size() == 3;
+
+        for (Plugin plugin : plugins) {
+            Object pluginObject = plugin.newInstance();
+            if (pluginObject instanceof Runnable) {
+                runtimeManager.take((Runnable) pluginObject);
+            }
+        }
+
+        testFolder.delete();
     }
 }

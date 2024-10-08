@@ -71,6 +71,10 @@ public class WorkspacePluginLocator extends PluginLocator {
         addRestrictedPackage("jworkspace.kernel.*");
     }
 
+    public static void downloadPluginJarFile() {
+
+    }
+
     public static void writePluginJarFile(File classesLocation,
                                           String[] classes,
                                           Manifest manifest,

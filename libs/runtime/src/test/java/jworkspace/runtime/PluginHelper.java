@@ -17,8 +17,8 @@ public class PluginHelper {
     static final String PLUGIN_JAR_2 = "plugin2.jar";
     static final String ANOTHER_PLUGIN_JAR = "another_plugin.jar";
 
-    static final String TEST_PLUGIN_CLASS = "jworkspace/kernel/TestPlugin.class";
-    static final String TEST_PLUGIN_CLASS_2 = "jworkspace/kernel/TestPlugin2.class";
+    static final String TEST_PLUGIN_CLASS = "jworkspace/runtime/TestPlugin.class";
+    static final String TEST_PLUGIN_CLASS_2 = "jworkspace/runtime/TestPlugin2.class";
 
     private static final String TEST_PLUGIN_CLASS_PACKAGE = "jworkspace.kernel.";
     private static final String TEST_PLUGIN = "jworkspace.kernel.TestPlugin";
