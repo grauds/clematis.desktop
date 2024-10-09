@@ -35,9 +35,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
 
 import com.hyperrealm.kiwi.util.ResourceManager;
 import com.hyperrealm.kiwi.util.StringUtils;
@@ -47,17 +45,17 @@ import jworkspace.api.DefinitionNode;
 import jworkspace.api.IWorkspaceComponent;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 
 /**
  * Software installer workspace component
  */
+@Log
 @Getter
 @Setter
 public class WorkspaceInstaller implements IWorkspaceComponent {
 
     static final String JVM_ARGS_DELIMITER = " ";
-
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceInstaller.class);
     /**
      * Resource manager for installer resources
      */
@@ -102,7 +100,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
     @Override
     public void load() throws IOException {
 
-        LOG.info("> Loading installer");
+        log.log(Level.INFO, "Loading installer");
         /*
          * Load data sources
          */
@@ -119,7 +117,7 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
             jvmData.getRoot().add(jvm);
         }
 
-        LOG.info("> Installer is loaded");
+        log.log(Level.INFO, "Installer is loaded");
     }
 
     /**
@@ -138,15 +136,13 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
     @Override
     public void save() throws IOException {
 
-        LOG.info("> Saving installer");
-        /*
-         * Load data sources
-         */
+        log.log(Level.INFO, "Saving installer");
+
         applicationData.getRoot().save();
         libraryData.getRoot().save();
         jvmData.getRoot().save();
 
-        LOG.info("> Installer is saved");
+        log.log(Level.INFO, "Installer is saved");
 
     }
 

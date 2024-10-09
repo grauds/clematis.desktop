@@ -37,13 +37,11 @@ import java.util.StringTokenizer;
 
 import javax.swing.Icon;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.model.datasource.TreeDataSource;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 
 /**
  * An implementation of {@link com.hyperrealm.kiwi.ui.model.datasource.TreeDataSource TreeDataSource},
@@ -54,6 +52,7 @@ import lombok.Setter;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@Log
 @Getter
 public class DefinitionDataSource implements TreeDataSource<DefinitionNode> {
 
@@ -62,8 +61,6 @@ public class DefinitionDataSource implements TreeDataSource<DefinitionNode> {
     public static final String LABEL_PROPERTY = "LABEL";
 
     public static final String ICON_PROPERTY = "ICON";
-
-    private static final Logger LOG = LoggerFactory.getLogger(DefinitionDataSource.class);
 
     private static final DefinitionNode[] EMPTY_ARRAY = new DefinitionNode[0];
 

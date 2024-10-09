@@ -26,11 +26,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.extern.java.Log;
+
 /**
  * The internal class loader for plugins.
  * <p>
@@ -54,9 +54,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author Mark Lindner
  */
+@Log
 public class PluginClassLoader extends ClassLoader {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PluginClassLoader.class);
 
     private static final int PATH_EXTRA_LENGTH = 6;
 
@@ -193,7 +192,7 @@ public class PluginClassLoader extends ClassLoader {
                             break;
                         } catch (IOException ex) {
                             /* ignore error, & continue */
-                            LOG.error(ex.getMessage(), ex);
+                            log.log(Level.SEVERE, ex.getMessage(), ex);
                         }
                     }
                 }
@@ -255,12 +254,12 @@ public class PluginClassLoader extends ClassLoader {
                         return (jar.getInputStream(entry));
                     } catch (IOException ex) {
                         /* ignore error, & continue */
-                        LOG.error(ex.getMessage());
+                        log.log(Level.SEVERE, ex.getMessage(), ex);
                     }
                 }
             } catch (IOException ex) {
                 /* ignore error, & continue */
-                LOG.error(ex.getMessage());
+                log.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
 

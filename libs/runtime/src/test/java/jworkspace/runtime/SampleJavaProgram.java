@@ -1,12 +1,14 @@
 package jworkspace.runtime;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.logging.Level;
 
-@Slf4j
+import lombok.extern.java.Log;
+
+@Log
 @SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public class SampleJavaProgram {
 
     public static void main(String[] args) {
-        log.info(String.valueOf(1));
+        log.log(Level.INFO, String.valueOf(1));
     }
 }

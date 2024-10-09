@@ -29,11 +29,11 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
 
 import com.hyperrealm.kiwi.ui.KiwiAudioClip;
+
+import lombok.extern.java.Log;
 
 /**
  * A basic implementation of an applet context. The
@@ -44,10 +44,8 @@ import com.hyperrealm.kiwi.ui.KiwiAudioClip;
  * @author Mark Lindner
  * @since Kiwi 1.4.2
  */
-
+@Log
 public abstract class KiwiAppletContext implements AppletContext {
-
-    private static final Logger LOG = LoggerFactory.getLogger(KiwiAppletContext.class);
 
     private HashMap<String, Applet> applets;
 
@@ -119,7 +117,7 @@ public abstract class KiwiAppletContext implements AppletContext {
             ac = new KiwiAudioClip(url);
 
         } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
+            log.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
         return (ac);

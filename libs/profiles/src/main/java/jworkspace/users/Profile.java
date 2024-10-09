@@ -40,27 +40,27 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.logging.Level;
 
 import org.kohsuke.args4j.Option;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.util.Config;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.extern.java.Log;
+
 /**
  * This class represents a single user in workspace.
  *
  * @author Anton Troshin
  */
+@Log
 @Data
 @EqualsAndHashCode(doNotUseGetters = true, exclude = {"password", "messageDigest"})
 @SuppressWarnings("unused")
 public class Profile {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Profile.class);
 
     private static final String VAR_CFG = "var.cfg";
 
@@ -199,7 +199,7 @@ public class Profile {
             setPassword(password);
         } catch (Exception e) {
             this.messageDigest = null;
-            LOG.error(e.getMessage(), e);
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -242,7 +242,7 @@ public class Profile {
         ) {
             getParameters().load(inputFile);
         } catch (FileNotFoundException ex) {
-            LOG.warn("Configuration is not found for " + userName);
+            log.log(Level.WARNING, "Configuration is not found for " + userName);
         }
         /*
          * Read password
@@ -259,7 +259,7 @@ public class Profile {
             description = dis.readUTF();
             password = dis.readUTF();
         } catch (FileNotFoundException ex) {
-            LOG.warn("Saved data is not found for " + userName);
+            log.log(Level.WARNING, "Saved data is not found for " + userName);
         }
     }
 

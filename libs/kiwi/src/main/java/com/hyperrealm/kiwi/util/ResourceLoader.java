@@ -24,11 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
 
 import com.hyperrealm.kiwi.ui.KiwiAudioClip;
+
+import lombok.extern.java.Log;
 
 /**
  * A utility class containing methods for retrieving application resources;
@@ -46,27 +46,22 @@ import com.hyperrealm.kiwi.ui.KiwiAudioClip;
  * @author Mark Lindner
  * @see com.hyperrealm.kiwi.util.ResourceManager
  */
-
+@Log
 public class ResourceLoader {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceLoader.class);
     /**
      * The class object associated with this resource loader.
      */
-    protected Class clazz;
+    protected Class<?> clazz;
 
-    private ResourceDecoder decoder;
+    private final ResourceDecoder decoder;
 
     /**
      * Construct a new <code>ResourceLoader</code>. A new resource loader is
      * created with a default input buffer size.
      */
 
-    public ResourceLoader(Class clazz) {
+    public ResourceLoader(Class<?> clazz) {
         this.clazz = clazz;
-
         decoder = new ResourceDecoder();
     }
 
@@ -153,7 +148,7 @@ public class ResourceLoader {
         try (InputStream is = getResourceAsStream(path)) {
             im = decoder.decodeImage(is);
         } catch (IOException ex) {
-            LOG.error(ex.getMessage(), ex);
+            log.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
         return (im);

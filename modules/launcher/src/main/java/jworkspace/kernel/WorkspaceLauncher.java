@@ -27,9 +27,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static jworkspace.utils.StreamUtils.withCounter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

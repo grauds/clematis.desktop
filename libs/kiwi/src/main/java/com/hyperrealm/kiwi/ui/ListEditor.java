@@ -29,19 +29,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.model.list.MutableListModel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;
 import com.hyperrealm.kiwi.util.ResourceManager;
+
+import lombok.extern.java.Log;
 /**
  * A simple editor for entering a list of text items. The editor consists of
  * an input field for entry of new items and a scrollable list for the display
@@ -58,12 +58,8 @@ import com.hyperrealm.kiwi.util.ResourceManager;
  * @author Mark Lindner
  * @since Kiwi 2.0
  */
-
+@Log
 public class ListEditor extends KPanel implements ActionListener {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ListEditor.class);
 
     private static final Insets DEFAULT_INSETS = new Insets(3, 3, 3, 3);
 
@@ -126,7 +122,7 @@ public class ListEditor extends KPanel implements ActionListener {
 
             method.invoke(editComponent, this);
         } catch (Exception ignored) {
-            LOG.warn("Action listener will not be added to: " + editComponent, ignored);
+            log.log(Level.WARNING, "Action listener will not be added to: " + editComponent, ignored);
         }
 
 

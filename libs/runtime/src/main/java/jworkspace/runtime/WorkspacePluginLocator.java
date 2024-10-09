@@ -39,14 +39,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.plugin.Plugin;
@@ -55,12 +53,13 @@ import com.hyperrealm.kiwi.plugin.PluginException;
 import com.hyperrealm.kiwi.plugin.PluginLocator;
 
 import lombok.NonNull;
+import lombok.extern.java.Log;
+
 /**
  * @author Anton Troshin
  */
+@Log
 public class WorkspacePluginLocator extends PluginLocator {
-
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspacePluginLocator.class);
 
     /**
      * Construct a new <code>PluginLocator</code> with Workspace plugin context.
@@ -134,7 +133,7 @@ public class WorkspacePluginLocator extends PluginLocator {
     public List<Plugin> loadPlugins(Path directory) {
         if (directory != null) {
 
-            LOG.info("> Loading plugins from " + directory);
+            log.log(Level.INFO, "Loading plugins from " + directory);
             return scanPluginsDir(directory.toFile());
         } else {
 
@@ -165,7 +164,7 @@ public class WorkspacePluginLocator extends PluginLocator {
                 plugins.add(plugin);
             }
         } catch (PluginException ex) {
-            LOG.warn("Cannot load plugins from " + dir.getAbsolutePath() + " - " + ex.getMessage());
+            log.log(Level.INFO, "Cannot load plugins from " + dir.getAbsolutePath() + " - " + ex.getMessage());
         }
         return plugins;
     }

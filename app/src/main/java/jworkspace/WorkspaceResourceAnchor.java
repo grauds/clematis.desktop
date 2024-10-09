@@ -30,26 +30,26 @@ import java.text.DateFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.java.Log;
 
 /**
  * @author Anton Troshin
  */
+@Log
 public class WorkspaceResourceAnchor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceResourceAnchor.class);
     private static ResourceBundle resources = null;
 
     private WorkspaceResourceAnchor() {}
 
     public static void printAvailableLocales() {
 
-        LOG.info("Available locales:");
+        log.log(Level.INFO, "Available locales:");
         Locale[] list = DateFormat.getAvailableLocales();
         for (Locale locale : list) {
-            LOG.info(locale.getLanguage() + "   " + locale.getCountry());
+            log.log(Level.INFO, locale.getLanguage() + "   " + locale.getCountry());
         }
     }
 
@@ -63,7 +63,7 @@ public class WorkspaceResourceAnchor {
         try {
             message = resources.getString(id);
         } catch (MissingResourceException ex) {
-            LOG.warn("Cannot find resource:" + id);
+            log.log(Level.INFO, "Cannot find resource:" + id);
         }
 
         return message;

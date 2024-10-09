@@ -37,9 +37,6 @@ import java.util.Stack;
 import javax.swing.Icon;
 import javax.swing.tree.TreePath;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.event.tree.KTreeModelListener;
 import com.hyperrealm.kiwi.event.tree.KTreeModelSupport;
 import com.hyperrealm.kiwi.util.KiwiUtils;
@@ -48,6 +45,7 @@ import com.hyperrealm.kiwi.util.ResourceManager;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 
 /**
  * Definition node is a base class for a node within a tree like structure of nodes, backed up with files.
@@ -57,6 +55,7 @@ import lombok.Setter;
  * @author Anton Troshin
  * @author Mark Lindner
  */
+@Log
 @Getter
 @EqualsAndHashCode
 public abstract class DefinitionNode {
@@ -64,8 +63,6 @@ public abstract class DefinitionNode {
     public static final Icon OPEN_ICON, CLOSED_ICON, LOCKED_ICON, ROOT_ICON, LEAF_ICON;
 
     public static final String FILE_EXTENSION = ".cfg";
-
-    private static final Logger LOG = LoggerFactory.getLogger(DefinitionNode.class);
 
     private static final String FOLDER_CLOSED_GIF = "folder-closed.gif";
 

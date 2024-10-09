@@ -35,29 +35,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.extern.java.Log;
 
 /**
  * This class can add, rename, delete or list user profiles.
  * @author Anton Troshin
  */
-@Data
+@Log
 @Setter(AccessLevel.PACKAGE)
 @Getter(AccessLevel.PACKAGE)
 @SuppressWarnings("unused")
 public class ProfilesManager implements Comparator<Profile> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ProfilesManager.class);
 
     private static final String PROFILES_MANAGER_PROFILE_NULL = "ProfilesManager.profile.null";
 
@@ -102,7 +98,7 @@ public class ProfilesManager implements Comparator<Profile> {
         if (profile != null && profile.checkPassword(password)) {
             File file = profile.getProfilePath(getBasePath()).toFile();
             if (KiwiUtils.deleteTree(file) == 0) {
-                LOG.warn("No files were deleted for {}", profile.getUserName());
+                log.log(Level.WARNING, "No files were deleted for {}", profile.getUserName());
             }
         }
     }
@@ -230,7 +226,7 @@ public class ProfilesManager implements Comparator<Profile> {
         try {
             saveCurrentProfile();
         } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
         clearCurrentProfile();
     }
@@ -244,7 +240,7 @@ public class ProfilesManager implements Comparator<Profile> {
             Profile profile = loadProfile(name);
             delete(profile, password);
         } catch (ProfileOperationException ex) {
-            LOG.error("Cannot remove the profile: {} due to {}", name, ex.getMessage());
+            log.log(Level.SEVERE, String.format("Cannot remove the profile: %s due to %s", name, ex.getMessage()), ex);
         }
     }
 }

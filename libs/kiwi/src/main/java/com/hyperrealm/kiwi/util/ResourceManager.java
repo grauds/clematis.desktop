@@ -26,15 +26,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.ColorTheme;
 import com.hyperrealm.kiwi.ui.KiwiAudioClip;
+
+import lombok.extern.java.Log;
 
 /**
  * This class provides base functionality for a resource manager; it includes
@@ -64,12 +64,9 @@ import com.hyperrealm.kiwi.ui.KiwiAudioClip;
  * @author Mark Lindner
  * @see com.hyperrealm.kiwi.util.ResourceLoader
  */
+@Log
 @SuppressWarnings("unused")
 public class ResourceManager {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
     /**
      * The default base path for images.
      */
@@ -552,7 +549,7 @@ public class ResourceManager {
                     bundle = new LocaleData(is);
                     bundles.put(cpath, bundle);
                 } catch (IOException ex) {
-                    LOG.error(ex.getMessage(), ex);
+                    log.log(Level.SEVERE, ex.getMessage(), ex);
                 }
             }
 

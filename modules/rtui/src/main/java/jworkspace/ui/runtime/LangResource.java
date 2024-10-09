@@ -29,19 +29,13 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * International resources for runtime manager.
  *
  * @author Anton Troshin
  */
+@Log
 public class LangResource {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(LangResource.class);
 
     private static final String I18N_RESOURCES = "i18n/rmstrings";
 
