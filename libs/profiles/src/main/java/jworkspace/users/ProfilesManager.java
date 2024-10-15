@@ -39,7 +39,6 @@ import java.util.logging.Level;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -50,12 +49,10 @@ import lombok.extern.java.Log;
  * @author Anton Troshin
  */
 @Log
-@Setter(AccessLevel.PACKAGE)
-@Getter(AccessLevel.PACKAGE)
+@Setter
+@Getter
 @SuppressWarnings("unused")
 public class ProfilesManager implements Comparator<Profile> {
-
-    private static final String PROFILES_MANAGER_PROFILE_NULL = "ProfilesManager.profile.null";
 
     private static final String DEFAULT_USER_NAME = "root";
 
@@ -65,9 +62,9 @@ public class ProfilesManager implements Comparator<Profile> {
 
     private Profile currentProfile = null;
 
-    private final Profile defaultProfile = new Profile("default", "", "", "", "");
+    public ProfilesManager() {}
 
-    ProfilesManager(Path basePath) {
+    public ProfilesManager(Path basePath) {
         super();
         this.basePath = basePath;
     }
@@ -179,7 +176,7 @@ public class ProfilesManager implements Comparator<Profile> {
     private Profile readProfile(String userName) throws IOException {
         Profile profile = new Profile();
         profile.setUserName(userName);
-        profile.load(getBasePath());
+        profile.load(getBasePath().resolve(userName));
         return profile;
     }
 
@@ -199,15 +196,7 @@ public class ProfilesManager implements Comparator<Profile> {
         if (profile == null) {
             return;
         }
-        profile.save(getBasePath());
-    }
-
-    Profile getCurrentProfile() {
-        return Objects.requireNonNullElse(currentProfile, defaultProfile);
-    }
-
-    Profile getDefaultProfile() {
-        return defaultProfile;
+        profile.save(getBasePath().resolve(profile.getUserName()));
     }
 
     public void login(String name, String password) throws ProfileOperationException {
@@ -232,7 +221,7 @@ public class ProfilesManager implements Comparator<Profile> {
     }
 
     public boolean userLogged() {
-        return getCurrentProfile() != null && getCurrentProfile() != getDefaultProfile();
+        return getCurrentProfile() != null;
     }
 
     public void removeProfile(String name, String password) {

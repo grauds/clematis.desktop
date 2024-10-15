@@ -3,6 +3,7 @@ package jworkspace.users;
 import java.io.IOException;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
@@ -31,7 +32,7 @@ public class LoginTest {
         // this adds incomplete profile -> to disk
         userManager.add(profile);
 
-        assert userManager.getCurrentProfile().getUserName().equals("default");
+        Assertions.assertNull(userManager.getCurrentProfile());
 
         // this selects incomplete profile -> from disk
         userManager.login(profile.getUserName(), "password");

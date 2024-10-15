@@ -24,13 +24,22 @@ package jworkspace.kernel;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
+
+import com.hyperrealm.kiwi.plugin.PluginException;
+
+import jworkspace.Workspace;
+import jworkspace.users.Profile;
+import jworkspace.users.ProfileOperationException;
+import jworkspace.users.ProfilesManager;
 
 /**
  * @author Anton Troshin
@@ -39,17 +48,31 @@ public class WorkspaceTest {
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         testFolder.create();
     }
 
     @Test
-    public void testBeginWork() {
+    public void testBeginWork() throws ProfileOperationException, PluginException, IOException {
+        Path basePath = Path.of(testFolder.getRoot().getPath());
+
+        ProfilesManager profilesManager = new ProfilesManager(basePath);
+
+        String testProfileName = "test";
+        String password = "password";
+
+        Profile testProfile = new Profile(testProfileName);
+        testProfile.setPassword(password);
+        profilesManager.add(testProfile);
+
+        Assertions.assertEquals(1, Objects.requireNonNull(testFolder.getRoot().listFiles()).length);
+
+        Workspace.start(testProfileName, password, basePath);
 
     }
 
-    @After
+    @AfterEach
     public void after() {
         testFolder.delete();
     }

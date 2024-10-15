@@ -242,7 +242,7 @@ public class Profile {
         ) {
             getParameters().load(inputFile);
         } catch (FileNotFoundException ex) {
-            log.log(Level.WARNING, "Configuration is not found for " + userName);
+            log.log(Level.WARNING, String.format("Configuration is not found for user '%s' ", userName));
         }
         /*
          * Read password
@@ -259,7 +259,7 @@ public class Profile {
             description = dis.readUTF();
             password = dis.readUTF();
         } catch (FileNotFoundException ex) {
-            log.log(Level.WARNING, "Saved data is not found for " + userName);
+            log.log(Level.WARNING, String.format("Saved data is not found for user '%s' ", userName));
         }
     }
 

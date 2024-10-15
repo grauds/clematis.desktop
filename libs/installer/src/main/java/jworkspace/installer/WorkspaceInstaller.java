@@ -77,8 +77,10 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      */
     private DefinitionDataSource applicationData;
 
+    public WorkspaceInstaller() {}
+
     /**
-     * Public constructor with custom data root
+     * Public constructor with data root
      * @param dataRoot - a folder to store information in
      */
     public WorkspaceInstaller(File dataRoot) {

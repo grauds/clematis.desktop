@@ -79,4 +79,8 @@ public class RuntimeManager {
     public int getActiveCount() {
         return this.poolExecutor.getActiveCount();
     }
+
+    public void yield() {
+        this.poolExecutor.shutdown();
+    }
 }

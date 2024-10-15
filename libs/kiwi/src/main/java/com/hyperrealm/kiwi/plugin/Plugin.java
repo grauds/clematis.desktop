@@ -229,7 +229,6 @@ public final class Plugin extends PluginDTO {
      *
      * @since Kiwi 2.0
      */
-
     public void reload() throws PluginException {
         reset();
         load();

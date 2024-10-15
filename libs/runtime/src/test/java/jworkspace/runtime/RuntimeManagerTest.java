@@ -70,7 +70,6 @@ public class RuntimeManagerTest {
         File dataRoot = testFolder.getRoot().toPath().toFile();
         WorkspaceInstaller workspaceInstaller = new WorkspaceInstaller(dataRoot);
 
-
         // create default jvm
         JVM jvm = JVM.getCurrentJvm(workspaceInstaller.getJvmData().getRoot());
 
@@ -80,6 +79,7 @@ public class RuntimeManagerTest {
         sampleJavaProgram.setJvm(jvm.getLinkString());
 
         // get invocation arguments
+        String testProcessName = "Test process";
         String[] args = workspaceInstaller.getInvocationArgs(sampleJavaProgram);
         runtimeManager.addListener(new IWorkspaceListener() {
             @Override
@@ -89,10 +89,10 @@ public class RuntimeManagerTest {
 
             @Override
             public void processEvent(Integer event, Object lparam, Object rparam) {
-                Assertions.assertEquals("Test process", ((JavaProcess) lparam).getName());
+                Assertions.assertEquals(testProcessName, ((JavaProcess) lparam).getName());
             }
         });
-        runtimeManager.take(new JavaProcess(args, "Test process"));
+        runtimeManager.take(new JavaProcess(args, testProcessName));
         Assertions.assertEquals(1, runtimeManager.getActiveCount());
         testFolder.delete();
     }
