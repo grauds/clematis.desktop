@@ -31,7 +31,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.JavaProcess;
 import lombok.extern.java.Log;
 
@@ -47,6 +46,7 @@ import lombok.extern.java.Log;
 @Log
 public class ConsoleLauncher {
 
+    static final String JVM_ARGS_DELIMITER = " ";
     /**
      * Workspace main class name
      */
@@ -97,9 +97,9 @@ public class ConsoleLauncher {
         /*
          * Add arguments
          */
-        commandLine.append(Character.DIRECTIONALITY_WHITESPACE);
+        commandLine.append(JVM_ARGS_DELIMITER);
         commandLine.append(JWORKSPACE_CLASS);
-        commandLine.append(Character.DIRECTIONALITY_WHITESPACE);
+        commandLine.append(JVM_ARGS_DELIMITER);
 
         if (!userName.isEmpty()) {
             commandLine.append(" --name ").append(userName);
@@ -129,9 +129,10 @@ public class ConsoleLauncher {
     @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:NestedIfDepth"})
     public static StringBuffer getCommandLine() {
         StringBuffer sb = new StringBuffer();
+        sb.append(".").append(File.pathSeparator);
 
         File lib = Paths.get(
-            System.getProperty("user.dir"), "lib"
+            "lib"
         ).toFile();
 
         try {
@@ -153,11 +154,14 @@ public class ConsoleLauncher {
                     }
                 }));
             }
+            sb.append("jworkspace-2.0.0-SNAPSHOT.jar");
+            sb.insert(0, "java -Djava.library.path="
+                + lib.getName()
+                + " -classpath "
+            );
         } catch (IOException e) {
             log.severe(e.getMessage());
         }
-
-        sb.insert(0, "java -Djava.library.path=" + lib.getAbsolutePath() + " -classpath ");
         return sb;
     }
 }

@@ -1,4 +1,4 @@
-package jworkspace.kernel;
+package jworkspace;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2019 Anton Troshin
@@ -36,7 +36,6 @@ import org.junit.rules.TemporaryFolder;
 
 import com.hyperrealm.kiwi.plugin.PluginException;
 
-import jworkspace.Workspace;
 import jworkspace.users.Profile;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.ProfilesManager;

@@ -5,19 +5,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static jworkspace.runtime.RuntimeManager.AFTER_EXECUTE_EVENT;
-import static jworkspace.runtime.RuntimeManager.BEFORE_EXECUTE_EVENT;
-import jworkspace.api.IWorkspaceListener;
-import jworkspace.installer.Application;
-import jworkspace.installer.JVM;
-import jworkspace.installer.WorkspaceInstaller;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
+
+import static jworkspace.runtime.RuntimeManager.AFTER_EXECUTE_EVENT;
+import static jworkspace.runtime.RuntimeManager.BEFORE_EXECUTE_EVENT;
+import jworkspace.api.IWorkspaceListener;
+import jworkspace.installer.Application;
+import jworkspace.installer.JVM;
+import jworkspace.installer.WorkspaceInstaller;
 
 public class RuntimeManagerTest {
 

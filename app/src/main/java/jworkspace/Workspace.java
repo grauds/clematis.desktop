@@ -25,7 +25,11 @@ import lombok.NonNull;
 import lombok.extern.java.Log;
 
 @Log
-@SuppressWarnings({"PMD", "checkstyle:hideutilityclassconstructor"})
+@SuppressWarnings({
+    "PMD",
+    "checkstyle:hideutilityclassconstructor",
+    "checkstyle:regexp"
+})
 public class Workspace {
 
     @Option(name = "--name", usage = "user profile name")
