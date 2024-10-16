@@ -35,11 +35,15 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.UIManager;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A multi-line label. This class renders a string as one or more lines,
@@ -53,19 +57,21 @@ import javax.swing.UIManager;
  * @author Mark Lindner
  * @author PING Software Group
  */
+@Getter
+@Setter
+@SuppressWarnings("checkstyle:MagicNumber")
 class DesktopIconLabel extends JLabel {
     static final int CENTER_ALIGNMENT = 0;
     private static final int LEFT_ALIGNMENT = 1;
     private static final int RIGHT_ALIGNMENT = 2;
 
-    private int cols;
+    private final int cols;
     private int pw = -1;
     private int h;
     private int h0;
     private FontMetrics fm = null;
     private String text;
-    private String[] lines;
-    @SuppressWarnings("checkstyle:MagicNumber")
+    private List<String> lines = new ArrayList<>();
     private Dimension dim = new Dimension(10, 10);
     private int alignment = DesktopIconLabel.LEFT_ALIGNMENT;
     private boolean selected = false;
@@ -111,8 +117,8 @@ class DesktopIconLabel extends JLabel {
         }
 
         StringTokenizer st = new StringTokenizer(text, "\t \f\n");
-        StringBuffer line = new StringBuffer();
-        Vector v = new Vector();
+        StringBuilder line = new StringBuilder();
+        List<String> v = new ArrayList<>();
         int w = 0;
         int sw = fm.charWidth(' ');
 
@@ -122,8 +128,8 @@ class DesktopIconLabel extends JLabel {
             int tw = ((w == 0) ? ww : ww + sw);
 
             if ((w + tw) > pw) {
-                v.addElement(line.toString());
-                line = new StringBuffer();
+                v.add(line.toString());
+                line = new StringBuilder();
                 line.append(word);
                 w = ww;
             } else {
@@ -138,17 +144,15 @@ class DesktopIconLabel extends JLabel {
         // flush
 
         if (w > 0) {
-            v.addElement(line.toString());
+            v.add(line.toString());
         }
-
-        lines = new String[v.size()];
-        v.copyInto(lines);
+        lines = v;
 
         // compute height information
 
         h = fm.getHeight() + fm.getLeading();
         h0 = fm.getAscent() + fm.getLeading();
-        int ph = (lines.length * h);
+        int ph = (lines.size() * h);
 
         Insets ins = getInsets();
 
@@ -198,36 +202,38 @@ class DesktopIconLabel extends JLabel {
         int lineLength = 0;
 
         if (alignment == DesktopIconLabel.CENTER_ALIGNMENT) {
-            for (int i = 0; i < lines.length; i++) {
-                for (int j = 0; j < lines[i].length(); j++) {
-                    lineLength += fm.charWidth(lines[i].charAt(j));
+            for (int i = 0; i < lines.size(); i++) {
+                for (int j = 0; j < lines.get(i).length(); j++) {
+                    lineLength += fm.charWidth(lines.get(i).charAt(j));
                 }
 
-                gc.drawString(lines[i],
+                gc.drawString(lines.get(i),
                     ins.left + (getWidth() - lineLength) / 2,
                     ins.top + h0 + (i * h));
 
                 lineLength = 0;
             }
         } else if (alignment == DesktopIconLabel.LEFT_ALIGNMENT) {
-            for (int i = 0; i < lines.length; i++) {
-                for (int j = 0; j < lines[i].length(); j++) {
-                    lineLength += fm.charWidth(lines[i].charAt(j));
+            for (int i = 0; i < lines.size(); i++) {
+                for (int j = 0; j < lines.get(i).length(); j++) {
+                    lineLength += fm.charWidth(lines.get(i).charAt(j));
                 }
 
-                gc.drawString(lines[i],
+                gc.drawString(lines.get(i),
                     getWidth() - lineLength - ins.right, ins.top + h0 + (i * h));
 
                 lineLength = 0;
             }
         } else {
-            for (int i = 0; i < lines.length; i++) {
-                for (int j = 0; j < lines[i].length(); j++) {
-                    lineLength += fm.charWidth(lines[i].charAt(j));
+            for (int i = 0; i < lines.size(); i++) {
+                for (int j = 0; j < lines.get(i).length(); j++) {
+                    lineLength += fm.charWidth(lines.get(i).charAt(j));
                 }
 
-                gc.drawString(lines[i],
-                    ins.right, ins.top + h0 + (i * h));
+                gc.drawString(
+                    lines.get(i),
+                    ins.right, ins.top + h0 + (i * h)
+                );
 
                 lineLength = 0;
             }
@@ -244,23 +250,6 @@ class DesktopIconLabel extends JLabel {
     public void setText(String text) {
         this.text = text;
         repaint();
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    /**
-     * Get alignment
-     *
-     * @return current alignment
-     */
-    public int getAlignment() {
-        return this.alignment;
     }
 
     /**

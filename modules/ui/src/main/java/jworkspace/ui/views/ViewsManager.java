@@ -65,43 +65,42 @@ import javax.swing.border.EmptyBorder;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.widgets.WorkspaceError;
+import lombok.extern.java.Log;
 
 /**
  * Desktop manager drives views in common JFrame environment. It may add/delete/switch the view in a card layout
  * fashion.
  * @author Anton Troshin
  */
+@Log
 public class ViewsManager extends AbstractViewsManager {
     /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ViewsManager.class);
-    /**
-     *
+     * The name for the configuration saving file
      */
     private static final String DESKTOP_CONFIG = "desktops.dat";
     /**
-     *
+     * The prefix for view
      */
     private static final String VIEW = "view_";
     /*
      * Actions list
      */
-    private ViewsActions actions;
+    private final ViewsActions actions;
     /**
      * The collection of views in current system.
      */
-    private List<IView> views = new Vector<>();
+    private final List<IView> views = new Vector<>();
     /**
      * The number of current panel.
      */
@@ -109,7 +108,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Main menu
      */
-    private JMenu go = new JMenu(WorkspaceResourceAnchor.getString("ViewsManager.menu.go"));
+    private final JMenu go = new JMenu(WorkspaceResourceAnchor.getString("ViewsManager.menu.go"));
     /**
      * Menu for Workspace system menubar.
      */
@@ -117,7 +116,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Group of buttons
      */
-    private ButtonGroup group = new ButtonGroup();
+    private final ButtonGroup group = new ButtonGroup();
     /**
      * Header panel is included for information
      * purposes.
@@ -153,7 +152,7 @@ public class ViewsManager extends AbstractViewsManager {
      * Add desktop
      */
     void addDesktop() {
-        Frame parent = jworkspace.kernel.Workspace.getUi().getFrame();
+        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
         if (parent != null) {
 
             ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
@@ -178,7 +177,7 @@ public class ViewsManager extends AbstractViewsManager {
      */
     public void removeView() {
 
-        Frame parent = jworkspace.kernel.Workspace.getUi().getFrame();
+        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
 
         if (parent != null) {
             int result;
@@ -200,7 +199,7 @@ public class ViewsManager extends AbstractViewsManager {
      * View properties
      */
     void viewProperties() {
-        Frame parent = jworkspace.kernel.Workspace.getUi().getFrame();
+        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
         PropertiesHolderDlg prhg = new PropertiesHolderDlg(parent, getCurrentView().getOptionPanels());
         prhg.setVisible(true);
         update();
@@ -393,10 +392,12 @@ public class ViewsManager extends AbstractViewsManager {
     public void deleteCurrentView() {
 
         if (views.size() == 1) {
-            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
-                    WorkspaceResourceAnchor.getString("ViewsManager.cannotRmView.message"),
-                    WorkspaceResourceAnchor.getString("ViewsManager.cannotRmView.title"),
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                WorkspaceResourceAnchor.getString("ViewsManager.cannotRmView.message"),
+                WorkspaceResourceAnchor.getString("ViewsManager.cannotRmView.title"),
+                JOptionPane.WARNING_MESSAGE
+            );
             return;
         }
         /*
@@ -480,7 +481,10 @@ public class ViewsManager extends AbstractViewsManager {
                 List<JMenu> vmenus = new Vector<>(Arrays.asList(menus));
                 lparam.put(Constants.MENUS_PARAMETER, vmenus);
                 lparam.put(Constants.FLAG_PARAMETER, Boolean.FALSE);
-                Workspace.fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
+                ServiceLocator
+                    .getInstance()
+                    .getEventsDispatcher()
+                    .fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
             }
         }
         currentView = localIndex;
@@ -510,7 +514,10 @@ public class ViewsManager extends AbstractViewsManager {
 
                 lparam.put(Constants.MENUS_PARAMETER, vmenus);
                 lparam.put(Constants.FLAG_PARAMETER, Boolean.TRUE);
-                Workspace.fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
+                ServiceLocator
+                    .getInstance()
+                    .getEventsDispatcher()
+                    .fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
             }
         }
         update();
@@ -573,7 +580,7 @@ public class ViewsManager extends AbstractViewsManager {
     private JCheckBoxMenuItem getToggleHeaderMenuItem() {
         if (toggleHeader == null) {
             toggleHeader = Utils.createCheckboxMenuItem(actions.getAction(ViewsActions.SWITCH_HEADER_ACTION_NAME));
-            toggleHeader.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
+            toggleHeader.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK));
         }
         return toggleHeader;
     }
@@ -780,10 +787,12 @@ public class ViewsManager extends AbstractViewsManager {
                 getCurrentView().load();
                 ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                     getImage("desktop/reload.png"));
-                JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
+                JOptionPane.showMessageDialog(
+                    DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                     WorkspaceResourceAnchor.getString("ViewsManager.reload.message"),
                     WorkspaceResourceAnchor.getString("ViewsManager.reload.title"),
-                    JOptionPane.INFORMATION_MESSAGE, icon);
+                    JOptionPane.INFORMATION_MESSAGE, icon
+                );
             }
         } catch (IOException ex) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString("ViewsManager.reload.failed"), ex);
@@ -797,7 +806,13 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Read header panel orientation and visibility.
          */
-        File file = Workspace.ensureUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
+        File file = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .ensureUserHomePath()
+            .resolve(getPath())
+            .resolve(DESKTOP_CONFIG)
+            .toFile();
 
         try (FileInputStream inputFile = new FileInputStream(file);
              DataInputStream dataStream = new DataInputStream(inputFile)) {
@@ -850,17 +865,29 @@ public class ViewsManager extends AbstractViewsManager {
      */
     public void save() throws IOException {
 
-        File file = Workspace.ensureUserHomePath().resolve(getPath()).toFile();
+        File file = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .ensureUserHomePath()
+            .resolve(getPath())
+            .toFile();
+
         if (!file.exists()) {
             if (!file.mkdirs()) {
-                LOG.error("Can't create directories, not saving: " + file.getAbsolutePath());
+                log.severe("Can't create directories, not saving: " + file.getAbsolutePath());
                 return;
             }
         } else {
             KiwiUtils.deleteTree(file);
         }
 
-        file = Workspace.ensureUserHomePath().resolve(getPath()).resolve(DESKTOP_CONFIG).toFile();
+        file = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .ensureUserHomePath()
+            .resolve(getPath())
+            .resolve(DESKTOP_CONFIG)
+            .toFile();
 
         try (FileOutputStream outputFile = new FileOutputStream(file);
             DataOutputStream outputStream = new DataOutputStream(outputFile)) {
@@ -875,8 +902,14 @@ public class ViewsManager extends AbstractViewsManager {
 
                     File viewSavePath = Paths.get(getPath(), VIEW, String.valueOf(counter)).toFile();
 
-                    Path file1 = Workspace.ensureUserHomePath().resolve(getPath()).resolve(VIEW)
+                    Path file1 = ServiceLocator
+                        .getInstance()
+                        .getProfilesManager()
+                        .ensureUserHomePath()
+                        .resolve(getPath())
+                        .resolve(VIEW)
                         .resolve(String.valueOf(counter));
+
                     if (!Files.exists(file1)) {
                         Files.createDirectories(file1);
                     }
@@ -924,7 +957,7 @@ public class ViewsManager extends AbstractViewsManager {
         for (int i = 0; i < names.length; i++) {
             String itemname = names[i];
 
-            if (itemname == null || itemname.equals("")) {
+            if (itemname == null || itemname.isEmpty()) {
                 itemname = Integer.toString(i);
             }
 

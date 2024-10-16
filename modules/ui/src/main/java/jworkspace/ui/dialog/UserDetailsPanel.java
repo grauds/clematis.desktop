@@ -41,14 +41,19 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
+import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.users.Profile;
 
 /**
  * User details panel gathers user data for profiles.
  */
 class UserDetailsPanel extends KPanel {
-    private JTextField tNick, tName, tSurname, tMail;
-    private JTextArea tDescription;
+    private final JTextField tNick;
+    private final JTextField tName;
+    private final JTextField tSurname;
+    private final JTextField tMail;
+    private final JTextArea tDescription;
 
     @SuppressWarnings("MagicNumber")
     UserDetailsPanel() {
@@ -136,7 +141,7 @@ class UserDetailsPanel extends KPanel {
         tChangePassword.setDefaultCapable(false);
         tChangePassword.addActionListener(evt -> {
             ChangePasswordDlg dlg =
-                new ChangePasswordDlg(Workspace.getUi().getFrame());
+                new ChangePasswordDlg(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame());
             dlg.setVisible(true);
         });
         buttonHolder.add(tChangePassword, BorderLayout.EAST);
@@ -148,19 +153,23 @@ class UserDetailsPanel extends KPanel {
     }
 
     public void setData() {
-        tNick.setText(Workspace.getUserManager().getUserName());
-        tName.setText(Workspace.getUserManager().getUserFirstName());
-        tSurname.setText(Workspace.getUserManager().getUserLastName());
-        tMail.setText(Workspace.getUserManager().getEmail());
-        tDescription.setText(Workspace.getUserManager().getDescription());
+        Profile currentProfile = ServiceLocator.getInstance().getProfilesManager().getCurrentProfile();
+
+        tNick.setText(currentProfile.getUserName());
+        tName.setText(currentProfile.getUserFirstName());
+        tSurname.setText(currentProfile.getUserLastName());
+        tMail.setText(currentProfile.getEmail());
+        tDescription.setText(currentProfile.getDescription());
     }
 
     public boolean syncData() {
-        Workspace.getUserManager().setUserFirstName(tName.getText());
-        Workspace.getUserManager().setUserLastName(tSurname.getText());
-        Workspace.getUserManager().setEmail(tMail.getText());
-        Workspace.getUserManager().setDescription(tDescription.getText());
-        Workspace.getUserManager().setUserName(tNick.getText());
+        Profile currentProfile = ServiceLocator.getInstance().getProfilesManager().getCurrentProfile();
+
+        currentProfile.setUserFirstName(tName.getText());
+        currentProfile.setUserLastName(tSurname.getText());
+        currentProfile.setEmail(tMail.getText());
+        currentProfile.setDescription(tDescription.getText());
+        currentProfile.setUserName(tNick.getText());
 
         return true;
     }

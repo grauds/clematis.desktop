@@ -30,8 +30,6 @@ import java.io.IOException;
 
 import javax.swing.JMenu;
 
-import jworkspace.ui.views.PropertiesPanel;
-
 /**
  * User gui view. Such shell have to load itself, restore state
  * or save itself on disk. It also have to provide option panels,

@@ -13,19 +13,20 @@ import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalTheme;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.io.ConfigFile;
 
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.plaf.PlafFactory;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.extern.java.Log;
 
 /**
  * @author Anton Troshin
  */
+@Log
 public class UIConfig {
 
     /**
@@ -57,34 +58,18 @@ public class UIConfig {
      */
     public static final String CK_UNDECORATED = "gui.frame.undecorated";
     /**
-     * Logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(UIConfig.class);
-    /**
      * Workspace background texture
      */
+    @Setter
+    @Getter
     private Image texture = null;
     /**
      * Configuration
      */
-    private ConfigFile config;
+    private final ConfigFile config;
 
     public UIConfig(@NonNull File configFile) {
         this.config = new ConfigFile(configFile, "GUI Related Properties");
-    }
-
-    /**
-     * Returns texture image for settings dialog
-     */
-    public Image getTexture() {
-        return texture;
-    }
-
-    /**
-     * Set texture for java workspace gui
-     */
-    public void setTexture(Image texture) {
-        this.texture = texture;
     }
 
     /**
@@ -146,7 +131,7 @@ public class UIConfig {
             config.load();
 
         } catch (IOException e) {
-            LOG.warn("Couldn't load the config, continuing with defaults");
+            log.warning("Couldn't load the config, continuing with defaults");
         }
         /*
          * Load recently used texture
@@ -155,10 +140,13 @@ public class UIConfig {
             /*
              * Read texture
              */
-            setTexture(ImageIO.read(Workspace.ensureUserHomePath().resolve(CK_TEXTURE_FILE_NAME).toFile()));
+            setTexture(ImageIO.read(
+                ServiceLocator.getInstance().getProfilesManager()
+                    .ensureUserHomePath().resolve(CK_TEXTURE_FILE_NAME).toFile()
+            ));
 
         } catch (IOException e) {
-            LOG.warn("Cannot read texture: " + e.getMessage());
+            log.warning("Cannot read texture: " + e.getMessage());
             setTextureVisible(false);
 
         }
@@ -174,15 +162,17 @@ public class UIConfig {
             saveTheme();
             config.store();
         } catch (IOException ex) {
-            LOG.error(ex.getMessage(), ex);
+            log.severe(ex.getMessage());
         }
         /*
          * Write texture on disk
          */
         if (getTexture() != null) {
 
-            try (OutputStream os = new FileOutputStream(Workspace.ensureUserHomePath()
-                .resolve(CK_TEXTURE_FILE_NAME).toFile())) {
+            try (OutputStream os = new FileOutputStream(
+                ServiceLocator.getInstance().getProfilesManager()
+                    .ensureUserHomePath().resolve(CK_TEXTURE_FILE_NAME).toFile()
+            )) {
 
                 ImageIcon textureIcon = new ImageIcon(getTexture());
                 BufferedImage bi = new BufferedImage(textureIcon.getIconWidth(), textureIcon.getIconHeight(),
@@ -196,7 +186,7 @@ public class UIConfig {
                 }
 
             } catch (IOException e) {
-                LOG.warn("Cannot write texture: " + e.getMessage());
+                log.warning("Cannot write texture: " + e.getMessage());
             }
         }
     }

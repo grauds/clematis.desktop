@@ -7,8 +7,6 @@ dependencies {
 
     testImplementation project(':api')
     testImplementation project(':kiwi')
-
-    implementation "args4j:args4j:2.0.16"
 }
 
 jar {

@@ -70,8 +70,9 @@ import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 import com.hyperrealm.kiwi.util.Task;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.config.DesktopServiceLocator;
+import lombok.Getter;
 
 /**
  * This is a graphic resources explorer panel. Graphic resources can reside inside of a jar file or directory.
@@ -84,22 +85,17 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
 
     private static final String LOAD_FAILED_MESSAGE =
         WorkspaceResourceAnchor.getString("ResourceExplorerPanel.load.failed");
-    /**
-     * Default logger
-     */
+
     private static final Logger LOG = LoggerFactory.getLogger(ResourceExplorerPanel.class);
-
-    private static Dimension thumbnailDimension;
-
-    private static Border unselectedThumbnailBorder;
-
-    private static Border selectedThumbnailBorder;
+    private static final Dimension THUMBNAIL_DIMENSION;
+    private static final Border UNSELECTED_THUMBNAIL_BORDER;
+    private static final Border SELECTED_THUMBNAIL_BORDER;
 
     // We only need one copy of these for all instances
     static {
-        unselectedThumbnailBorder = BorderFactory.createRaisedBevelBorder();
-        selectedThumbnailBorder = BorderFactory.createLoweredBevelBorder();
-        thumbnailDimension = new Dimension(96, 96);
+        UNSELECTED_THUMBNAIL_BORDER = BorderFactory.createRaisedBevelBorder();
+        SELECTED_THUMBNAIL_BORDER = BorderFactory.createLoweredBevelBorder();
+        THUMBNAIL_DIMENSION = new Dimension(96, 96);
     }
 
     /**
@@ -109,20 +105,20 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
     boolean isTextureChooser = true;
     /**
      * Path to repository
+     * -- GETTER --
+     *  Get path to repository
+
      */
+    @Getter
     private String path = null;
     /**
      * List of all Thumbnails in this panel
      */
-    private List<Thumbnail> list = new Vector<>();
+    private final List<Thumbnail> list = new Vector<>();
     /**
      * Width of this panel
      */
     private int setWidth = 450;
-    /**
-     * Instance of workspace gui
-     */
-    private WorkspaceGUI wgui = null;
 
     private ProgressDialog pr = null;
 
@@ -133,11 +129,6 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         addComponentListener(this); // catch resize events
         setPreferredDimension();
-
-        // todo: what is this??
-        if (Workspace.getUi() instanceof WorkspaceGUI) {
-            wgui = (WorkspaceGUI) Workspace.getUi();
-        }
     }
 
     /**
@@ -154,7 +145,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
             Component lastcomponent = getComponent(componentCount - 1);
             Point p = lastcomponent.getLocation();
             h = p.y; // top of last component
-            h += thumbnailDimension.height;
+            h += THUMBNAIL_DIMENSION.height;
             h += 5; // plus y border size for neatness
         } else {
             h = 300; // no components - probably best if it's a nonzero size
@@ -226,13 +217,6 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
     }
 
     /**
-     * Get path to repository
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
      * Set path to repository
      */
     public void setPath(String path) {
@@ -243,7 +227,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         list.clear();
 
         revalidate();
-        pr = new ProgressDialog(Workspace.getUi().getFrame(),
+        pr = new ProgressDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
             WorkspaceResourceAnchor.getString("ResourceExplorerPanel.loadingRep"), true);
         Loader loader = new Loader();
         pr.track(loader);
@@ -311,6 +295,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
              * First get all KIWI textures if specified flag is
              * set.
              */
+            WorkspaceGUI wgui = DesktopServiceLocator.getInstance().getWorkspaceGUI();
             if (wgui != null && wgui.isKiwiTextureVisible() && isTextureChooser) {
                 try {
                     enumLibTextures();
@@ -432,13 +417,14 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
      */
     static class Thumbnail extends JLabel implements MouseListener {
 
+        @Getter
         private boolean selected = false;
 
         private ImageIcon imageIcon = null;
 
         private Thumbnail() {
             super();
-            setPreferredSize(thumbnailDimension);
+            setPreferredSize(THUMBNAIL_DIMENSION);
             setSelected(false);
             setVerticalTextPosition(BOTTOM);
             setHorizontalTextPosition(CENTER);
@@ -446,16 +432,12 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
             addMouseListener(this);
         }
 
-        public boolean isSelected() {
-            return selected;
-        }
-
         public void setSelected(boolean b) {
             selected = b;
             if (selected) {
-                setBorder(selectedThumbnailBorder);
+                setBorder(SELECTED_THUMBNAIL_BORDER);
             } else {
-                setBorder(unselectedThumbnailBorder);
+                setBorder(UNSELECTED_THUMBNAIL_BORDER);
             }
         }
 
@@ -496,11 +478,10 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         public void mouseClicked(MouseEvent e) {
             Container c = getParent();
 
-            if (!(c instanceof ResourceExplorerPanel)) {
+            if (!(c instanceof ResourceExplorerPanel tp)) {
                 return;
             }
 
-            ResourceExplorerPanel tp = (ResourceExplorerPanel) c;
             if (e.getClickCount() == 1) {
                 if (!e.isControlDown()) {
                     tp.deselectAll(); // unselect all thumbnails

@@ -40,8 +40,8 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.installer.Application;
 import jworkspace.api.DefinitionNode;
+import jworkspace.installer.Application;
 import jworkspace.ui.WorkspaceGUI;
 
 /**
@@ -68,8 +68,7 @@ public class ApplicationChooserDialog extends ComponentDialog {
 
     protected boolean accept() {
         Object selectedItem = treeTable.getSelectedItem();
-        if (selectedItem instanceof DefinitionNode) {
-            DefinitionNode n = (DefinitionNode) selectedItem;
+        if (selectedItem instanceof DefinitionNode n) {
             if (n.getClass() == Application.class) {
                 application = (Application) n;
             }

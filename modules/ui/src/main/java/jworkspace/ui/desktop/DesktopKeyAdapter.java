@@ -34,7 +34,8 @@ import jworkspace.ui.api.Constants;
  * @author Anton Troshin
  */
 class DesktopKeyAdapter extends KeyAdapter {
-    private Desktop desktop;
+
+    private final Desktop desktop;
 
     DesktopKeyAdapter(Desktop desktop) {
         this.desktop = desktop;
@@ -69,15 +70,13 @@ class DesktopKeyAdapter extends KeyAdapter {
             }
         } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
             desktop.removeSelectedIcons();
-        } else if (e.getKeyCode() == KeyEvent.VK_V
-            && e.getModifiers() == KeyEvent.CTRL_MASK) {
+        } else if (e.getKeyCode() == KeyEvent.VK_V && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
             if (e.getSource() instanceof Desktop) {
                 ((Desktop) e.getSource()).pasteIcons();
             } else if (e.getSource() instanceof DesktopIcon) {
                 ((DesktopIcon) e.getSource()).desktop.pasteIcons();
             }
-        } else if (e.getKeyCode() == KeyEvent.VK_A
-            && e.getModifiers() == KeyEvent.CTRL_MASK) {
+        } else if (e.getKeyCode() == KeyEvent.VK_A && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
             if (e.getSource() instanceof Desktop) {
                 ((Desktop) e.getSource()).selectAll();
             } else if (e.getSource() instanceof DesktopIcon) {

@@ -48,9 +48,10 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.ImageRenderer;
 import jworkspace.ui.widgets.ResourceExplorerDialog;
 
@@ -59,9 +60,11 @@ import jworkspace.ui.widgets.ResourceExplorerDialog;
  */
 class TexturePanel extends KPanel implements ActionListener {
     private static final String TEXTURES_REPOSITORY = "TEXTURES_REPOSITORY";
-    private JButton bIconBrowse, bLibBrowser;
-    private ImageRenderer lImage;
-    private JCheckBox chShowTexture, chShowWTextures;
+    private final JButton bIconBrowse;
+    private final JButton bLibBrowser;
+    private final ImageRenderer lImage;
+    private final JCheckBox chShowTexture;
+    private final JCheckBox chShowWTextures;
 
     @SuppressWarnings("MagicNumber")
     TexturePanel() {
@@ -143,20 +146,36 @@ class TexturePanel extends KPanel implements ActionListener {
                 lImage.setImage(im);
             }
         } else if (o == bLibBrowser) {
-            ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(Workspace.getUi().getFrame());
+            ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+            );
             callResourceBrowser(resBrowser);
         } else if (o == chShowWTextures) {
-            ((WorkspaceGUI) Workspace.getUi()).setKiwiTextureVisible(chShowWTextures.isSelected());
+            DesktopServiceLocator
+                .getInstance()
+                .getWorkspaceGUI()
+                .setKiwiTextureVisible(chShowWTextures.isSelected());
         }
     }
 
     private void callResourceBrowser(ResourceExplorerDialog resBrowser) {
         resBrowser.setHint(true);
-        String path = Workspace.getUserManager().getParameters().getString(TEXTURES_REPOSITORY);
-        if (path == null && Workspace.getUi() instanceof WorkspaceGUI) {
+        String path = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .getCurrentProfile()
+            .getParameters()
+            .getString(TEXTURES_REPOSITORY);
+
+        if (path == null && DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {
 
             path = WorkspaceGUI.getTexturesPath().toFile().getAbsolutePath();
-            Workspace.getUserManager().getParameters().putString(TEXTURES_REPOSITORY, path);
+            ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .getCurrentProfile()
+                .getParameters()
+                .putString(TEXTURES_REPOSITORY, path);
         }
         resBrowser.setData(path);
         resBrowser.setVisible(true);
@@ -171,9 +190,9 @@ class TexturePanel extends KPanel implements ActionListener {
     }
 
     public void setData() {
-        lImage.setImage(((WorkspaceGUI) Workspace.getUi()).getTexture());
-        chShowTexture.setSelected(((WorkspaceGUI) Workspace.getUi()).isTextureVisible());
-        chShowWTextures.setSelected(((WorkspaceGUI) Workspace.getUi()).isKiwiTextureVisible());
+        lImage.setImage(DesktopServiceLocator.getInstance().getWorkspaceGUI().getTexture());
+        chShowTexture.setSelected(DesktopServiceLocator.getInstance().getWorkspaceGUI().isTextureVisible());
+        chShowWTextures.setSelected(DesktopServiceLocator.getInstance().getWorkspaceGUI().isKiwiTextureVisible());
     }
 
     public boolean syncData() {
@@ -182,7 +201,7 @@ class TexturePanel extends KPanel implements ActionListener {
          */
         Image imtexture = lImage.getImage();
 
-        if (imtexture != null && Workspace.getUi() instanceof WorkspaceGUI) {
+        if (imtexture != null && DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {
 
             ImageIcon textureIcon = new ImageIcon(imtexture);
             BufferedImage bi = new BufferedImage(
@@ -194,15 +213,11 @@ class TexturePanel extends KPanel implements ActionListener {
             textureIcon.paintIcon(null, g, 0, 0);
             g.dispose();
 
-            ((WorkspaceGUI) Workspace.getUi()).setTexture(bi);
+            DesktopServiceLocator.getInstance().getWorkspaceGUI().setTexture(bi);
         }
 
-        if (Workspace.getUi() instanceof WorkspaceGUI) {
-            if (chShowTexture.isSelected()) {
-                ((WorkspaceGUI) Workspace.getUi()).setTextureVisible(true);
-            } else {
-                ((WorkspaceGUI) Workspace.getUi()).setTextureVisible(false);
-            }
+        if (DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {
+            DesktopServiceLocator.getInstance().getWorkspaceGUI().setTextureVisible(chShowTexture.isSelected());
         }
         /*
          * Set flag whether the texture is visible

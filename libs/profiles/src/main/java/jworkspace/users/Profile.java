@@ -42,8 +42,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Level;
 
-import org.kohsuke.args4j.Option;
-
 import com.hyperrealm.kiwi.util.Config;
 
 import lombok.Data;
@@ -74,10 +72,8 @@ public class Profile {
 
     private static final String ALGORITHM = "MD5";
 
-    @Option(name = "-username")
     private String userName = "default";
 
-    @Option(name = "-password")
     private String password = "";
 
     private MessageDigest messageDigest;

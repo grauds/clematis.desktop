@@ -56,7 +56,7 @@ import com.hyperrealm.kiwi.io.StreamUtils;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IConstants;
+import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.ActionChangedListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.widgets.WorkspaceError;
@@ -66,7 +66,7 @@ import jworkspace.ui.widgets.WorkspaceError;
  *
  * @author Anton Troshin
  */
-public final class Utils implements IConstants {
+public final class Utils implements Constants {
 
     private static final int BUFFER = 1024;
     /**

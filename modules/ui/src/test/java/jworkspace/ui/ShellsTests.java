@@ -40,7 +40,6 @@ import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 import com.hyperrealm.kiwi.util.plugin.PluginException;
 
 import jworkspace.ui.api.Constants;
-import jworkspace.ui.api.ViewPluginLocator;
 import jworkspace.ui.config.UIConfig;
 
 /**

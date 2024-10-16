@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceGUI;
 
 /**
@@ -51,7 +51,7 @@ public class WindowHandler extends StreamHandler {
     private static final int DEFAULT_WIDTH = 400;
     private static final int DEFAULT_HEIGHT = 500;
     // The logger being displayed in this window
-    private Logger logger;
+    private final Logger logger;
 
     /**
      * Set up the connection between the stream
@@ -119,7 +119,11 @@ public class WindowHandler extends StreamHandler {
             // Fire event
             Map<String, Object> lparam = new HashMap<>();
             lparam.put("frame", this);
-            Workspace.fireEvent(WorkspaceGUI.ExternalFrameListener.CODE, lparam, null);
+
+            ServiceLocator
+                .getInstance()
+                .getEventsDispatcher()
+                .fireEvent(WorkspaceGUI.ExternalFrameListener.CODE, lparam, null);
         }
 
         public void dispose() {

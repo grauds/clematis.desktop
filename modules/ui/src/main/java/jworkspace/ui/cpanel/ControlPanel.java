@@ -47,11 +47,16 @@ import javax.swing.SwingUtilities;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * System control panel
  *
  * @author Anton Troshin
  */
+@Getter
+@Setter
 public class ControlPanel extends KPanel implements LayoutManager, MouseListener, MouseMotionListener, ActionListener {
     /**
      * Specifies that components should be laid out left to right.
@@ -75,9 +80,9 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
 
     private CScrollButton downButton = null;
 
-    private JViewport viewport = new JViewport();
+    private final JViewport viewport = new JViewport();
 
-    private CButtonsPane buttonsPane;
+    private final CButtonsPane buttonsPane;
     /**
      * Mouse pointer coordinate.
      */
@@ -240,22 +245,6 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     }
 
     /**
-     * Returns the holder for the buttons.
-     *
-     * @return jworkspace.ui.cpanel.CButtonsPane
-     */
-    public CButtonsPane getButtonsPane() {
-        return buttonsPane;
-    }
-
-    /**
-     * Returns orientation of this component.
-     */
-    public int getOrientation() {
-        return orientation;
-    }
-
-    /**
      * Sets orientation of this component.
      */
     public void setOrientation(int orientation) {
@@ -355,26 +344,20 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     }
 
     /**
-     * Mouse pressed event causes generic property
-     * of control bar to change. Control bar sends only NEW
-     * value, as we dont use old mouse pointer
-     * coordinate while dragging.
+     * Mouse pressed event causes generic property of control bar to change. Control bar sends only NEW
+     * value, as we don't use old mouse pointer coordinate while dragging.
      */
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e)) {
             return;
         }
-
         dragged = true;
-
-        firePropertyChange("BEGIN_DRAGGING", !dragged, dragged);
+        firePropertyChange("BEGIN_DRAGGING", false, dragged);
         e.consume();
     }
 
     /**
-     * Mouse released message handler.
-     * By this event control panel sends
-     * property change event to
+     * Mouse released message handler. By this event control panel sends property change event to
      * all its subcomponents.
      */
     public void mouseReleased(MouseEvent e) {
@@ -382,10 +365,9 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
             return;
         }
         dragged = false;
-
-        firePropertyChange("END_DRAGGING", !dragged, dragged);
-
+        firePropertyChange("END_DRAGGING", true, dragged);
         viewport.setViewPosition(new Point(0, 0));
+        e.consume();
     }
 
     /**

@@ -42,6 +42,7 @@ import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
 
 import jworkspace.WorkspaceResourceAnchor;
+import lombok.Getter;
 
 /**
  * @author Anton Troshin
@@ -70,7 +71,13 @@ public class JPopupMenuEx extends JPopupMenu {
     /**
      * "more->" menu - recursive object allows for arbitrarily deep
      * more menus.
+     * -- GETTER --
+     *  Convenience helper - get one of the sub-menus if you
+     *  want to manipulate it directly (For Example - insert a static
+     *  item.)
+
      */
+    @Getter
     private JMoreMenu moreMenu;
 
     public JPopupMenuEx() {
@@ -266,15 +273,6 @@ public class JPopupMenuEx extends JPopupMenu {
         }
 
         return retVal;
-    }
-
-    /**
-     * Convenience helper - get one of the sub-menus if you
-     * want to manipulate it directly (For Example - insert a static
-     * item.)
-     */
-    public JMoreMenu getMoreMenu() {
-        return moreMenu;
     }
 
     /**

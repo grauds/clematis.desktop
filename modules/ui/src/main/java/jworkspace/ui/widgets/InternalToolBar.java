@@ -70,19 +70,19 @@ public class InternalToolBar extends KPanel implements MouseListener, MouseMotio
 
     public static final int HORIZONTAL = 1;
 
-    private int orientation;
+    private final int orientation;
 
     private boolean floatable;
 
     private boolean docked;
 
-    private JDesktopPane desktop;
+    private final JDesktopPane desktop;
 
-    private String title;
+    private final String title;
 
-    private GridBagLayout g;
+    private final GridBagLayout g;
 
-    private GridBagConstraints c;
+    private final GridBagConstraints c;
 
     private ImageIcon icon;
 
@@ -90,7 +90,7 @@ public class InternalToolBar extends KPanel implements MouseListener, MouseMotio
 
     private InternalFrame frame;
 
-    private JPanel panel;
+    private final JPanel panel;
 
     private Border border;
 
@@ -367,8 +367,8 @@ public class InternalToolBar extends KPanel implements MouseListener, MouseMotio
 
     static class Separator extends JComponent {
 
-        private int size;
-        private InternalToolBar parent;
+        private final int size;
+        private final InternalToolBar parent;
 
         Separator(int size, InternalToolBar p) {
             this.size = size;

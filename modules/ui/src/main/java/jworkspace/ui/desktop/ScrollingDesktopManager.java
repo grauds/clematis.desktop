@@ -43,7 +43,7 @@ import javax.swing.JViewport;
 @SuppressWarnings("MagicNumber")
 public class ScrollingDesktopManager extends DefaultDesktopManager {
 
-    private Desktop desktop;
+    private final Desktop desktop;
 
     ScrollingDesktopManager(Desktop desktop) {
         this.desktop = desktop;
@@ -90,8 +90,7 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
     }
 
     private JScrollPane getScrollPane() {
-        if (desktop.getParent() instanceof JViewport) {
-            JViewport viewPort = (JViewport) desktop.getParent();
+        if (desktop.getParent() instanceof JViewport viewPort) {
             if (viewPort.getParent() instanceof JScrollPane) {
                 return (JScrollPane) viewPort.getParent();
             }

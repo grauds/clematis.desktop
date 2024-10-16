@@ -41,7 +41,7 @@ import javax.swing.SwingUtilities;
  */
 public class UISwitchListener implements PropertyChangeListener {
 
-    private Component componentToSwitch;
+    private final Component componentToSwitch;
 
     /**
      * Instance of <code>jworkspace.ui.action.UISwitchListener</code>

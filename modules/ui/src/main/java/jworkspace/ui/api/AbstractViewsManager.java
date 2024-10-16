@@ -34,23 +34,27 @@ import javax.swing.JPanel;
 import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.ui.cpanel.CButton;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Views switcher and manager
  *
  * @author Anton Troshin
  */
+@Setter
+@Getter
 public abstract class AbstractViewsManager extends KPanel {
     /**
-     * Save path. Relative to user.home
+     * Path to hold views configuration
      */
-    private String path = "multidesktop";
-
+    private String path = "desktop";
     /**
      * Adds view to collection of views.
      *
      * @param panel              javax.swing.JComponent
-     * @param displayImmediately boolean
-     * @param register
+     * @param displayImmediately if the view will be displayed right after it is added
+     * @param register           if the view has to be unique
      */
     public abstract void addView(IView panel, boolean displayImmediately, boolean register);
 
@@ -96,21 +100,6 @@ public abstract class AbstractViewsManager extends KPanel {
      * Returns option panels for content manager
      */
     public abstract JPanel[] getOptionPanels();
-
-    /**
-     * Returns relative path for saving component data.
-     */
-    public java.lang.String getPath() {
-        return path;
-    }
-
-    /**
-     * Sets path for saving component data.
-     * This path is relative to user.home path.
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
 
     /**
      * Loads profile data.

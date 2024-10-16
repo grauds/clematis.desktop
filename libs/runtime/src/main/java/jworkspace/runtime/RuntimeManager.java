@@ -64,6 +64,14 @@ public class RuntimeManager {
         this.poolExecutor.execute(runnable);
     }
 
+    public void run(String command) {
+
+    }
+
+    public void executeNativeCommand(String command) {
+
+    }
+
     public boolean addListener(IWorkspaceListener l) {
         return this.eventsDispatcher.addListener(l);
     }

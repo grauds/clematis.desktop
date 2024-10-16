@@ -30,7 +30,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.IView;
@@ -64,7 +64,10 @@ public abstract class DefaultShell implements IShell, ActionListener {
             lparam.put("view", this);
             lparam.put("display", Boolean.TRUE);
             lparam.put("register", Boolean.FALSE);
-            Workspace.fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
+            ServiceLocator
+                .getInstance()
+                .getEventsDispatcher()
+                .fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
         }
     }
 

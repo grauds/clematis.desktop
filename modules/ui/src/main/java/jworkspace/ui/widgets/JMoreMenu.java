@@ -280,13 +280,6 @@ public class JMoreMenu extends JMenu {
     }
 
     /**
-     * Accessor
-     */
-    public double getMaximumHeight() {
-        return maximumHeight;
-    }
-
-    /**
      * Set the maximum allowable height if default screenheight-taskbar
      * is insufficient.
      */

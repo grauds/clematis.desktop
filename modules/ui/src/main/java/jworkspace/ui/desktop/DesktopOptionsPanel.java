@@ -38,7 +38,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.views.PropertiesPanel;
+import jworkspace.ui.api.PropertiesPanel;
 
 /**
  * Class to set desktop options.
@@ -56,15 +56,15 @@ class DesktopOptionsPanel extends KPanel implements ActionListener, PropertiesPa
     /**
      * Desktop that has to be edited
      */
-    private Desktop desktop;
+    private final Desktop desktop;
     /**
      * Drag mode
      */
-    private JCheckBox dragMode = new JCheckBox();
+    private final JCheckBox dragMode = new JCheckBox();
     /**
      * Drag mode
      */
-    private JCheckBox transparent = new JCheckBox();
+    private final JCheckBox transparent = new JCheckBox();
     /**
      * Outline flag
      */

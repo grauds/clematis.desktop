@@ -82,7 +82,7 @@ public class LoggingPanel extends KPanel {
         add(showButton, BorderLayout.SOUTH);
         showButton.addActionListener(ae -> {
             String name = loggerNamesList.getSelectedValue();
-            if (name != null && !name.equals("")) {
+            if (name != null && !name.isEmpty()) {
                 loggerList.add(openWindow(name));
             }
         });
@@ -94,7 +94,7 @@ public class LoggingPanel extends KPanel {
     private void populateList() {
         // Get the names of the currently-instantiated loggers
         LogManager logManager = LogManager.getLogManager();
-        Enumeration e = logManager.getLoggerNames();
+        Enumeration<String> e = logManager.getLoggerNames();
         // Build a Vector of the names
         Vector<String> names = new Vector<>();
         while (e.hasMoreElements()) {
@@ -111,7 +111,7 @@ public class LoggingPanel extends KPanel {
      * unfortunately some code relies on the old behavior - when changing logger configuration, it simply drops the
      * logger reference. That means that the garbage collector is free to reclaim that memory, which means that the
      * logger configuration is lost. For example, consider:
-     *
+     * <p>
      * public static void initLogging() throws Exception {
      *  Logger logger = Logger.getLogger("edu.umd.cs");
      *  logger.addHandler(new FileHandler()); // call to change logger configuration
@@ -120,7 +120,7 @@ public class LoggingPanel extends KPanel {
      * The logger reference is lost at the end of the method (it doesn't escape the method), so if you have a garbage
      * collection cycle just after the call to initLogging, the logger configuration is lost (because Logger only
      * keeps weak references).
-     *
+     * <p>
      * public static void main(String[] args) throws Exception {
      *  initLogging(); // adds a file handler to the logger
      *  System.gc(); // logger configuration lost

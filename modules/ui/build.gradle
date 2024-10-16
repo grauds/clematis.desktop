@@ -25,7 +25,6 @@ dependencies {
 
     compileOnly project(':jworkspace')
 
-    implementation project(':kiwi')
     implementation "commons-codec:commons-codec:$codecVersion"
     implementation "org.jdom:jdom2:$jdomVersion"
 

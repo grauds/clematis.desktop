@@ -44,6 +44,8 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.ui.api.PropertiesPanel;
+
 /**
  * This dialog holds a properties panel for a view. Each panel is placed as a component to a tab view.
  * After user selects to close dialog, this class invokes <code>syncData</code> method on every panel
@@ -60,7 +62,7 @@ public class PropertiesHolderDlg extends ComponentDialog {
 
     private KTabbedPane tabbedPane;
 
-    private List<PropertiesPanel> propertiesPanelList = new ArrayList<>();
+    private final List<PropertiesPanel> propertiesPanelList = new ArrayList<>();
     /**
      * Constructor for property viewer panel.
      *

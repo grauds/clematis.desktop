@@ -119,8 +119,16 @@ public class ProfilesManager implements Comparator<Profile> {
      *
      * @return java.lang.String
      */
-    Path ensureCurrentProfilePath(Path basePath) throws IOException {
-        return getCurrentProfile().ensureProfilePath(basePath);
+    public Path ensureCurrentProfilePath(Path basePath) throws IOException {
+        if (getCurrentProfile() != null) {
+            return getCurrentProfile().ensureProfilePath(basePath);
+        } else {
+            return getBasePath();
+        }
+    }
+
+    public Path ensureUserHomePath() throws IOException {
+        return ensureCurrentProfilePath(getBasePath());
     }
 
     /**
@@ -128,8 +136,12 @@ public class ProfilesManager implements Comparator<Profile> {
      *
      * @return java.lang.String
      */
-    Path getCurrentProfilePath(Path basePath) {
-        return getCurrentProfile().getProfilePath(basePath);
+    public Path getCurrentProfilePath() {
+        if (getCurrentProfile() != null) {
+            return getCurrentProfile().getProfilePath(getBasePath());
+        } else {
+            return getBasePath();
+        }
     }
 
     /**

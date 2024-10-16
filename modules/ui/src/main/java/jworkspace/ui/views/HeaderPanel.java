@@ -68,11 +68,11 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     /**
      * Header label is the only component to display info.
      */
-    private JLabel headerLabel = new JLabel();
+    private final JLabel headerLabel = new JLabel();
     /**
      * Margins.
      */
-    private Insets margin = new Insets(0, 0, 0, 0);
+    private final Insets margin = new Insets(0, 0, 0, 0);
     /**
      * Current orientation - by default HEADER.
      */
@@ -80,7 +80,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     /**
      * Header label is the only component to display info.
      */
-    private ClockLabel clockLabel = new ClockLabel();
+    private final ClockLabel clockLabel = new ClockLabel();
 
     /**
      * HeaderPanel constructor. Takes title string

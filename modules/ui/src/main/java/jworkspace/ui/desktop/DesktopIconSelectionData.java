@@ -28,24 +28,20 @@ package jworkspace.ui.desktop;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+
 /**
  * Desktop icon selection data is necessary for copy/paste of icons groups.
  */
+@Getter
 class DesktopIconSelectionData implements Serializable {
-    private Integer size;
+
+    private final Integer size;
     // Icon data
-    private DesktopIconData[] iconData;
+    private final DesktopIconData[] iconData;
 
     DesktopIconSelectionData(int size, DesktopIconData[] iconData) {
         this.size = size;
         this.iconData = iconData;
-    }
-
-    DesktopIconData[] getIconData() {
-        return iconData;
-    }
-
-    public Integer getSize() {
-        return size;
     }
 }

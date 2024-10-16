@@ -44,6 +44,7 @@ import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.swing.ImageIcon;
@@ -55,14 +56,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.WorkspaceException;
-import jworkspace.kernel.Workspace;
 import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.WorkspaceInterpreter;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
-import jworkspace.ui.widgets.WorkspaceError;
+import jworkspace.ui.config.DesktopServiceLocator;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Desktop icon is a shortcut to command.
@@ -70,6 +71,7 @@ import jworkspace.ui.widgets.WorkspaceError;
 @SuppressWarnings("MagicNumber")
 class DesktopIcon extends JComponent implements MouseListener, MouseMotionListener, FocusListener, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -14567890635540403L;
 
     private static JPopupMenu popupMenu = null;
@@ -81,18 +83,18 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
 
     protected transient Desktop desktop;
 
-    private BrightnessReducer br = new BrightnessReducer();
+    private final BrightnessReducer br = new BrightnessReducer();
 
     private String command = "";
-
     private String workingDir;
-
     private int mode = Constants.JAVA_APP_MODE;
 
+    @Getter
     private ImageIcon icon = null;
-
+    @Getter
     private ImageIcon darkenedIcon = null;
-
+    @Setter
+    @Getter
     private boolean selected = false;
     // DesktopLayout data
     private int xPos = 0;
@@ -100,7 +102,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     private int xPressed = 0;
     private int yPressed = 0;
     // Internal components
-    private DesktopIconLabel textLabel = new DesktopIconLabel("", 11);
+    private final DesktopIconLabel textLabel = new DesktopIconLabel("", 11);
     private String comments;
 
     /**
@@ -180,7 +182,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      * Edit this label.
      */
     private void edit() {
-        DesktopIconDialog dlg = new DesktopIconDialog(Workspace.getUi().getFrame());
+        DesktopIconDialog dlg = new DesktopIconDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame());
 
         dlg.setData(this);
         dlg.setVisible(true);
@@ -229,7 +231,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     private JMenuItem getCopy() {
         if (copy == null) {
             copy = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Copy"));
-            copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
+            copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
             copy.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
                     ((DesktopIcon) popupMenu.getInvoker()).desktop.copyIcons();
@@ -245,7 +247,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     private JMenuItem getCut() {
         if (cut == null) {
             cut = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Cut"));
-            cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_MASK));
+            cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
             cut.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
                     ((DesktopIcon) popupMenu.getInvoker()).desktop.cutIcons();
@@ -286,13 +288,6 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
 
         }
         return execute;
-    }
-
-    /**
-     * Returns image for this desktop icon
-     */
-    public ImageIcon getIcon() {
-        return icon;
     }
 
     /**
@@ -399,7 +394,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     private JMenuItem getProperties() {
         if (properties == null) {
             properties = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Properties") + "...");
-            properties.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK));
+            properties.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK));
             properties.addActionListener(e -> {
                 if (popupMenu.getInvoker() instanceof DesktopIcon) {
                     ((DesktopIcon) popupMenu.getInvoker()).edit();
@@ -453,22 +448,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
         this.yPos = yPos;
     }
 
-    /**
-     * Is this desktop icon selected
-     */
-    public boolean isSelected() {
-        return selected;
-    }
-
-    /**
-     * Sets selected flag for desktop icon
-     */
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    public void focusGained(FocusEvent e) {
-    }
+    public void focusGained(FocusEvent e) {}
 
     public void focusLost(FocusEvent e) {
         repaint();
@@ -484,19 +464,19 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      * Execute command line for this desktop icon
      */
     private void launch() {
-        if (mode == Constants.SCRIPTED_FILE_MODE) {
-            WorkspaceInterpreter.getInstance().sourceScriptFile(command);
+      /*  if (mode == Constants.SCRIPTED_FILE_MODE) {
+            // todo WorkspaceInterpreter.getInstance().sourceScriptFile(command);
         } else if (mode == Constants.SCRIPTED_METHOD_MODE) {
-            WorkspaceInterpreter.getInstance().executeScript(command);
+            // todo WorkspaceInterpreter.getInstance().executeScript(command);
         } else if (mode == Constants.JAVA_APP_MODE) {
             try {
-                Workspace.getRuntimeManager().run(command);
+                ServiceLocator.getInstance().getRuntimeManager().run(command);
             } catch (WorkspaceException | IOException ex) {
                 WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.cannotLaunch"), ex);
             }
         } else if (mode == Constants.NATIVE_COMMAND_MODE) {
-            Workspace.getRuntimeManager().executeNativeCommand(command, workingDir);
-        }
+            ServiceLocator.getInstance().getRuntimeManager().executeNativeCommand(command, workingDir);
+        }*/
     }
 
     /**
@@ -692,20 +672,25 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      */
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
-        textLabel.setBounds(x - (textLabel.getPreferredSize().width - width) / 2,
-            y + height + 3, textLabel.getPreferredSize().width, textLabel.getPreferredSize().
-                height);
+        textLabel.setBounds(
+            x - (textLabel.getPreferredSize().width - width) / 2,
+            y + height + 3,
+            textLabel.getPreferredSize().width, textLabel.getPreferredSize().height
+        );
     }
 
     /**
      * Base class method overriden in order
      * to set bounds of label accordingly.
      */
-    public void setBounds(Rectangle dimensions) {
+    public void setBounds(@NonNull Rectangle dimensions) {
         super.setBounds(dimensions);
-        textLabel.setBounds(dimensions.x - (textLabel.getPreferredSize().width - dimensions.width) / 2,
-            dimensions.y + dimensions.height + 3, textLabel.getPreferredSize().width, textLabel.getPreferredSize().
-                height);
+        textLabel.setBounds(
+            dimensions.x - (textLabel.getPreferredSize().width - dimensions.width) / 2,
+            dimensions.y + dimensions.height + 3,
+            textLabel.getPreferredSize().width,
+            textLabel.getPreferredSize().height
+        );
     }
 
     /**
@@ -762,15 +747,15 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
                 ((DesktopIcon) e.getSource()).desktop.removeSelectedIcons();
                 e.consume();
             } else if (e.getKeyCode() == KeyEvent.VK_C
-                && e.getModifiers() == KeyEvent.CTRL_MASK) {
+                && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
                 ((DesktopIcon) e.getSource()).desktop.copyIcons();
                 e.consume();
             } else if (e.getKeyCode() == KeyEvent.VK_X
-                && e.getModifiers() == KeyEvent.CTRL_MASK) {
+                && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
                 ((DesktopIcon) e.getSource()).desktop.cutIcons();
                 e.consume();
             } else if (e.getKeyCode() == KeyEvent.VK_P
-                && e.getModifiers() == KeyEvent.CTRL_MASK) {
+                && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
                 ((DesktopIcon) e.getSource()).edit();
                 e.consume();
             }

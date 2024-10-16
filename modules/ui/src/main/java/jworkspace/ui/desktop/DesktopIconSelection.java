@@ -32,6 +32,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
+import lombok.NonNull;
+
 /**
  * Desktop icon selection is necessary for group operations with icons.
  */
@@ -40,9 +42,9 @@ class DesktopIconSelection implements ClipboardOwner, Transferable {
     static DataFlavor desktopIconFlavor
         = new DataFlavor(DesktopIconSelectionData.class, "Desktop Icon Collection");
 
-    private DesktopIconSelectionData data;
+    private final DesktopIconSelectionData data;
 
-    private DataFlavor[] flavors = {desktopIconFlavor};
+    private final DataFlavor[] flavors = {desktopIconFlavor};
 
     /**
      * Public constructor.
@@ -55,6 +57,8 @@ class DesktopIconSelection implements ClipboardOwner, Transferable {
     /**
      * Returns transfer data, that is actually a desktop icon data.
      */
+    @Override
+    @NonNull
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (flavor.equals(desktopIconFlavor)) {
             return data;
@@ -63,13 +67,16 @@ class DesktopIconSelection implements ClipboardOwner, Transferable {
         }
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return flavors;
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         return (flavor.equals(desktopIconFlavor));
     }
 
+    @Override
     public void lostOwnership(Clipboard clipboard, Transferable contents) {}
 }

@@ -32,6 +32,8 @@ import lombok.extern.java.Log;
 })
 public class Workspace {
 
+    public static final String VERSION = "Java Workspace 2.0.0 SNAPSHOT";
+
     @Option(name = "--name", usage = "user profile name")
     private String name;
 

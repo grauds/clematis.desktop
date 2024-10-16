@@ -54,9 +54,9 @@ import jworkspace.ui.api.action.UISwitchListener;
 @SuppressWarnings("unused")
 public class CheckList extends JPanel {
 
-    private JList<CheckBoxItem> listCheckBox;
+    private final JList<CheckBoxItem> listCheckBox;
 
-    private JList<String> listDescription;
+    private final JList<String> listDescription;
 
     @SuppressWarnings("MagicNumber")
     public CheckList() {
@@ -70,7 +70,6 @@ public class CheckList extends JPanel {
 
         //This listbox holds the actual descriptions of list items.
         listDescription = new JList<>(listData);
-
         listDescription.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listDescription.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {

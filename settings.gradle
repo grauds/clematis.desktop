@@ -3,9 +3,6 @@ rootProject.name = 'clematis'
 include 'app'
 project(':app').name = 'jworkspace'
 
-//include 'launcher'
-//project(':launcher').projectDir = file('modules/launcher')
-
 include 'kiwi'
 project(':kiwi').projectDir = file('libs/kiwi')
 
@@ -21,8 +18,8 @@ project(':runtime').projectDir = file('libs/runtime')
 include 'profiles'
 project(':profiles').projectDir = file('libs/profiles')
 
-//include 'ui'
-//project(':ui').projectDir = file('modules/ui')
+include 'ui'
+project(':ui').projectDir = file('modules/ui')
 
 //include 'rtui'
 //project(':rtui').projectDir = file('modules/rtui')

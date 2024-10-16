@@ -58,25 +58,21 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginException;
 import com.hyperrealm.kiwi.ui.SplashScreen;
 import com.hyperrealm.kiwi.ui.UIChangeManager;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
+import com.hyperrealm.kiwi.util.ResourceManager;
 import com.hyperrealm.kiwi.util.Task;
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IBasicUI;
-import jworkspace.api.IConstants;
 import jworkspace.api.IWorkspaceListener;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.IView;
-import jworkspace.ui.api.ViewPluginLocator;
+import jworkspace.ui.api.IWorkspaceUI;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.UIConfig;
 import jworkspace.ui.config.plaf.PlafFactory;
@@ -84,22 +80,19 @@ import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.views.DefaultCompoundView;
 import jworkspace.ui.widgets.WorkspaceError;
+import lombok.extern.log4j.Log4j;
 
 /**
  * Workspace Desktop user interface
  *
  * @author Anton Troshin
  */
-public class WorkspaceGUI implements IBasicUI {
-
-    /**
-     * Logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceGUI.class);
+@Log4j
+public class WorkspaceGUI implements IWorkspaceUI {
     /**
      * Resource manager
      */
-    private static WorkspaceResourceManager resourceManager = null;
+    private static ResourceManager resourceManager = null;
     /**
      * Workspace UI logo.
      */
@@ -123,7 +116,7 @@ public class WorkspaceGUI implements IBasicUI {
     /**
      * A list of displayed frames
      */
-    private ArrayList<Frame> displayedFrames = new ArrayList<>();
+    private final ArrayList<Frame> displayedFrames = new ArrayList<>();
     /**
      * Progress dialog for observing shells load.
      */
@@ -137,7 +130,8 @@ public class WorkspaceGUI implements IBasicUI {
 
         UIChangeManager.getInstance().setDefaultFrameIcon(getResourceManager().getImage("jw_16x16.png"));
         registerListeners();
-        uiConfig = new UIConfig(Workspace.getUserHomePath().resolve(Constants.CONFIG_FILE).toFile());
+        uiConfig = new UIConfig(
+            ServiceLocator.getInstance().getProfilesManager().getBasePath().resolve(Constants.CONFIG_FILE).toFile());
     }
 
     /**
@@ -150,14 +144,9 @@ public class WorkspaceGUI implements IBasicUI {
         return actions;
     }
 
-    /**
-     * Returns resource manager for the GUI.
-     *
-     * @return kiwi.util.WorkspaceResourceManager
-     */
-    public static synchronized WorkspaceResourceManager getResourceManager() {
+    public static synchronized ResourceManager getResourceManager() {
         if (resourceManager == null) {
-            resourceManager = new WorkspaceResourceManager(WorkspaceGUI.class);
+            resourceManager = new ResourceManager(WorkspaceGUI.class);
         }
         return resourceManager;
     }

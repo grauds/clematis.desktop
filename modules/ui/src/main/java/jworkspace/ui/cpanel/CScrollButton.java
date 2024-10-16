@@ -52,7 +52,7 @@ class CScrollButton extends KButton implements PropertyChangeListener {
      * Incremental button increases the scrolling value and is usually is in the bottom of control panel.
      * Decremental button decreases scrolling value and is usually on the top of control panel.
      */
-    private boolean incremental;
+    private final boolean incremental;
 
     /**
      * Scroll bar will send action events to buttons pane, allowing it to scroll buttons layout. For successful

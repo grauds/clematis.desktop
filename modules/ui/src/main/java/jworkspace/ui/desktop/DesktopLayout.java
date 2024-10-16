@@ -36,7 +36,8 @@ import java.io.Serializable;
  */
 @SuppressWarnings("MagicNumber")
 class DesktopLayout implements LayoutManager, Serializable {
-    private Desktop desktop;
+
+    private final Desktop desktop;
 
     DesktopLayout(Desktop desktop) {
         this.desktop = desktop;

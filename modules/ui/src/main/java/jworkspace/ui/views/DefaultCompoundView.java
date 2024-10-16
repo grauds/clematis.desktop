@@ -30,21 +30,22 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.cpanel.CButton;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Simple user gui shell and view. This shell does nothing, but appears as plain panel in desktop.
  * @author Anton Troshin
  */
+@Getter
+@Setter
 public class DefaultCompoundView extends DefaultView
     implements IShell, ActionListener {
 
-    /**
-     * Are the buttons loaded?
-     */
     private boolean buttonsLoaded = false;
 
     protected DefaultCompoundView() {
@@ -65,7 +66,8 @@ public class DefaultCompoundView extends DefaultView
             lparam.put("view", this);
             lparam.put("display", Boolean.TRUE);
             lparam.put("register", isUnique());
-            Workspace.fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
+            ServiceLocator.getInstance()
+                .getEventsDispatcher().fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
         }
     }
 
@@ -73,11 +75,4 @@ public class DefaultCompoundView extends DefaultView
         return null;
     }
 
-    public void setButtonsLoaded(boolean buttonsLoaded) {
-        this.buttonsLoaded = buttonsLoaded;
-    }
-
-    public boolean areButtonsLoaded() {
-        return buttonsLoaded;
-    }
 }

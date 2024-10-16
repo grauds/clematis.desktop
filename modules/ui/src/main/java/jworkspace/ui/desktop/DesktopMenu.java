@@ -34,7 +34,6 @@ import javax.swing.UIManager;
 
 import static jworkspace.ui.api.Constants.PASTE;
 import static jworkspace.ui.api.Constants.SELECT_ALL;
-
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.Utils;
 import jworkspace.ui.api.Constants;
@@ -78,11 +77,11 @@ class DesktopMenu extends JPopupMenu {
 
         paste = add(Utils.createMenuItem(listener, WorkspaceResourceAnchor.getString(
             "Desktop.menu.paste"), PASTE, null));
-        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK));
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
 
         selectAll = add(Utils.createMenuItem(listener, WorkspaceResourceAnchor.getString("Desktop.menu.selectAll"),
                 SELECT_ALL, null));
-        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
+        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
         this.addSeparator();
 
         gradientFill = add(Utils.createMenuItem(listener,

@@ -44,7 +44,7 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.widgets.WorkspaceError;
 
 /**
@@ -67,10 +67,15 @@ class ChangePasswordDlg extends ComponentDialog {
 
     protected boolean accept() {
         try {
-            Workspace.getUserManager().setPassword(
-                new String(oldPass.getPassword()),
-                new String(newPass.getPassword()),
-                new String(confirmPass.getPassword()));
+            ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .getCurrentProfile()
+                .setPassword(
+                    new String(oldPass.getPassword()),
+                    new String(newPass.getPassword()),
+                    new String(confirmPass.getPassword())
+                );
         } catch (Exception ex) {
             WorkspaceError.exception(WorkspaceResourceAnchor.
                 getString("ChangePasswordDlg.pwdChange.failed"), ex);

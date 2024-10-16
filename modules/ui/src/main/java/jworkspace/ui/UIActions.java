@@ -40,17 +40,14 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.DocumentBrowserFrame;
-import com.hyperrealm.kiwi.ui.model.DocumentDataSource;
+import com.hyperrealm.kiwi.ui.model.datasource.DocumentDataSource;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
+import jworkspace.Workspace;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IConstants;
-import jworkspace.kernel.Workspace;
 import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.IWorkspaceUI;
 import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.dialog.SettingsDialog;
 import jworkspace.ui.dialog.UserDetailsDialog;
@@ -60,7 +57,7 @@ import jworkspace.ui.widgets.ImageRenderer;
  * This class contains all actions of workspace frame that are for system use.
  * @author Anton Troshin
  */
-public class UIActions implements IConstants {
+public class UIActions implements Constants {
 
     /**
      * Logoff action name
@@ -98,8 +95,6 @@ public class UIActions implements IConstants {
     static final String SHOW_PANEL_ACTION_NAME =
         WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.cp");
 
-    private static final Logger LOG = LoggerFactory.getLogger(UIActions.class);
-
     /**
      * New user action name
      */
@@ -118,11 +113,11 @@ public class UIActions implements IConstants {
     /**
      * Instance of Workspace GUI
      */
-    protected WorkspaceGUI gui;
+    protected IWorkspaceUI gui;
     /**
      * All actions
      */
-    private Map<String, Action> actions = new HashMap<>();
+    private final Map<String, Action> actions = new HashMap<>();
     /**
      * Show control panel action
      */
@@ -131,7 +126,7 @@ public class UIActions implements IConstants {
     /**
      * Public constructor
      */
-    UIActions(WorkspaceGUI gui) {
+    UIActions(IWorkspaceUI gui) {
         super();
         this.gui = gui;
         createActions();
@@ -201,7 +196,7 @@ public class UIActions implements IConstants {
     private void about() {
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        JDialog aboutFrame = new JDialog(Workspace.getUi().getFrame());
+        JDialog aboutFrame = new JDialog(gui.getFrame());
         Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.gif");
 
         aboutFrame.getContentPane().setLayout(new BorderLayout());
@@ -225,16 +220,21 @@ public class UIActions implements IConstants {
         try {
 
             DocumentDataSource helpSource = new DocumentDataSource(WorkspaceGUI.getResourceManager());
-            DocumentBrowserFrame dbf = new DocumentBrowserFrame(IConstants.VERSION
-                + Constants.LOG_SPACE + WorkspaceResourceAnchor.getString("message#184"),
-                "", helpSource);
+            DocumentBrowserFrame dbf = new DocumentBrowserFrame(
+                Workspace.VERSION
+                    + Constants.LOG_SPACE
+                    + WorkspaceResourceAnchor.getString("message#184"),
+                "", helpSource
+            );
 
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            dbf.setBounds(MARGIN, MARGIN, (int) (2 * screenSize.getWidth() / SIZE_FACTOR),
-                (int) (2 * screenSize.getHeight() / SIZE_FACTOR));
+            dbf.setBounds(MARGIN, MARGIN,
+                (int) (2 * screenSize.getWidth() / SIZE_FACTOR),
+                (int) (2 * screenSize.getHeight() / SIZE_FACTOR)
+            );
             dbf.setVisible(true);
         } catch (ResourceNotFoundException ex) {
-            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
+            JOptionPane.showMessageDialog(gui.getFrame(),
                 WorkspaceResourceAnchor.getString("UIActions.resource.notFound")
                     + " " + ex.getMessage());
         }
@@ -244,7 +244,7 @@ public class UIActions implements IConstants {
      * Show my details dialog
      */
     private void showMyDetails() {
-        UserDetailsDialog dlg = new UserDetailsDialog(Workspace.getUi().getFrame());
+        UserDetailsDialog dlg = new UserDetailsDialog(gui.getFrame());
         dlg.setData();
         dlg.setVisible(true);
     }
@@ -253,7 +253,7 @@ public class UIActions implements IConstants {
      * Show workspace ui settings dialog
      */
     private void showSettings() {
-        SettingsDialog dlg = new SettingsDialog(Workspace.getUi().getFrame());
+        SettingsDialog dlg = new SettingsDialog(gui.getFrame());
         dlg.setData();
         dlg.setVisible(true);
     }
@@ -264,7 +264,7 @@ public class UIActions implements IConstants {
         }
 
         public void actionPerformed(ActionEvent e) {
-//            try {
+//          todo  try {
 //                Workspace.changeCurrentProfile();
 //            } catch (WorkspaceException ex) {
 //                LOG.error(ex.getMessage(), ex);
@@ -278,7 +278,7 @@ public class UIActions implements IConstants {
         }
 
         public void actionPerformed(ActionEvent e) {
-            Workspace.exit();
+           // todo Workspace.exit();
         }
     }
 

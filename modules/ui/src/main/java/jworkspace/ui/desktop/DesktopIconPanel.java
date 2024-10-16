@@ -53,11 +53,12 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.config.ServiceLocator;
 import jworkspace.installer.ApplicationDataSource;
-import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 import jworkspace.ui.widgets.ImageRenderer;
 import jworkspace.ui.widgets.ResourceExplorerDialog;
@@ -71,7 +72,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
     private JTextField tName, tScriptedMethod, tNativeCommand, tSourceScript, tJavaApp, field;
 
-    private JTextArea tDesc;
+    private final JTextArea tDesc;
 
     private JButton bIconBrowse, bScriptBrowse, bAppBrowse, bWdBrowse, bNativeBrowse, bLibBrowser;
 
@@ -123,12 +124,16 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setMultiSelectionEnabled(false);
 
-            if (chooser.showOpenDialog(Workspace.getUi().getFrame()) == JFileChooser.APPROVE_OPTION) {
+            if (chooser.showOpenDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+            ) == JFileChooser.APPROVE_OPTION) {
                 File scriptFile = chooser.getSelectedFile();
                 tSourceScript.setText(scriptFile.getAbsolutePath());
             }
         } else if (o == bAppBrowse) {
-            ApplicationChooserDialog chooser = new ApplicationChooserDialog(Workspace.getUi().getFrame());
+            ApplicationChooserDialog chooser = new ApplicationChooserDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+            );
             chooser.setVisible(true);
             if (chooser.isCancelled()) {
                 return;
@@ -137,7 +142,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
                 substring(ApplicationDataSource.ROOT.length()
                 ));
         } else if (o == bWdBrowse) {
-            File dir = ClassCache.chooseDirectory(Workspace.getUi().getFrame());
+            File dir = ClassCache.chooseDirectory(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame());
             if (dir != null) {
                 field.setText(dir.getAbsolutePath());
             }
@@ -148,11 +153,15 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
                 );
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setMultiSelectionEnabled(false);
-            if (chooser.showOpenDialog(Workspace.getUi().getFrame()) == JFileChooser.APPROVE_OPTION) {
+            if (chooser.showOpenDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()) == JFileChooser.APPROVE_OPTION
+            ) {
                 tNativeCommand.setText(chooser.getSelectedFile().getAbsolutePath());
             }
         } else if (o == bLibBrowser) {
-            ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(Workspace.getUi().getFrame());
+            ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+            );
             callResourceBrowser(resBrowser);
         } else if (o == rb1) {
             disableAllOnModesPanel();
@@ -181,14 +190,27 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
     private void callResourceBrowser(ResourceExplorerDialog resBrowser) {
 
         resBrowser.setHint(false);
-        String path = Workspace.getUserManager().getParameters().
-            getString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
+        String path = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .getCurrentProfile()
+            .getParameters()
+            .getString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
 
-        if (path == null && Workspace.getUi() instanceof WorkspaceGUI) {
+        if (path == null && DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {
 
-            path = ((WorkspaceGUI) Workspace.getUi()).getDesktopIconsPath()
-                .toFile().getAbsolutePath();
-            Workspace.getUserManager().getParameters().
+            path = DesktopServiceLocator
+                .getInstance()
+                .getWorkspaceGUI()
+                .getDesktopIconsPath()
+                .toFile()
+                .getAbsolutePath();
+
+            ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .getCurrentProfile()
+                .getParameters().
                 putString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
         }
         resBrowser.setData(path);

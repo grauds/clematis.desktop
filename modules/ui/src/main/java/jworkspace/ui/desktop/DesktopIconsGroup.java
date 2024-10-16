@@ -37,9 +37,9 @@ import jworkspace.ui.widgets.GlassDragPane;
  */
 class DesktopIconsGroup implements Serializable {
 
-    private Desktop desktop;
+    private final Desktop desktop;
 
-    private List<GlassDragPane> dragPanes = new Vector<>();
+    private final List<GlassDragPane> dragPanes = new Vector<>();
 
     private int xShift = 0;
 

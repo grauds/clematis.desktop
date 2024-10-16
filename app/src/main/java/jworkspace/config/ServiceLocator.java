@@ -2,6 +2,7 @@ package jworkspace.config;
 
 import java.util.concurrent.TimeUnit;
 
+import jworkspace.api.EventsDispatcher;
 import jworkspace.installer.WorkspaceInstaller;
 import jworkspace.runtime.RuntimeManager;
 import jworkspace.runtime.WorkspacePluginLocator;
@@ -24,9 +25,9 @@ public class ServiceLocator {
 
     private final WorkspaceInstaller installer = new WorkspaceInstaller();
 
-    private ServiceLocator() {
+    private final EventsDispatcher eventsDispatcher = new EventsDispatcher();
 
-    }
+    private ServiceLocator() {}
 
     public static ServiceLocator getInstance() {
         return InstanceHolder.SERVICE_LOCATOR;

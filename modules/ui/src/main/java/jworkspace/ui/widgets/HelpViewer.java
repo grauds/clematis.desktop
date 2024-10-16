@@ -55,7 +55,7 @@ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.ui.config.DesktopServiceLocator;
 
 /**
  * jEdit's HTML viewer. It uses a Swing JEditorPane to display the HTML,
@@ -74,15 +74,15 @@ public class HelpViewer extends JPanel {
     private static final String HELP_BROWSER_TITLE = "Help Browser";
 
     // private members
-    private JButton back;
+    private final JButton back;
 
-    private JButton forward;
+    private final JButton forward;
 
-    private JEditorPane viewer;
+    private final JEditorPane viewer;
 
-    private JTextField urlField;
+    private final JTextField urlField;
 
-    private URL[] history;
+    private final URL[] history;
 
     private int historyPos;
 
@@ -160,10 +160,12 @@ public class HelpViewer extends JPanel {
         try {
             gotoURL(new URL(FILE_PROTOCOL + file));
         } catch (MalformedURLException e) {
-            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
+            JOptionPane.showMessageDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                 CANNOT_OPEN_LOCATION_MESSAGE + FILE_PROTOCOL + file,
                 HELP_BROWSER_TITLE,
-                JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.INFORMATION_MESSAGE
+            );
         }
     }
 

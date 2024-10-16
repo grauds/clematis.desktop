@@ -39,17 +39,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IConstants;
-import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.AbstractStateAction;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Actions of desktop manager
  * @author Anton Troshin
  */
-public class ViewsActions implements IConstants {
+public class ViewsActions implements Constants {
 
     /**
      * Browse back action name
@@ -99,11 +99,11 @@ public class ViewsActions implements IConstants {
     /**
      * All actions
      */
-    private Map<String, Action> actions = new HashMap<>();
+    private final Map<String, Action> actions = new HashMap<>();
     /**
      * ViewsManager manager instance
      */
-    private ViewsManager manager;
+    private final ViewsManager manager;
 
     /**
      * Constructor actions.
@@ -249,7 +249,7 @@ public class ViewsActions implements IConstants {
         }
 
         public void actionPerformed(ActionEvent e) {
-            Frame parent = Workspace.getUi().getFrame();
+            Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
             if (parent != null) {
                 int result;
                 ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().getImage("desktop/remove.png"));

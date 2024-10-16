@@ -54,6 +54,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -76,15 +77,18 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.ui.KDesktopPane;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.Utils;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
+import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.api.action.UISwitchListener;
-import jworkspace.ui.views.PropertiesPanel;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Java Desktop
@@ -108,15 +112,15 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * List of desktopIcons.
      */
-    private List<DesktopIcon> desktopIcons = new Vector<>();
+    private final List<DesktopIcon> desktopIcons = new Vector<>();
     /**
      * Selector frame.
      */
-    private transient GlassDragPane selectPane = new GlassDragPane();
+    private final transient GlassDragPane selectPane = new GlassDragPane();
     /**
      * Starting selection point.
      */
-    private Point startingSelection = new Point();
+    private final Point startingSelection = new Point();
     /**
      * 2nd color of desktop.
      */
@@ -124,11 +128,11 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Ending selection point.
      */
-    private Point endingSelection = new Point();
+    private final Point endingSelection = new Point();
     /**
      * Coordinates of top left menu corner.
      */
-    private Point menuLeftTopCorner = new Point();
+    private final Point menuLeftTopCorner = new Point();
     /**
      * Desktop Icons group.
      */
@@ -140,7 +144,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Desktop popup menu.
      */
-    private DesktopMenu desktopPopupMenu = new DesktopMenu(this, this);
+    private final DesktopMenu desktopPopupMenu = new DesktopMenu(this, this);
     /**
      * Desktop menu
      */
@@ -170,10 +174,19 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * New desktop manager
      */
-    private ScrollingDesktopManager manager;
+    private final ScrollingDesktopManager manager;
     /**
      * Save path. Relative to user.home
+     * -- GETTER --
+     *  Returns relative path for saving component data.
+     * -- SETTER --
+     *  Sets path for saving component data.
+     *  This path is relative to user.home path.
+
+
      */
+    @Setter
+    @Getter
     private String path = "";
 
     /**
@@ -235,8 +248,11 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                     WorkspaceResourceAnchor.getString("Desktop.defaultIconName"),
                     WorkspaceResourceAnchor.getString("Desktop.defaultIconCommand"),
                     "", this, null);
+
                 DesktopIconDialog dlg =
-                    new DesktopIconDialog(Workspace.getUi().getFrame());
+                    new DesktopIconDialog(
+                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+                    );
 
                 dlg.setData(icon);
                 dlg.setVisible(true);
@@ -250,9 +266,11 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
             case Constants.BACKGROUND:
                 if (!isGradientFill()) {
-                    Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
+                    Color color = JColorChooser.showDialog(
+                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                         WorkspaceResourceAnchor.getString("Desktop.chooseBg.title"),
-                        getBackground());
+                        getBackground()
+                    );
 
                     if (color != null) {
                         setBackground(color);
@@ -260,12 +278,16 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                         repaint();
                     }
                 } else {
-                    Color color1 = JColorChooser.showDialog(Workspace.getUi().getFrame(),
+                    Color color1 = JColorChooser.showDialog(
+                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                         WorkspaceResourceAnchor.getString("Desktop.chooseBg1.title"),
-                        getBackground());
-                    Color color2 = JColorChooser.showDialog(Workspace.getUi().getFrame(),
+                        getBackground()
+                    );
+                    Color color2 = JColorChooser.showDialog(
+                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                         WorkspaceResourceAnchor.getString("Desktop.chooseBg2.title"),
-                        bgColor2);
+                        bgColor2
+                    );
                     if (color1 != null) {
                         setBackground(color1);
                     }
@@ -295,7 +317,9 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
             case Constants.CHOOSE_BACKGROUND_IMAGE:
                 JFileChooser fch = ClassCache.getIconChooser();
-                if (fch.showOpenDialog(Workspace.getUi().getFrame()) != JFileChooser.APPROVE_OPTION) {
+                if (fch.showOpenDialog(
+                    DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()) != JFileChooser.APPROVE_OPTION
+                ) {
                     return;
                 }
                 File imf = fch.getSelectedFile();
@@ -502,7 +526,11 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         DesktopIconSelectionData selectionData =
             new DesktopIconSelectionData(selectedIconsData.size(), selectedIconsData.toArray(iconData));
 
-        Workspace.getUi().getClipboard().setContents(new DesktopIconSelection(selectionData), this);
+        DesktopServiceLocator
+            .getInstance()
+            .getWorkspaceGUI()
+            .getClipboard()
+            .setContents(new DesktopIconSelection(selectionData), this);
     }
 
     /**
@@ -624,13 +652,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Sets desktop group of icons.
-     */
-    protected void setIconGroup(DesktopIconsGroup iconGroup) {
-        this.iconGroup = iconGroup;
-    }
-
-    /**
      * Get rendering mode of background image
      */
     int getRenderMode() {
@@ -653,21 +674,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
         renderMode = mode;
         repaint();
-    }
-
-    /**
-     * Returns relative path for saving component data.
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * Sets path for saving component data.
-     * This path is relative to user.home path.
-     */
-    public void setPath(String path) {
-        this.path = path;
     }
 
     /**
@@ -879,8 +885,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     public void load() throws IOException {
 
-        File file = Workspace.ensureUserHomePath()
-            .resolve(getPath()).resolve(Constants.DESKTOP_DAT).toFile();
+        File file = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .ensureUserHomePath()
+            .resolve(getPath())
+            .resolve(Constants.DESKTOP_DAT)
+            .toFile();
 
         try (FileInputStream inputFile = new FileInputStream(file);
              ObjectInputStream dataStream = new ObjectInputStream(inputFile)) {
@@ -914,7 +925,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             }
             pathToImage = dataStream.readUTF();
 
-            if (pathToImage.trim().equals("") || !new File(pathToImage).exists()) {
+            if (pathToImage.trim().isEmpty() || !new File(pathToImage).exists()) {
                 pathToImage = null;
             }
 
@@ -1051,7 +1062,12 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     void pasteIcons() {
         try {
-            Transferable contents = Workspace.getUi().getClipboard().getContents(this);
+            Transferable contents = DesktopServiceLocator
+                .getInstance()
+                .getWorkspaceGUI()
+                .getClipboard()
+                .getContents(this);
+
             if (contents == null) {
                 return;
             }
@@ -1255,9 +1271,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             ? WorkspaceResourceAnchor.getString("Desktop.removeIcon.title")
             : WorkspaceResourceAnchor.getString("Desktop.removeIcons.title");
 
-        if (JOptionPane.showConfirmDialog(Workspace.getUi().getFrame(),
-            dialogMessage, dialogTitle, JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
-
+        if (JOptionPane.showConfirmDialog(
+            DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+            dialogMessage, dialogTitle, JOptionPane.YES_NO_OPTION
+        ) != JOptionPane.YES_OPTION) {
             return;
         }
 
@@ -1288,7 +1305,12 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             setName(Constants.DESKTOP_NAME_DEFAULT);
         }
 
-        File file = Workspace.ensureUserHomePath().resolve(getPath()).toFile();
+        File file = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .ensureUserHomePath()
+            .resolve(getPath())
+            .toFile();
 
         if (!file.exists()) {
             if (!file.mkdirs()) {
@@ -1297,7 +1319,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             }
         }
 
-        file = Workspace.ensureUserHomePath().resolve(getPath()).resolve(Constants.DESKTOP_DAT).toFile();
+        file = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .ensureUserHomePath()
+            .resolve(getPath())
+            .resolve(Constants.DESKTOP_DAT)
+            .toFile();
 
         try (FileOutputStream outputFile = new FileOutputStream(file);
              ObjectOutputStream outputStream = new ObjectOutputStream(outputFile)) {
@@ -1326,18 +1354,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 (desktopIcon).save(outputStream);
             }
 
-            if (pathToImage != null) {
-                outputStream.writeUTF(pathToImage);
-            } else {
-                outputStream.writeUTF("");
-            }
-
-            if (getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE) {
-                outputStream.writeBoolean(true);
-            } else {
-                outputStream.writeBoolean(false);
-            }
-
+            outputStream.writeUTF(Objects.requireNonNullElse(pathToImage, ""));
+            outputStream.writeBoolean(getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE);
             outputStream.flush();
         }
     }
@@ -1376,10 +1394,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         Transferable contents = Workspace.getUi().getClipboard().getContents(this);
         if (contents == null) {
             desktopPopupMenu.getPaste().setEnabled(false);
-        } else if (contents instanceof DesktopIconSelection) {
-            desktopPopupMenu.getPaste().setEnabled(true);
         } else {
-            desktopPopupMenu.getPaste().setEnabled(false);
+            desktopPopupMenu.getPaste().setEnabled(contents instanceof DesktopIconSelection);
         }
     }
 

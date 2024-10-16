@@ -29,6 +29,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import lombok.NonNull;
 
 import javax.swing.JTextArea;
 
@@ -44,10 +45,8 @@ import com.hyperrealm.kiwi.ui.KFrame;
 public class StreamWindow extends KFrame {
     // The text area in which we display incoming text
     private JTextArea textArea;
-    // Data written to this stream is appended to the
-    // text area
-    private StreamWindowStream out;
-
+    // Data written to this stream is appended to the text area
+    private final StreamWindowStream out;
     /**
      * Create a new StreamWindow -- set up the interface
      * and install listeners. Make the window visible
@@ -104,7 +103,7 @@ public class StreamWindow extends KFrame {
     class StreamWindowStream extends OutputStream {
         // This is used to write a single byte. We
         // pre-allocate it to save time
-        private byte[] tinyBuffer = new byte[1];
+        private final byte[] tinyBuffer = new byte[1];
 
         /**
          * Closing the stream closes the window

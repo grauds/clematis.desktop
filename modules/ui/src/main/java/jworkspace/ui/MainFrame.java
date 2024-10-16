@@ -52,9 +52,9 @@ import org.slf4j.LoggerFactory;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
+import jworkspace.Workspace;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.api.IConstants;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
@@ -87,7 +87,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     /**
      * A reference to Workspace GUI
      */
-    private WorkspaceGUI gui;
+    private final WorkspaceGUI gui;
     /**
      * Control panel.
      */
@@ -100,7 +100,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * System clipboard- can be used for copy/paste
      * or drag and drop operations.
      */
-    private Clipboard c = new Clipboard("System clipboard");
+    private final Clipboard c = new Clipboard("System clipboard");
     /**
      * The drag pane is needed every time dragging
      * occurs. Drag pane displays possible position
@@ -138,8 +138,8 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     public void create() {
         LOG.info("Building gui" + Constants.LOG_FINISH);
         try {
-            Class clazz = Class.forName(MainFrame.CONTENT_MANAGER);
-            Object object = clazz.newInstance();
+            Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
+            Object object = clazz.getDeclaredConstructor().newInstance();
 
             if (!(object instanceof JComponent)) {
                 throw new IllegalArgumentException();
@@ -324,7 +324,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          *  My details
          */
         JMenuItem myDetails = Utils.createMenuItem(gui.getActions().getAction(UIActions.MY_DETAILS_ACTION_NAME));
-        myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+        myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
         wmenu.add(myDetails);
         /*
          * Settings
@@ -337,7 +337,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         JCheckBoxMenuItem showControlPanel = Utils.createCheckboxMenuItem(gui.getActions()
             .getAction(UIActions.SHOW_PANEL_ACTION_NAME));
         showControlPanel.setSelected(getControlPanel().isVisible());
-        showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+        showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
         wmenu.add(showControlPanel);
         wmenu.addSeparator();
         /*
@@ -361,7 +361,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          * Exit
          */
         JMenuItem exit = Utils.createMenuItem(gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
-        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_MASK));
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK));
         wmenu.add(exit);
 
         systemMenu.add(wmenu);
@@ -382,7 +382,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     public void load(DataInputStream inputStream) {
         LOG.info("Loading workspace frame");
         try {
-            Class clazz = Class.forName(MainFrame.CONTENT_MANAGER);
+            Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
 
             if (!(object instanceof JComponent)) {
@@ -622,7 +622,10 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Updates controls for the component.
      */
     public void update() {
-        setTitle(IConstants.VERSION + Constants.LOG_SPACE + Workspace.getUserManager().getUserName());
+        setTitle(Workspace.VERSION
+            + Constants.LOG_SPACE
+            + ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getUserName()
+        );
         invalidate();
         validate();
         repaint();

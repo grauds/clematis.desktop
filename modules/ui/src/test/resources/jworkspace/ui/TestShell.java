@@ -7,12 +7,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import com.hyperrealm.kiwi.util.plugin.PluginException;
-import org.junit.rules.TemporaryFolder;
 
 import com.hyperrealm.kiwi.util.plugin.Plugin;
 import com.hyperrealm.kiwi.util.plugin.PluginDTO;
 
-import jworkspace.ui.api.ViewPluginLocator;
 import jworkspace.ui.cpanel.CButton;
 
 /**

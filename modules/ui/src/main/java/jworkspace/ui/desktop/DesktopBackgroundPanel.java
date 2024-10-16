@@ -63,13 +63,12 @@ import static jworkspace.ui.api.Constants.STRETCH_IMAGE;
 import static jworkspace.ui.api.Constants.TILE_IMAGE;
 import static jworkspace.ui.api.Constants.TOP_LEFT_CORNER_IMAGE;
 import static jworkspace.ui.api.Constants.TOP_RIGHT_CORNER_IMAGE;
-
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
-import jworkspace.ui.views.PropertiesPanel;
+import jworkspace.ui.api.PropertiesPanel;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.ImageRenderer;
 
 /**
@@ -100,7 +99,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
     /**
      * Path field
      */
-    private JTextField pathField = new JTextField(15);
+    private final JTextField pathField = new JTextField(15);
     /**
      * Name of desktop
      */
@@ -108,7 +107,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
     /**
      * Desktop that has to be edited
      */
-    private Desktop desktop;
+    private final Desktop desktop;
     /**
      * Current image render mode
      */
@@ -120,11 +119,11 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
     /**
      * Make cover visible
      */
-    private JCheckBox coverVisibleCheckbox = new JCheckBox();
+    private final JCheckBox coverVisibleCheckbox = new JCheckBox();
     /**
      * Gradient fill switch
      */
-    private JCheckBox gradient = new JCheckBox();
+    private final JCheckBox gradient = new JCheckBox();
     /**
      * Gradient fill flag.
      */
@@ -199,7 +198,9 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
             case Constants.CHOOSE_BACKGROUND_IMAGE:
                 JFileChooser fch = ClassCache.
                     getIconChooser(pathToImage == null ? " " : pathToImage);
-                if (fch.showOpenDialog(Workspace.getUi().getFrame()) != JFileChooser.APPROVE_OPTION) {
+                if (fch.showOpenDialog(
+                    DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()) != JFileChooser.APPROVE_OPTION
+                ) {
                     return;
                 }
                 File imf = fch.getSelectedFile();
@@ -252,7 +253,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
                 repaint();
                 break;
             case Constants.CHOOSE_GRADIENT_COLOR_1: {
-                Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
+                Color color = JColorChooser.showDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                     WorkspaceResourceAnchor.getString("DesktopBgPanel.chooseBg1"),
                     desktop.getBackground());
                 if (color != null) {
@@ -263,7 +264,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
                 break;
             }
             case Constants.CHOOSE_GRADIENT_COLOR_2: {
-                Color color = JColorChooser.showDialog(Workspace.getUi().getFrame(),
+                Color color = JColorChooser.showDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                     WorkspaceResourceAnchor.getString("DesktopBgPanel.chooseBg2"),
                     desktop.getSecondBackground());
                 if (color != null) {
@@ -520,9 +521,9 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
                             g.drawImage(cover.getImage(), x, y,
                                 (int) (cover.getIconWidth() * picXScale),
                                 (int) (cover.getIconHeight() * picYScale), this);
-                            y += cover.getIconHeight() * picYScale;
+                            y += (int) (cover.getIconHeight() * picYScale);
                         }
-                        x += cover.getIconWidth() * picXScale;
+                        x += (int) (cover.getIconWidth() * picXScale);
                         y = 0;
                     }
                 } else if (renderMode == TOP_LEFT_CORNER_IMAGE) {

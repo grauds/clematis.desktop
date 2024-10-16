@@ -34,8 +34,8 @@ import javax.swing.JComponent;
 import javax.swing.UIManager;
 
 /**
- * Separator is generally a thin component, that divides button on logic groups. The pecularity is expressed in
- * boolean reverse field, that is used by control panel's layout algorythm. Use <code>addLayoutComponent()</code>
+ * Separator is generally a thin component, that divides button on logic groups. The peculiarity is expressed in
+ * boolean reverse field, that is used by control panel's layout algorithm. Use <code>addLayoutComponent()</code>
  * method with specified parameters to insert buttons and separators into control panel.
  */
 class CSeparator extends JComponent implements PropertyChangeListener {

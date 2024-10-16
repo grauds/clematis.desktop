@@ -55,7 +55,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceManager;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceGUI;
 
 /**
@@ -81,7 +81,12 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         for (int i = 0; i < rows; i++) {
             name = (String) table.getValueAt(i, 0);
             value = (String) table.getValueAt(i, 1);
-            Workspace.getUserManager().getParameters().put(name, value);
+            ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .getCurrentProfile()
+                .getParameters()
+                .put(name, value);
         }
         return (userDetailsPanel.syncData());
     }
@@ -100,9 +105,16 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
                     icon,
                     null, null);
 
-            if (name != null && Workspace.getUserManager().getParameters().get(name) != null) {
+            if (name != null && ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .getCurrentProfile()
+                .getParameters()
+                .get(name) != null) {
+
                 JOptionPane.showMessageDialog(this,
                     WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.alreadyExists"));
+
             } else if (name != null){
                 Object[] row = new Object[2];
                 row[0] = name;
@@ -121,7 +133,12 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
                 WorkspaceResourceAnchor.getString("UserDetailsDlg.deleteParam.title"),
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 tmodel.removeRow(rows[0]);
-                Workspace.getUserManager().getParameters().remove(name);
+                ServiceLocator
+                    .getInstance()
+                    .getProfilesManager()
+                    .getCurrentProfile()
+                    .getParameters()
+                    .remove(name);
             }
         }
     }
@@ -131,7 +148,13 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
 
         Image p = null;
         try {
-            File file = Workspace.ensureUserHomePath().resolve("portrait.jpg").toFile();
+            File file = ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .ensureUserHomePath()
+                .resolve("portrait.jpg")
+                .toFile();
+
             p = ImageIO.read(file);
         } catch (IOException e) {
             // do not pay attention
@@ -230,11 +253,21 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
     private void refresh() {
         tmodel.setNumRows(0);
         Object[] row = new Object[2];
-        Enumeration e = Workspace.getUserManager().getParameters().keys();
+        Enumeration<Object> e = ServiceLocator
+            .getInstance()
+            .getProfilesManager()
+            .getCurrentProfile()
+            .getParameters()
+            .keys();
 
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
-            String value = Workspace.getUserManager().getParameters().getString(name);
+            String value = ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .getCurrentProfile()
+                .getParameters()
+                .getString(name);
 
             row[0] = name;
             row[1] = value;

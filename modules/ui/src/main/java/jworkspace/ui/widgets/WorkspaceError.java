@@ -50,8 +50,9 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.api.WorkspaceException;
-import jworkspace.kernel.Workspace;
 import jworkspace.ui.Utils;
+import jworkspace.ui.config.DesktopServiceLocator;
+
 /**
  * Gui error reporter for the end-user
  *
@@ -73,7 +74,7 @@ public class WorkspaceError {
 
     private static final BorderLayout BORDER_LAYOUT = new BorderLayout(5, 5);
 
-    private Thread laterThread;
+    private final Thread laterThread;
 
     private boolean showingLater = false;
 
@@ -88,7 +89,7 @@ public class WorkspaceError {
     public static void exception(String usermsg, Throwable ex) {
 
         Throwable throwable = ex;
-        Component c = Workspace.getUi().getFrame();
+        Component c = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
         String excp;
         String title = null;
 
@@ -163,7 +164,11 @@ public class WorkspaceError {
     }
 
     public static void msg(String title, String usermsg) {
-        JOptionPane.showMessageDialog(Workspace.getUi().getFrame(), usermsg, title, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+            usermsg,
+            title,
+            JOptionPane.ERROR_MESSAGE
+        );
     }
 
     /**

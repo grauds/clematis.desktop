@@ -1,4 +1,4 @@
-package jworkspace.api;
+package jworkspace.ui.api;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -29,6 +29,8 @@ package jworkspace.api;
 import java.awt.Frame;
 import java.awt.datatransfer.Clipboard;
 
+import jworkspace.api.IWorkspaceComponent;
+
 /**
  * Basic user interface for jWorkspace with main window, basic popup dialogs,
  * update data or request if data is modified
@@ -46,12 +48,12 @@ public interface IWorkspaceUI extends IWorkspaceComponent {
     Frame getFrame();
 
     /**
-     * Check whether this UI is modified.
+     * Check whether this UI contains user modified data
      */
     boolean isModified();
 
     /**
-     * Command to update the UI.
+     * Command to update the tree of components
      */
     void update();
 

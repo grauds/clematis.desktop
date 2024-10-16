@@ -26,14 +26,20 @@ package jworkspace.ui.widgets;
   ----------------------------------------------------------------------------
 */
 
+
 import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Icon node is necessary for nodes in Java Workspace trees, each node allows placement of images.
  *
  * @author Anton Troshin
  */
+@Getter
+@Setter
 public class IconNode extends DefaultMutableTreeNode {
 
     private Icon icon;
@@ -53,14 +59,6 @@ public class IconNode extends DefaultMutableTreeNode {
         this.icon = icon;
     }
 
-    public Icon getIcon() {
-        return icon;
-    }
-
-    public void setIcon(Icon icon) {
-        this.icon = icon;
-    }
-
     public String getIconName() {
         String str = userObject.toString();
         int index = str.lastIndexOf(".");
@@ -69,9 +67,5 @@ public class IconNode extends DefaultMutableTreeNode {
         } else {
             return iconName;
         }
-    }
-
-    public void setIconName(String name) {
-        iconName = name;
     }
 }

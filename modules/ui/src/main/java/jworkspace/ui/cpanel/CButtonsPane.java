@@ -62,7 +62,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import jworkspace.ui.Utils;
 
 /**
- * Class <code>jworkspace.ui.cpanel.CButtonsPane</code> is an invisible layer that actually deals with buttons and
+ * Class {@link CButtonsPane} is an invisible layer that actually deals with buttons and
  * performs scrolling.
  *
  * @author Anton Troshin
@@ -83,23 +83,23 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     /**
      * Metal borders
      */
-    private static Border metalRolloverBorder = new CompoundBorder(
+    private static final Border METAL_ROLLOVER_BORDER = new CompoundBorder(
         new MetalBorders.RolloverButtonBorder(), new BasicBorders.MarginBorder());
     /**
      * Metal non rollover borders
      */
-    private static Border metalNonRolloverBorder = new CompoundBorder(
+    private static final Border METAL_NON_ROLLOVER_BORDER = new CompoundBorder(
         new MetalBorders.ButtonBorder(), new BasicBorders.MarginBorder());
     /**
      * Basic borders
      */
-    private static Border basicRolloverBorder = new CompoundBorder(
+    private static final Border BASIC_ROLLOVER_BORDER = new CompoundBorder(
         BorderFactory.createBevelBorder(BevelBorder.RAISED), new BasicBorders.MarginBorder());
     /**
      * Basic non rollover borders
      */
     @SuppressWarnings("MagicNumber")
-    private static Border basicNonRolloverBorder = new CompoundBorder(
+    private static final Border BASIC_NON_ROLLOVER_BORDER = new CompoundBorder(
         BorderFactory.createEmptyBorder(3, 3, 3, 3), new BasicBorders.MarginBorder());
     /**
      * Orientation of control bar relative to
@@ -109,11 +109,11 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     /**
      * The table of borders.
      */
-    private Map<JButton, Border> borderTable = new HashMap<>();
+    private final Map<JButton, Border> borderTable = new HashMap<>();
     /**
      * The table of margins
      */
-    private Map<JButton, Insets> marginTable = new HashMap<>();
+    private final Map<JButton, Insets> marginTable = new HashMap<>();
     /**
      * Initial state of buttons.
      */
@@ -375,13 +375,11 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      * Sets rollover borders.
      */
     private void setBorderToRollover(Component c) {
-        if (c instanceof JButton) {
-            JButton b = (JButton) c;
-
+        if (c instanceof JButton b) {
             if (b.getUI() instanceof MetalButtonUI) {
-                swapBorders(b, metalNonRolloverBorder, metalRolloverBorder);
+                swapBorders(b, METAL_NON_ROLLOVER_BORDER, METAL_ROLLOVER_BORDER);
             } else if (b.getUI() instanceof BasicButtonUI) {
-                swapBorders(b, basicNonRolloverBorder, basicRolloverBorder);
+                swapBorders(b, BASIC_NON_ROLLOVER_BORDER, BASIC_ROLLOVER_BORDER);
             }
         }
     }
@@ -390,13 +388,11 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      * Sets borders to non rollover
      */
     private void setBorderToNonRollover(Component c) {
-        if (c instanceof JButton) {
-            JButton b = (JButton) c;
-
+        if (c instanceof JButton b) {
             if (b.getUI() instanceof MetalButtonUI) {
-                swapBorders(b, metalRolloverBorder, metalNonRolloverBorder, false);
+                swapBorders(b, METAL_ROLLOVER_BORDER, METAL_NON_ROLLOVER_BORDER, false);
             } else if (b.getUI() instanceof BasicButtonUI) {
-                swapBorders(b, basicRolloverBorder, basicNonRolloverBorder, false);
+                swapBorders(b, BASIC_ROLLOVER_BORDER, BASIC_NON_ROLLOVER_BORDER, false);
             }
         }
     }
@@ -424,10 +420,9 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     }
 
     private void setBorderToNormal(Component c) {
-        if (c instanceof JButton) {
-            JButton b = (JButton) c;
-            if (b.getBorder() == metalRolloverBorder || b.getBorder() == metalNonRolloverBorder
-                || b.getBorder() == basicRolloverBorder || b.getBorder() == basicNonRolloverBorder) {
+        if (c instanceof JButton b) {
+            if (b.getBorder() == METAL_ROLLOVER_BORDER || b.getBorder() == METAL_NON_ROLLOVER_BORDER
+                || b.getBorder() == BASIC_ROLLOVER_BORDER || b.getBorder() == BASIC_NON_ROLLOVER_BORDER) {
                 b.setBorder(borderTable.remove(b));
             }
 

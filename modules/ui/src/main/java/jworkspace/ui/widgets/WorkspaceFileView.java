@@ -43,11 +43,11 @@ public class WorkspaceFileView extends FileView {
 
     private static final Icon HTML_ICON = WorkspaceGUI.getResourceManager().getIcon("filedlg/html.gif");
 
-    private Map<String, Icon> icons = new HashMap<>();
+    private final Map<String, Icon> icons = new HashMap<>();
 
-    private Map<File, String> fileDescriptions = new HashMap<>();
+    private final Map<File, String> fileDescriptions = new HashMap<>();
 
-    private Map<String, String> typeDescriptions = new HashMap<>();
+    private final Map<String, String> typeDescriptions = new HashMap<>();
 
     public WorkspaceFileView() {
         super();
@@ -93,10 +93,6 @@ public class WorkspaceFileView extends FileView {
         return icon;
     }
 
-    public String getName(File f) {
-        return null;
-    }
-
     public String getTypeDescription(File f) {
         return typeDescriptions.get(getExtension(f));
     }
@@ -106,7 +102,7 @@ public class WorkspaceFileView extends FileView {
      * true if the filename starts with a "."
      */
     public Boolean isHidden(File f) {
-        if (f != null && !f.getName().equals("") && f.getName().charAt(0) == '.') {
+        if (f != null && !f.getName().isEmpty() && f.getName().charAt(0) == '.') {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;

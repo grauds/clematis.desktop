@@ -30,19 +30,24 @@ import javax.swing.JMenu;
 import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.ui.api.IView;
+import jworkspace.ui.api.PropertiesPanel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Default user gui view.
  * @author Anton Troshin
  */
+@Setter
+@Getter
 public class DefaultView extends KPanel implements IView {
     /**
      * Show this window
      */
     protected static final String SHOW = "SHOW";
     /**
-     * Save path. Relative to user.home
-     */
+     * Save path
+      */
     private String path = "";
 
     /**
@@ -64,20 +69,6 @@ public class DefaultView extends KPanel implements IView {
      * default assemble of ui components.
      */
     public void create() {
-    }
-
-    /**
-     * Returns path for saving component data.
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * Sets path for saving component data.
-     */
-    public void setPath(String path) {
-        this.path = path;
     }
 
     /**

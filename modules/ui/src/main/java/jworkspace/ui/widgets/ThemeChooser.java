@@ -43,12 +43,15 @@ public class ThemeChooser extends JComboBox<MetalTheme> {
     public ThemeChooser() {
         super();
         setRenderer(new DefaultListCellRenderer() {
-            public Component getListCellRendererComponent(JList list, Object value,
-                                                          int index, boolean isSelected, boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList list,
+                                                          Object value,
+                                                          int index,
+                                                          boolean isSelected,
+                                                          boolean cellHasFocus
+            ) {
                 Component comp = super.getListCellRendererComponent(list, value,
                     index, isSelected, cellHasFocus);
-                if (value instanceof MetalTheme) {
-                    MetalTheme theme = (MetalTheme) value;
+                if (value instanceof MetalTheme theme) {
                     setText(theme.getName());
                 }
                 return comp;
@@ -64,10 +67,7 @@ public class ThemeChooser extends JComboBox<MetalTheme> {
      */
     public String getTheme() {
         if (getSelectedItem() != null) {
-            Class clazz = getSelectedItem().getClass();
-            if (clazz != null) {
-                return getSelectedItem().getClass().getName();
-            }
+            return getSelectedItem().getClass().getName();
         }
         return null;
     }

@@ -29,6 +29,7 @@ package jworkspace.ui.widgets;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JTree;
@@ -59,15 +60,12 @@ public class IconNodeRenderer extends DefaultTreeCellRenderer {
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         if (value instanceof IconNode) {
             Icon icon = ((IconNode) value).getIcon();
-
             if (icon == null) {
                 icon = getIcon(tree, (IconNode) value);
             }
-
             if (icon != null) {
                 setIcon(icon);
             }
-
         }
         return this;
     }
@@ -75,7 +73,7 @@ public class IconNodeRenderer extends DefaultTreeCellRenderer {
     private Icon getIcon(JTree tree, IconNode value) {
         Icon icon = null;
 
-        Hashtable icons = (Hashtable) tree.getClientProperty("JTree.icons");
+        Map icons = (Map) tree.getClientProperty("JTree.icons");
         String name = value.getIconName();
         if ((icons != null) && (name != null)) {
             icon = (Icon) icons.get(name);

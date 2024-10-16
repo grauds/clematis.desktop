@@ -32,7 +32,8 @@ import java.awt.Frame;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -74,8 +75,9 @@ public final class ClassCache {
     private static final String CACHE_HYPERTEXT_TITLE = "Cache.hypertext";
     private static final String CACHE_CHOOSE_HTMLOR_DIRECTORY_TITLE = "Cache.chooseHTMLOrDirectory";
     private static final String USER_HOME_PROPERTY = "user.home";
+
     // common cache
-    private static Hashtable cache = new Hashtable();
+    private static final Map<String, Object> OBJECT_MAP = new HashMap<>();
 
     // file dialogs
     private static JFileChooser fileChooser = null;
@@ -277,7 +279,7 @@ public final class ClassCache {
      * Get methos of class cache
      */
     public static Object get(Object key) {
-        return cache.get(key);
+        return OBJECT_MAP.get(key);
     }
 
     /**
@@ -370,8 +372,8 @@ public final class ClassCache {
     /**
      * Put method of class cache
      */
-    public static void put(Object key, Object value) {
-        cache.put(key, value);
+    public static void put(String key, Object value) {
+        OBJECT_MAP.put(key, value);
     }
 
     /**
