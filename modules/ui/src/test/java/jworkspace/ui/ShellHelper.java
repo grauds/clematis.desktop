@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.jar.Manifest;
 
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
 
-import jworkspace.kernel.WorkspacePluginLocator;
+import jworkspace.runtime.WorkspacePluginLocator;
 
 /**
  * @author Anton Troshin

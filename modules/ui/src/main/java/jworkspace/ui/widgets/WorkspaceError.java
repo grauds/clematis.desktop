@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.api.WorkspaceException;
-import jworkspace.ui.Utils;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.utils.SwingUtils;
 
 /**
  * Gui error reporter for the end-user
@@ -113,7 +113,7 @@ public class WorkspaceError {
         }
 
         // create panel with advanced error message
-        JPanel l = Utils.createMultiLineLabel(msg.toString(), COLS);
+        JPanel l = SwingUtils.createMultiLineLabel(msg.toString(), COLS);
         l.setBorder(EMPTY_BORDER);
 
         GridBagLayout gb = new GridBagLayout();
@@ -121,7 +121,7 @@ public class WorkspaceError {
 
         JPanel p = new JPanel(gb);
 
-        JButton b = Utils.createButtonFromAction(new ShowErrorDetailsAction(ex, c), true);
+        JButton b = SwingUtils.createButtonFromAction(new ShowErrorDetailsAction(ex, c), true);
 
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;

@@ -28,7 +28,6 @@ package jworkspace.ui.widgets;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.Icon;

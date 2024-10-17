@@ -79,12 +79,12 @@ import com.hyperrealm.kiwi.ui.KDesktopPane;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.ui.ClassCache;
-import jworkspace.ui.Utils;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
 import lombok.Getter;
@@ -687,21 +687,21 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             if (icon.isSelected()) {
                 Point location = icon.getLocation();
 
-                topLeft.x = Utils.min(topLeft.x, location.x + getParent().getLocation().x + getLocation().x);
-                topLeft.y = Utils.min(topLeft.y, location.y + getParent().getLocation().y + getLocation().y);
+                topLeft.x = SwingUtils.min(topLeft.x, location.x + getParent().getLocation().x + getLocation().x);
+                topLeft.y = SwingUtils.min(topLeft.y, location.y + getParent().getLocation().y + getLocation().y);
 
-                bottomRight.x = Utils.max(bottomRight.x, location.x
+                bottomRight.x = SwingUtils.max(bottomRight.x, location.x
                     + getParent().getLocation().x + getLocation().x + icon.getWidth());
 
-                bottomRight.y = Utils.max(bottomRight.y, location.y
+                bottomRight.y = SwingUtils.max(bottomRight.y, location.y
                     + getParent().getLocation().y + getLocation().y + icon.getHeight());
 
             }
         }
 
         Rectangle groupBounds = new Rectangle(topLeft.x, topLeft.y,
-            Utils.distance(topLeft.x, bottomRight.x),
-            Utils.distance(topLeft.y, bottomRight.y));
+            SwingUtils.distance(topLeft.x, bottomRight.x),
+            SwingUtils.distance(topLeft.y, bottomRight.y));
 
         int localXShift = xshift;
         int localYShift = yshift;
@@ -735,19 +735,19 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             int xlocation = iconData.getXPos();
             int ylocation = iconData.getYPos();
 
-            topLeft.x = Utils.min(topLeft.x, xlocation + getParent().getLocation().x + getLocation().x);
-            topLeft.y = Utils.min(topLeft.y, ylocation + getParent().getLocation().y + getLocation().y);
+            topLeft.x = SwingUtils.min(topLeft.x, xlocation + getParent().getLocation().x + getLocation().x);
+            topLeft.y = SwingUtils.min(topLeft.y, ylocation + getParent().getLocation().y + getLocation().y);
 
-            bottomRight.x = Utils.max(bottomRight.x, xlocation
+            bottomRight.x = SwingUtils.max(bottomRight.x, xlocation
                 + getParent().getLocation().x + getLocation().x + iconData.getWidth());
 
-            bottomRight.y = Utils.max(bottomRight.y, ylocation
+            bottomRight.y = SwingUtils.max(bottomRight.y, ylocation
                 + getParent().getLocation().y + getLocation().y + iconData.getHeight());
         }
 
         Rectangle groupBounds = new Rectangle(topLeft.x, topLeft.y,
-            Utils.distance(topLeft.x, bottomRight.x),
-            Utils.distance(topLeft.y, bottomRight.y));
+            SwingUtils.distance(topLeft.x, bottomRight.x),
+            SwingUtils.distance(topLeft.y, bottomRight.y));
 
         int localFinalX = finalx;
         int localFinalY = finaly;
@@ -953,10 +953,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         endingSelection.x = e.getX();
         endingSelection.y = e.getY();
 
-        selectPane.setBounds(Utils.min(startingSelection.x, endingSelection.x),
-            Utils.min(startingSelection.y, endingSelection.y),
-            Utils.distance(endingSelection.x, startingSelection.x),
-            Utils.distance(endingSelection.y, startingSelection.y));
+        selectPane.setBounds(SwingUtils.min(startingSelection.x, endingSelection.x),
+            SwingUtils.min(startingSelection.y, endingSelection.y),
+            SwingUtils.distance(endingSelection.x, startingSelection.x),
+            SwingUtils.distance(endingSelection.y, startingSelection.y));
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -1105,10 +1105,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     private void rectSelector() {
         Rectangle selector =
-            new Rectangle(Utils.min(startingSelection.x, endingSelection.x),
-                Utils.min(startingSelection.y, endingSelection.y),
-                Utils.distance(endingSelection.x, startingSelection.x),
-                Utils.distance(endingSelection.y, startingSelection.y));
+            new Rectangle(SwingUtils.min(startingSelection.x, endingSelection.x),
+                SwingUtils.min(startingSelection.y, endingSelection.y),
+                SwingUtils.distance(endingSelection.x, startingSelection.x),
+                SwingUtils.distance(endingSelection.y, startingSelection.y));
 
         for (DesktopIcon desktopIcon : desktopIcons) {
             Rectangle iconPlace = desktopIcon.getBounds();
@@ -1171,13 +1171,13 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
              * Divide all icons into groups
              */
             if ((direction == Constants.ICON_ON_NORTH
-                && Utils.isNorthernQuadrant(cursorIconPoint, currentIconPoint))
+                && SwingUtils.isNorthernQuadrant(cursorIconPoint, currentIconPoint))
                 || (direction == Constants.ICON_ON_SOUTH
-                && Utils.isSouthernQuadrant(cursorIconPoint, currentIconPoint))
+                && SwingUtils.isSouthernQuadrant(cursorIconPoint, currentIconPoint))
                 || (direction == Constants.ICON_ON_EAST
-                && Utils.isEasternQuadrant(cursorIconPoint, currentIconPoint))
+                && SwingUtils.isEasternQuadrant(cursorIconPoint, currentIconPoint))
                 || (direction == Constants.ICON_ON_WEST
-                && Utils.isWesternQuadrant(cursorIconPoint, currentIconPoint))) {
+                && SwingUtils.isWesternQuadrant(cursorIconPoint, currentIconPoint))) {
                 /*
                  * Min is becoming the first icon in quadrant
                  */
@@ -1185,8 +1185,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                     minIconPoint = currentIconPoint;
                 }
 
-                if (Utils.distance(cursorIconPoint, minIconPoint)
-                    >= Utils.distance(cursorIconPoint, currentIconPoint)) {
+                if (SwingUtils.distance(cursorIconPoint, minIconPoint)
+                    >= SwingUtils.distance(cursorIconPoint, currentIconPoint)) {
                     min = icon;
                     minIconPoint = currentIconPoint;
                 }
@@ -1391,7 +1391,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 desktopPopupMenu.getSwitchCover().setText(WorkspaceResourceAnchor.getString("Desktop.menu.showCover"));
             }
         }
-        Transferable contents = Workspace.getUi().getClipboard().getContents(this);
+        Transferable contents = DesktopServiceLocator.getInstance().getWorkspaceGUI().getClipboard().getContents(this);
         if (contents == null) {
             desktopPopupMenu.getPaste().setEnabled(false);
         } else {

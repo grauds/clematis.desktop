@@ -56,11 +56,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.utils.SwingUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -629,7 +629,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
         g.setColor(desktopSelectionColor);
 
         if (hasFocus()) {
-            Utils.drawDashedRect(g, 0, 0, getWidth() - 1, getHeight() - 1);
+            SwingUtils.drawDashedRect(g, 0, 0, getWidth() - 1, getHeight() - 1);
         }
 
         textLabel.setBackground(desktop.getBackground());

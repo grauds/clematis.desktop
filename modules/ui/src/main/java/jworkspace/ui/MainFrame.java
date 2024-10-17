@@ -60,6 +60,7 @@ import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
+import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
 
@@ -286,7 +287,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     /**
      * Returns control panel for this frame.
      */
-    ControlPanel getControlPanel() {
+    public ControlPanel getControlPanel() {
         if (controlPanel == null) {
             controlPanel = new ControlPanel();
             controlPanel.addPropertyChangeListener(this);
@@ -323,18 +324,18 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         /*
          *  My details
          */
-        JMenuItem myDetails = Utils.createMenuItem(gui.getActions().getAction(UIActions.MY_DETAILS_ACTION_NAME));
+        JMenuItem myDetails = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.MY_DETAILS_ACTION_NAME));
         myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
         wmenu.add(myDetails);
         /*
          * Settings
          */
-        JMenuItem settings = Utils.createMenuItem(gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
+        JMenuItem settings = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
         wmenu.add(settings);
         /*
          * Show control panel
          */
-        JCheckBoxMenuItem showControlPanel = Utils.createCheckboxMenuItem(gui.getActions()
+        JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(gui.getActions()
             .getAction(UIActions.SHOW_PANEL_ACTION_NAME));
         showControlPanel.setSelected(getControlPanel().isVisible());
         showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
@@ -343,24 +344,24 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         /*
          * Help
          */
-        JMenuItem help = Utils.createMenuItem(gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
+        JMenuItem help = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
         help.setEnabled(false);
         wmenu.add(help);
         /*
          * About
          */
-        JMenuItem about = Utils.createMenuItem(gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
+        JMenuItem about = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
         wmenu.add(about);
         wmenu.addSeparator();
         /*
          * Log off
          */
-        JMenuItem logOff = Utils.createMenuItem(gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
+        JMenuItem logOff = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
         wmenu.add(logOff);
         /*
          * Exit
          */
-        JMenuItem exit = Utils.createMenuItem(gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
+        JMenuItem exit = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
         exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK));
         wmenu.add(exit);
 

@@ -145,4 +145,8 @@ public class Workspace {
         ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
         profilesManager.logout();
     }
+
+    public static void exit() {
+        System.exit(0);
+    }
 }

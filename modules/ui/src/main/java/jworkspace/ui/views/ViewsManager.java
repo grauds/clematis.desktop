@@ -66,7 +66,6 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.Utils;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
@@ -75,6 +74,7 @@ import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
+import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.WorkspaceError;
 import lombok.extern.java.Log;
 
@@ -242,23 +242,25 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Back button.
          */
-        CButton bBack = Utils.createCButtonFromAction(actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME));
+        CButton bBack = SwingUtils.createCButtonFromAction(actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME));
         /*
          * Forward button.
          */
-        CButton bForward = Utils.createCButtonFromAction(actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME));
+        CButton bForward = SwingUtils.createCButtonFromAction(
+            actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME)
+        );
         /*
          * Add desktop.
          */
-        CButton bAdd = Utils.createCButtonFromAction(actions.getAction(ViewsActions.ADD_DESKTOP_ACTION_NAME));
+        CButton bAdd = SwingUtils.createCButtonFromAction(actions.getAction(ViewsActions.ADD_DESKTOP_ACTION_NAME));
         /*
          * View desktop properties.
          */
-        CButton bProp = Utils.createCButtonFromAction(actions.getAction(ViewsActions.PROPERTIES_ACTION_NAME));
+        CButton bProp = SwingUtils.createCButtonFromAction(actions.getAction(ViewsActions.PROPERTIES_ACTION_NAME));
         /*
          * Delete desktop.
          */
-        CButton bDelete = Utils.createCButtonFromAction(actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME));
+        CButton bDelete = SwingUtils.createCButtonFromAction(actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME));
 
         return new CButton[]{bBack, bForward, bAdd, bProp, bDelete};
     }
@@ -273,12 +275,12 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Back action.
          */
-        JMenuItem goBack = Utils.createMenuItem(actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME));
+        JMenuItem goBack = SwingUtils.createMenuItem(actions.getAction(ViewsActions.BROWSE_BACK_ACTION_NAME));
         go.add(goBack);
         /*
          * Forward action.
          */
-        JMenuItem goForward = Utils.createMenuItem(actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME));
+        JMenuItem goForward = SwingUtils.createMenuItem(actions.getAction(ViewsActions.BROWSE_FORWARD_ACTION_NAME));
         go.add(goForward);
         go.addSeparator();
         /*
@@ -289,28 +291,28 @@ public class ViewsManager extends AbstractViewsManager {
         /*
          * Add desktop.
          */
-        JMenuItem newDesktop = Utils.createMenuItem(actions.getAction(ViewsActions.ADD_DESKTOP_ACTION_NAME));
+        JMenuItem newDesktop = SwingUtils.createMenuItem(actions.getAction(ViewsActions.ADD_DESKTOP_ACTION_NAME));
         go.add(newDesktop);
         /*
          * Delete desktop.
          */
-        JMenuItem deleteView = Utils.createMenuItem(actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME));
+        JMenuItem deleteView = SwingUtils.createMenuItem(actions.getAction(ViewsActions.REMOVE_VIEW_ACTION_NAME));
         go.add(deleteView);
         go.addSeparator();
         /*
          * Reload current view.
          */
-        JMenuItem reloadView = Utils.createMenuItem(actions.getAction(ViewsActions.RELOAD_VIEW_ACTION_NAME));
+        JMenuItem reloadView = SwingUtils.createMenuItem(actions.getAction(ViewsActions.RELOAD_VIEW_ACTION_NAME));
         go.add(reloadView);
         /*
          * Saves current view.
          */
-        JMenuItem saveView = Utils.createMenuItem(actions.getAction(ViewsActions.SAVE_VIEW_ACTION_NAME));
+        JMenuItem saveView = SwingUtils.createMenuItem(actions.getAction(ViewsActions.SAVE_VIEW_ACTION_NAME));
         go.add(saveView);
         /*
          * View desktop properties.
          */
-        JMenuItem properties = Utils.createMenuItem(actions.getAction(ViewsActions.PROPERTIES_ACTION_NAME));
+        JMenuItem properties = SwingUtils.createMenuItem(actions.getAction(ViewsActions.PROPERTIES_ACTION_NAME));
         go.add(properties);
         go.addSeparator();
 
@@ -579,7 +581,7 @@ public class ViewsManager extends AbstractViewsManager {
      */
     private JCheckBoxMenuItem getToggleHeaderMenuItem() {
         if (toggleHeader == null) {
-            toggleHeader = Utils.createCheckboxMenuItem(actions.getAction(ViewsActions.SWITCH_HEADER_ACTION_NAME));
+            toggleHeader = SwingUtils.createCheckboxMenuItem(actions.getAction(ViewsActions.SWITCH_HEADER_ACTION_NAME));
             toggleHeader.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK));
         }
         return toggleHeader;

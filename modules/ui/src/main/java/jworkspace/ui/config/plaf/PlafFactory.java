@@ -49,8 +49,7 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jworkspace.kernel.Workspace;
-
+import jworkspace.config.ServiceLocator;
 /**
  * Pluggable look and feel factory
  * @author Anton Troshin
@@ -63,7 +62,7 @@ public class PlafFactory {
     /**
      * Path to save in workspace environment
      */
-    private static final Path PATH = Workspace.getBasePath().resolve(LAFS_XML);
+    private static final Path PATH = ServiceLocator.getInstance().getProfilesManager().getBasePath().resolve(LAFS_XML);
     /**
      * Default logger
      */

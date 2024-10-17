@@ -35,9 +35,9 @@ import javax.swing.UIManager;
 import static jworkspace.ui.api.Constants.PASTE;
 import static jworkspace.ui.api.Constants.SELECT_ALL;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.Utils;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.utils.SwingUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -71,34 +71,34 @@ class DesktopMenu extends JPopupMenu {
         super();
         this.desktop = desktop;
 
-        createShortcut = add(Utils.createMenuItem(listener,
+        createShortcut = add(SwingUtils.createMenuItem(listener,
             WorkspaceResourceAnchor.getString("Desktop.menu.createShortcut") + Constants.LOG_FINISH,
                 Constants.CREATE_SHORTCUT, null));
 
-        paste = add(Utils.createMenuItem(listener, WorkspaceResourceAnchor.getString(
+        paste = add(SwingUtils.createMenuItem(listener, WorkspaceResourceAnchor.getString(
             "Desktop.menu.paste"), PASTE, null));
         paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
 
-        selectAll = add(Utils.createMenuItem(listener, WorkspaceResourceAnchor.getString("Desktop.menu.selectAll"),
+        selectAll = add(SwingUtils.createMenuItem(listener, WorkspaceResourceAnchor.getString("Desktop.menu.selectAll"),
                 SELECT_ALL, null));
         selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
         this.addSeparator();
 
-        gradientFill = add(Utils.createMenuItem(listener,
+        gradientFill = add(SwingUtils.createMenuItem(listener,
             WorkspaceResourceAnchor.getString("Desktop.menu.gradientFill"), Constants.GRADIENT_FILL, null));
 
-        changeBackgroundColour = add(Utils.createMenuItem(listener,
+        changeBackgroundColour = add(SwingUtils.createMenuItem(listener,
             WorkspaceResourceAnchor.getString("Desktop.menu.background"), Constants.BACKGROUND, null));
 
-        chooseBgImage = add(Utils.createMenuItem(listener,
+        chooseBgImage = add(SwingUtils.createMenuItem(listener,
             WorkspaceResourceAnchor.getString("Desktop.menu.chooseBgImage"),
             Constants.CHOOSE_BACKGROUND_IMAGE, null));
-        switchCover = add(Utils.createMenuItem(listener,
+        switchCover = add(SwingUtils.createMenuItem(listener,
             WorkspaceResourceAnchor.getString("Desktop.menu.switchCover"), Constants.SWITCH_COVER, null));
 
         this.addSeparator();
 
-        closeAllWindows = add(Utils.createMenuItem(listener,
+        closeAllWindows = add(SwingUtils.createMenuItem(listener,
             WorkspaceResourceAnchor.getString("Desktop.menu.closeAllWindows"),
             Constants.CLOSE_ALL_WINDOWS, null));
 

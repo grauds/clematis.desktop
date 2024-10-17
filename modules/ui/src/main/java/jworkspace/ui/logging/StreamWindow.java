@@ -29,7 +29,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import lombok.NonNull;
 
 import javax.swing.JTextArea;
 

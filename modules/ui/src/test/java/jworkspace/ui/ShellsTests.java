@@ -27,18 +27,18 @@ package jworkspace.ui;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginDTO;
-import com.hyperrealm.kiwi.util.plugin.PluginException;
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.PluginException;
 
+import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.UIConfig;
 
@@ -49,7 +49,7 @@ public class ShellsTests {
 
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         testFolder.create();
 
@@ -59,17 +59,21 @@ public class ShellsTests {
     @Test
     public void testIsLoading() throws PluginException, IOException {
 
-        Plugin testPlugin = new ViewPluginLocator()
-            .loadPlugin(ViewPluginLocator.getPluginFile(testFolder.getRoot(),
-                ShellHelper.SHELL_JAR), PluginDTO.PLUGIN_TYPE_ANY);
+        Plugin testPlugin = ServiceLocator.getInstance().getPluginLocator()
+            .loadPlugin(
+                WorkspacePluginLocator.getPluginFile(
+                    testFolder.getRoot(), ShellHelper.SHELL_JAR
+                ), PluginDTO.PLUGIN_TYPE_ANY
+            );
+
         Object obj = testPlugin.newInstance();
 
-        assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
+        Assertions.assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
 
         ShellHelper.assertPluginEqualsManifest(testPlugin);
 
         testPlugin.reload();
-        assertEquals("jworkspace.ui.TestShell", obj.getClass().getName());
+        Assertions.assertEquals("jworkspace.ui.TestShell", obj.getClass().getName());
 
         ((ITestShell) obj).setPath(testFolder.getRoot().getPath());
         ((ITestShell) obj).load();
@@ -78,18 +82,21 @@ public class ShellsTests {
     @Test
     public void testChildIsLoading() throws PluginException {
 
-        Plugin testPlugin = new ViewPluginLocator()
-            .loadPlugin(ViewPluginLocator.getPluginFile(testFolder.getRoot(),
-                ShellHelper.CHILD_SHELL_JAR),
-                PluginDTO.PLUGIN_TYPE_ANY);
+        Plugin testPlugin = ServiceLocator.getInstance().getPluginLocator()
+            .loadPlugin(
+                WorkspacePluginLocator.getPluginFile(
+                    testFolder.getRoot(), ShellHelper.CHILD_SHELL_JAR
+                ),
+                PluginDTO.PLUGIN_TYPE_ANY
+            );
+
         Object obj = testPlugin.newInstance();
 
-        assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
-
+        Assertions.assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
         ShellHelper.assertPluginEqualsChildManifest(testPlugin);
 
         testPlugin.reload();
-        assertEquals("jworkspace.ui.ChildTestShell", obj.getClass().getName());
+        Assertions.assertEquals("jworkspace.ui.ChildTestShell", obj.getClass().getName());
     }
 
     @Test
@@ -114,7 +121,7 @@ public class ShellsTests {
         assert !uiConfig.isDecorated();
     }
 
-    @After
+    @AfterEach
     public void after() {
         testFolder.delete();
     }

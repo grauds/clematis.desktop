@@ -244,4 +244,20 @@ public interface Constants {
      *
      */
     String DEFAULT_LAF = "system";
+    /**
+     *
+     */
+    String VIEW_PARAMETER = "view";
+    /**
+     *
+     */
+    String DISPLAY_PARAMETER = "display";
+    /**
+     *
+     */
+    String REGISTER_PARAMETER = "register";
+    /**
+     * Small menu ICON
+     */
+    String MENU_ICON = "MENU_ICON";
 }
