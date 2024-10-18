@@ -47,7 +47,6 @@ import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 import jworkspace.Workspace;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.Constants;
-import jworkspace.ui.api.IWorkspaceUI;
 import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.dialog.SettingsDialog;
 import jworkspace.ui.dialog.UserDetailsDialog;
@@ -113,7 +112,7 @@ public class UIActions implements Constants {
     /**
      * Instance of Workspace GUI
      */
-    protected IWorkspaceUI gui;
+    protected WorkspaceGUI gui;
     /**
      * All actions
      */
@@ -126,7 +125,7 @@ public class UIActions implements Constants {
     /**
      * Public constructor
      */
-    UIActions(IWorkspaceUI gui) {
+    UIActions(WorkspaceGUI gui) {
         super();
         this.gui = gui;
         createActions();
@@ -195,7 +194,6 @@ public class UIActions implements Constants {
      */
     private void about() {
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         JDialog aboutFrame = new JDialog(gui.getFrame());
         Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.gif");
 
@@ -204,6 +202,8 @@ public class UIActions implements Constants {
         imr.setImage(im);
         aboutFrame.getContentPane().add(imr, BorderLayout.CENTER);
         aboutFrame.pack();
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         aboutFrame.setLocation((screenSize.width - aboutFrame.getWidth()) / 2,
             (screenSize.height - aboutFrame.getHeight()) / 2);
 

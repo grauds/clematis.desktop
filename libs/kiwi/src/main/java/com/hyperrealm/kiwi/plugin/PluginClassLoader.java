@@ -247,7 +247,8 @@ public class PluginClassLoader extends ClassLoader {
 
         for (String jarPath : jars) {
 
-            try (JarFile jar = new JarFile(new File(jarPath))) {
+            try {
+                JarFile jar = new JarFile(new File(jarPath)); // avoid autoclosing of the stream!
                 JarEntry entry = jar.getJarEntry(name);
                 if (entry != null) {
                     try {

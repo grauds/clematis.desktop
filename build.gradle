@@ -150,6 +150,8 @@ dependencies {
     jacocoAggregation project(':kiwi')
     jacocoAggregation project(':installer')
     jacocoAggregation project(':runtime')
+    jacocoAggregation project(':profiles')
+    jacocoAggregation project(':ui')
 }
 
 

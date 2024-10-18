@@ -47,6 +47,7 @@ import jworkspace.ui.dialog.ApplicationChooserDialog;
  * All plugin actions
  * @author Anton Troshin
  */
+@Log
 class RuntimeManagerActions {
     /**
      * Action property - this action work for editor

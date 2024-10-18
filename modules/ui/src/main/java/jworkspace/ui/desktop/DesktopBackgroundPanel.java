@@ -50,9 +50,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
@@ -70,16 +67,14 @@ import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.ImageRenderer;
+import lombok.extern.java.Log;
 
 /**
  * Desktop property panel
  */
+@Log
 @SuppressWarnings("MagicNumber")
 class DesktopBackgroundPanel extends KPanel implements ActionListener, PropertiesPanel {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(DesktopBackgroundPanel.class);
 
     private static final String DESKTOP_BG_PANEL_CENTER = "DesktopBgPanel.center";
     private static final String DESKTOP_BG_PANEL_TILE = "DesktopBgPanel.tile";
@@ -217,7 +212,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
                             repaint();
                         }
                     } catch (IOException e) {
-                        LOG.error("Can't load desktop wallpaper", e);
+                        log.severe("Can't load desktop wallpaper: " + e.getMessage());
                     }
                 }
                 break;

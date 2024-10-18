@@ -60,7 +60,13 @@ target/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Java Workspace directories
 /libs/api/jacoco/
 /libs/installer/jacoco/
 /libs/kiwi/jacoco/
 /lib
+
+.jworkspace/
+logs/
+users/

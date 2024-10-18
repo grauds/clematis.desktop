@@ -38,6 +38,7 @@ import javax.swing.JMenu;
  * @author Anton Troshin
  */
 public interface IView {
+
     /**
      * View activated or deactivated
      */

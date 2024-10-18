@@ -8,7 +8,7 @@ dependencies {
     implementation project(':profiles')
     implementation project(':kiwi')
 
-    implementation "org.kohsuke.args4j:args4j-maven-plugin:2.37"
+    implementation "args4j:args4j:2.0.16"
 }
 
 

@@ -144,7 +144,7 @@ public class LoginDialog extends ComponentDialog {
         registerTextInputComponent(tPasswd);
         main.add(tPasswd, gbc);
 
-        if (getTitle().length() == 0) {
+        if (getTitle().isEmpty()) {
             setTitle(loc.getMessage("kiwi.dialog.title.login"));
         }
 

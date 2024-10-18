@@ -35,9 +35,6 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.KTabbedPane;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
@@ -45,6 +42,7 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.PropertiesPanel;
+import lombok.extern.java.Log;
 
 /**
  * This dialog holds a properties panel for a view. Each panel is placed as a component to a tab view.
@@ -53,12 +51,9 @@ import jworkspace.ui.api.PropertiesPanel;
  * ignores the situation.
  * @author Anton Troshin
  */
+@Log
 @SuppressFBWarnings("UR_UNINIT_READ")
 public class PropertiesHolderDlg extends ComponentDialog {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(PropertiesHolderDlg.class);
 
     private KTabbedPane tabbedPane;
 

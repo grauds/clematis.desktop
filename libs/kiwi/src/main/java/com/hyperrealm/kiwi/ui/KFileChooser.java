@@ -171,11 +171,8 @@ public class KFileChooser extends JFileChooser {
         }
 
         dialog.setLocationRelativeTo(parent);
-
         rescanCurrentDirectory();
-
         dialog.setVisible(true);
-
         return (returnValue);
     }
 

@@ -47,6 +47,7 @@ import com.hyperrealm.kiwi.util.Config;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.extern.java.Log;
 
 /**
@@ -56,6 +57,7 @@ import lombok.extern.java.Log;
  */
 @Log
 @Data
+@ToString(exclude = {"password", "messageDigest"})
 @EqualsAndHashCode(doNotUseGetters = true, exclude = {"password", "messageDigest"})
 @SuppressWarnings("unused")
 public class Profile {
@@ -74,7 +76,7 @@ public class Profile {
 
     private String userName = "default";
 
-    private String password = "";
+    private String password = null;
 
     private MessageDigest messageDigest;
 
@@ -90,7 +92,6 @@ public class Profile {
 
     public Profile() {
         super();
-        setPasswordAndDigest("");
     }
 
     public Profile(String userName,
@@ -108,7 +109,8 @@ public class Profile {
     }
 
     public Profile(String name) {
-        this(name, "", "", "", "");
+        this();
+        this.setUserName(name);
     }
 
     /**
@@ -183,9 +185,11 @@ public class Profile {
 
     public void setPassword(String newPassword) {
         if (this.messageDigest != null) {
-            this.password = new String(this.messageDigest
+            this.password = new String(
+                this.messageDigest
                     .digest(Objects.requireNonNullElse(newPassword, "").getBytes(StandardCharsets.UTF_8)),
-                StandardCharsets.UTF_8);
+                StandardCharsets.UTF_8
+            );
         }
     }
 
@@ -323,10 +327,10 @@ public class Profile {
      * Check whether if supplied encoded password is correct.
      */
     boolean checkPassword(@NonNull Profile candidate) {
-        return Arrays.equals(candidate.getPassword(), getPassword());
+        return getPassword() == null || Arrays.equals(candidate.getPassword(), getPassword());
     }
 
     public byte[] getPassword() {
-        return password.getBytes(StandardCharsets.UTF_8);
+        return password != null ? password.getBytes(StandardCharsets.UTF_8) : null;
     }
 }

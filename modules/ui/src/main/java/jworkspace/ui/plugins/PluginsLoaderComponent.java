@@ -4,6 +4,8 @@ import javax.swing.SwingUtilities;
 
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.config.DesktopServiceLocator;
 
@@ -24,6 +26,9 @@ public class PluginsLoaderComponent {
             WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.loading"),
             true
         );
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        pr.setLocation((screenSize.width - pr.getWidth()) / 2,
+            (screenSize.height - pr.getHeight()) / 2);
         this.shellsLoader = new ShellsLoader(pr);
     }
 

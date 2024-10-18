@@ -217,7 +217,7 @@ public class ProfilesManager implements Comparator<Profile> {
     public void login(@NonNull Profile candidate) throws ProfileOperationException {
         Profile profile = loadProfile(candidate.getUserName());
         if (!profile.checkPassword(candidate)) {
-            throw new ProfileOperationException("Login has failed");
+            throw new ProfileOperationException("Login has failed: password check is failed");
         }
         setCurrentProfile(profile);
     }

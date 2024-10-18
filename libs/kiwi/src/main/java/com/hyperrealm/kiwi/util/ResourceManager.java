@@ -549,7 +549,7 @@ public class ResourceManager {
                     bundle = new LocaleData(is);
                     bundles.put(cpath, bundle);
                 } catch (IOException ex) {
-                    log.log(Level.SEVERE, ex.getMessage(), ex);
+                    log.log(Level.SEVERE, ex.getMessage());
                 }
             }
 

@@ -128,7 +128,6 @@ public class SearchDialog extends KDialog
     });
       this.pack();
       if (getParent()!= null) {
-
           setLocationRelativeTo(getParent());
       }
       this.setVisible(true);

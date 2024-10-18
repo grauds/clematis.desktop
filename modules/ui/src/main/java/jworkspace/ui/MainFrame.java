@@ -47,9 +47,6 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.KFrame;
 
 import jworkspace.Workspace;
@@ -63,16 +60,14 @@ import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
+import lombok.extern.java.Log;
 
 /**
  * Main frame for Java Workspace UI
  * @author Anton Troshin
  */
+@Log
 public class MainFrame extends KFrame implements PropertyChangeListener {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(MainFrame.class);
     /**
      * The name of content manager
      */
@@ -137,7 +132,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Creates default frame.
      */
     public void create() {
-        LOG.info("Building gui" + Constants.LOG_FINISH);
+        log.info("Building gui" + Constants.LOG_FINISH);
         try {
             Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.getDeclaredConstructor().newInstance();
@@ -147,7 +142,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             }
 
             content = (AbstractViewsManager) object;
-            LOG.info("Loaded content manager" + Constants.LOG_SPACE + MainFrame.CONTENT_MANAGER);
+            log.info("Loaded content manager" + Constants.LOG_SPACE + MainFrame.CONTENT_MANAGER);
         } catch (Exception e) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.load.CM.failed"), e);
             return;
@@ -183,7 +178,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
         assemble();
         setVisible(true);
-        LOG.info("Frame is loaded with default configuration");
+        log.info("Frame is loaded with default configuration");
     }
 
     /*
@@ -381,7 +376,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * is from file jwxwin.dat.
      */
     public void load(DataInputStream inputStream) {
-        LOG.info("Loading workspace frame");
+        log.info("Loading workspace frame");
         try {
             Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
             Object object = clazz.newInstance();
@@ -466,7 +461,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          * End of Main Frame config.
          */
         assemble();
-        LOG.info("Loaded workspace frame");
+        log.info("Loaded workspace frame");
         setVisible(true);
     }
 
@@ -556,7 +551,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Saves profile data.
      */
     public void save(DataOutputStream outputStream) {
-        LOG.info("Saving workspace frame");
+        log.info("Saving workspace frame");
         /*
          * Write out Main Frame configuration.
          */
@@ -579,7 +574,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         } catch (IOException e) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.save.failed"), e);
         }
-        LOG.info("Saved workspace frame");
+        log.info("Saved workspace frame");
     }
 
     /**

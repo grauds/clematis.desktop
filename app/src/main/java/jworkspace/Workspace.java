@@ -2,11 +2,10 @@ package jworkspace;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.kohsuke.args4j.ExampleMode.ALL;
-import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -14,6 +13,7 @@ import org.kohsuke.args4j.Option;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
+import jworkspace.api.IWorkspaceUI;
 import jworkspace.config.ServiceLocator;
 import jworkspace.installer.WorkspaceInstaller;
 import jworkspace.runtime.RuntimeManager;
@@ -34,14 +34,15 @@ public class Workspace {
 
     public static final String VERSION = "Java Workspace 2.0.0 SNAPSHOT";
 
+    public static final String HOME_DIR = ".jworkspace";
+
+    public static final String PLUGINS_DIRECTORY = "plugins";
+
     @Option(name = "--name", usage = "user profile name")
     private String name;
 
     @Option(name = "--password", usage = "user profile password")
     private String password;
-
-    @Argument
-    private final List<String> arguments = new ArrayList<>();
 
     private Workspace() {}
 
@@ -55,10 +56,6 @@ public class Workspace {
 
         try {
             parser.parseArgument(args);
-            if (arguments.isEmpty()) {
-                throw new CmdLineException(parser, "No argument is given");
-            }
-
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println("Workspace [options...] arguments...");
@@ -79,21 +76,24 @@ public class Workspace {
             System.out.println("--password is set");
         }
 
-        // access non-option arguments
-        System.out.println("other arguments are:");
-
-        for (String s : arguments) {
-            System.out.println(s);
+        try {
+            if (name != null) {
+                Workspace.start(name, password,
+                    Paths.get(System.getProperty("user.dir")).resolve(HOME_DIR).toString()
+                );
+            }
+        } catch (ProfileOperationException | IOException | PluginException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void start(@NonNull String name, @NonNull String password, @NonNull Path root)
+    public static void start(@NonNull String name, String password, @NonNull String root)
         throws ProfileOperationException, IOException, PluginException {
         /*
          * Validate profile name and password to get the configuration stored there
          */
         ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
-        profilesManager.setBasePath(root);
+        profilesManager.setBasePath(Paths.get(root));
         profilesManager.login(name, password);
         /*
          * Choose the current profile
@@ -108,20 +108,35 @@ public class Workspace {
         workspaceInstaller.reset();
         workspaceInstaller.load();
         /*
-         * Load plugins from profile directory
+         * Load plugins from system directory
          */
         WorkspacePluginLocator pluginLocator = ServiceLocator.getInstance().getPluginLocator();
         List<Plugin> plugins = pluginLocator.loadPlugins(
-            profilePath.resolve("plugins")
+            profilesManager.getBasePath().resolve(PLUGINS_DIRECTORY)
+        );
+        /*
+         * Create required modules
+         */
+        for (Plugin plugin : plugins) {
+            Object pluginObject = plugin.newInstance();
+            if (pluginObject instanceof IWorkspaceUI gui) {
+                gui.load();
+            }
+        }
+        /*
+         * Load plugins from profile directory
+         */
+        List<Plugin> userPlugins = pluginLocator.loadPlugins(
+            profilePath.resolve(PLUGINS_DIRECTORY)
         );
         /*
          * Send plugins to runtime manager if they are instances of Runnable
          */
         RuntimeManager runtimeManager = ServiceLocator.getInstance().getRuntimeManager();
-        for (Plugin plugin : plugins) {
+        for (Plugin plugin : userPlugins) {
             Object pluginObject = plugin.newInstance();
-            if (pluginObject instanceof Runnable) {
-                runtimeManager.take((Runnable) pluginObject);
+            if (pluginObject instanceof Runnable runnable) {
+                runtimeManager.take(runnable);
             }
         }
     }

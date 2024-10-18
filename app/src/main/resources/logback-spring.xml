@@ -1,5 +1,5 @@
 <configuration>
-    <springProperty name="LOG_PATH" source="logging.file.path" defaultValue="logs/" />
+    <springProperty name="LOG_PATH" source="logging.file.path" defaultValue=".jworkspace/logs/" />
     <jmxConfigurator/>
 
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
@@ -29,7 +29,7 @@
         <file>${LOG_PATH}/jworkspace.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>${LOG_PATH}/api.%d.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/jworkspace.%d.log</fileNamePattern>
             <maxHistory>${LOG_HISTORY}</maxHistory>
         </rollingPolicy>
 

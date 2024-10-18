@@ -1,4 +1,4 @@
-package jworkspace.ui.api;
+package jworkspace.api;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -28,8 +28,6 @@ package jworkspace.ui.api;
 
 import java.awt.Frame;
 import java.awt.datatransfer.Clipboard;
-
-import jworkspace.api.IWorkspaceComponent;
 
 /**
  * Basic user interface for jWorkspace with main window, basic popup dialogs,

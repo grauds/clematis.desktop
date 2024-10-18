@@ -257,11 +257,11 @@ public abstract class ComponentDialog extends KDialog {
 
     public void setVisible(boolean flag) {
         if (flag) {
+            pack();
             if (getParent() != null) {
                 setLocationRelativeTo(getParent());
             }
             validate();
-            //pack();
         }
         super.setVisible(flag);
     }

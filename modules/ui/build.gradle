@@ -18,15 +18,11 @@ processResources {
 
 dependencies {
 
+    compileOnly project(':api')
     compileOnly project(':jworkspace')
 
-  //  implementation "commons-codec:commons-codec:1.13"
     implementation "org.jdom:jdom2:2.0.6.1"
-
     testImplementation project(':jworkspace')
-  //  testImplementation project(':api')
-  //  testImplementation project(':kiwi')
-  //  testImplementation project(':runtime')
 }
 
 jar {
@@ -48,5 +44,6 @@ jar {
 
 tasks.register('deployToPlugins', Copy) {
     from jar
-    into "${System.getProperty("user.home")}/.jworkspace/plugins/"
+    //into "${System.getProperty("user.home")}/.jworkspace/plugins/"
+    into "${project.rootDir}/.jworkspace/plugins/"
 }

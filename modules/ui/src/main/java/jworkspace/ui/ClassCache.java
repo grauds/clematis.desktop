@@ -41,9 +41,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.KFileChooser;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
 
@@ -52,14 +49,14 @@ import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.widgets.FilePreviewer;
 import jworkspace.ui.widgets.WorkspaceFileFilter;
 import jworkspace.ui.widgets.WorkspaceFileView;
+import lombok.extern.java.Log;
+
 /**
  * Workspace cache for heavy UI components
  * @author Anton Troshin
  */
+@Log
 public final class ClassCache {
-
-
-    private static final Logger LOG = LoggerFactory.getLogger(ClassCache.class);
 
     private static final String JAR_EXTENTION = "jar";
     private static final String ZIP_EXTENTION = "zip";
@@ -234,7 +231,7 @@ public final class ClassCache {
                     return (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1)
                         ? testCover.getImage() : null;
                 } catch (IOException e) {
-                    LOG.error(e.getLocalizedMessage(), e);
+                    log.severe(e.getLocalizedMessage());
                 }
             }
         }

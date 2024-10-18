@@ -44,23 +44,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.api.WorkspaceException;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.utils.SwingUtils;
+import lombok.extern.java.Log;
 
 /**
  * Gui error reporter for the end-user
  *
  * @author Anton Troshin
  */
+@Log
 public class WorkspaceError {
-
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceError.class);
 
     private static final double DEFAULT_SCALE = 0.9;
 
@@ -276,7 +273,7 @@ public class WorkspaceError {
                         }
                     }
                 } catch (InterruptedException ex) {
-                    LOG.warn(ex.getMessage(), ex);
+                    log.warning(ex.getMessage());
                 }
             }
         }

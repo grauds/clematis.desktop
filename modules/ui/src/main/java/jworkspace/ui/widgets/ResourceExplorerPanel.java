@@ -60,9 +60,6 @@ import javax.swing.JLabel;
 import javax.swing.Scrollable;
 import javax.swing.border.Border;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 import com.hyperrealm.kiwi.util.ResourceManager;
@@ -73,6 +70,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.config.DesktopServiceLocator;
 import lombok.Getter;
+import lombok.extern.java.Log;
 
 /**
  * This is a graphic resources explorer panel. Graphic resources can reside inside of a jar file or directory.
@@ -80,13 +78,12 @@ import lombok.Getter;
  *
  * @author Anton Troshin
  */
+@Log
 @SuppressWarnings("MagicNumber")
 public class ResourceExplorerPanel extends KPanel implements Scrollable, ComponentListener {
 
     private static final String LOAD_FAILED_MESSAGE =
         WorkspaceResourceAnchor.getString("ResourceExplorerPanel.load.failed");
-
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceExplorerPanel.class);
     private static final Dimension THUMBNAIL_DIMENSION;
     private static final Border UNSELECTED_THUMBNAIL_BORDER;
     private static final Border SELECTED_THUMBNAIL_BORDER;
@@ -105,9 +102,6 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
     boolean isTextureChooser = true;
     /**
      * Path to repository
-     * -- GETTER --
-     *  Get path to repository
-
      */
     @Getter
     private String path = null;
@@ -242,7 +236,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         try {
             is = ResourceManager.getKiwiResourceManager().getStream("textures/_index.txt");
         } catch (ResourceNotFoundException ex) {
-            LOG.warn("Resource library is not found", ex);
+            log.warning("Resource library is not found:" + ex.getMessage());
             return;
         }
         String s;
@@ -264,7 +258,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
                     revalidate();
                 }
             } catch (ResourceNotFoundException e) {
-                LOG.warn("Resource is not found", e);
+                log.warning("Resource is not found: " + e.getMessage());
             }
         }
         reader.close();

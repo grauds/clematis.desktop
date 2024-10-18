@@ -38,7 +38,6 @@ package jworkspace.ui.plaf.themes;
  * @(#)PropertiesMetalTheme.java	1.8 02/06/13
  */
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -47,8 +46,8 @@ import java.util.StringTokenizer;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.java.Log;
+
 
 /**
  * This class allows you to load a theme from a file.
@@ -68,12 +67,8 @@ import org.slf4j.LoggerFactory;
  * @author Steve Wilson
  * @version 1.8 06/13/02
  */
+@Log
 public class PropertiesMetalTheme extends DefaultMetalTheme {
-
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(PropertiesMetalTheme.class);
 
     private String name = "Custom Theme";
 
@@ -124,7 +119,7 @@ public class PropertiesMetalTheme extends DefaultMetalTheme {
         try {
             prop.load(stream);
         } catch (IOException e) {
-            LOG.error("Can't load properties", e);
+            log.severe("Can't load properties: " + e.getMessage());
         }
 
         Object tempName = prop.get("name");
@@ -132,7 +127,7 @@ public class PropertiesMetalTheme extends DefaultMetalTheme {
             name = tempName.toString();
         }
 
-        Object colorString = null;
+        Object colorString;
 
         colorString = prop.get("primary1");
         if (colorString != null) {
@@ -227,7 +222,7 @@ public class PropertiesMetalTheme extends DefaultMetalTheme {
             blue = Integer.parseInt(st.nextToken());
 
         } catch (Exception e) {
-            LOG.error("Can't parse colour", e);
+            log.severe("Can't parse colour: " + e.getMessage());
         }
 
         return new ColorUIResource(red, green, blue);

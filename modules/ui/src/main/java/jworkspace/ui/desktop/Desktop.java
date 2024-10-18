@@ -71,9 +71,6 @@ import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.ui.KDesktopPane;
 
 import jworkspace.WorkspaceResourceAnchor;
@@ -89,18 +86,16 @@ import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 
 /**
  * Java Desktop
  * @author Anton Troshin
  */
 @SuppressWarnings({"MagicNumber"})
+@Log
 public class Desktop extends KDesktopPane implements IView, MouseListener, MouseMotionListener,
     ActionListener, ClipboardOwner {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Desktop.class);
     /**
      * Image icon - desktop wallpaper.
      */
@@ -335,7 +330,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                             repaint();
                         }
                     } catch (IOException e1) {
-                        LOG.error(e1.getMessage());
+                        log.severe(e1.getMessage());
                     }
                 }
                 break;
@@ -1314,7 +1309,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
         if (!file.exists()) {
             if (!file.mkdirs()) {
-                LOG.error("Can't create directories, not saving: " + file.getAbsolutePath());
+                log.severe("Can't create directories, not saving: " + file.getAbsolutePath());
                 return;
             }
         }
