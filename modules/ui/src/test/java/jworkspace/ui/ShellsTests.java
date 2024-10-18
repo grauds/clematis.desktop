@@ -37,7 +37,6 @@ import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
-import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.UIConfig;
@@ -52,14 +51,13 @@ public class ShellsTests {
     @BeforeEach
     public void before() throws IOException {
         testFolder.create();
-
         ShellHelper.preparePlugins(testFolder.getRoot());
     }
 
     @Test
     public void testIsLoading() throws PluginException, IOException {
 
-        Plugin testPlugin = ServiceLocator.getInstance().getPluginLocator()
+        Plugin testPlugin = new WorkspacePluginLocator()
             .loadPlugin(
                 WorkspacePluginLocator.getPluginFile(
                     testFolder.getRoot(), ShellHelper.SHELL_JAR
@@ -82,7 +80,7 @@ public class ShellsTests {
     @Test
     public void testChildIsLoading() throws PluginException {
 
-        Plugin testPlugin = ServiceLocator.getInstance().getPluginLocator()
+        Plugin testPlugin = new WorkspacePluginLocator()
             .loadPlugin(
                 WorkspacePluginLocator.getPluginFile(
                     testFolder.getRoot(), ShellHelper.CHILD_SHELL_JAR

@@ -1,4 +1,4 @@
-package jworkspace.ui.config.plaf.themes;
+package jworkspace.ui.plaf.themes;
 /*
  * Copyright (c) 2002 Sun Microsystems, Inc. All  Rights Reserved.
  *

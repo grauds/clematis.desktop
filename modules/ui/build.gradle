@@ -16,19 +16,17 @@ processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-ext {
-    codecVersion = '1.13'
-    jdomVersion = '2.0.6.1'
-}
-
 dependencies {
 
     compileOnly project(':jworkspace')
 
-    implementation "commons-codec:commons-codec:$codecVersion"
-    implementation "org.jdom:jdom2:$jdomVersion"
+  //  implementation "commons-codec:commons-codec:1.13"
+    implementation "org.jdom:jdom2:2.0.6.1"
 
     testImplementation project(':jworkspace')
+  //  testImplementation project(':api')
+  //  testImplementation project(':kiwi')
+  //  testImplementation project(':runtime')
 }
 
 jar {
@@ -48,10 +46,7 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task deployToPlugins(type: Copy) {
+tasks.register('deployToPlugins', Copy) {
     from jar
     into "${System.getProperty("user.home")}/.jworkspace/plugins/"
 }
-
-deployToPlugins.dependsOn(assemble)
-build.finalizedBy deployToPlugins

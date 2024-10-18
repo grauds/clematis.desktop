@@ -1,4 +1,4 @@
-package jworkspace.ui.config.plaf.themes;
+package jworkspace.ui.plaf.themes;
 /*
  * Copyright (c) 2002 Sun Microsystems, Inc. All  Rights Reserved.
  *
@@ -35,37 +35,35 @@ package jworkspace.ui.config.plaf.themes;
  */
 
 /*
- * @(#)BigContrastMetalTheme.java	1.12 02/06/13
+ * @(#)DemoMetalTheme.java	1.9 02/06/13
  */
 
 
-import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.UIDefaults;
-import javax.swing.border.Border;
-import javax.swing.border.MatteBorder;
-import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalIconFactory;
 
 /**
- * This class describes a theme using "green" colors.
+ * This class describes a theme using large fonts.
+ * It's great for giving demos of your software to a group
+ * where people will have trouble seeing what you're doing.
  *
  * @author Steve Wilson
- * @version 1.12 06/13/02
+ * @version 1.9 06/13/02
  */
-public class BigContrastMetalTheme extends ContrastMetalTheme {
+public class DemoMetalTheme extends DefaultMetalTheme {
 
     private static final String DIALOG_FONT_FACE = "Dialog";
-    private final FontUIResource controlFont = new FontUIResource(DIALOG_FONT_FACE, Font.BOLD, 24);
-    private final FontUIResource systemFont = new FontUIResource(DIALOG_FONT_FACE, Font.PLAIN, 24);
-    private final FontUIResource windowTitleFont = new FontUIResource(DIALOG_FONT_FACE, Font.BOLD, 24);
-    private final FontUIResource userFont = new FontUIResource("SansSerif", Font.PLAIN, 24);
-    private final FontUIResource smallFont = new FontUIResource(DIALOG_FONT_FACE, Font.PLAIN, 20);
+    private final FontUIResource controlFont = new FontUIResource(DIALOG_FONT_FACE, Font.BOLD, 18);
+    private final FontUIResource systemFont = new FontUIResource(DIALOG_FONT_FACE, Font.PLAIN, 18);
+    private final FontUIResource userFont = new FontUIResource("SansSerif", Font.PLAIN, 18);
+    private final FontUIResource smallFont = new FontUIResource(DIALOG_FONT_FACE, Font.PLAIN, 14);
 
     public String getName() {
-        return "Low Vision";
+        return "Presentation";
     }
 
     public FontUIResource getControlTextFont() {
@@ -85,40 +83,27 @@ public class BigContrastMetalTheme extends ContrastMetalTheme {
     }
 
     public FontUIResource getWindowTitleFont() {
-        return windowTitleFont;
+        return controlFont;
     }
 
     public FontUIResource getSubTextFont() {
         return smallFont;
     }
 
-    @SuppressWarnings("MagicNumber")
+    @SuppressWarnings("checkstyle:MagicNumber")
     public void addCustomEntriesToTable(UIDefaults table) {
         super.addCustomEntriesToTable(table);
 
-        final int internalFrameIconSize = 30;
+        final int internalFrameIconSize = 22;
         table.put("InternalFrame.closeIcon", MetalIconFactory.getInternalFrameCloseIcon(internalFrameIconSize));
         table.put("InternalFrame.maximizeIcon", MetalIconFactory.getInternalFrameMaximizeIcon(internalFrameIconSize));
         table.put("InternalFrame.iconifyIcon", MetalIconFactory.getInternalFrameMinimizeIcon(internalFrameIconSize));
         table.put("InternalFrame.minimizeIcon",
             MetalIconFactory.getInternalFrameAltMaximizeIcon(internalFrameIconSize));
 
-
-        Border blackLineBorder = new BorderUIResource(new MatteBorder(2, 2, 2, 2, Color.black));
-        Border textBorder = blackLineBorder;
-
-        table.put("ToolTip.border", blackLineBorder);
-        table.put("TitledBorder.border", blackLineBorder);
-
-
-        table.put("TextField.border", textBorder);
-        table.put("PasswordField.border", textBorder);
-        table.put("TextArea.border", textBorder);
-        table.put("TextPane.font", textBorder);
-
-        table.put("ScrollPane.border", blackLineBorder);
-        table.put("ScrollBar.width", 25);
+        table.put("ScrollBar.width", 21);
 
 
     }
+
 }

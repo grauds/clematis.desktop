@@ -1,4 +1,4 @@
-package jworkspace.ui.config.plaf;
+package jworkspace.ui.plaf;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin
@@ -35,18 +35,20 @@ import javax.swing.plaf.metal.MetalTheme;
 
 import org.jdom2.Attribute;
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import jworkspace.ui.config.DesktopServiceLocator;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.java.Log;
 
 /**
  * This class configures extra information about each plaf in xml,
  * including themes, methods for setting such themes and etc.
  */
+@Log
+@Setter
+@Getter
 class XPlafConnector {
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(XPlafConnector.class);
 
     private static final String CURRENT = "current";
 
@@ -60,7 +62,7 @@ class XPlafConnector {
      */
     private UIManager.LookAndFeelInfo info = null;
     /**
-     * Array of assosiated themes with this laf
+     * Array of associated themes with this laf
      * All themes are from metal plaf.
      */
     private MetalTheme[] themes = null;
@@ -73,7 +75,6 @@ class XPlafConnector {
      * to be invoked to set theme on this plaf.
      */
     private Element method = null;
-
     /**
      * Create connector from binary jdom branch
      * <p>
@@ -90,51 +91,54 @@ class XPlafConnector {
      * @return new connector or null
      */
     public static XPlafConnector create(Element element) {
+
         XPlafConnector connector = new XPlafConnector();
+
         //** create and install laf, if it is not installed on creation
         Element clazzNameEl = element.getChild(CLASS_NODE);
         String lafClazzName = clazzNameEl.getText();
+
         try {
-            Class clazz = Class.forName(lafClazzName);
-            LookAndFeel laf = (LookAndFeel) clazz.newInstance();
+            Class<?> clazz = Class.forName(lafClazzName);
+            LookAndFeel laf = (LookAndFeel) clazz.getDeclaredConstructor().newInstance();
             connector.info = new UIManager.LookAndFeelInfo(laf.getName(), lafClazzName);
+
             //** check if this laf is installed in system
-            if (PlafFactory.getInstance().getLookAndFeel(lafClazzName) == null) {
+            if (DesktopServiceLocator.getInstance().getPlafFactory().getLookAndFeel(lafClazzName) == null) {
                 UIManager.installLookAndFeel(connector.info);
             }
         } catch (Exception | Error e) {
-            LOG.error("Cannot create laf: ", e);
+            log.severe("Cannot create laf: " + e.getMessage());
             return null;
         }
+
         //** look for themes
         List<Element> themes = element.getChildren(THEME_NODE);
         List<MetalTheme> ths = new ArrayList<>();
-        /*
-         * Set current theme, do not install it in look and feel
-         */
+
+        /* Set current theme, do not install it in look and feel */
         for (Element theme : themes) {
             String themeName = theme.getText();
-            if (themeName != null && !themeName.trim().equals("")) {
+            if (themeName != null && !themeName.trim().isEmpty()) {
                 try {
-                    Class clazz = Class.forName(themeName);
-                    MetalTheme th = (MetalTheme) clazz.newInstance();
+                    Class<?> clazz = Class.forName(themeName);
+                    MetalTheme th = (MetalTheme) clazz.getDeclaredConstructor().newInstance();
                     ths.add(th);
-                    /*
-                     * Set current theme, do not install it in look and feel
-                     */
+
+                    /* Set current theme, do not install it in look and feel */
                     if (theme.getAttribute(CURRENT) != null
                         && theme.getAttributeValue(CURRENT).equalsIgnoreCase(Boolean.TRUE.toString())) {
                         connector.currentTheme = th;
                     }
                 } catch (Exception e) {
-                    LOG.error("Cannot load laf: ", e);
+                    log.severe("Cannot load laf: " + e.getMessage());
                 }
             }
         }
         //** copy themes to array
-        connector.themes = ths.toArray(new MetalTheme[0]);
+        connector.setThemes(ths.toArray(new MetalTheme[0]));
         //** set method
-        connector.method = element.getChild("method");
+        connector.setMethod(element.getChild("method"));
         //** finally return connector
         return connector;
     }
@@ -181,46 +185,12 @@ class XPlafConnector {
     }
 
     /**
-     * Returns currently set theme on this look and feel
-     *
-     * @return currently set theme on this look and feel
-     */
-    MetalTheme getCurrentTheme() {
-        return currentTheme;
-    }
-
-    UIManager.LookAndFeelInfo getInfo() {
-        return info;
-    }
-
-    public void setInfo(UIManager.LookAndFeelInfo info) {
-        this.info = info;
-    }
-
-    public MetalTheme[] getThemes() {
-        return themes;
-    }
-
-    public void setThemes(MetalTheme[] themes) {
-        this.themes = themes;
-    }
-
-    /**
      * Sets current theme for this look and feel.
      *
      * @param clazz of theme
      */
-    void setCurrentTheme(String clazz) {
+    void setTheme(String clazz) {
         currentTheme = lookUpTheme(clazz);
-    }
-
-    /**
-     * Sets current theme for this look and feel.
-     *
-     * @param theme
-     */
-    void setCurrentTheme(MetalTheme theme) {
-        currentTheme = theme;
     }
 
     /**
@@ -246,12 +216,12 @@ class XPlafConnector {
         /*
          * We use only metal themes by now
          */
-        Class[] argsTypes = new Class[]{MetalTheme.class};
+        Class<?>[] argsTypes = new Class[]{MetalTheme.class};
         /*
          * Instantiate method
          */
         try {
-            Class lafClazz = Class.forName(info.getClassName());
+            Class<?> lafClazz = Class.forName(info.getClassName());
             /*
              * Invoke method
              */
@@ -268,7 +238,7 @@ class XPlafConnector {
             }
             UIManager.setLookAndFeel(info.getClassName());
         } catch (Exception e) {
-            LOG.error("Can't set look and feel", e);
+            log.severe("Can't set look and feel: " + e.getMessage());
         }
     }
 

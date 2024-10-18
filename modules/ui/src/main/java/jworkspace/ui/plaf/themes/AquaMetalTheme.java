@@ -1,4 +1,4 @@
-package jworkspace.ui.config.plaf.themes;
+package jworkspace.ui.plaf.themes;
 /*
  * Copyright (c) 2002 Sun Microsystems, Inc. All  Rights Reserved.
  *
@@ -35,7 +35,7 @@ package jworkspace.ui.config.plaf.themes;
  */
 
 /*
- * @(#)GreenMetalTheme.java	1.7 02/06/13
+ * @(#)AquaMetalTheme.java	1.7 02/06/13
  */
 
 
@@ -43,20 +43,19 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 
 /**
- * This class describes a theme using "green" colors.
+ * This class describes a theme using "blue-green" colors.
  *
  * @author Steve Wilson
  * @version 1.7 06/13/02
  */
-public class GreenMetalTheme extends DefaultMetalTheme {
+public class AquaMetalTheme extends DefaultMetalTheme {
 
-    // greenish colors
-    private final ColorUIResource primary1 = new ColorUIResource(51, 102, 51);
-    private final ColorUIResource primary2 = new ColorUIResource(102, 153, 102);
-    private final ColorUIResource primary3 = new ColorUIResource(153, 204, 153);
+    private final ColorUIResource primary1 = new ColorUIResource(102, 153, 153);
+    private final ColorUIResource primary2 = new ColorUIResource(128, 192, 192);
+    private final ColorUIResource primary3 = new ColorUIResource(159, 235, 235);
 
     public String getName() {
-        return "Emerald";
+        return "Oxide";
     }
 
     protected ColorUIResource getPrimary1() {

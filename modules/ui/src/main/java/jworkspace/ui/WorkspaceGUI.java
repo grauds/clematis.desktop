@@ -67,8 +67,7 @@ import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.IWorkspaceUI;
-import jworkspace.ui.config.UIConfig;
-import jworkspace.ui.config.plaf.PlafFactory;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.plugins.PluginsLoaderComponent;
 import jworkspace.ui.widgets.WorkspaceError;
@@ -85,10 +84,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Workspace UI logo.
      */
     private static SplashScreen logo = null;
-    /**
-     * Instance of workspace configuration
-     */
-    private final UIConfig uiConfig;
     /**
      * Workspace main frame
      */
@@ -109,9 +104,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
         UIChangeManager.getInstance().setDefaultFrameIcon(getResourceManager().getImage("jw_16x16.png"));
         registerListeners();
-        uiConfig = new UIConfig(
-            ServiceLocator.getInstance().getProfilesManager().getBasePath().resolve(Constants.CONFIG_FILE).toFile()
-        );
     }
 
     UIActions getActions() {
@@ -186,14 +178,14 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Returns texture image for settings dialog
      */
     public Image getTexture() {
-        return uiConfig.getTexture();
+        return DesktopServiceLocator.getInstance().getUiConfig().getTexture();
     }
 
     /**
      * Set texture for java workspace gui
      */
     public void setTexture(BufferedImage texture) {
-        uiConfig.setTexture(texture);
+        DesktopServiceLocator.getInstance().getUiConfig().setTexture(texture);
     }
 
     /**
@@ -231,7 +223,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Is texture visible
      */
     public boolean isTextureVisible() {
-        return uiConfig.isTextureVisible();
+        return DesktopServiceLocator.getInstance().getUiConfig().isTextureVisible();
     }
 
     /**
@@ -239,10 +231,12 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     public void setTextureVisible(boolean isTextureVisible) {
 
-        uiConfig.setTextureVisible(isTextureVisible);
-        if (isTextureVisible && uiConfig.getTexture() != null) {
-            UIChangeManager.getInstance().setDefaultTexture(uiConfig.getTexture());
-            getFrame().setTexture(uiConfig.getTexture());
+        DesktopServiceLocator.getInstance().getUiConfig().setTextureVisible(isTextureVisible);
+        if (isTextureVisible && DesktopServiceLocator.getInstance().getUiConfig().getTexture() != null) {
+            UIChangeManager.getInstance().setDefaultTexture(
+                DesktopServiceLocator.getInstance().getUiConfig().getTexture()
+            );
+            getFrame().setTexture(DesktopServiceLocator.getInstance().getUiConfig().getTexture());
         } else {
             UIChangeManager.getInstance().setDefaultTexture(null);
             getFrame().setTexture(null);
@@ -262,7 +256,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Is Kiwi texture visible?
      */
     public boolean isKiwiTextureVisible() {
-        return uiConfig.isKiwiTextureVisible();
+        return DesktopServiceLocator.getInstance().getUiConfig().isKiwiTextureVisible();
     }
 
 
@@ -275,39 +269,62 @@ public class WorkspaceGUI implements IWorkspaceUI {
          */
         getLogoScreen().setVisible(true);
         /*
-         * Workspace configuration
+         * Read workspace UI configuration
          */
-        uiConfig.load();
+        DesktopServiceLocator
+            .getInstance()
+            .getUiConfig()
+            .setConfigFile(
+                ServiceLocator.getInstance().getProfilesManager().getBasePath().resolve("ui").toFile()
+            );
+
+        DesktopServiceLocator.getInstance().getUiConfig().load();
+
         /*
          * Set undecorated property
          */
-        boolean undecorated = uiConfig.isDecorated();
+        boolean undecorated = DesktopServiceLocator.getInstance().getUiConfig().isDecorated();
         getFrame().setUndecorated(undecorated);
         if (undecorated) {
             getFrame().setSize(Toolkit.getDefaultToolkit().getScreenSize());
         }
+
         /*
          * Set texture on
          */
-        setTextureVisible(uiConfig.isTextureVisible());
+        setTextureVisible(DesktopServiceLocator.getInstance().getUiConfig().isTextureVisible());
+
         /*
          * Set LAF and styles
          */
         try {
-            if (uiConfig.getLaf() != null && !uiConfig.getLaf().isEmpty()) {
+            if (DesktopServiceLocator.getInstance().getUiConfig().getLaf() != null
+                && !DesktopServiceLocator.getInstance().getUiConfig().getLaf().isEmpty()) {
 
-                if (uiConfig.getLaf().equals(Constants.DEFAULT_LAF)
-                    || !PlafFactory.getInstance().setLookAndFeel(uiConfig.getLaf())) {
-
+                if (DesktopServiceLocator.getInstance().getUiConfig().getLaf().equals(Constants.DEFAULT_LAF)
+                    || !DesktopServiceLocator
+                    .getInstance()
+                    .getPlafFactory()
+                    .setLookAndFeel(
+                        DesktopServiceLocator.getInstance().getUiConfig().getLaf()
+                    )
+                ) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } else {
 
-                    PlafFactory.getInstance().setCurrentTheme(uiConfig.getLaf(), uiConfig.getTheme());
+                    DesktopServiceLocator
+                        .getInstance()
+                        .getPlafFactory()
+                        .setCurrentTheme(
+                            DesktopServiceLocator.getInstance().getUiConfig().getLaf(),
+                            DesktopServiceLocator.getInstance().getUiConfig().getTheme()
+                        );
                 }
             }
         } catch (Exception ex) {
             log.warning(ex.getMessage());
         }
+
         /*
          * Create heavy dialogs and store them in the cache
          */
@@ -376,11 +393,11 @@ public class WorkspaceGUI implements IWorkspaceUI {
         /*
          * Save the workspace configuration
          */
-        uiConfig.save();
+        DesktopServiceLocator.getInstance().getUiConfig().save();
         /*
          * Save look and feel infos
          */
-        PlafFactory.getInstance().save();
+        DesktopServiceLocator.getInstance().getPlafFactory().save();
         /*
          * Dispose opened frames
          */
@@ -436,7 +453,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
     public void showMessage(String usermsg) {}
 
     public void setKiwiTextureVisible(boolean visible) {
-        uiConfig.setKiwiTextureVisible(visible);
+        DesktopServiceLocator.getInstance().getUiConfig().setKiwiTextureVisible(visible);
     }
 
     /**

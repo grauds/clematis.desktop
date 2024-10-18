@@ -28,7 +28,6 @@ public class PluginHelper {
     private static final String TEST_PLUGIN_HELP_URL = "http://test.com";
     private static final String TEST_PLUGIN_ICON = "/dummy/path.png";
 
-    private static final String TEST_PLUGIN_2 = "jworkspace.kernel.TestPlugin2";
     private static final String TEST_PLUGIN_NAME_2 = "Test plugin 2";
     private static final String TEST_PLUGIN_DESCRIPTION_2 = "Test plugin 2 description";
     private static final String TEST_PLUGIN_VERSION_2 = "2.0.0";

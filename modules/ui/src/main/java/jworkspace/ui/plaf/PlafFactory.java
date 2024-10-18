@@ -1,4 +1,4 @@
-package jworkspace.ui.config.plaf;
+package jworkspace.ui.plaf;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -31,7 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,40 +46,38 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import jworkspace.config.ServiceLocator;
+import lombok.NonNull;
+import lombok.extern.java.Log;
+
 /**
  * Pluggable look and feel factory
  * @author Anton Troshin
  */
+@Log
 public class PlafFactory {
     /**
      * The name of configuration file
      */
     private static final String LAFS_XML = "lafs.xml";
     /**
-     * Path to save in workspace environment
-     */
-    private static final Path PATH = ServiceLocator.getInstance().getProfilesManager().getBasePath().resolve(LAFS_XML);
-    /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(PlafFactory.class);
-    /**
      * Single instance
      */
     private static PlafFactory instance;
     /**
+     * Root folder for the data
+     */
+    private File configFile;
+    /**
      * Array of plaf connectors
      */
-    private List<XPlafConnector> connectors = new ArrayList<>();
+    private final List<XPlafConnector> connectors = new ArrayList<>();
 
-    /**
-     * Private constructor
-     */
-    private PlafFactory() {}
+    public PlafFactory() {}
+
+    public PlafFactory(@NonNull File dataRoot) {
+        this.configFile = Paths.get(dataRoot.getAbsolutePath()).resolve(LAFS_XML).toFile();
+    }
 
     /**
      * Get a single instance of this factory
@@ -99,9 +97,8 @@ public class PlafFactory {
      */
     private void load() {
         try {
-            File file = PATH.toFile();
             SAXBuilder builder = new SAXBuilder();
-            Document doc = builder.build(file);
+            Document doc = builder.build(configFile);
             Element root = doc.getRootElement();
             /*
              * Here we should find all plaf elements, described
@@ -115,7 +112,7 @@ public class PlafFactory {
                 }
             }
         } catch (JDOMException | IOException e) {
-            LOG.warn("Cannot load the factory, applying the defaults. Caused by: ", e);
+            log.warning("Cannot load the factory, applying the defaults. Caused by: " + e.getMessage());
 
             UIManager.LookAndFeelInfo[] installed = UIManager.getInstalledLookAndFeels();
             MetalTheme currentTheme = MetalLookAndFeel.getCurrentTheme();
@@ -137,7 +134,7 @@ public class PlafFactory {
      */
     public void save() {
         try (StringWriter sw = new StringWriter();
-             FileOutputStream os = new FileOutputStream(PATH.toFile())) {
+             FileOutputStream os = new FileOutputStream(configFile)) {
 
             Element plafs = new Element("plafs");
             for (XPlafConnector connector : connectors) {
@@ -152,7 +149,7 @@ public class PlafFactory {
             os.flush();
 
         } catch (IOException e) {
-            LOG.warn("Cannot save the factory: ", e);
+            log.warning("Cannot save the factory: " + e.getMessage());
         }
     }
 
@@ -182,12 +179,12 @@ public class PlafFactory {
         for (UIManager.LookAndFeelInfo info : infos) {
             if (info.getName().equals(selectedLaf)
                 || info.getClassName().equals(selectedLaf)) {
-                Class clazz = Class.forName(selectedLaf, true, Thread.currentThread().
+                Class<?> clazz = Class.forName(selectedLaf, true, Thread.currentThread().
                     getContextClassLoader());
                 try {
-                    return (LookAndFeel) clazz.newInstance();
+                    return (LookAndFeel) clazz.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    LOG.error("Cannot instantiate the plaf discovered", e);
+                    log.severe("Cannot instantiate the plaf discovered: " + e.getMessage());
                 }
             }
         }
@@ -218,11 +215,9 @@ public class PlafFactory {
      * @return plaf connector for selected laf
      */
     private XPlafConnector lookUpConnector(String className) {
-        for (Object o : connectors) {
-            XPlafConnector connector = (XPlafConnector) o;
-
-            if (connector.getInfo().getClassName().equals(className)) {
-                return connector;
+        for (XPlafConnector o : connectors) {
+            if (o.getInfo().getClassName().equals(className)) {
+                return o;
             }
         }
         return null;
@@ -258,7 +253,7 @@ public class PlafFactory {
             }
             return true;
         } catch (Exception ex) {
-            LOG.error("Cannot set look and feel", ex);
+            log.severe("Cannot set look and feel: " + ex.getMessage());
         }
         return false;
     }
@@ -308,7 +303,7 @@ public class PlafFactory {
          */
         XPlafConnector connector = lookUpConnector(laf);
         if (connector != null) {
-            connector.setCurrentTheme(theme);
+            connector.setTheme(theme);
         }
     }
 }

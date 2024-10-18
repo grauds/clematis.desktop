@@ -19,7 +19,6 @@ public class ShellHelper {
     static final String CHILD_SHELL_JAR = "child_shell.jar";
 
     private static final String TEST_SHELL_CLASS = "jworkspace/ui/TestShell.class";
-    private static final String BASE_SHELL_CLASS = "jworkspace/ui/ITestShell.class";
     private static final String TEST_SHELL = "jworkspace.ui.TestShell";
 
     private static final String TEST_SHELL_NAME = "Test shell";

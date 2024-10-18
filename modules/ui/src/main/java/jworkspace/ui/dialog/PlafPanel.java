@@ -44,7 +44,7 @@ import com.hyperrealm.kiwi.ui.LookAndFeelChooser;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.config.plaf.PlafFactory;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.ThemeChooser;
 
 /**
@@ -116,7 +116,6 @@ class PlafPanel extends KPanel implements ActionListener {
 
     private LookAndFeelChooser getLfChooser() {
         if (lfchooser == null) {
-            PlafFactory.getInstance();
             lfchooser = new LookAndFeelChooser();
         }
         return lfchooser;
@@ -129,8 +128,12 @@ class PlafPanel extends KPanel implements ActionListener {
         if (e.getSource() == getLfChooser()) {
             fetchInfo();
         } else if (e.getSource() == getThemeChooser()) {
-            PlafFactory.getInstance().setCurrentTheme(getLfChooser().getLookAndFeel(),
-                getThemeChooser().getTheme());
+            DesktopServiceLocator
+                .getInstance()
+                .getPlafFactory()
+                .setCurrentTheme(
+                    getLfChooser().getLookAndFeel(), getThemeChooser().getTheme()
+                );
         }
     }
 
@@ -153,7 +156,7 @@ class PlafPanel extends KPanel implements ActionListener {
         /*
          * Currently selected laf
          */
-        LookAndFeel selectedLaf = PlafFactory.getInstance().getLookAndFeel(selectedLafName);
+        LookAndFeel selectedLaf = DesktopServiceLocator.getInstance().getPlafFactory().getLookAndFeel(selectedLafName);
         /*
          * Get description of selected laf
          */
@@ -162,12 +165,11 @@ class PlafPanel extends KPanel implements ActionListener {
             /*
              * Get a list of themes for a current LAF
              */
-            MetalTheme[] themes = PlafFactory.getInstance().listThemes(selectedLaf);
+            MetalTheme[] themes = DesktopServiceLocator.getInstance().getPlafFactory().listThemes(selectedLaf);
             getThemeChooser().setModel(new DefaultComboBoxModel<>(themes));
 
-            MetalTheme currentTheme = PlafFactory.getInstance().getCurrentTheme(selectedLaf);
+            MetalTheme currentTheme = DesktopServiceLocator.getInstance().getPlafFactory().getCurrentTheme(selectedLaf);
             getThemeChooser().setSelectedItem(currentTheme);
-
             getThemeChooser().setEnabled(themes.length > 0);
         }
     }
@@ -202,6 +204,9 @@ class PlafPanel extends KPanel implements ActionListener {
     }
 
     boolean syncData() {
-        return PlafFactory.getInstance().setLookAndFeel(getLfChooser().getLookAndFeel());
+        return DesktopServiceLocator
+            .getInstance()
+            .getPlafFactory()
+            .setLookAndFeel(getLfChooser().getLookAndFeel());
     }
 }

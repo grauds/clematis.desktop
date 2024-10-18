@@ -6,10 +6,10 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import com.hyperrealm.kiwi.util.plugin.PluginException;
+import com.hyperrealm.kiwi.plugin.PluginException;
 
-import com.hyperrealm.kiwi.util.plugin.Plugin;
-import com.hyperrealm.kiwi.util.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
 
 import jworkspace.ui.cpanel.CButton;
 

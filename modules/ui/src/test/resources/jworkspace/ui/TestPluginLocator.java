@@ -1,7 +1,7 @@
 package jworkspace.ui;
 
-import com.hyperrealm.kiwi.util.plugin.PluginLocator;
-import jworkspace.kernel.WorkspacePluginLocator;
+import com.hyperrealm.kiwi.plugin.PluginLocator;
+import jworkspace.runtime.WorkspacePluginLocator;
 
 /**
  * @author Anton Troshin

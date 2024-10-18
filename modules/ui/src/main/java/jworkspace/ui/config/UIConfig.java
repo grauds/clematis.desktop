@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -15,9 +16,7 @@ import javax.swing.plaf.metal.MetalTheme;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
 
-import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.Constants;
-import jworkspace.ui.config.plaf.PlafFactory;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -27,8 +26,9 @@ import lombok.extern.java.Log;
  * @author Anton Troshin
  */
 @Log
+@Setter
+@Getter
 public class UIConfig {
-
     /**
      *
      */
@@ -60,33 +60,32 @@ public class UIConfig {
     /**
      * Workspace background texture
      */
-    @Setter
-    @Getter
     private Image texture = null;
     /**
      * Configuration
      */
-    private final ConfigFile config;
+    private ConfigFile config;
+
+    public UIConfig() {
+
+    }
 
     public UIConfig(@NonNull File configFile) {
+        this.setConfigFile(configFile);
+    }
+
+    public void setConfigFile(@NonNull File configFile) {
         this.config = new ConfigFile(configFile, "GUI Related Properties");
     }
 
-    /**
-     * Is texture visible
-     */
     public boolean isTextureVisible() {
         return config.getBoolean(CK_TEXTURE_VISIBLE, false);
     }
-
 
     public void setTextureVisible(boolean b) {
         config.putBoolean(CK_TEXTURE_VISIBLE, b);
     }
 
-    /**
-     * Is Kiwi texture visible?
-     */
     public boolean isKiwiTextureVisible() {
         return config.getBoolean(CK_KIWI, true);
     }
@@ -110,7 +109,7 @@ public class UIConfig {
     }
 
     public void saveTheme() {
-        MetalTheme theme = PlafFactory.getInstance().getCurrentTheme();
+        MetalTheme theme = DesktopServiceLocator.getInstance().getPlafFactory().getCurrentTheme();
         if (theme != null) {
             config.putString(CK_THEME, theme.getClass().getName());
         } else {
@@ -122,27 +121,17 @@ public class UIConfig {
         return config.getBoolean(CK_UNDECORATED, false);
     }
 
-    /**
-     * Loads workspace GUI configuration
-     */
     public void load() {
 
         try {
             config.load();
-
         } catch (IOException e) {
             log.warning("Couldn't load the config, continuing with defaults");
         }
-        /*
-         * Load recently used texture
-         */
+
         try {
-            /*
-             * Read texture
-             */
             setTexture(ImageIO.read(
-                ServiceLocator.getInstance().getProfilesManager()
-                    .ensureUserHomePath().resolve(CK_TEXTURE_FILE_NAME).toFile()
+                Paths.get(this.config.getPath()).getParent().resolve(CK_TEXTURE_FILE_NAME).toFile()
             ));
 
         } catch (IOException e) {
@@ -152,9 +141,6 @@ public class UIConfig {
         }
     }
 
-    /**
-     * Saves workspace GUI configuration
-     */
     public void save() {
 
         try {
@@ -164,14 +150,11 @@ public class UIConfig {
         } catch (IOException ex) {
             log.severe(ex.getMessage());
         }
-        /*
-         * Write texture on disk
-         */
+
         if (getTexture() != null) {
 
             try (OutputStream os = new FileOutputStream(
-                ServiceLocator.getInstance().getProfilesManager()
-                    .ensureUserHomePath().resolve(CK_TEXTURE_FILE_NAME).toFile()
+                Paths.get(this.config.getPath()).getParent().resolve(CK_TEXTURE_FILE_NAME).toFile()
             )) {
 
                 ImageIcon textureIcon = new ImageIcon(getTexture());

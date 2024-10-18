@@ -58,17 +58,17 @@ public class  PluginTests {
 
         Plugin testPlugin = new WorkspacePluginLocator()
             .loadPlugin(
-                WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
-                PluginHelper.PLUGIN_JAR),
-                PluginDTO.PLUGIN_TYPE_ANY
+                WorkspacePluginLocator.getPluginFile(
+                    testFolder.getRoot(), PluginHelper.PLUGIN_JAR
+                ), PluginDTO.PLUGIN_TYPE_ANY
             );
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
-
         testPlugin.addPluginReloadListener(event -> Assertions.assertEquals(testPlugin, event.getSource()));
-
         testPlugin.reload();
+
         Object obj = testPlugin.newInstance();
+
         assert obj instanceof ITestPlugin;
 
         Assertions.assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());
