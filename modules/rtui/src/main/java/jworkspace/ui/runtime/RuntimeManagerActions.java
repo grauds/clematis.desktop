@@ -26,7 +26,6 @@ package jworkspace.ui.runtime;
 */
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,14 +33,12 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
-import jworkspace.api.WorkspaceException;
-import jworkspace.kernel.Workspace;
+import jworkspace.config.ServiceLocator;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
+import lombok.extern.java.Log;
 
 /**
  * All plugin actions
@@ -86,17 +83,13 @@ class RuntimeManagerActions {
      */
     static final String START_ACTION_NAME = "Start";
     /**
-     * Default logger
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(RuntimeManagerActions.class);
-    /**
      * Runtime manager window
      */
-    private RuntimeManagerWindow manager;
+    private final RuntimeManagerWindow manager;
     /**
      * All actions
      */
-    private Map<String, Action> actions = new HashMap<>();
+    private final Map<String, Action> actions = new HashMap<>();
 
     /**
      * Default public constructor
@@ -237,14 +230,17 @@ class RuntimeManagerActions {
         }
 
         public void actionPerformed(ActionEvent evt) {
-            ApplicationChooserDialog dlg = new ApplicationChooserDialog(Workspace.getUi().getFrame());
+            ApplicationChooserDialog dlg = new ApplicationChooserDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+            );
             dlg.setVisible(true);
             if (dlg.getSelectedApplication() != null) {
-                try {
-                    Workspace.getRuntimeManager().run(dlg.getSelectedApplication().getLinkString());
-                } catch (WorkspaceException | IOException e) {
-                    LOG.error(e.getMessage(), e);
-                }
+                ServiceLocator
+                    .getInstance()
+                    .getRuntimeManager()
+                    .run(
+                        dlg.getSelectedApplication().getLinkString()
+                    );
             }
             manager.update();
         }

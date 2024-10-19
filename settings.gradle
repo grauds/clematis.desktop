@@ -18,11 +18,14 @@ project(':runtime').projectDir = file('libs/runtime')
 include 'profiles'
 project(':profiles').projectDir = file('libs/profiles')
 
+include 'ui-api'
+project(':ui-api').projectDir = file('modules/ui-api')
+
 include 'ui'
 project(':ui').projectDir = file('modules/ui')
 
-//include 'rtui'
-//project(':rtui').projectDir = file('modules/rtui')
+include 'rtui'
+project(':rtui').projectDir = file('modules/rtui')
 
 //
 //include 'instui'

@@ -1,4 +1,4 @@
-package jworkspace.ui.cpanel;
+package jworkspace.ui.api.cpanel;
 
 /* ----------------------------------------------------------------------------
    Java Workspace

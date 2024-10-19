@@ -37,7 +37,7 @@ public class ProfileTest {
         profile.setDescription("Description");
 
         String newPassword = "password";
-        profile.setPassword("", newPassword, newPassword);
+        profile.setPassword(null, newPassword, newPassword);
         profile.save(testFolder.getRoot().toPath());
 
         Profile anotherCopy = new Profile();

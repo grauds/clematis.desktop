@@ -1,4 +1,4 @@
-package jworkspace.ui.views;
+package jworkspace.ui.api.views;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin

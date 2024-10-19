@@ -55,7 +55,7 @@ import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
-import jworkspace.ui.cpanel.CButton;
+import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;

@@ -27,7 +27,7 @@ package jworkspace.ui.api;
 
 import java.io.IOException;
 
-import jworkspace.ui.cpanel.CButton;
+import jworkspace.ui.api.cpanel.CButton;
 
 /**
  * User gui shell - a collection of user views.

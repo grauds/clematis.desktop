@@ -71,8 +71,8 @@ import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.config.DesktopServiceLocator;
-import jworkspace.ui.cpanel.CButton;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.WorkspaceError;
@@ -454,7 +454,7 @@ public class ViewsManager extends AbstractViewsManager {
 
         int localIndex = index;
 
-        if (views.size() == 0) {
+        if (views.isEmpty()) {
             return;
         }
 

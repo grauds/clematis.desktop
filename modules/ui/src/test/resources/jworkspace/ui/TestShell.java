@@ -11,7 +11,7 @@ import com.hyperrealm.kiwi.plugin.PluginException;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 
-import jworkspace.ui.cpanel.CButton;
+import jworkspace.ui.api.cpanel.CButton;
 
 /**
  * @author Anton Troshin

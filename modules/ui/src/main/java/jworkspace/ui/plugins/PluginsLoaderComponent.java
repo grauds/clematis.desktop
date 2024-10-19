@@ -1,11 +1,12 @@
 package jworkspace.ui.plugins;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import javax.swing.SwingUtilities;
 
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.config.DesktopServiceLocator;
 

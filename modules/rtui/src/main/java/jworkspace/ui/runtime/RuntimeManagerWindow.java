@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -57,17 +58,18 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
-import com.hyperrealm.kiwi.util.plugin.Plugin;
 
-import jworkspace.kernel.JavaProcess;
-import jworkspace.kernel.Workspace;
-import jworkspace.ui.Utils;
-import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.WorkspaceResourceManager;
-import jworkspace.ui.cpanel.CButton;
-import jworkspace.ui.views.DefaultCompoundView;
+import static jworkspace.ui.WorkspaceGUI.getResourceManager;
+import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.JavaProcess;
+import jworkspace.runtime.RuntimeManager;
+import jworkspace.ui.api.cpanel.CButton;
+import jworkspace.ui.api.views.DefaultCompoundView;
+import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.utils.SwingUtils;
 
 /**
  * Runtime Manager window shows information about loaded shells,
@@ -85,8 +87,6 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     private static final String RUNTIME_MANAGER = LangResource.getString("message#240");
 
     private static RuntimeManagerActions actions;
-
-    private static WorkspaceResourceManager resourceManager;
 
     private final List<Monitor> monitors = new Vector<>();
 
@@ -133,7 +133,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         setName(RUNTIME_MANAGER);
     }
 
-    public synchronized RuntimeManagerActions getActions() {
+    synchronized RuntimeManagerActions getActions() {
         if (actions == null) {
             actions = new RuntimeManagerActions(this);
         }
@@ -290,12 +290,14 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      */
     void copyLog() {
         List<JavaProcess> p = processes.getSelectedValuesList();
-        if (p == null || p.size() == 0) {
+        if (p == null || p.isEmpty()) {
             return;
         }
         if (p.size() > 1) {
-            JOptionPane.showMessageDialog(Workspace.getUi().getFrame(),
-                LangResource.getString("message#252"));
+            JOptionPane.showMessageDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                LangResource.getString("message#252")
+            );
         }
     }
 
@@ -304,21 +306,23 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      */
     private JToolBar createProcessesToolbar() {
         JToolBar tb = new JToolBar();
-        WorkspaceGUI gui = null;
-        if (Workspace.getUi() instanceof WorkspaceGUI) {
-            gui = (WorkspaceGUI) Workspace.getUi();
-        }
         tb.setFloatable(false);
-        if (gui != null) {
-            JButton b = Utils.createButtonFromAction(getActions().getAction(RuntimeManagerActions.START_ACTION_NAME));
-            tb.add(b);
 
-            b = Utils.createButtonFromAction(getActions().getAction(RuntimeManagerActions.KILL_ACTION_NAME));
-            tb.add(b);
+        JButton b = SwingUtils.createButtonFromAction(
+            getActions().getAction(RuntimeManagerActions.START_ACTION_NAME)
+        );
+        tb.add(b);
 
-            b = Utils.createButtonFromAction(getActions().getAction(RuntimeManagerActions.COPY_LOG_ACTION_NAME));
-            tb.add(b);
-        }
+        b = SwingUtils.createButtonFromAction(
+            getActions().getAction(RuntimeManagerActions.KILL_ACTION_NAME)
+        );
+        tb.add(b);
+
+        b = SwingUtils.createButtonFromAction(
+            getActions().getAction(RuntimeManagerActions.COPY_LOG_ACTION_NAME)
+        );
+        tb.add(b);
+
         return tb;
     }
 
@@ -335,10 +339,6 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         pr.add(createPluginsLabel(), BorderLayout.NORTH);
         pr.add(new JScrollPane(plugins), BorderLayout.CENTER);
         return pr;
-    }
-
-    public boolean isUnique() {
-        return true;
     }
 
     /**
@@ -358,7 +358,10 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      * Kill all processes
      */
     void killAll() {
-        Workspace.getRuntimeManager().getAllProcesses().forEach(JavaProcess::kill);
+        /*ServiceLocator
+            .getInstance()
+            .getRuntimeManager()
+            .getAllProcesses().forEach(JavaProcess::kill);*/
         processes.repaint();
     }
 
@@ -370,11 +373,18 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         for (JavaProcess o : p) {
             if (o != null) {
                 o.kill();
-                Workspace.getRuntimeManager().remove(o);
+               /* todo ServiceLocator
+                    .getInstance()
+                    .getRuntimeManager()
+                    .remove(o);*/
             }
         }
-        processes.setListData(Workspace.getRuntimeManager()
-                .getAllProcesses().toArray(JavaProcess[]::new));
+        /*todo processes.setListData(
+            ServiceLocator
+                .getInstance()
+                .getRuntimeManager()
+                .getAllProcesses().toArray(JavaProcess[]::new)
+        );*/
         processes.repaint();
     }
 
@@ -393,10 +403,13 @@ public class RuntimeManagerWindow extends DefaultCompoundView
      * Kill all processes and remove them from list
      */
     void killAllAndRemove() {
-        Workspace.getRuntimeManager().getAllProcesses().forEach(JavaProcess::kill);
-        Workspace.getRuntimeManager().removeTerminated();
-        processes.setListData(Workspace.getRuntimeManager()
-                .getAllProcesses().toArray(JavaProcess[]::new));
+        RuntimeManager runtimeManager = ServiceLocator.getInstance().getRuntimeManager();
+     /* todo runtimeManager.getAllProcesses().forEach(JavaProcess::kill);
+        todo runtimeManager.removeTerminated();
+        todo processes.setListData(
+            runtimeManager.getAllProcesses().toArray(JavaProcess[]::new)
+        );
+      */
         processes.repaint();
     }
 
@@ -447,28 +460,22 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     }
 
     public void update() {
-        List<JavaProcess> p = Workspace.getRuntimeManager().getAllProcesses();
+
+        List<JavaProcess> p = new ArrayList<>();
+        /* todo ServiceLocator
+            .getInstance()
+            .getRuntimeManager()
+            .getAllProcesses();
+        */
         processes.setListData(p.toArray(JavaProcess[]::new));
 
         Set<Plugin> listData = new HashSet<>();
-        listData.addAll(Workspace.getSystemPlugins());
-        listData.addAll(Workspace.getUserPlugins());
+       // todo listData.addAll(Workspace.getSystemPlugins());
+       // todo listData.addAll(Workspace.getUserPlugins());
         plugins.setListData(listData.toArray(new Plugin[] {}));
 
         getActions().enableActions(!processes.isSelectionEmpty());
         super.update();
-    }
-
-    /**
-     * Returns resource manager for the GUI.
-     *
-     * @return kiwi.util.WorkspaceResourceManager
-     */
-    public static synchronized WorkspaceResourceManager getResourceManager() {
-        if (resourceManager == null) {
-            resourceManager = new WorkspaceResourceManager(RuntimeManagerWindow.class);
-        }
-        return resourceManager;
     }
 
     /**
@@ -508,14 +515,20 @@ public class RuntimeManagerWindow extends DefaultCompoundView
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
             setCellRenderer(new DefaultListCellRenderer() {
-                public Component getListCellRendererComponent(JList list, Object value,
-                                                              int index, boolean isSelected, boolean cellHasFocus) {
-                    Component comp = super.getListCellRendererComponent(list, value,
-                        index, isSelected, cellHasFocus);
-                    if (value instanceof Plugin) {
-                        Plugin plugin = (Plugin) value;
+                public Component getListCellRendererComponent(JList list,
+                                                              Object value,
+                                                              int index,
+                                                              boolean isSelected,
+                                                              boolean cellHasFocus
+                ) {
+
+                    Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (value instanceof Plugin plugin) {
+
                         setText(value.toString());
+
                         Icon icon = plugin.getIcon();
+
                         if (icon == null && plugin.getType().equals("XShell")) {
                             setIcon(new ImageIcon(getResourceManager().getImage("shell.png")));
                         } else if (icon == null && plugin.getType().equals("XPlugin")) {

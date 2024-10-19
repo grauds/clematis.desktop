@@ -80,6 +80,10 @@ public class PluginLocator {
     @Setter
     private boolean excludeParentClassLoader = false;
 
+    @Getter
+    @Setter
+    private ClassLoader parentPluginClassLoader;
+
     /**
      * Construct a new <code>PluginLocator</code> with the specified plugin
      * context.
@@ -157,7 +161,10 @@ public class PluginLocator {
 
     PluginClassLoader createClassLoader() {
         return new PluginClassLoader(forbiddenPackages, restrictedPackages,
-            isExcludeParentClassLoader() ? null : getClass().getClassLoader()
+            isExcludeParentClassLoader() ? null
+                : (getParentPluginClassLoader() != null
+                  ? getParentPluginClassLoader() : getClass().getClassLoader()
+                )
         );
     }
 }

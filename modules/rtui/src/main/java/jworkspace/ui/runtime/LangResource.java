@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import lombok.extern.java.Log;
+
 /**
  * International resources for runtime manager.
  *
@@ -57,7 +59,7 @@ public class LangResource {
             message = resources.getString(id);
         } catch (MissingResourceException ex) {
             message = id;
-            LOG.debug("Cannot find resource string " + id + " in file rmstrings");
+            log.finest("Cannot find resource string " + id + " in file rmstrings");
         }
         return message;
     }

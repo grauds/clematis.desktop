@@ -482,7 +482,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     public class WorkspaceViewListener implements IWorkspaceListener {
 
-        public static final int CODE = 1000;
+        public static final int CODE = Constants.WORKSPACE_VIEW_LISTENER_CODE;
 
         @Override
         public int getCode() {

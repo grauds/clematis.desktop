@@ -35,14 +35,14 @@ public abstract class Task implements Runnable {
 
     private static final int MAX_PERCENT = 100;
 
-    private ArrayList<ProgressObserver> observers;
+    private final ArrayList<ProgressObserver> observers;
 
     /**
      * Construct a new <code>Task</code>.
      */
 
     public Task() {
-        observers = new ArrayList<ProgressObserver>();
+        observers = new ArrayList<>();
     }
 
     /**

@@ -50,7 +50,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.ActionChangedListener;
-import jworkspace.ui.cpanel.CButton;
+import jworkspace.ui.api.cpanel.CButton;
 
 /**
  * Workspace utils.

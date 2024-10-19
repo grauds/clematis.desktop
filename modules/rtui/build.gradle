@@ -26,10 +26,10 @@ ext {
 dependencies {
 
     compileOnly project(':jworkspace')
+    compileOnly project(':ui-api')
     compileOnly project(':ui')
     compileOnly "org.jdom:jdom2:$jdomVersion"
 
-    implementation project(':kiwi')
     implementation "joda-time:joda-time:$jodaVersion"
 
     testImplementation project(':ui')
@@ -52,9 +52,9 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task deployToPlugins(type: Copy) {
+tasks.register('deployToPlugins', Copy) {
     from jar
-    into "${System.getProperty("user.home")}/.jworkspace/users/default/shells/"
+    into "${project.rootDir}/.jworkspace/users/root/shells/"
 }
 
 deployToPlugins.dependsOn(assemble)

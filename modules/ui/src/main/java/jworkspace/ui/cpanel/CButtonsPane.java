@@ -59,6 +59,7 @@ import javax.swing.plaf.metal.MetalButtonUI;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
+import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.utils.SwingUtils;
 
 /**

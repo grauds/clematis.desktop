@@ -34,7 +34,7 @@ import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.IView;
-import jworkspace.ui.cpanel.CButton;
+import jworkspace.ui.api.cpanel.CButton;
 
 /**
  * Default user gui shell.

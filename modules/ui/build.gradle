@@ -21,6 +21,8 @@ dependencies {
     compileOnly project(':api')
     compileOnly project(':jworkspace')
 
+    implementation project(':ui-api')
+
     implementation "org.jdom:jdom2:2.0.6.1"
     testImplementation project(':jworkspace')
 }

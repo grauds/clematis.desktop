@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
+import jworkspace.ui.api.cpanel.CButton;
 import lombok.Getter;
 import lombok.Setter;
 

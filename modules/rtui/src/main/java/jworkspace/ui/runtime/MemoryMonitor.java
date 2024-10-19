@@ -51,19 +51,19 @@ class MemoryMonitor extends KPanel implements Runnable {
     private int w, h;
     private BufferedImage bimg;
     private Graphics2D big;
-    private Font font = new Font("Times New Roman", Font.PLAIN, 11);
-    private Runtime r = Runtime.getRuntime();
+    private final Font font = new Font("Times New Roman", Font.PLAIN, 11);
+    private final Runtime r = Runtime.getRuntime();
     private int columnInc;
     private float[] pts;
     private int ptNum;
     private int ascent, descent;
     private float freeMemory, totalMemory;
-    private Rectangle graphOutlineRect = new Rectangle();
-    private Rectangle2D mfRect = new Rectangle2D.Float();
-    private Rectangle2D muRect = new Rectangle2D.Float();
-    private Line2D graphLine = new Line2D.Float();
-    private Color graphColor = new Color(46, 139, 87);
-    private Color mfColor = new Color(0, 100, 0);
+    private final Rectangle graphOutlineRect = new Rectangle();
+    private final Rectangle2D mfRect = new Rectangle2D.Float();
+    private final Rectangle2D muRect = new Rectangle2D.Float();
+    private final Line2D graphLine = new Line2D.Float();
+    private final Color graphColor = new Color(46, 139, 87);
+    private final Color mfColor = new Color(0, 100, 0);
 
     MemoryMonitor() {
         setBackground(Color.black);

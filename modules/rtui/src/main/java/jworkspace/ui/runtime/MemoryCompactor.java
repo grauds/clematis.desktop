@@ -49,8 +49,8 @@ public class MemoryCompactor extends Thread {
     private KButton button; //update this with our status
 
     private boolean timetodie = false; // when true, we'll exit...
-    private boolean[] runningflag;    // set this to false before we exit...
-    private int minfree; // % minimum free memory before we try to gc
+    private final boolean[] runningflag;    // set this to false before we exit...
+    private final int minfree; // % minimum free memory before we try to gc
 
     /**
      */

@@ -19,9 +19,9 @@ import jworkspace.ui.MainFrame;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.api.cpanel.CButton;
+import jworkspace.ui.api.views.DefaultCompoundView;
 import jworkspace.ui.config.DesktopServiceLocator;
-import jworkspace.ui.cpanel.CButton;
-import jworkspace.ui.views.DefaultCompoundView;
 import jworkspace.users.Profile;
 import jworkspace.users.ProfilesManager;
 import lombok.extern.java.Log;
@@ -57,7 +57,8 @@ public class ShellsLoader extends Task {
 
         pluginPath = pluginPath.resolve("shells");
 
-        WorkspacePluginLocator pluginLocator = ServiceLocator.getInstance().getPluginLocator();
+        WorkspacePluginLocator pluginLocator = DesktopServiceLocator.getInstance().getPluginLocator();
+        pluginLocator.setParentPluginClassLoader(this.getClass().getClassLoader());
         List<Plugin> plugins = pluginLocator.loadPlugins(
             pluginPath
         );

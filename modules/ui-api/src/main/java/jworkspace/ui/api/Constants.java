@@ -26,7 +26,6 @@ package jworkspace.ui.api;
   ----------------------------------------------------------------------------
 */
 
-import jworkspace.WorkspaceResourceAnchor;
 /**
  *
  * @author Anton Troshin
@@ -151,7 +150,7 @@ public interface Constants {
     /**
      *
      */
-    String DESKTOP_NAME_DEFAULT = WorkspaceResourceAnchor.getString("Desktop.defaultName");
+    String DESKTOP_NAME_DEFAULT = "Clematis Desktop";
     /**
      *
      */
@@ -260,4 +259,8 @@ public interface Constants {
      * Small menu ICON
      */
     String MENU_ICON = "MENU_ICON";
+    /**
+     *
+     */
+    int WORKSPACE_VIEW_LISTENER_CODE = 1000;
 }

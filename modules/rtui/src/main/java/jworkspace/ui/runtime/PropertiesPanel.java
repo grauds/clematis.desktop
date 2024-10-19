@@ -36,14 +36,12 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
-import com.hyperrealm.kiwi.util.plugin.Plugin;
 
-import static jworkspace.ui.runtime.RuntimeManagerWindow.getResourceManager;
-
-import jworkspace.kernel.JavaProcess;
-
+import static jworkspace.ui.WorkspaceGUI.getResourceManager;
+import jworkspace.runtime.JavaProcess;
 /**
  * @author Anton Troshin
  */
@@ -113,20 +111,23 @@ public class PropertiesPanel extends KPanel {
             remove(log);
             log = null;
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><font color=black><b>");
-        sb.append(LangResource.getString("Name")).append(": ");
-        sb.append("</b>");
-        sb.append(pr.getName());
-        sb.append("<br><b>");
-        sb.append(LangResource.getString("Started_at")).append(": ");
-        sb.append("</b>");
-        sb.append(pr.getStartTime().toString());
-        sb.append("<br></html>");
+        String sb = "<html><font color=black><b>"
+            + LangResource.getString("Name") + ": "
+            + "</b>"
+            + pr.getName()
+            + "<br><b>"
+            + LangResource.getString("Started_at") + ": "
+            + "</b>"
+            + pr.getStartTime().toString()
+            + "<br></html>";
 //        log = pr.getVLog();
 //        log.setPreferredSize(new Dimension(200, 200));
-        layoutReport(sb.toString(), new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-            .getResourceAsImage("images/process.png")));
+        layoutReport(
+            sb,
+            new ImageIcon(
+                new ResourceLoader(RuntimeManagerWindow.class).getResourceAsImage("images/process.png")
+            )
+        );
     }
 
     /**
@@ -137,29 +138,30 @@ public class PropertiesPanel extends KPanel {
             remove(log);
             log = null;
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><font color=\"black\">");
-        sb.append("<br><br><b>");
-        sb.append(LangResource.getString("Name")).append(": ");
-        sb.append("</b>");
-        sb.append(plugin.getName());
-        sb.append("<br><b>");
-        sb.append(LangResource.getString("Type")).append(": ");
-        sb.append("</b>");
-        sb.append(plugin.getType());
-        sb.append("<br><b>");
-        sb.append(LangResource.getString("Version")).append(": ");
-        sb.append("</b>");
-        sb.append(plugin.getVersion());
-        sb.append("<br><b>");
-        sb.append(LangResource.getString("Class_Name")).append(": ");
-        sb.append("</b>");
-        sb.append(plugin.getClassName());
-        sb.append("<br><b>");
-        sb.append(LangResource.getString("Loaded")).append(": ");
-        sb.append("</b>");
-        sb.append(plugin.isLoaded());
-        sb.append("<br><b>");
+        String sb = "<html><font color=\"black\">"
+            + "<br><br><b>"
+            + LangResource.getString("Name") + ": "
+            + "</b>"
+            + plugin.getName()
+            + "<br><b>"
+            + LangResource.getString("Type") + ": "
+            + "</b>"
+            + plugin.getType()
+            + "<br><b>"
+            + LangResource.getString("Version") + ": "
+            + "</b>"
+            + plugin.getVersion()
+            + "<br><b>"
+            + LangResource.getString("Class_Name") + ": "
+            + "</b>"
+            + plugin.getClassName()
+            + "<br><b>"
+            + LangResource.getString("Loaded") + ": "
+            + "</b>"
+            + plugin.isLoaded()
+            + "<br><b>"
+            + "</font></html>";
+
 //        if (!plugin.getProperties().isEmpty()) {
 //            sb.append(LangResource.getString("Properties") + ": ");
 //            sb.append("</b><br>");
@@ -178,7 +180,6 @@ public class PropertiesPanel extends KPanel {
 //            sb.append("<br>");
 //            sb.append("--------------------");
 //        }
-        sb.append("</font></html>");
 
         Icon icon = plugin.getIcon();
         if (icon == null && plugin.getType().equals("XShell")) {
@@ -188,7 +189,7 @@ public class PropertiesPanel extends KPanel {
         } else if (icon == null) {
             icon = new ImageIcon(getResourceManager().getImage("unknown_big.png"));
         }
-        layoutReport(sb.toString(), icon);
+        layoutReport(sb, icon);
     }
 
     void createDefaultReport() {

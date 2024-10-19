@@ -1,4 +1,4 @@
-package jworkspace.ui.views;
+package jworkspace.ui.api.views;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -26,14 +26,15 @@ package jworkspace.ui.views;
   ----------------------------------------------------------------------------
 */
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
-import jworkspace.ui.cpanel.CButton;
+import jworkspace.ui.api.cpanel.CButton;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,20 +56,25 @@ public class DefaultCompoundView extends DefaultView
     /**
      * Invoked when an action occurs.
      */
-    public void actionPerformed(java.awt.event.ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        if (command.equals(DefaultCompoundView.SHOW)) {
+        if (command.equals(DefaultView.SHOW)) {
             /*
-             * Send message to workspace gui with request
-             * to add to layout?
+             * Send message to workspace gui with request to add to layout
              */
             Map<String, Object> lparam = new HashMap<>();
             lparam.put("view", this);
             lparam.put("display", Boolean.TRUE);
             lparam.put("register", isUnique());
-            ServiceLocator.getInstance()
-                .getEventsDispatcher().fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
+            fireEvent(Constants.WORKSPACE_VIEW_LISTENER_CODE, lparam);
         }
+    }
+
+    public static void fireEvent(int code, Map<String, Object> lparam) {
+        ServiceLocator.getInstance()
+            .getEventsDispatcher().fireEvent(
+                code, lparam, null
+            );
     }
 
     public CButton[] getButtons() {
