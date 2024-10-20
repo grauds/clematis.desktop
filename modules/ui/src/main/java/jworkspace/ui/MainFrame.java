@@ -155,9 +155,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             for (CButton button : buttons) {
                 getControlPanel().addButton(button);
             }
-            if (buttons.length > 0) {
-                getControlPanel().addSeparator();
-            }
         }
         /*
          * Ask for menus
@@ -436,9 +433,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             if (buttons != null) {
                 for (CButton button : buttons) {
                     getControlPanel().addButton(button);
-                }
-                if (buttons.length > 0) {
-                    getControlPanel().addSeparator();
                 }
             }
             /*

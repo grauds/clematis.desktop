@@ -59,7 +59,9 @@ public abstract class Task implements Runnable {
      */
 
     public final void addProgressObserver(ProgressObserver observer) {
-        observers.add(observer);
+        synchronized (observers) {
+            observers.add(observer);
+        }
     }
 
     /**
@@ -69,7 +71,9 @@ public abstract class Task implements Runnable {
      */
 
     public final void removeProgressObserver(ProgressObserver observer) {
-        observers.remove(observer);
+        synchronized (observers) {
+            observers.remove(observer);
+        }
     }
 
     /**
@@ -90,8 +94,10 @@ public abstract class Task implements Runnable {
             percentInt = MAX_PERCENT;
         }
 
-        for (ProgressObserver observer : observers) {
-            observer.setProgress(percentInt);
+        synchronized (observers) {
+            for (ProgressObserver observer : observers) {
+                observer.setProgress(percentInt);
+            }
         }
     }
 

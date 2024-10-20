@@ -4,11 +4,13 @@ import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.plaf.PlafFactory;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class DesktopServiceLocator {
 
-    private final WorkspaceGUI workspaceGUI = new WorkspaceGUI();
+    @Setter
+    private WorkspaceGUI workspaceGUI;
 
     private final WorkspacePluginLocator pluginLocator = new WorkspacePluginLocator();
 

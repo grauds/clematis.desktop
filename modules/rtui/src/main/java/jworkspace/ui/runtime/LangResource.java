@@ -25,7 +25,6 @@ package jworkspace.ui.runtime;
   ----------------------------------------------------------------------------
 */
 
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -47,15 +46,12 @@ public class LangResource {
     }
 
     static String getString(String id) {
+
+        String message;
         try {
             if (resources == null) {
                 resources = ResourceBundle.getBundle(I18N_RESOURCES);
             }
-        } catch (MissingResourceException ex) {
-            resources = ResourceBundle.getBundle(I18N_RESOURCES, Locale.ENGLISH);
-        }
-        String message;
-        try {
             message = resources.getString(id);
         } catch (MissingResourceException ex) {
             message = id;

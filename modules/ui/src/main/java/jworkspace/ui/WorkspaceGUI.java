@@ -104,6 +104,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
         UIChangeManager.getInstance().setDefaultFrameIcon(getResourceManager().getImage("jw_16x16.png"));
         registerListeners();
+        DesktopServiceLocator.getInstance().setWorkspaceGUI(this);
     }
 
     UIActions getActions() {
