@@ -157,7 +157,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         if (logo == null) {
-            Image im = getResourceManager().getImage("logo/Logo.gif");
+            Image im = getResourceManager().getImage("logo/Logo.png");
             logo = new SplashScreen(new Frame(), im, null);
 
             ImageIcon imc = new ImageIcon(im);

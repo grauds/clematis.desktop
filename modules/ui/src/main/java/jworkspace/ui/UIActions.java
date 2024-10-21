@@ -195,7 +195,7 @@ public class UIActions implements Constants {
     private void about() {
 
         JDialog aboutFrame = new JDialog(gui.getFrame());
-        Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.gif");
+        Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.png");
 
         aboutFrame.getContentPane().setLayout(new BorderLayout());
         ImageRenderer imr = new ImageRenderer();
