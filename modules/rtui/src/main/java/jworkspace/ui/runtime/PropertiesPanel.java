@@ -33,6 +33,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
@@ -48,7 +49,7 @@ import jworkspace.runtime.JavaProcess;
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals"})
 public class PropertiesPanel extends KPanel {
 
-    private JLabel l;
+    private JTextPane l;
 
     private JComponent log = null;
 
@@ -62,19 +63,21 @@ public class PropertiesPanel extends KPanel {
     /**
      * Get performance label
      */
-    private JLabel createDefaultLabel() {
+    private JTextPane createDefaultLabel() {
 
-        JLabel label = new JLabel();
+        JTextPane label = new JTextPane();
 
+        label.setContentType("text/html");
         label.setBackground(Color.white);
         label.setOpaque(true);
         label.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setVerticalAlignment(JLabel.CENTER);
+        //label.setHorizontalAlignment(JLabel.CENTER);
+        label.setEditable(false);
+      /*  label.setVerticalAlignment(JLabel.CENTER);
         label.setHorizontalTextPosition(JLabel.CENTER);
         label.setVerticalTextPosition(JLabel.BOTTOM);
         label.setIconTextGap(10);
-
+*/
         Font font = label.getFont();
         label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
 
@@ -139,7 +142,7 @@ public class PropertiesPanel extends KPanel {
             log = null;
         }
         String sb = "<html><font color=\"black\">"
-            + "<br><br><b>"
+            + "<br><b>"
             + LangResource.getString("Name") + ": "
             + "</b>"
             + plugin.getName()
@@ -152,7 +155,7 @@ public class PropertiesPanel extends KPanel {
             + "</b>"
             + plugin.getVersion()
             + "<br><b>"
-            + LangResource.getString("Class_Name") + ": "
+            + LangResource.getString("Class") + ": "
             + "</b>"
             + plugin.getClassName()
             + "<br><b>"
@@ -160,7 +163,12 @@ public class PropertiesPanel extends KPanel {
             + "</b>"
             + plugin.isLoaded()
             + "<br><b>"
+            + LangResource.getString("Home") + ": "
+            + "</b><a href=\""
+            + plugin.getHelpURL().toString()
+            + "\">" + plugin.getHelpURL().toString() + "</a><br>"
             + "</font></html>";
+
 
 //        if (!plugin.getProperties().isEmpty()) {
 //            sb.append(LangResource.getString("Properties") + ": ");
@@ -205,13 +213,13 @@ public class PropertiesPanel extends KPanel {
     }
 
     private void layoutReport(String text, Icon icon) {
-        l.setHorizontalAlignment(JLabel.CENTER);
+      /*  l.setHorizontalAlignment(JLabel.CENTER);
         l.setVerticalAlignment(JLabel.CENTER);
         l.setHorizontalTextPosition(JLabel.CENTER);
         l.setVerticalTextPosition(JLabel.BOTTOM);
         if (icon != null) {
             l.setIcon(icon);
-        }
+        }*/
         l.setText(text);
         if (log != null) {
             remove(l);

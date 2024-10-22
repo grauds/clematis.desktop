@@ -41,9 +41,10 @@ jar {
                  "PluginName": jar.archiveBaseName.get(),
                  "PluginType": "ANY",
                  "PluginDescription": jar.archiveClassifier.get(),
-                 "PluginIcon": "",
+                 "PluginIcon": "jworkspace/ui/runtime/images/runtime.png",
+                 "PluginIconBig": "jworkspace/ui/runtime/images/runtime_big.png",
                  "PluginVersion": jar.archiveVersion.get(),
-                 "PluginHelpURL": ""
+                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/rtui"
          ], "jworkspace.ui.runtime.RuntimeManagerWindow.class")
     }
     from {

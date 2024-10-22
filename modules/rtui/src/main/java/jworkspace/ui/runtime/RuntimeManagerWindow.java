@@ -470,8 +470,9 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         processes.setListData(p.toArray(JavaProcess[]::new));
 
         Set<Plugin> listData = new HashSet<>();
-       // todo listData.addAll(Workspace.getSystemPlugins());
-       // todo listData.addAll(Workspace.getUserPlugins());
+        listData.addAll(ServiceLocator.getInstance().getSystemPlugins());
+        listData.addAll(ServiceLocator.getInstance().getUserPlugins());
+
         plugins.setListData(listData.toArray(new Plugin[] {}));
 
         getActions().enableActions(!processes.isSelectionEmpty());

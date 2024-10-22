@@ -62,6 +62,7 @@ public class ShellsLoader extends Task {
         List<Plugin> plugins = pluginLocator.loadPlugins(
             pluginPath
         );
+        ServiceLocator.getInstance().getUserPlugins().addAll(plugins);
 
         if (plugins.isEmpty()) {
             showMessageInProgressDialog(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));

@@ -33,9 +33,9 @@ jar {
                  "PluginName": jar.archiveBaseName.get(),
                  "PluginType": "ANY",
                  "PluginDescription": jar.archiveClassifier.get(),
-                 "PluginIcon": "",
+                 "PluginIcon": "jworkspace/ui/images/desktop/desktop.png",
                  "PluginVersion": jar.archiveVersion.get(),
-                 "PluginHelpURL": ""
+                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/ui"
          ], "jworkspace.ui.WorkspaceGUI.class")
     }
     from {

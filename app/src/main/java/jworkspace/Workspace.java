@@ -114,6 +114,8 @@ public class Workspace {
         List<Plugin> plugins = pluginLocator.loadPlugins(
             profilesManager.getBasePath().resolve(PLUGINS_DIRECTORY)
         );
+        ServiceLocator.getInstance().getSystemPlugins().clear();
+        ServiceLocator.getInstance().getSystemPlugins().addAll(plugins);
         /*
          * Create required modules
          */
@@ -129,6 +131,8 @@ public class Workspace {
         List<Plugin> userPlugins = pluginLocator.loadPlugins(
             profilePath.resolve(PLUGINS_DIRECTORY)
         );
+        ServiceLocator.getInstance().getUserPlugins().clear();
+        ServiceLocator.getInstance().getUserPlugins().addAll(userPlugins);
         /*
          * Send plugins to runtime manager if they are instances of Runnable
          */
