@@ -80,7 +80,7 @@ import jworkspace.ui.utils.SwingUtils;
 public class RuntimeManagerWindow extends DefaultCompoundView
     implements ListSelectionListener, ChangeListener {
 
-    private static final String PLUGINS = LangResource.getString("Plugins");
+    private static final String PLUGINS = LangResource.getString("Installed Plugins");
 
     private static final String PROCESSES = LangResource.getString("Processes");
 
@@ -102,9 +102,9 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     public RuntimeManagerWindow() {
         super();
 
+        monitors.add(new Monitor(LangResource.getString("message#244"), new IPAddressPanel()));
         monitors.add(new Monitor(LangResource.getString("message#245"), new MemoryMonitor()));
         monitors.add(new Monitor(LangResource.getString("message#248"), new MemoryCompactorPanel()));
-        monitors.add(new Monitor(LangResource.getString("message#244"), new IPAddressPanel()));
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.add(PLUGINS, createPluginsList());
@@ -118,14 +118,15 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         nestScroller.getViewport().setOpaque(false);
         nestScroller.setOpaque(false);
 
-        perfPanel.add(nestScroller, BorderLayout.CENTER);
-        tabbedPane.add(LangResource.getString("Performance"), perfPanel);
+        //perfPanel.add(nestScroller, BorderLayout.CENTER);
+       // tabbedPane.add(LangResource.getString("Performance"), perfPanel);
 
         this.setLayout(new BorderLayout());
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, propPanel);
         split.setOpaque(false);
 
         this.add(split, BorderLayout.CENTER);
+        this.add(nestScroller, BorderLayout.EAST);
 
         tabbedPane.addChangeListener(this);
         tabbedPane.setOpaque(false);
@@ -183,12 +184,12 @@ public class RuntimeManagerWindow extends DefaultCompoundView
                 }
 
                 private void setListValue(Object value) {
-                    if (!(value instanceof JavaProcess)) {
+                    if (!(value instanceof JavaProcess javaProcess)) {
                         return;
                     }
 
-                    setText(((JavaProcess) value).getName());
-                    if (((JavaProcess) value).isAlive()) {
+                    setText(javaProcess.getName());
+                    if (javaProcess.isAlive()) {
                         setIcon(new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
                             .getResourceAsImage("images/alive.gif")));
                     } else {
@@ -525,19 +526,11 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
                     Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     if (value instanceof Plugin plugin) {
-
-                        setText(value.toString());
-
+                        setText(plugin.toString());
                         Icon icon = plugin.getIcon();
-
-                        if (icon == null && plugin.getType().equals("XShell")) {
-                            setIcon(new ImageIcon(getResourceManager().getImage("shell.png")));
-                        } else if (icon == null && plugin.getType().equals("XPlugin")) {
-                            setIcon(new ImageIcon(getResourceManager().getImage("plugin.png")));
-                        } else {
-                            setIcon(Objects.requireNonNullElseGet(icon,
-                                () -> new ImageIcon(getResourceManager().getImage("unknown.png"))));
-                        }
+                        setIcon(Objects.requireNonNullElseGet(icon,
+                            () -> new ImageIcon(getResourceManager().getImage("plugin.png"))
+                        ));
                     }
                     return comp;
                 }
