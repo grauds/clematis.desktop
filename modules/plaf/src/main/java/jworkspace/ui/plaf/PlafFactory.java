@@ -31,9 +31,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
@@ -47,7 +47,10 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import lombok.NonNull;
+import jworkspace.runtime.WorkspacePluginContext;
+import jworkspace.ui.api.Constants;
+import jworkspace.ui.config.DesktopServiceLocator;
+import lombok.Getter;
 import lombok.extern.java.Log;
 
 /**
@@ -55,15 +58,24 @@ import lombok.extern.java.Log;
  * @author Anton Troshin
  */
 @Log
+@Getter
 public class PlafFactory {
+    /**
+     * Key for UI properties
+     */
+    public static final String CK_THEME = "gui.theme";
     /**
      * The name of configuration file
      */
     private static final String LAFS_XML = "lafs.xml";
     /**
-     * Single instance
+     * Support for i18n strings
      */
-    private static PlafFactory instance;
+    private static final ResourceBundle STRINGS = ResourceBundle.getBundle("i18n/strings");
+    /**
+     * Workspace shared context for plugins
+     */
+    private final WorkspacePluginContext pluginContext;
     /**
      * Root folder for the data
      */
@@ -73,44 +85,56 @@ public class PlafFactory {
      */
     private final List<XPlafConnector> connectors = new ArrayList<>();
 
-    public PlafFactory() {}
-
-    public PlafFactory(@NonNull File dataRoot) {
-        this.configFile = Paths.get(dataRoot.getAbsolutePath()).resolve(LAFS_XML).toFile();
-    }
-
-    /**
-     * Get a single instance of this factory
-     *
-     * @return single instance
-     */
-    public static synchronized PlafFactory getInstance() {
-        if (instance == null) {
-            instance = new PlafFactory();
-            instance.load();
-        }
-        return instance;
+    public PlafFactory(WorkspacePluginContext pluginContext) {
+        this.pluginContext = pluginContext;
     }
 
     /**
      * Load and install look and feels from user configuration file
      */
-    private void load() {
+    public void load() {
+
+        this.configFile = this.pluginContext.getUserDir().resolve(LAFS_XML).toFile();
         try {
             SAXBuilder builder = new SAXBuilder();
             Document doc = builder.build(configFile);
-            Element root = doc.getRootElement();
+            Element element = doc.getRootElement();
             /*
              * Here we should find all plaf elements, described
              * in xml file under <plaf> tags
              */
-            List<Element> plafs = root.getChildren("plaf");
+            List<Element> plafs = element.getChildren("plaf");
             for (Element plaf : plafs) {
-                XPlafConnector connector = XPlafConnector.create(plaf);
+                XPlafConnector connector = XPlafConnector.create(plaf, this);
                 if (connector != null) {
                     connectors.add(connector);
                 }
             }
+
+            /*
+             * Set LAF and styles
+             */
+            try {
+                if (DesktopServiceLocator.getInstance().getUiConfig().getLaf() != null
+                    && !DesktopServiceLocator.getInstance().getUiConfig().getLaf().isEmpty()) {
+
+                    if (DesktopServiceLocator.getInstance().getUiConfig().getLaf().equals(Constants.DEFAULT_LAF)
+                        || !setLookAndFeel(
+                                DesktopServiceLocator.getInstance().getUiConfig().getLaf()
+                            )
+                    ) {
+                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    } else {
+                        setCurrentTheme(
+                            DesktopServiceLocator.getInstance().getUiConfig().getLaf(),
+                            DesktopServiceLocator.getInstance().getUiConfig().getString(CK_THEME)
+                        );
+                    }
+                }
+            } catch (Exception ex) {
+                log.warning(ex.getMessage());
+            }
+
         } catch (JDOMException | IOException e) {
             log.warning("Cannot load the factory, applying the defaults. Caused by: " + e.getMessage());
 
@@ -118,7 +142,7 @@ public class PlafFactory {
             MetalTheme currentTheme = MetalLookAndFeel.getCurrentTheme();
 
             for (UIManager.LookAndFeelInfo info : installed) {
-                XPlafConnector connector = new XPlafConnector();
+                XPlafConnector connector = new XPlafConnector(this);
                 connector.setInfo(info);
                 connector.setThemes(new MetalTheme[0]);
                 if (info.getClassName().equals(MetalLookAndFeel.class.getCanonicalName())) {
@@ -133,6 +157,9 @@ public class PlafFactory {
      * Save all look and feel user config
      */
     public void save() {
+
+        this.configFile = this.pluginContext.getUserDir().resolve(LAFS_XML).toFile();
+
         try (StringWriter sw = new StringWriter();
              FileOutputStream os = new FileOutputStream(configFile)) {
 
@@ -305,6 +332,23 @@ public class PlafFactory {
         if (connector != null) {
             connector.setTheme(theme);
         }
+    }
+
+    public String getTheme() {
+        return DesktopServiceLocator.getInstance().getUiConfig().getString(CK_THEME, "");
+    }
+
+    public void saveTheme() {
+        MetalTheme theme = getCurrentTheme();
+        if (theme != null) {
+            DesktopServiceLocator.getInstance().getUiConfig().putString(CK_THEME, theme.getClass().getName());
+        } else {
+            DesktopServiceLocator.getInstance().getUiConfig().remove(CK_THEME);
+        }
+    }
+
+    public static String getString(String key) {
+        return PlafFactory.STRINGS.getString(key);
     }
 }
 

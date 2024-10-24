@@ -36,7 +36,6 @@ import javax.swing.plaf.metal.MetalTheme;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
-import jworkspace.ui.config.DesktopServiceLocator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
@@ -58,6 +57,10 @@ class XPlafConnector {
 
     private static final String NAME_ATTRIBUTE = "name";
     /**
+     * Plaf factory reference
+     */
+    private final PlafFactory plafFactory;
+    /**
      * Look and feel instance
      */
     private UIManager.LookAndFeelInfo info = null;
@@ -75,6 +78,11 @@ class XPlafConnector {
      * to be invoked to set theme on this plaf.
      */
     private Element method = null;
+
+    XPlafConnector(PlafFactory plafFactory) {
+        this.plafFactory = plafFactory;
+    }
+
     /**
      * Create connector from binary jdom branch
      * <p>
@@ -87,12 +95,13 @@ class XPlafConnector {
      * <method access="public" static="true" type="void" name="setCurrentTheme"/>
      * </plaf>
      *
-     * @param element binary jdom branch
+     * @param element     binary jdom branch
+     * @param plafFactory
      * @return new connector or null
      */
-    public static XPlafConnector create(Element element) {
+    public static XPlafConnector create(Element element, PlafFactory plafFactory) {
 
-        XPlafConnector connector = new XPlafConnector();
+        XPlafConnector connector = new XPlafConnector(plafFactory);
 
         //** create and install laf, if it is not installed on creation
         Element clazzNameEl = element.getChild(CLASS_NODE);
@@ -104,7 +113,7 @@ class XPlafConnector {
             connector.info = new UIManager.LookAndFeelInfo(laf.getName(), lafClazzName);
 
             //** check if this laf is installed in system
-            if (DesktopServiceLocator.getInstance().getPlafFactory().getLookAndFeel(lafClazzName) == null) {
+            if (plafFactory.getLookAndFeel(lafClazzName) == null) {
                 UIManager.installLookAndFeel(connector.info);
             }
         } catch (Exception | Error e) {

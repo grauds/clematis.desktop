@@ -57,9 +57,12 @@ public final class Plugin extends PluginDTO {
 
     private Class<?> pluginClass = null;
 
+    @Getter
+    private Object pluginObject = null;
+
     private final Properties props = new Properties();
 
-    private final PluginLocator locator;
+    private final PluginLocator<?> locator;
 
     private final EventListenerList listeners = new EventListenerList();
 
@@ -68,12 +71,13 @@ public final class Plugin extends PluginDTO {
 
     private PluginClassLoader loader;
 
-    /* Construct a new plugin. A plugin is uniquely identified by a jar file
+    /**
+     * Construct a new plugin. A plugin is uniquely identified by a jar file
      * and a class name. It's initially created by the PluginLocator which scans
-     * a jar file for plugin entires. When it's reloaded, it reopens the jar file
-     * and rescans everything. (hopefully...will this really work?)
+     * a jar file for plugin entries. When it's reloaded, it reopens the jar file
+     * and rescans everything.
      */
-    Plugin(PluginLocator locator, String jarFile, String expectedType)
+    <T extends PluginContext> Plugin(PluginLocator<T> locator, String jarFile, String expectedType)
         throws PluginException {
         super(expectedType, jarFile);
 
@@ -86,9 +90,9 @@ public final class Plugin extends PluginDTO {
      *
      * @return The context.
      */
-
-    public PluginContext getContext() {
-        return locator.getContext();
+    @SuppressWarnings("unchecked")
+    public <T extends PluginContext> T getContext() {
+        return (T) locator.getContext();
     }
 
     /**
@@ -248,15 +252,17 @@ public final class Plugin extends PluginDTO {
      */
 
     public Object newInstance() throws PluginException {
+
         if (!loaded) {
             throw (new PluginException("Plugin is not loaded!"));
         }
 
-        Object obj = null;
+        if (pluginObject != null) {
+            return pluginObject;
+        }
 
         try {
             // try to find a c'tor that takes a PluginContext first
-
             Constructor<?> ctor = null;
             Constructor<?>[] ctors = pluginClass.getConstructors();
 
@@ -271,24 +277,24 @@ public final class Plugin extends PluginDTO {
                     break;
                 }
             }
-
+            // call a constructor with plugin context injection
             if (ctor != null) {
-                obj = ctor.newInstance(getContext());
+                pluginObject = ctor.newInstance(getContext());
             }
 
         } catch (Exception ex) {
             throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN + pluginClass.getName(), ex));
         }
 
-        if (obj == null) {
+        if (pluginObject == null) {
             try {
-                obj = pluginClass.getDeclaredConstructor().newInstance();
+                pluginObject = pluginClass.getDeclaredConstructor().newInstance();
             } catch (Exception ex) {
                 throw (new PluginException(FAILED_TO_INSTANTIATE_PLUGIN + pluginClass.getName(), ex));
             }
         }
 
-        return obj;
+        return pluginObject;
     }
 
     /**

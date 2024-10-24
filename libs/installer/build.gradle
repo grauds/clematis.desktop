@@ -4,9 +4,11 @@ dependencies {
 
     compileOnly project(':api')
     compileOnly project(':kiwi')
+    compileOnly project(':runtime')
 
     testImplementation project(':api')
     testImplementation project(':kiwi')
+    testImplementation project(':runtime')
 }
 
 jar {
@@ -14,4 +16,27 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+jar {
+    manifest {
+        attributes([
+                "PluginName": jar.archiveBaseName.get(),
+                "PluginType": "ANY",
+                "PluginDescription": jar.archiveClassifier.get(),
+                "PluginIcon": "jworkspace/installer/images/installer.png",
+                "PluginVersion": jar.archiveVersion.get(),
+                "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/libs/installer"
+        ], "jworkspace.installer.WorkspaceInstaller.class")
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register('deployToPlugins', Copy) {
+    from jar
+    //into "${System.getProperty("user.home")}/.jworkspace/plugins/"
+    into "${project.rootDir}/.jworkspace/plugins/"
 }

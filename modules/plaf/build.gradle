@@ -1,0 +1,37 @@
+version '1.0.0-SNAPSHOT'
+
+
+dependencies {
+
+    compileOnly project(":kiwi")
+    compileOnly project(":ui")
+    compileOnly project(":ui-api")
+    compileOnly project(":runtime")
+
+    implementation "org.jdom:jdom2:2.0.6.1"
+}
+
+jar {
+    manifest {
+        attributes([
+                "PluginName": jar.archiveBaseName.get(),
+                "PluginType": "ANY",
+                "PluginDescription": jar.archiveClassifier.get(),
+                "PluginIcon": "jworkspace/ui/plaf/images/plaf.png",
+                "PluginVersion": jar.archiveVersion.get(),
+                "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/plaf"
+        ], "jworkspace.ui.plaf.PlafFactory.class")
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register('deployToPlugins', Copy) {
+    from jar
+    into "${project.rootDir}/.jworkspace/users/root/shells/"
+}
+
+deployToPlugins.dependsOn(assemble)
+build.finalizedBy deployToPlugins

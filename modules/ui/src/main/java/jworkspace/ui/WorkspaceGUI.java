@@ -65,6 +65,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.IWorkspaceUI;
 import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.WorkspacePluginContext;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.config.DesktopServiceLocator;
@@ -85,6 +86,10 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     private static SplashScreen logo = null;
     /**
+     * Plugin context to be injected by plugin loader
+     */
+    private final WorkspacePluginContext pluginContext;
+    /**
      * Workspace main frame
      */
     private MainFrame frame = null;
@@ -99,8 +104,10 @@ public class WorkspaceGUI implements IWorkspaceUI {
     /**
      * Default constructor.
      */
-    public WorkspaceGUI() {
+    public WorkspaceGUI(WorkspacePluginContext pluginContext) {
         super();
+
+        this.pluginContext = pluginContext;
 
         UIChangeManager.getInstance().setDefaultFrameIcon(getResourceManager().getImage("jw_16x16.png"));
         registerListeners();
@@ -194,12 +201,10 @@ public class WorkspaceGUI implements IWorkspaceUI {
      *
      * @return path to textures jar library
      */
-    public static Path getTexturesPath() {
+    public Path getTexturesPath() {
 
-        return ServiceLocator
-            .getInstance()
-            .getProfilesManager()
-            .getBasePath()
+        return pluginContext
+            .getUserDir()
             .resolve(Constants.LIB_PATH)
             .resolve(Constants.RES_PATH)
             .resolve(Constants.TEXTURES_JAR);
@@ -211,10 +216,8 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * @return path to desktop icons jar library
      */
     public Path getDesktopIconsPath() {
-        return ServiceLocator
-            .getInstance()
-            .getProfilesManager()
-            .getBasePath()
+        return pluginContext
+            .getUserDir()
             .resolve(Constants.LIB_PATH)
             .resolve(Constants.RES_PATH)
             .resolve(Constants.DESKTOP_JAR);
@@ -276,7 +279,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
             .getInstance()
             .getUiConfig()
             .setConfigFile(
-                ServiceLocator.getInstance().getProfilesManager().getBasePath().resolve("ui").toFile()
+                this.pluginContext.getUserDir().resolve("ui").toFile()
             );
 
         DesktopServiceLocator.getInstance().getUiConfig().load();
@@ -294,38 +297,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
          * Set texture on
          */
         setTextureVisible(DesktopServiceLocator.getInstance().getUiConfig().isTextureVisible());
-
-        /*
-         * Set LAF and styles
-         */
-        try {
-            if (DesktopServiceLocator.getInstance().getUiConfig().getLaf() != null
-                && !DesktopServiceLocator.getInstance().getUiConfig().getLaf().isEmpty()) {
-
-                if (DesktopServiceLocator.getInstance().getUiConfig().getLaf().equals(Constants.DEFAULT_LAF)
-                    || !DesktopServiceLocator
-                    .getInstance()
-                    .getPlafFactory()
-                    .setLookAndFeel(
-                        DesktopServiceLocator.getInstance().getUiConfig().getLaf()
-                    )
-                ) {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } else {
-
-                    DesktopServiceLocator
-                        .getInstance()
-                        .getPlafFactory()
-                        .setCurrentTheme(
-                            DesktopServiceLocator.getInstance().getUiConfig().getLaf(),
-                            DesktopServiceLocator.getInstance().getUiConfig().getTheme()
-                        );
-                }
-            }
-        } catch (Exception ex) {
-            log.warning(ex.getMessage());
-        }
-
         /*
          * Create heavy dialogs and store them in the cache
          */
@@ -333,10 +304,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
         try (
             FileInputStream inputFile = new FileInputStream(
-                ServiceLocator
-                    .getInstance()
-                    .getProfilesManager()
-                    .ensureUserHomePath()
+                this.pluginContext.getUserDir()
                     .resolve(Constants.DATA_FILE).toFile()
             ); DataInputStream inputStream = new DataInputStream(inputFile)
         ) {
@@ -395,10 +363,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
          * Save the workspace configuration
          */
         DesktopServiceLocator.getInstance().getUiConfig().save();
-        /*
-         * Save look and feel infos
-         */
-        DesktopServiceLocator.getInstance().getPlafFactory().save();
         /*
          * Dispose opened frames
          */

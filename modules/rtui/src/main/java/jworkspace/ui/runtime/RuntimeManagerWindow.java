@@ -66,6 +66,7 @@ import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.JavaProcess;
 import jworkspace.runtime.RuntimeManager;
+import jworkspace.runtime.WorkspacePluginContext;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.api.views.DefaultCompoundView;
 import jworkspace.ui.config.DesktopServiceLocator;
@@ -92,6 +93,8 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
     private final PropertiesPanel propPanel = new PropertiesPanel();
 
+    private final WorkspacePluginContext pluginContext;
+
     private JList<JavaProcess> processes = null;
 
     private JList<Plugin> plugins = null;
@@ -99,8 +102,10 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     /**
      * RuntimeManagerWindow constructor.
      */
-    public RuntimeManagerWindow() {
+    public RuntimeManagerWindow(WorkspacePluginContext pluginContext) {
         super();
+
+        this.pluginContext = pluginContext;
 
         monitors.add(new Monitor(LangResource.getString("message#244"), new IPAddressPanel()));
         monitors.add(new Monitor(LangResource.getString("message#245"), new MemoryMonitor()));

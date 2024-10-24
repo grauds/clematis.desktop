@@ -43,6 +43,7 @@ import com.hyperrealm.kiwi.util.StringUtils;
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
 import jworkspace.api.IWorkspaceComponent;
+import jworkspace.runtime.WorkspacePluginContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
@@ -61,6 +62,10 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      */
     private static ResourceManager resourceManager = null;
     /**
+     * Shared plugin context for workspace environment
+     */
+    private final WorkspacePluginContext pluginContext;
+    /**
      * Root folder for the data
      */
     private File dataRoot;
@@ -77,15 +82,17 @@ public class WorkspaceInstaller implements IWorkspaceComponent {
      */
     private DefinitionDataSource applicationData;
 
-    public WorkspaceInstaller() {}
+    public WorkspaceInstaller(WorkspacePluginContext pluginContext) {
+        this(pluginContext.getUserDir().toFile(), pluginContext);
+    }
 
-    /**
-     * Public constructor with data root
-     * @param dataRoot - a folder to store information in
-     */
     public WorkspaceInstaller(File dataRoot) {
-        super();
+        this(dataRoot, null);
+    }
+
+    WorkspaceInstaller(File dataRoot, WorkspacePluginContext pluginContext) {
         this.dataRoot = dataRoot;
+        this.pluginContext = pluginContext;
         reset();
     }
 

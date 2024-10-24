@@ -51,6 +51,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.dialog.IDialogPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.ImageRenderer;
 import jworkspace.ui.widgets.ResourceExplorerDialog;
@@ -58,7 +59,8 @@ import jworkspace.ui.widgets.ResourceExplorerDialog;
 /**
  * General settings panel for settings dialog.
  */
-class TexturePanel extends KPanel implements ActionListener {
+class TexturePanel extends KPanel implements ActionListener, IDialogPanel {
+
     private static final String TEXTURES_REPOSITORY = "TEXTURES_REPOSITORY";
     private final JButton bIconBrowse;
     private final JButton bLibBrowser;
@@ -169,7 +171,13 @@ class TexturePanel extends KPanel implements ActionListener {
 
         if (path == null && DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {
 
-            path = WorkspaceGUI.getTexturesPath().toFile().getAbsolutePath();
+            path = DesktopServiceLocator
+                .getInstance()
+                .getWorkspaceGUI()
+                .getTexturesPath()
+                .toFile()
+                .getAbsolutePath();
+
             ServiceLocator
                 .getInstance()
                 .getProfilesManager()

@@ -26,7 +26,10 @@ package jworkspace.ui.dialog;
    ----------------------------------------------------------------------------
 */
 
+import java.awt.Component;
 import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -34,6 +37,8 @@ import com.hyperrealm.kiwi.ui.KTabbedPane;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.ui.api.dialog.IDialogPanel;
+import lombok.NonNull;
 
 /**
  * Settings dialog shows a list of general workspace options.
@@ -44,29 +49,34 @@ public class SettingsDialog extends ComponentDialog {
 
     private TexturePanel texturePanel;
 
-    private PlafPanel plafPanel;
+    private final List<IDialogPanel> additionalPanels = new ArrayList<>();
+
+    private final KTabbedPane tabbedPane = new KTabbedPane();
 
     public SettingsDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString("SettingsDialog.title"), true);
         setResizable(false);
     }
 
+    public void addPanel(@NonNull String title, @NonNull IDialogPanel panel) {
+        this.additionalPanels.add(panel);
+        if (panel instanceof Component component) {
+            this.tabbedPane.addTab(title, component);
+        }
+    }
+
     protected JComponent buildDialogUI() {
         setComment(null);
 
-        KTabbedPane tabbedPane = new KTabbedPane();
-
         texturePanel = new TexturePanel();
-        plafPanel = new PlafPanel();
-
         tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.textureTab"), texturePanel);
-        tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.lafTab"), plafPanel);
 
         return (tabbedPane);
     }
 
     protected boolean accept() {
-        return texturePanel.syncData() && plafPanel.syncData();
+        this.additionalPanels.forEach(IDialogPanel::syncData);
+        return texturePanel.syncData();
     }
 
     public void dispose() {

@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
-import javax.swing.plaf.metal.MetalTheme;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
 
@@ -45,10 +44,6 @@ public class UIConfig {
      *
      */
     public static final String CK_LAF = "gui.laf";
-    /**
-     *
-     */
-    public static final String CK_THEME = "gui.theme";
     /**
      *
      */
@@ -104,19 +99,6 @@ public class UIConfig {
         }
     }
 
-    public String getTheme() {
-        return config.getString(CK_THEME, "");
-    }
-
-    public void saveTheme() {
-        MetalTheme theme = DesktopServiceLocator.getInstance().getPlafFactory().getCurrentTheme();
-        if (theme != null) {
-            config.putString(CK_THEME, theme.getClass().getName());
-        } else {
-            config.remove(CK_THEME);
-        }
-    }
-
     public boolean isDecorated() {
         return config.getBoolean(CK_UNDECORATED, false);
     }
@@ -145,7 +127,6 @@ public class UIConfig {
 
         try {
             saveLaf();
-            saveTheme();
             config.store();
         } catch (IOException ex) {
             log.severe(ex.getMessage());
@@ -174,4 +155,19 @@ public class UIConfig {
         }
     }
 
+    public String getString(String key, String defaultValue) {
+        return config.getString(key, defaultValue);
+    }
+
+    public String putString(String key, String value) {
+        return config.putString(key, value);
+    }
+
+    public Object remove(String key) {
+        return config.remove(key);
+    }
+
+    public String getString(String key) {
+        return config.getString(key);
+    }
 }

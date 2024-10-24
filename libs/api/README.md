@@ -1,11 +1,11 @@
-# jWorkspace API 
+# Java Workspace API 
 
 This package contains interfaces and classes which make API for the desktop. 
 The accent is set on DefinitionNode class, its hierarchy and its data source.
 
-<img src="./doc/api.png" alt="drawing" width="100%"/>
+<img src="./doc/api.png" alt="drawing" width="70%"/>
 
-## Quick Start: Definition Node
+## Definition Node
 
 DefinitionNode class is the base class for different classes which deal with textual 
 and binary information, stored on the local file system. Each node therefore
@@ -64,3 +64,6 @@ And a definition node can give its path back:
 ```
 String path = emptyNode.getLinkString();
 ```
+
+## Events Dispatcher
+

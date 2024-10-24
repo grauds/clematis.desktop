@@ -26,11 +26,21 @@ package jworkspace.runtime;
   ----------------------------------------------------------------------------
 */
 
+import java.nio.file.Path;
+
 import com.hyperrealm.kiwi.plugin.PluginContext;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
+ * Workspace specific set of data to be shared with plugins.
+ *
  * @author Anton Troshin
  */
+@Getter
+@Setter
 public class WorkspacePluginContext implements PluginContext {
 
+    private Path userDir;
 }

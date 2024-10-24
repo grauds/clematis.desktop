@@ -17,20 +17,14 @@ processResources {
 
 }
 
-ext {
-    codecVersion = '1.11'
-    jdomVersion = '2.0.6.1'
-    jodaVersion = '2.10.3'
-}
-
 dependencies {
 
     compileOnly project(':jworkspace')
     compileOnly project(':ui-api')
     compileOnly project(':ui')
-    compileOnly "org.jdom:jdom2:$jdomVersion"
+    compileOnly "org.jdom:jdom2:2.0.6.1"
 
-    implementation "joda-time:joda-time:$jodaVersion"
+    implementation "joda-time:joda-time:2.10.3"
 
     testImplementation project(':ui')
 }

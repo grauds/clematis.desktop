@@ -59,14 +59,13 @@ import lombok.extern.java.Log;
  * @author Anton Troshin
  */
 @Log
-public class WorkspacePluginLocator extends PluginLocator {
+public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext> {
 
     /**
      * Construct a new <code>PluginLocator</code> with Workspace plugin context.
      */
     public WorkspacePluginLocator() {
         super(new WorkspacePluginContext());
-
         addRestrictedPackage("jworkspace.runtime.*");
     }
 
@@ -124,7 +123,8 @@ public class WorkspacePluginLocator extends PluginLocator {
      * Load plugins from specified directory. This method traverses directory, with all subdirectories,
      * searches for jar file and tries to load all plugins.
      *
-     * @param directory path to directory
+     * @param directory path to directory to load plugins. Note, that this is not the directory
+     *                  there the plugins will load their data from.
      */
     public List<Plugin> loadPlugins(Path directory) {
         if (directory != null) {

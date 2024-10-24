@@ -13,9 +13,8 @@ import org.kohsuke.args4j.Option;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
-import jworkspace.api.IWorkspaceUI;
+import jworkspace.api.IWorkspaceComponent;
 import jworkspace.config.ServiceLocator;
-import jworkspace.installer.WorkspaceInstaller;
 import jworkspace.runtime.RuntimeManager;
 import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.users.Profile;
@@ -38,16 +37,19 @@ public class Workspace {
 
     public static final String PLUGINS_DIRECTORY = "plugins";
 
-    @Option(name = "--name", usage = "user profile name")
+    @Option(name = "--name", usage = "user profile name", required = true)
     private String name;
 
     @Option(name = "--password", usage = "user profile password")
     private String password;
 
+    @Option(name = "--path", usage = "workspace path to store data")
+    private String path = System.getProperty("user.dir");
+
     private Workspace() {}
 
     public static void main(String[] args) {
-        new Workspace().doMain(args);
+        Workspace.getInstance().doMain(args);
     }
 
     private void doMain(String[] args) {
@@ -78,41 +80,39 @@ public class Workspace {
 
         try {
             if (name != null) {
-                Workspace.start(name, password,
-                    Paths.get(System.getProperty("user.dir")).resolve(HOME_DIR).toString()
-                );
+                Workspace.start(name, password, Paths.get(path).resolve(HOME_DIR));
             }
         } catch (ProfileOperationException | IOException | PluginException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void start(@NonNull String name, String password, @NonNull String root)
+    public void start(@NonNull String name, String password)
+        throws ProfileOperationException, PluginException, IOException {
+        Workspace.start(name, password, Paths.get(path).resolve(HOME_DIR));
+    }
+
+    public static void start(@NonNull String name, String password, @NonNull Path root)
         throws ProfileOperationException, IOException, PluginException {
         /*
          * Validate profile name and password to get the configuration stored there
          */
         ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
-        profilesManager.setBasePath(Paths.get(root));
+        profilesManager.setBasePath(root);
         profilesManager.login(name, password);
-        /*
-         * Choose the current profile
-         */
+
         Profile currentProfile = profilesManager.getCurrentProfile();
         Path profilePath = currentProfile.getProfilePath(profilesManager.getBasePath());
         /*
-         * Load workspace installer from the user path
+         * Set workspace user directory inside workspace base directory to plugins context
          */
-        WorkspaceInstaller workspaceInstaller = ServiceLocator.getInstance().getInstaller();
-        workspaceInstaller.setDataRoot(profilePath.toFile());
-        workspaceInstaller.reset();
-        workspaceInstaller.load();
+        ServiceLocator.getInstance().getPluginLocator().getContext().setUserDir(profilePath);
         /*
          * Load plugins from system directory
          */
         WorkspacePluginLocator pluginLocator = ServiceLocator.getInstance().getPluginLocator();
         List<Plugin> plugins = pluginLocator.loadPlugins(
-            profilesManager.getBasePath().resolve(PLUGINS_DIRECTORY)
+            root.resolve(PLUGINS_DIRECTORY)
         );
         ServiceLocator.getInstance().getSystemPlugins().clear();
         ServiceLocator.getInstance().getSystemPlugins().addAll(plugins);
@@ -121,8 +121,8 @@ public class Workspace {
          */
         for (Plugin plugin : plugins) {
             Object pluginObject = plugin.newInstance();
-            if (pluginObject instanceof IWorkspaceUI gui) {
-                gui.load();
+            if (pluginObject instanceof IWorkspaceComponent component) {
+                component.load();
             }
         }
         /*
@@ -133,31 +133,52 @@ public class Workspace {
         );
         ServiceLocator.getInstance().getUserPlugins().clear();
         ServiceLocator.getInstance().getUserPlugins().addAll(userPlugins);
-        /*
-         * Send plugins to runtime manager if they are instances of Runnable
-         */
+
         RuntimeManager runtimeManager = ServiceLocator.getInstance().getRuntimeManager();
         for (Plugin plugin : userPlugins) {
             Object pluginObject = plugin.newInstance();
+            if (pluginObject instanceof IWorkspaceComponent component) {
+                component.load();
+            }
+            /*
+             * Send plugins to runtime manager if they are instances of Runnable
+             */
             if (pluginObject instanceof Runnable runnable) {
                 runtimeManager.take(runnable);
             }
         }
     }
 
-    static void stop(@NonNull Path root) throws IOException {
+    public void stop() throws IOException {
+        Workspace.stop(Paths.get(path).resolve(HOME_DIR));
+    }
+
+    public static void stop(@NonNull Path root) throws IOException {
         /*
          * Stop all running threads
          */
         RuntimeManager runtimeManager = ServiceLocator.getInstance().getRuntimeManager();
         runtimeManager.yield();
         /*
-         * Clear up workspace installer
+         * Save and reset all system plugins
          */
-        WorkspaceInstaller workspaceInstaller = ServiceLocator.getInstance().getInstaller();
-        workspaceInstaller.save();
-        workspaceInstaller.setDataRoot(root.toFile());
-        workspaceInstaller.reset();
+        for (Plugin plugin : ServiceLocator.getInstance().getSystemPlugins()) {
+            Object pluginObject = plugin.getPluginObject();
+            if (pluginObject instanceof IWorkspaceComponent component) {
+                component.save();
+                component.reset();
+            }
+        }
+        /*
+         * Save and reset all user plugins
+         */
+        for (Plugin plugin : ServiceLocator.getInstance().getUserPlugins()) {
+            Object pluginObject = plugin.getPluginObject();
+            if (pluginObject instanceof IWorkspaceComponent component) {
+                component.save();
+                component.reset();
+            }
+        }
         /*
          * Logout from the current profile
          */
@@ -167,5 +188,13 @@ public class Workspace {
 
     public static void exit() {
         System.exit(0);
+    }
+
+    public static Workspace getInstance() {
+        return Workspace.InstanceHolder.WORKSPACE;
+    }
+
+    private static final class InstanceHolder {
+        private static final Workspace WORKSPACE = new Workspace();
     }
 }

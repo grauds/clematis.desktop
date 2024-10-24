@@ -103,7 +103,6 @@ public class ShellsTests {
         UIConfig uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(Constants.CONFIG_FILE).toFile());
 
         uiConfig.saveLaf();
-        uiConfig.saveTheme();
         uiConfig.setKiwiTextureVisible(true);
         uiConfig.setTexture(WorkspaceGUI.getResourceManager().getImage("test_texture.gif"));
         uiConfig.setTextureVisible(true);

@@ -59,19 +59,18 @@ import lombok.Setter;
  * plugin. Finally, <code>PluginVersion</code> specifies the version number of
  * the plugin.
  * <p>
- *
+ * @param <T>
  * @author Mark Lindner
  * @since Kiwi 1.3
  */
-
-public class PluginLocator {
+public class PluginLocator<T extends PluginContext> {
 
     private final ArrayList<String> forbiddenPackages;
 
     private final ArrayList<String> restrictedPackages;
 
     @Getter
-    private final PluginContext context;
+    private final T context;
 
     @Getter
     private final ResourceDecoder decoder;
@@ -90,7 +89,7 @@ public class PluginLocator {
      *
      * @param context The <code>PluginContext</code> for this plugin locator.
      */
-    public PluginLocator(PluginContext context) {
+    public PluginLocator(T context) {
 
         decoder = new ResourceDecoder();
 

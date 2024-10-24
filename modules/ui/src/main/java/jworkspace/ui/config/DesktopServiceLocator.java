@@ -2,7 +2,6 @@ package jworkspace.ui.config;
 
 import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.plaf.PlafFactory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,8 +14,6 @@ public class DesktopServiceLocator {
     private final WorkspacePluginLocator pluginLocator = new WorkspacePluginLocator();
 
     private final UIConfig uiConfig = new UIConfig();
-
-    private final PlafFactory plafFactory = new PlafFactory();
 
     private DesktopServiceLocator() {}
 

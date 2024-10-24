@@ -27,9 +27,12 @@ project(':ui').projectDir = file('modules/ui')
 include 'rtui'
 project(':rtui').projectDir = file('modules/rtui')
 
-//
+include 'plaf'
+project(':plaf').projectDir = file('modules/plaf')
+
 //include 'instui'
 //project(':instui').projectDir = file('plugins/instui')
+
 //
 //include 'launcher'
 //project(':launcher').projectDir = file('plugins/launcher')

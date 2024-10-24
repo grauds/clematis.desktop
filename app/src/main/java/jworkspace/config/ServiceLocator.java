@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import com.hyperrealm.kiwi.plugin.Plugin;
 
 import jworkspace.api.EventsDispatcher;
-import jworkspace.installer.WorkspaceInstaller;
 import jworkspace.runtime.RuntimeManager;
 import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.users.ProfilesManager;
@@ -31,8 +30,6 @@ public class ServiceLocator {
     private final List<Plugin> systemPlugins = new ArrayList<>();
 
     private final List<Plugin> userPlugins = new ArrayList<>();
-
-    private final WorkspaceInstaller installer = new WorkspaceInstaller();
 
     private final EventsDispatcher eventsDispatcher = new EventsDispatcher();
 

@@ -67,7 +67,7 @@ public class WorkspaceTest {
 
         Assertions.assertEquals(1, Objects.requireNonNull(testFolder.getRoot().listFiles()).length);
 
-        Workspace.start(testProfileName, password, basePath.toString());
+        Workspace.start(testProfileName, password, basePath);
 
     }
 

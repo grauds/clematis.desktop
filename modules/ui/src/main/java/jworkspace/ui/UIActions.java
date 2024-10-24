@@ -31,6 +31,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -264,11 +265,11 @@ public class UIActions implements Constants {
         }
 
         public void actionPerformed(ActionEvent e) {
-//          todo  try {
-//                Workspace.changeCurrentProfile();
-//            } catch (WorkspaceException ex) {
-//                LOG.error(ex.getMessage(), ex);
-//            }
+            try {
+                Workspace.getInstance().stop();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

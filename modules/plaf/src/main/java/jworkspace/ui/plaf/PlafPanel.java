@@ -1,4 +1,4 @@
-package jworkspace.ui.dialog;
+package jworkspace.ui.plaf;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003 Anton Troshin
@@ -43,15 +43,17 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.LookAndFeelChooser;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.api.dialog.IDialogPanel;
 import jworkspace.ui.widgets.ThemeChooser;
+import lombok.NonNull;
 
 /**
  * Panel for customizing look and feel of java workspace.
  */
 @SuppressWarnings("MagicNumber")
-class PlafPanel extends KPanel implements ActionListener {
+public class PlafPanel extends KPanel implements ActionListener, IDialogPanel {
+
+    private final PlafFactory plafFactory;
     /**
      * Look and feel chooser
      */
@@ -68,8 +70,9 @@ class PlafPanel extends KPanel implements ActionListener {
     /**
      * Public constructor
      */
-    PlafPanel() {
+    PlafPanel(@NonNull PlafFactory plafFactory) {
         super();
+        this.plafFactory = plafFactory;
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         setLayout(gb);
@@ -81,7 +84,7 @@ class PlafPanel extends KPanel implements ActionListener {
         //***** laf chooser *****
 
         KPanel kp = new KPanel();
-        kp.setBorder(new TitledBorder(WorkspaceResourceAnchor.getString("PlafPanel.lafBorder.title")));
+        kp.setBorder(new TitledBorder(PlafFactory.getString("PlafPanel.lafBorder.title")));
         kp.setLayout(new BorderLayout());
 
      //   getLfChooser().setPreferredSize(new Dimension(150, 20));
@@ -97,7 +100,7 @@ class PlafPanel extends KPanel implements ActionListener {
         //*** themes chooser ********
 
         kp = new KPanel();
-        kp.setBorder(new TitledBorder(WorkspaceResourceAnchor.getString("PlafPanel.themesBorder.title")));
+        kp.setBorder(new TitledBorder(PlafFactory.getString("PlafPanel.themesBorder.title")));
         kp.setLayout(new BorderLayout());
 
    //     getThemeChooser().setPreferredSize(new Dimension(150, 20));
@@ -128,12 +131,9 @@ class PlafPanel extends KPanel implements ActionListener {
         if (e.getSource() == getLfChooser()) {
             fetchInfo();
         } else if (e.getSource() == getThemeChooser()) {
-            DesktopServiceLocator
-                .getInstance()
-                .getPlafFactory()
-                .setCurrentTheme(
-                    getLfChooser().getLookAndFeel(), getThemeChooser().getTheme()
-                );
+            plafFactory.setCurrentTheme(
+                getLfChooser().getLookAndFeel(), getThemeChooser().getTheme()
+            );
         }
     }
 
@@ -156,7 +156,7 @@ class PlafPanel extends KPanel implements ActionListener {
         /*
          * Currently selected laf
          */
-        LookAndFeel selectedLaf = DesktopServiceLocator.getInstance().getPlafFactory().getLookAndFeel(selectedLafName);
+        LookAndFeel selectedLaf = plafFactory.getLookAndFeel(selectedLafName);
         /*
          * Get description of selected laf
          */
@@ -165,10 +165,10 @@ class PlafPanel extends KPanel implements ActionListener {
             /*
              * Get a list of themes for a current LAF
              */
-            MetalTheme[] themes = DesktopServiceLocator.getInstance().getPlafFactory().listThemes(selectedLaf);
+            MetalTheme[] themes = plafFactory.listThemes(selectedLaf);
             getThemeChooser().setModel(new DefaultComboBoxModel<>(themes));
 
-            MetalTheme currentTheme = DesktopServiceLocator.getInstance().getPlafFactory().getCurrentTheme(selectedLaf);
+            MetalTheme currentTheme = plafFactory.getCurrentTheme(selectedLaf);
             getThemeChooser().setSelectedItem(currentTheme);
             getThemeChooser().setEnabled(themes.length > 0);
         }
@@ -203,10 +203,7 @@ class PlafPanel extends KPanel implements ActionListener {
         return scrollPane;
     }
 
-    boolean syncData() {
-        return DesktopServiceLocator
-            .getInstance()
-            .getPlafFactory()
-            .setLookAndFeel(getLfChooser().getLookAndFeel());
+    public boolean syncData() {
+        return plafFactory.setLookAndFeel(getLfChooser().getLookAndFeel());
     }
 }
