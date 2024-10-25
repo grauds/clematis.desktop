@@ -24,7 +24,6 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -37,26 +36,25 @@ import lombok.extern.java.Log;
  */
 @Log
 public class LangResource {
+    /**
+     * Support for i18n strings
+     */
+    private static ResourceBundle strings;
 
-    private static final String I18N_RESOURCES = "i18n/rmstrings";
+    private LangResource() {}
 
-    private static ResourceBundle resources = null;
+    public static String getString(String id) {
 
-    private LangResource() {
-    }
-
-    static String getString(String id) {
-
-        String message;
+        String message = id;
         try {
-            if (resources == null) {
-                resources = ResourceBundle.getBundle(I18N_RESOURCES);
+            if (strings == null) {
+                strings = ResourceBundle.getBundle("i18n/rmstrings");
             }
-            message = resources.getString(id);
-        } catch (MissingResourceException ex) {
-            message = id;
-            log.finest("Cannot find resource string " + id + " in file rmstrings");
+            message = strings.getString(id);
+        } catch (MissingResourceException ignored) {
+            //log.log(Level.INFO, "Cannot find resource:" + id);
         }
+
         return message;
     }
 }

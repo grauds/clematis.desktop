@@ -25,10 +25,9 @@ package jworkspace.ui.api;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-
-import java.io.IOException;
-
 import javax.swing.JMenu;
+
+import jworkspace.api.IWorkspaceComponent;
 
 /**
  * User gui view. Such shell have to load itself, restore state
@@ -37,7 +36,7 @@ import javax.swing.JMenu;
  *
  * @author Anton Troshin
  */
-public interface IView {
+public interface IView extends IWorkspaceComponent {
 
     /**
      * View activated or deactivated
@@ -82,21 +81,6 @@ public interface IView {
      * to be unique among all workspace views.
      */
     boolean isUnique();
-
-    /**
-     * Load view from disk
-     */
-    void load() throws IOException;
-
-    /**
-     * Reset the state of view
-     */
-    void reset();
-
-    /**
-     * Save all settings to default path
-     */
-    void save() throws IOException;
 
     /**
      * Update view

@@ -28,8 +28,10 @@ public class PluginsLoaderComponent {
             true
         );
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        pr.setLocation((screenSize.width - pr.getWidth()) / 2,
-            (screenSize.height - pr.getHeight()) / 2);
+        pr.setLocation(
+            (screenSize.width - pr.getWidth()) / 2,
+            (screenSize.height - pr.getHeight()) / 2
+        );
         this.shellsLoader = new ShellsLoader(pr);
     }
 

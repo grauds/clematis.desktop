@@ -31,7 +31,6 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -265,11 +264,7 @@ public class UIActions implements Constants {
         }
 
         public void actionPerformed(ActionEvent e) {
-            try {
-                Workspace.getInstance().stop();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            Workspace.endSession();
         }
     }
 
@@ -279,7 +274,7 @@ public class UIActions implements Constants {
         }
 
         public void actionPerformed(ActionEvent e) {
-           // todo Workspace.exit();
+            Workspace.exit();
         }
     }
 
@@ -338,8 +333,8 @@ public class UIActions implements Constants {
         }
 
         public void actionPerformed(ActionEvent e) {
-            ((MainFrame) gui.getFrame()).switchControlPanel();
-            setSelected(((MainFrame) gui.getFrame()).getControlPanel().isVisible());
+            gui.getFrame().switchControlPanel();
+            setSelected(gui.getFrame().getControlPanel().isVisible());
         }
     }
 }

@@ -81,7 +81,7 @@ import jworkspace.ui.utils.SwingUtils;
 public class RuntimeManagerWindow extends DefaultCompoundView
     implements ListSelectionListener, ChangeListener {
 
-    private static final String PLUGINS = LangResource.getString("Installed Plugins");
+    private static final String PLUGINS = LangResource.getString("Installed_Plugins");
 
     private static final String PROCESSES = LangResource.getString("Processes");
 
@@ -162,14 +162,6 @@ public class RuntimeManagerWindow extends DefaultCompoundView
             RUNTIME_MANAGER);
 
         return new CButton[]{bShow};
-    }
-
-    /**
-     * This method actually saves data in plugins
-     */
-    public void dispose() {
-        plugins.removeAll();
-        processes.removeAll();
     }
 
     /**
@@ -423,6 +415,21 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         if (flag) {
             update();
         }
+    }
+
+    @Override
+    public void load() {
+
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void save() {
+
     }
 
     /**

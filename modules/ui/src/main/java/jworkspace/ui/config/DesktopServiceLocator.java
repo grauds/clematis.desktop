@@ -1,6 +1,5 @@
 package jworkspace.ui.config;
 
-import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.ui.WorkspaceGUI;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +9,6 @@ public class DesktopServiceLocator {
 
     @Setter
     private WorkspaceGUI workspaceGUI;
-
-    private final WorkspacePluginLocator pluginLocator = new WorkspacePluginLocator();
 
     private final UIConfig uiConfig = new UIConfig();
 

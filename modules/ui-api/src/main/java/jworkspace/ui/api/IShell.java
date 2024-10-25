@@ -25,8 +25,7 @@ package jworkspace.ui.api;
   ----------------------------------------------------------------------------
 */
 
-import java.io.IOException;
-
+import jworkspace.api.IWorkspaceComponent;
 import jworkspace.ui.api.cpanel.CButton;
 
 /**
@@ -34,27 +33,12 @@ import jworkspace.ui.api.cpanel.CButton;
  *
  * @author Anton Troshin
  */
-public interface IShell {
+public interface IShell extends IWorkspaceComponent {
 
     /**
      * Get all Control Panel buttons for this shell
      */
     CButton[] getButtons();
-
-    /**
-     * Load shell from disk
-     */
-    void load() throws IOException;
-
-    /**
-     * Reset the state of shell
-     */
-    void reset();
-
-    /**
-     * Save all settings to default path
-     */
-    void save() throws IOException;
 
     /**
      * Returns a relative path for saving component data.

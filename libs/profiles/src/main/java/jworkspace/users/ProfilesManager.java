@@ -187,7 +187,7 @@ public class ProfilesManager implements Comparator<Profile> {
     private Profile readProfile(String userName) throws IOException {
         Profile profile = new Profile();
         profile.setUserName(userName);
-        profile.load(getBasePath().resolve(userName));
+        profile.load(getBasePath());
         return profile;
     }
 
@@ -207,7 +207,7 @@ public class ProfilesManager implements Comparator<Profile> {
         if (profile == null) {
             return;
         }
-        profile.save(getBasePath().resolve(profile.getUserName()));
+        profile.save(getBasePath());
     }
 
     public void login(String name, String password) throws ProfileOperationException {

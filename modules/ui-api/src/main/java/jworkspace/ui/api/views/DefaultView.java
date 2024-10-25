@@ -40,7 +40,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class DefaultView extends KPanel implements IView {
+public abstract class DefaultView extends KPanel implements IView {
     /**
      * Show this window
      */
@@ -100,24 +100,6 @@ public class DefaultView extends KPanel implements IView {
      */
     public boolean isUnique() {
         return true;
-    }
-
-    /**
-     * Load view from disk
-     */
-    public void load() {
-    }
-
-    /**
-     * Reset the state of view
-     */
-    public void reset() {
-    }
-
-    /**
-     * Save all settings to default path
-     */
-    public void save() {
     }
 
     /**

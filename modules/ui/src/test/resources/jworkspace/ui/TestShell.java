@@ -76,4 +76,9 @@ public class TestShell implements ITestShell {
     public void setPath(String path) {
         testFolder = new File(path);
     }
+
+    @Override
+    public String getName() {
+        return "Test shell";
+    }
 }

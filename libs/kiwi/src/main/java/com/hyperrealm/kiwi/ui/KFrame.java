@@ -107,6 +107,10 @@ public class KFrame extends JFrame {
         main.add("North", menuBar);
     }
 
+    public void removeMenuBar(JMenuBar menuBar) {
+        main.remove(menuBar);
+    }
+
     /**
      * Set the status bar for the frame.
      *

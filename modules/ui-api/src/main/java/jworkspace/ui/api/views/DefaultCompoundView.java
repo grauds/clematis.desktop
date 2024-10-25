@@ -44,7 +44,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DefaultCompoundView extends DefaultView
+public abstract class DefaultCompoundView extends DefaultView
     implements IShell, ActionListener {
 
     private boolean buttonsLoaded = false;

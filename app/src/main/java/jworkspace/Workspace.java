@@ -3,20 +3,16 @@ package jworkspace;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import static org.kohsuke.args4j.ExampleMode.ALL;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
-import jworkspace.api.IWorkspaceComponent;
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.RuntimeManager;
-import jworkspace.runtime.WorkspacePluginLocator;
 import jworkspace.users.Profile;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.ProfilesManager;
@@ -95,6 +91,21 @@ public class Workspace {
     public static void start(@NonNull String name, String password, @NonNull Path root)
         throws ProfileOperationException, IOException, PluginException {
         /*
+         * Create system plugins
+         */
+        ServiceLocator.getInstance().getSystemPlugins().addAll(
+            ServiceLocator.getInstance().getPluginLocator().loadPlugins(
+                root.resolve(PLUGINS_DIRECTORY)
+            )
+        );
+        /*
+         * Start user session
+         */
+        startSession(name, password, root);
+    }
+
+    public static void startSession(@NonNull String name, String password, Path root) throws ProfileOperationException {
+        /*
          * Validate profile name and password to get the configuration stored there
          */
         ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
@@ -108,85 +119,68 @@ public class Workspace {
          */
         ServiceLocator.getInstance().getPluginLocator().getContext().setUserDir(profilePath);
         /*
-         * Load plugins from system directory
+         * Initialize system plugins from the user directory
          */
-        WorkspacePluginLocator pluginLocator = ServiceLocator.getInstance().getPluginLocator();
-        List<Plugin> plugins = pluginLocator.loadPlugins(
-            root.resolve(PLUGINS_DIRECTORY)
-        );
-        ServiceLocator.getInstance().getSystemPlugins().clear();
-        ServiceLocator.getInstance().getSystemPlugins().addAll(plugins);
+        ServiceLocator.loadPlugins(ServiceLocator.getInstance().getSystemPlugins());
         /*
-         * Create required modules
+         * Load plugins from user directory
          */
-        for (Plugin plugin : plugins) {
-            Object pluginObject = plugin.newInstance();
-            if (pluginObject instanceof IWorkspaceComponent component) {
-                component.load();
-            }
-        }
-        /*
-         * Load plugins from profile directory
-         */
-        List<Plugin> userPlugins = pluginLocator.loadPlugins(
-            profilePath.resolve(PLUGINS_DIRECTORY)
+        ServiceLocator.getInstance().getUserPlugins().addAll(
+            ServiceLocator.getInstance().loadPlugins(profilePath)
         );
-        ServiceLocator.getInstance().getUserPlugins().clear();
-        ServiceLocator.getInstance().getUserPlugins().addAll(userPlugins);
-
-        RuntimeManager runtimeManager = ServiceLocator.getInstance().getRuntimeManager();
-        for (Plugin plugin : userPlugins) {
-            Object pluginObject = plugin.newInstance();
-            if (pluginObject instanceof IWorkspaceComponent component) {
-                component.load();
-            }
-            /*
-             * Send plugins to runtime manager if they are instances of Runnable
-             */
-            if (pluginObject instanceof Runnable runnable) {
-                runtimeManager.take(runnable);
-            }
-        }
     }
 
-    public void stop() throws IOException {
-        Workspace.stop(Paths.get(path).resolve(HOME_DIR));
+    public static void endSession() {
+        /*
+         * Save amd reset all user plugins
+         */
+        ServiceLocator.savePlugins(
+            ServiceLocator.getInstance().getUserPlugins()
+        );
+        /*
+         * Unload all user plugins
+         */
+        ServiceLocator.unloadPlugins(
+            ServiceLocator.getInstance().getUserPlugins()
+        );
+        /*
+         * Save and reset all system plugins
+         */
+        ServiceLocator.savePlugins(
+            ServiceLocator.getInstance().getSystemPlugins()
+        );
+        /*
+         * Logout from the current profile
+         */
+        ServiceLocator.getInstance().getProfilesManager().logout();
     }
 
-    public static void stop(@NonNull Path root) throws IOException {
+    public static void stop() throws IOException {
         /*
          * Stop all running threads
          */
         RuntimeManager runtimeManager = ServiceLocator.getInstance().getRuntimeManager();
         runtimeManager.yield();
         /*
-         * Save and reset all system plugins
+         * End user session
          */
-        for (Plugin plugin : ServiceLocator.getInstance().getSystemPlugins()) {
-            Object pluginObject = plugin.getPluginObject();
-            if (pluginObject instanceof IWorkspaceComponent component) {
-                component.save();
-                component.reset();
-            }
-        }
+        endSession();
         /*
-         * Save and reset all user plugins
+         * Unload system plugins
          */
-        for (Plugin plugin : ServiceLocator.getInstance().getUserPlugins()) {
-            Object pluginObject = plugin.getPluginObject();
-            if (pluginObject instanceof IWorkspaceComponent component) {
-                component.save();
-                component.reset();
-            }
-        }
-        /*
-         * Logout from the current profile
-         */
-        ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
-        profilesManager.logout();
+        ServiceLocator.unloadPlugins(
+            ServiceLocator.getInstance().getSystemPlugins()
+        );
     }
 
     public static void exit() {
+
+        try {
+            stop();
+        } catch (IOException e) {
+            log.severe(e.getMessage());
+        }
+
         System.exit(0);
     }
 

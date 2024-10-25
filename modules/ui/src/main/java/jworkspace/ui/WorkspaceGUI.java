@@ -279,7 +279,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
             .getInstance()
             .getUiConfig()
             .setConfigFile(
-                this.pluginContext.getUserDir().resolve("ui").toFile()
+                this.pluginContext.getUserDir().resolve("ui.cfg").toFile()
             );
 
         DesktopServiceLocator.getInstance().getUiConfig().load();
@@ -335,17 +335,9 @@ public class WorkspaceGUI implements IWorkspaceUI {
          */
         getFrame().reset();
         /*
-         * Assign reference to null to create another instance in the next line
-         */
-        frame = null;
-        /*
          * Set title
          */
         getFrame().setTitle(Workspace.VERSION);
-        /*
-         * Remove all choosers
-         */
-        ClassCache.resetFileChoosers();
     }
 
     /**
@@ -360,7 +352,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     public void save() {
         /*
-         * Save the workspace configuration
+         * Save the workspace ui configuration
          */
         DesktopServiceLocator.getInstance().getUiConfig().save();
         /*
@@ -374,12 +366,9 @@ public class WorkspaceGUI implements IWorkspaceUI {
          */
         displayedFrames.clear();
 
-        try (FileOutputStream outputFile = new FileOutputStream(ServiceLocator
-            .getInstance()
-            .getProfilesManager()
-            .ensureUserHomePath()
-            .resolve(Constants.DATA_FILE).toFile()
-        ); DataOutputStream outputStream = new DataOutputStream(outputFile)) {
+        try (FileOutputStream outputFile = new FileOutputStream(
+                this.pluginContext.getUserDir().resolve(Constants.DATA_FILE).toFile()
+            ); DataOutputStream outputStream = new DataOutputStream(outputFile)) {
 
             getFrame().save(outputStream);
         } catch (IOException e) {

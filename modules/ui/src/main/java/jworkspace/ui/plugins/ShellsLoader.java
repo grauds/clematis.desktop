@@ -54,14 +54,14 @@ public class ShellsLoader extends Task {
         } else {
             pluginPath = profilesManager.getBasePath();
         }
-
         pluginPath = pluginPath.resolve("shells");
 
-        WorkspacePluginLocator pluginLocator = DesktopServiceLocator.getInstance().getPluginLocator();
+        WorkspacePluginLocator pluginLocator = ServiceLocator.getInstance().getPluginLocator();
         pluginLocator.setParentPluginClassLoader(this.getClass().getClassLoader());
         List<Plugin> plugins = pluginLocator.loadPlugins(
             pluginPath
         );
+        // add shells to user plugins means they do care about their lifecycle between logins/logouts themselves
         ServiceLocator.getInstance().getUserPlugins().addAll(plugins);
 
         if (plugins.isEmpty()) {
@@ -133,9 +133,8 @@ public class ShellsLoader extends Task {
             } catch (IOException ex) {
                 log.warning("> System error: Shell cannot be loaded: " + ex);
             }
-            /*
-             * Ask for buttons and display them in the control panel
-             */
+
+            // Ask for buttons and display them in the control panel
             MainFrame mainFrame = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
             CButton[] buttons = shell.getButtons();
             if (buttons != null && buttons.length > 0) {
@@ -144,10 +143,8 @@ public class ShellsLoader extends Task {
                     mainFrame.getControlPanel().addButton(button);
                 }
             }
-            /*
-             * Notify plugin that the buttons are available and attach UIManager
-             * to track look and feel changes
-             */
+
+             // Notify plugin that the buttons are available and attach UIManager to track look and feel changes
             if (shell instanceof DefaultCompoundView defaultCompoundView) {
                 defaultCompoundView.setButtonsLoaded(true);
                 UIManager.addPropertyChangeListener(new UISwitchListener(defaultCompoundView));

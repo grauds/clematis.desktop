@@ -55,12 +55,11 @@ public class WorkspaceResourceAnchor {
 
     public static String getString(String id) {
 
-        if (resources == null) {
-            resources = ResourceBundle.getBundle("i18n/strings");
-        }
-
-        String message = "null";
+        String message = id;
         try {
+            if (resources == null) {
+                resources = ResourceBundle.getBundle("i18n/strings");
+            }
             message = resources.getString(id);
         } catch (MissingResourceException ex) {
             log.log(Level.INFO, "Cannot find resource:" + id);

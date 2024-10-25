@@ -33,7 +33,9 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
@@ -71,7 +73,7 @@ public class PlafFactory {
     /**
      * Support for i18n strings
      */
-    private static final ResourceBundle STRINGS = ResourceBundle.getBundle("i18n/strings");
+    private static ResourceBundle strings;
     /**
      * Workspace shared context for plugins
      */
@@ -347,8 +349,18 @@ public class PlafFactory {
         }
     }
 
-    public static String getString(String key) {
-        return PlafFactory.STRINGS.getString(key);
+    public static String getString(String id) {
+        String message = id;
+        try {
+            if (strings == null) {
+                strings = ResourceBundle.getBundle("i18n/strings");
+            }
+            message = strings.getString(id);
+        } catch (MissingResourceException ex) {
+            log.log(Level.INFO, "Cannot find resource:" + id);
+        }
+
+        return message;
     }
 }
 

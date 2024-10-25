@@ -276,14 +276,16 @@ public class Profile {
         /*
          * Write user variables
          */
-        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath)
-            .resolve(VAR_CFG).toFile())) {
+        try (FileOutputStream outputFile = new FileOutputStream(
+            ensureProfilePath(basePath).resolve(VAR_CFG).toFile())
+        ) {
             getParameters().store(outputFile, "USER VARIABLES");
         }
 
-        try (FileOutputStream outputFile = new FileOutputStream(ensureProfilePath(basePath)
-            .resolve(PROFILE_DAT).toFile());
-             DataOutputStream dos = new DataOutputStream(outputFile)) {
+        try (FileOutputStream outputFile = new FileOutputStream(
+                ensureProfilePath(basePath).resolve(PROFILE_DAT).toFile());
+             DataOutputStream dos = new DataOutputStream(outputFile)
+        ) {
 
             dos.writeUTF(userName);
             dos.writeUTF(userFirstName);

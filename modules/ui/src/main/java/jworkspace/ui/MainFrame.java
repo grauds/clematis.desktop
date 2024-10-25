@@ -115,16 +115,16 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     MainFrame(String title, WorkspaceGUI gui) {
         super(title);
-        /*
-         * Insert menu bar on the top.
-         */
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        // save reference for the ui
         this.gui = gui;
+
+        // insert menu bar on the top.
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.getMainContainer().setLayout(new BorderLayout());
         this.getMainContainer().setOpaque(false);
-        /*
-         * ui managers
-         */
+
+        // ui managers
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
@@ -292,7 +292,57 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     public JMenuBar getJMenuBar() {
         if (systemMenu == null) {
-            createMenuBar();
+            systemMenu = new JMenuBar();
+
+            JMenu wmenu = new JMenu(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
+            wmenu.setMnemonic(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
+            /*
+             *  My details
+             */
+            JMenuItem myDetails = SwingUtils.createMenuItem(gui.getActions().getAction(
+                UIActions.MY_DETAILS_ACTION_NAME)
+            );
+            myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
+            wmenu.add(myDetails);
+            /*
+             * Settings
+             */
+            JMenuItem settings = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
+            wmenu.add(settings);
+            /*
+             * Show control panel
+             */
+            JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(gui.getActions()
+                .getAction(UIActions.SHOW_PANEL_ACTION_NAME));
+            showControlPanel.setSelected(getControlPanel().isVisible());
+            showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
+            wmenu.add(showControlPanel);
+            wmenu.addSeparator();
+            /*
+             * Help
+             */
+            JMenuItem help = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
+            help.setEnabled(false);
+            wmenu.add(help);
+            /*
+             * About
+             */
+            JMenuItem about = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
+            wmenu.add(about);
+            wmenu.addSeparator();
+            /*
+             * Log off
+             */
+            JMenuItem logOff = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
+            wmenu.add(logOff);
+            /*
+             * Exit
+             */
+            JMenuItem exit = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
+            exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK));
+            wmenu.add(exit);
+
+            systemMenu.add(wmenu);
         }
         return systemMenu;
     }
@@ -302,63 +352,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      *
      * @param menuBar javax.swing.JMenuBar
      */
-    public void setJMenuBar(JMenuBar menuBar) {
-    }
-
-    /*
-     * Assemble system menu.
-     */
-    private void createMenuBar() {
-        systemMenu = new JMenuBar();
-
-        JMenu wmenu = new JMenu(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
-        wmenu.setMnemonic(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
-        /*
-         *  My details
-         */
-        JMenuItem myDetails = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.MY_DETAILS_ACTION_NAME));
-        myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
-        wmenu.add(myDetails);
-        /*
-         * Settings
-         */
-        JMenuItem settings = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
-        wmenu.add(settings);
-        /*
-         * Show control panel
-         */
-        JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(gui.getActions()
-            .getAction(UIActions.SHOW_PANEL_ACTION_NAME));
-        showControlPanel.setSelected(getControlPanel().isVisible());
-        showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
-        wmenu.add(showControlPanel);
-        wmenu.addSeparator();
-        /*
-         * Help
-         */
-        JMenuItem help = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
-        help.setEnabled(false);
-        wmenu.add(help);
-        /*
-         * About
-         */
-        JMenuItem about = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
-        wmenu.add(about);
-        wmenu.addSeparator();
-        /*
-         * Log off
-         */
-        JMenuItem logOff = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
-        wmenu.add(logOff);
-        /*
-         * Exit
-         */
-        JMenuItem exit = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
-        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK));
-        wmenu.add(exit);
-
-        systemMenu.add(wmenu);
-    }
+    public void setJMenuBar(JMenuBar menuBar) {}
 
     /*
      * Returns true if any of views claimed it is modified
@@ -376,7 +370,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         log.info("Loading workspace frame");
         try {
             Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
-            Object object = clazz.newInstance();
+            Object object = clazz.getDeclaredConstructor().newInstance();
 
             if (!(object instanceof JComponent)) {
                 throw new IllegalArgumentException();
@@ -498,16 +492,21 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Resets frame to its initial state.
      */
     public void reset() {
+
+        removeMenuBar(systemMenu);
+
         getMainContainer().remove(content);
-        getMainContainer().remove(getControlPanel());
+        getMainContainer().remove(controlPanel);
+        getMainContainer().remove(systemMenu);
         setTexture(null);
 
         content = null;
         controlPanel = null;
         systemMenu = null;
 
-        update();
-        setVisible(false);
+        invalidate();
+        validate();
+        repaint();
     }
 
     @SuppressWarnings("MagicNumber")

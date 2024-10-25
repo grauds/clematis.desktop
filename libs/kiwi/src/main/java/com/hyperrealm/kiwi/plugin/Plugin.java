@@ -221,9 +221,10 @@ public final class Plugin extends PluginDTO {
     /* Unload the plugin.
      */
 
-    private void reset() {
+    public void reset() {
         loader = null;
         pluginClass = null;
+        pluginObject = null;
         icon = null;
         loaded = false;
     }
