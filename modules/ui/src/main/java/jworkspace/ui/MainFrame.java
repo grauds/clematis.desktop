@@ -57,7 +57,6 @@ import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
-import jworkspace.ui.profiles.LoginForm;
 import jworkspace.ui.profiles.LoginPanel;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;

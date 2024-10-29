@@ -1,6 +1,10 @@
 package jworkspace.ui.profiles;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
@@ -10,18 +14,13 @@ import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_PADDING;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.SOUTH_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.WEST_POSITION;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import jworkspace.ui.WorkspaceGUI;
-
 import com.hyperrealm.kiwi.ui.ButtonPanel;
 import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KLabel;
 import com.hyperrealm.kiwi.ui.KPanel;
-import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceManager;
+
+import jworkspace.ui.WorkspaceGUI;
 
 /**
  * Login panel for the main frame
