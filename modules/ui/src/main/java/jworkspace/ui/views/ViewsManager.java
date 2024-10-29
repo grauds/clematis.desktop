@@ -79,8 +79,9 @@ import jworkspace.ui.widgets.WorkspaceError;
 import lombok.extern.java.Log;
 
 /**
- * Desktop manager drives views in common JFrame environment. It may add/delete/switch the view in a card layout
- * fashion.
+ * Default desktop manager drives views in common JFrame environment.
+ * It may add/delete/switch the view in a card layout fashion.
+ *
  * @author Anton Troshin
  */
 @Log
@@ -533,7 +534,7 @@ public class ViewsManager extends AbstractViewsManager {
     }
 
     /**
-     * Returns desktop by title.
+     * Finds desktop by title.
      */
     public Desktop getDesktop(String title) {
         for (IView view : views) {
@@ -805,9 +806,8 @@ public class ViewsManager extends AbstractViewsManager {
      * Loads profile data from desktop.dat.
      */
     public void load() throws IOException {
-        /*
-         * Read header panel orientation and visibility.
-         */
+
+        // Read header panel orientation and visibility.
         File file = ServiceLocator
             .getInstance()
             .getProfilesManager()
@@ -827,36 +827,28 @@ public class ViewsManager extends AbstractViewsManager {
 
             int size = dataStream.readInt();
 
-            if (size >= 1) {
-                for (int i = 0; i < size; i++) {
-                    /*
-                     * Construct relative path for loading shells
-                     */
-                    String viewSavePath = getPath() + File.separator + VIEW + i;
-                    /*
-                     * Loads shell via GUI method.
-                     */
-                    Desktop desktop = new Desktop();
-                    desktop.setPath(viewSavePath);
-                    desktop.load();
-                    addDesktop(desktop, false);
-                }
+            for (int i = 0; i < size; i++) {
 
-            } else {
-                throw new IOException();
+                // get desktop data path
+                String viewSavePath = getPath() + File.separator + VIEW + i;
+
+                // load a desktop
+                Desktop desktop = new Desktop();
+                desktop.setPath(viewSavePath);
+                desktop.load();
+
+                // add desktop to the layout
+                addDesktop(desktop, false);
             }
 
-            /*
-             * Add header panel
-             */
-            setCurrentView(0);
+            // Add header panel
+            setCurrentView(0); // todo save current view number
             add(getHeaderPanel(), getHeaderPanel().getOrientation());
+
             update();
 
         } catch (IOException e) {
-            /*
-             * Assemble default configuration.
-             */
+            // Assemble default configuration.
             create();
             update();
         }
@@ -902,7 +894,7 @@ public class ViewsManager extends AbstractViewsManager {
             for (IView view : views) {
                 if (view instanceof Desktop) {
 
-                    File viewSavePath = Paths.get(getPath(), VIEW, String.valueOf(counter)).toFile();
+                    File viewSavePath = Paths.get(getPath(), VIEW + counter).toFile();
 
                     Path file1 = ServiceLocator
                         .getInstance()

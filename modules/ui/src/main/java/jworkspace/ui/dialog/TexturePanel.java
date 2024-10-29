@@ -71,6 +71,7 @@ class TexturePanel extends KPanel implements ActionListener, IDialogPanel {
     @SuppressWarnings("MagicNumber")
     TexturePanel() {
         super();
+
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         setLayout(gb);
@@ -138,6 +139,7 @@ class TexturePanel extends KPanel implements ActionListener, IDialogPanel {
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         add(p1, gbc);
+
     }
 
     public void actionPerformed(ActionEvent evt) {

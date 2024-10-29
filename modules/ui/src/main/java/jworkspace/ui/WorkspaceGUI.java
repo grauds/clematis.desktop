@@ -297,6 +297,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
          * Set texture on
          */
         setTextureVisible(DesktopServiceLocator.getInstance().getUiConfig().isTextureVisible());
+
         /*
          * Create heavy dialogs and store them in the cache
          */

@@ -209,6 +209,16 @@ public abstract class ComponentDialog extends KDialog {
         installDialogUI();
     }
 
+    /** Get the icon to display in the top part of the dialog window. By
+     * default, this method returns <b>null</b>, which signifies that no icon
+     * will be displayed. The method can be called by classes that extend this
+     * class to provide an appropriate icon for the dialog.
+     */
+
+    public void setTopIcon(Icon icon) {
+        commentLabel.setIcon(icon);
+    }
+
     /**
      * Install the component returned by <code>buildDialogUI()</code>
      * into the dialog. If it is not possible to build the dialog UI at
@@ -275,7 +285,7 @@ public abstract class ComponentDialog extends KDialog {
      * @param c The <code>JTextField</code> to register.
      */
 
-    void registerTextInputComponent(JTextField c) {
+    protected void registerTextInputComponent(JTextField c) {
         inputComponent = c;
         inputComponent.addActionListener(actionListener);
     }

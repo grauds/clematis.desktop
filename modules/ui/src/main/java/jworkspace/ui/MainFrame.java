@@ -57,9 +57,13 @@ import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
+import jworkspace.ui.profiles.LoginForm;
+import jworkspace.ui.profiles.LoginPanel;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.java.Log;
 
 /**
@@ -77,37 +81,45 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     private static final String MAIN_FRAME_LOAD_FAILED_MESSAGE = "MainFrame.cmLoad.failed";
     /**
-     * Content.
-     */
-    private AbstractViewsManager content = null;
-    /**
      * A reference to Workspace GUI
      */
+    @Getter
     private final WorkspaceGUI gui;
+    /**
+     * System menu.
+     */
+    @Getter
+    private JMenuBar systemMenu = null;
+    /**
+     * Content.
+     */
+    private AbstractViewsManager contentManager = null;
     /**
      * Control panel.
      */
     private ControlPanel controlPanel = null;
     /**
-     * System menu.
+     * Control panel orientation
      */
-    private JMenuBar systemMenu = null;
+    @Getter
+    @Setter
+    private String orientation = BorderLayout.EAST;
     /**
      * System clipboard- can be used for copy/paste
-     * or drag and drop operations.
+     * or dragControlPanel and drop operations.
      */
-    private final Clipboard c = new Clipboard("System clipboard");
+    @Getter
+    private final Clipboard clipboard = new Clipboard("System clipboard");
     /**
-     * The drag pane is needed every time dragging
+     * The dragControlPanel pane is needed every time dragging
      * occurs. Drag pane displays possible position
      * of the panel.
      */
     private GlassDragPane dragPane = null;
     /**
-     * Current orientation
+     * Top login panel overlay
      */
-    private String orientation = BorderLayout.EAST;
-
+    private final LoginPanel loginPanel = new LoginPanel();
     /**
      * Main frame for Java Workspace GUI is created
      * with only title. All initialization is made
@@ -132,25 +144,12 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Creates default frame.
      */
     public void create() {
+
         log.info("Building gui" + Constants.LOG_FINISH);
-        try {
-            Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
-            Object object = clazz.getDeclaredConstructor().newInstance();
-
-            if (!(object instanceof JComponent)) {
-                throw new IllegalArgumentException();
-            }
-
-            content = (AbstractViewsManager) object;
-            log.info("Loaded content manager" + Constants.LOG_SPACE + MainFrame.CONTENT_MANAGER);
-        } catch (Exception e) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.load.CM.failed"), e);
-            return;
-        }
         /*
          * Ask for buttons and fill control panel.
          */
-        CButton[] buttons = content.getButtons();
+        CButton[] buttons = getContentManager().getButtons();
         if (buttons != null) {
             for (CButton button : buttons) {
                 getControlPanel().addButton(button);
@@ -159,16 +158,15 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         /*
          * Ask for menus
          */
-        JMenu[] menus = content.getMenu();
+        JMenu[] menus = getContentManager().getMenu();
         if (menus != null) {
             for (JMenu menu : menus) {
                 getJMenuBar().add(menu);
             }
         }
-        /*
-         * Create ui by default.
-         */
-        content.create();
+
+        // assemble default ui
+        getContentManager().create();
 
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(0, 0, size.width, size.height);
@@ -194,86 +192,97 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Drags control panel along the frame.
      */
     @SuppressWarnings("MagicNumber")
-    private void drag(int x, int y) {
+    private void dragControlPanel(int x, int y) {
         
         if ((y < getMainContainer().getSize().height / 3) 
             && (x > getMainContainer().getSize().width / 3) 
-            && (x < 2 * getMainContainer().getSize().width / 3)) {
-            
-            if (dragPane == null) {
-                dragPane = new GlassDragPane();
-            }
+            && (x < 2 * getMainContainer().getSize().width / 3)
+        ) {
 
-            dragPane.setBounds(getMainContainer().getLocation().x,
+            getDragPane().setBounds(
+                getMainContainer().getLocation().x,
                 getMainContainer().getLocation().y,
-                getMainContainer().getSize().width, Math.min(controlPanel.getWidth(),
-                    controlPanel.getHeight()));
+                getMainContainer().getSize().width,
+                Math.min(getControlPanel().getWidth(), getControlPanel().getHeight())
+            );
 
-            orientation = BorderLayout.NORTH;
+            setOrientation(BorderLayout.NORTH);
             getMainContainer().repaint();
 
         } else if ((y > 2 * getMainContainer().getSize().height / 3) 
             && (x > getMainContainer().getSize().width / 3) 
-            && (x < 2 * getMainContainer().getSize().width / 3)) {
-            if (dragPane == null) {
-                dragPane = new GlassDragPane();
-            }
+            && (x < 2 * getMainContainer().getSize().width / 3)
+        ) {
 
-            dragPane.setBounds(getMainContainer().getLocation().x,
+            getDragPane().setBounds(
+                getMainContainer().getLocation().x,
                 getMainContainer().getLocation().y 
-                    + getMainContainer().getSize().height - Math.min(controlPanel.getWidth(),
-                    controlPanel.getHeight()),
+                    + getMainContainer().getSize().height
+                    - Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
+                getMainContainer().getSize().width,
+                Math.min(getControlPanel().getWidth(), getControlPanel().getHeight())
+            );
 
-                getMainContainer().getSize().width, Math.min(controlPanel.getWidth(),
-                    controlPanel.getHeight()));
 
-
-            orientation = BorderLayout.SOUTH;
+            setOrientation(BorderLayout.SOUTH);
             getMainContainer().repaint();
+
         } else if (x < getMainContainer().getSize().width / 3) {
-            if (dragPane == null) {
-                dragPane = new GlassDragPane();
-            }
 
-            dragPane.setBounds(getMainContainer().getLocation().x,
-                getMainContainer().getLocation().y, Math.min(controlPanel.getWidth(),
-                    controlPanel.getHeight()),
+            getDragPane().setBounds(
+                getMainContainer().getLocation().x,
+                getMainContainer().getLocation().y,
+                Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
+                getMainContainer().getSize().height
+            );
 
-                getMainContainer().getSize().height);
-
-            orientation = BorderLayout.WEST;
+            setOrientation(BorderLayout.WEST);
             getMainContainer().repaint();
+
         } else if ((x > 2 * getMainContainer().getSize().width / 3)) {
-            if (dragPane == null) {
-                dragPane = new GlassDragPane();
-            }
 
-            dragPane.setBounds(getMainContainer().getLocation().x 
-                    + getMainContainer().getSize().width - Math.min(controlPanel.getWidth(),
-                controlPanel.getHeight()),
+            getDragPane().setBounds(
+                getMainContainer().getLocation().x
+                    + getMainContainer().getSize().width
+                    - Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
+                getMainContainer().getLocation().y,
+                Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
+                getMainContainer().getSize().height
+            );
 
-                getMainContainer().getLocation().y, Math.min(controlPanel.getWidth(),
-                    controlPanel.getHeight()),
-
-                getMainContainer().getSize().height);
-
-            orientation = BorderLayout.EAST;
+            setOrientation(BorderLayout.EAST);
             getMainContainer().repaint();
         }
     }
 
-    /*
-     * Returns clipboard for components use.
-     */
-    public Clipboard getClipboard() {
-        return c;
+    protected GlassDragPane getDragPane() {
+        if (dragPane == null) {
+            dragPane = new GlassDragPane();
+        }
+        return dragPane;
     }
 
     /*
      * Returns content manager for this frame.
+     * // todo can be a plugin extension point
      */
-    AbstractViewsManager getContentManager() {
-        return content;
+    AbstractViewsManager getContentManager() throws RuntimeException {
+
+        if (contentManager == null) {
+            try {
+                Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
+                Object object = clazz.getDeclaredConstructor().newInstance();
+
+                if (!(object instanceof JComponent)) {
+                    throw new IllegalArgumentException();
+                }
+
+                contentManager = (AbstractViewsManager) object;
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return contentManager;
     }
 
     /**
@@ -299,7 +308,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              *  My details
              */
-            JMenuItem myDetails = SwingUtils.createMenuItem(gui.getActions().getAction(
+            JMenuItem myDetails = SwingUtils.createMenuItem(getGui().getActions().getAction(
                 UIActions.MY_DETAILS_ACTION_NAME)
             );
             myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
@@ -307,12 +316,14 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Settings
              */
-            JMenuItem settings = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.SETTINGS_ACTION_NAME));
+            JMenuItem settings = SwingUtils.createMenuItem(
+                getGui().getActions().getAction(UIActions.SETTINGS_ACTION_NAME)
+            );
             wmenu.add(settings);
             /*
              * Show control panel
              */
-            JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(gui.getActions()
+            JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(getGui().getActions()
                 .getAction(UIActions.SHOW_PANEL_ACTION_NAME));
             showControlPanel.setSelected(getControlPanel().isVisible());
             showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
@@ -321,24 +332,24 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Help
              */
-            JMenuItem help = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.HELP_ACTION_NAME));
+            JMenuItem help = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.HELP_ACTION_NAME));
             help.setEnabled(false);
             wmenu.add(help);
             /*
              * About
              */
-            JMenuItem about = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.ABOUT_ACTION_NAME));
+            JMenuItem about = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.ABOUT_ACTION_NAME));
             wmenu.add(about);
             wmenu.addSeparator();
             /*
              * Log off
              */
-            JMenuItem logOff = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
+            JMenuItem logOff = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
             wmenu.add(logOff);
             /*
              * Exit
              */
-            JMenuItem exit = SwingUtils.createMenuItem(gui.getActions().getAction(UIActions.EXIT_ACTION_NAME));
+            JMenuItem exit = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.EXIT_ACTION_NAME));
             exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK));
             wmenu.add(exit);
 
@@ -359,33 +370,23 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * by user.
      */
     public boolean isModified() {
-        return content != null && content.isModified();
+        return getContentManager() != null && getContentManager().isModified();
     }
 
     /*
-     * Loads profile data. Input stream in parameters
-     * is from file jwxwin.dat.
+     * Loads profile data. Input stream in parameters is from file jwxwin.dat.
      */
     public void load(DataInputStream inputStream) {
         log.info("Loading workspace frame");
-        try {
-            Class<?> clazz = Class.forName(MainFrame.CONTENT_MANAGER);
-            Object object = clazz.getDeclaredConstructor().newInstance();
 
-            if (!(object instanceof JComponent)) {
-                throw new IllegalArgumentException();
-            }
-
-            content = (AbstractViewsManager) object;
-        } catch (Exception e) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
-            return;
-        }
         boolean visible = false;
+
         int x = 0;
         int y = 0;
+
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
         int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+
         try {
             /*
              * Read Main Frame config.
@@ -394,7 +395,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Control panel orientation.
              */
-            orientation = inputStream.readUTF();
+            setOrientation(inputStream.readUTF());
             /*
              * Location
              */
@@ -405,15 +406,16 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             width = inputStream.readInt();
             height = inputStream.readInt();
+
         } catch (IOException e) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
         }
         /*
          * Control panel
          */
-        gui.getActions().getShowPanelAction().setSelected(getControlPanel().isVisible());
+        getGui().getActions().getShowPanelAction().setSelected(getControlPanel().isVisible());
         getControlPanel().setVisible(visible);
-        getControlPanel().setOrientation(orientation);
+        getControlPanel().setOrientation(getOrientation());
         /*
          * Set bounds
          */
@@ -423,7 +425,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Ask for buttons and fill control panel.
              */
-            CButton[] buttons = content.getButtons();
+            CButton[] buttons = getContentManager().getButtons();
             if (buttons != null) {
                 for (CButton button : buttons) {
                     getControlPanel().addButton(button);
@@ -432,7 +434,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Ask for menus
              */
-            JMenu[] menus = content.getMenu();
+            JMenu[] menus = getContentManager().getMenu();
             if (menus != null) {
                 for (JMenu menu : menus) {
                     getJMenuBar().add(menu);
@@ -441,7 +443,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Load and update content
              */
-            content.load();
+            getContentManager().load();
         } catch (IOException e) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
         }
@@ -461,29 +463,34 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if (evt.getSource() instanceof ControlPanel) {
             if (evt.getPropertyName().equals("BEGIN_DRAGGING")) {
-                dragPane = new GlassDragPane();
-                getLayeredPane().setLayer(dragPane, Integer.MAX_VALUE);
-                dragPane.setBounds(controlPanel.getX() + getMainContainer().getX(),
-                    controlPanel.getY() + getMainContainer().getY(),
-                    controlPanel.getWidth(), controlPanel.getHeight());
-                getLayeredPane().add(dragPane);
+
+                getLayeredPane().setLayer(getDragPane(), Integer.MAX_VALUE);
+                getDragPane().setBounds(
+                    getControlPanel().getX() + getMainContainer().getX(),
+                    getControlPanel().getY() + getMainContainer().getY(),
+                    getControlPanel().getWidth(), getControlPanel().getHeight()
+                );
+                getLayeredPane().add(getDragPane());
+
             } else if (evt.getPropertyName().equals("END_DRAGGING")) {
-                getLayeredPane().remove(dragPane);
+
+                getLayeredPane().remove(getDragPane());
                 dragPane = null;
+                getMainContainer().remove(getControlPanel());
 
-                getMainContainer().remove(controlPanel);
+                getControlPanel().setOrientation(getOrientation());
 
-                controlPanel.setOrientation(orientation);
-
-                getMainContainer().add(controlPanel, orientation);
+                getMainContainer().add(getControlPanel(), getOrientation());
                 getContentPane().validate();
                 getContentPane().repaint();
+
             } else if (evt.getPropertyName().equals("DRAGGED")) {
-                /*
-                 * Mouse pointer coordinates
-                 */
-                drag(((Point) evt.getNewValue()).x + controlPanel.getX() + getContentPane().getX(),
-                    ((Point) evt.getNewValue()).y + controlPanel.getY() + getContentPane().getY());
+
+                // follow mouse pointer
+                dragControlPanel(
+                    ((Point) evt.getNewValue()).x + getControlPanel().getX() + getContentPane().getX(),
+                    ((Point) evt.getNewValue()).y + getControlPanel().getY() + getContentPane().getY()
+                );
             }
         }
     }
@@ -493,16 +500,18 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     public void reset() {
 
-        removeMenuBar(systemMenu);
+        removeMenuBar(getJMenuBar());
 
-        getMainContainer().remove(content);
-        getMainContainer().remove(controlPanel);
-        getMainContainer().remove(systemMenu);
+        getMainContainer().remove(getContentManager());
+        getMainContainer().remove(getControlPanel());
+        getMainContainer().remove(getJMenuBar());
         setTexture(null);
 
-        content = null;
+        contentManager = null;
         controlPanel = null;
         systemMenu = null;
+
+        addLoginPanel();
 
         invalidate();
         validate();
@@ -551,7 +560,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         boolean visible = getControlPanel().isVisible();
         try {
             outputStream.writeBoolean(visible);
-            outputStream.writeUTF(orientation);
+            outputStream.writeUTF(getOrientation());
             outputStream.writeInt(getLocation().x);
             outputStream.writeInt(getLocation().y);
             outputStream.writeInt(getWidth());
@@ -559,11 +568,11 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Save content of the frame
              */
-            content.save();
+            getContentManager().save();
             /*
              * Reset content of the frame
              */
-            content.reset();
+            getContentManager().reset();
         } catch (IOException e) {
             WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.save.failed"), e);
         }
@@ -589,8 +598,8 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          * Settle stuff on frame.
          */
         setMenuBar(getJMenuBar());
-        getMainContainer().add(content, BorderLayout.CENTER);
-        getMainContainer().add(getControlPanel(), orientation);
+        getMainContainer().add(getContentManager(), BorderLayout.CENTER);
+        getMainContainer().add(getControlPanel(), getOrientation());
         /*
          * Finally display.
          */
@@ -619,4 +628,17 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         validate();
         repaint();
     }
+
+    protected void addLoginPanel() {
+        loginPanel.setBounds(0, 0,
+            getMainContainer().getWidth(),
+            getMainContainer().getHeight());
+        getMainContainer().add(loginPanel);
+        getMainContainer().repaint();
+    }
+
+    protected void removeLoginPanel() {
+        getMainContainer().remove(loginPanel);
+    }
+
 }

@@ -62,7 +62,7 @@ public class LoginDialog extends ComponentDialog {
      */
     private JPasswordField tPasswd;
 
-    private DialogSet dialogs;
+    private final DialogSet dialogs;
 
     private String loginFailedMessage;
 

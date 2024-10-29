@@ -131,28 +131,30 @@ public class Workspace {
     }
 
     public static void endSession() {
-        /*
-         * Save amd reset all user plugins
-         */
-        ServiceLocator.savePlugins(
-            ServiceLocator.getInstance().getUserPlugins()
-        );
-        /*
-         * Unload all user plugins
-         */
-        ServiceLocator.unloadPlugins(
-            ServiceLocator.getInstance().getUserPlugins()
-        );
-        /*
-         * Save and reset all system plugins
-         */
-        ServiceLocator.savePlugins(
-            ServiceLocator.getInstance().getSystemPlugins()
-        );
-        /*
-         * Logout from the current profile
-         */
-        ServiceLocator.getInstance().getProfilesManager().logout();
+        if (ServiceLocator.getInstance().getProfilesManager().userLogged()) {
+            /*
+             * Save amd reset all user plugins
+             */
+            ServiceLocator.savePlugins(
+                ServiceLocator.getInstance().getUserPlugins()
+            );
+            /*
+             * Unload all user plugins
+             */
+            ServiceLocator.unloadPlugins(
+                ServiceLocator.getInstance().getUserPlugins()
+            );
+            /*
+             * Save and reset all system plugins
+             */
+            ServiceLocator.savePlugins(
+                ServiceLocator.getInstance().getSystemPlugins()
+            );
+            /*
+             * Logout from the current profile
+             */
+            ServiceLocator.getInstance().getProfilesManager().logout();
+        }
     }
 
     public static void stop() throws IOException {

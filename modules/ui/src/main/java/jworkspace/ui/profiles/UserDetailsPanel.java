@@ -1,4 +1,4 @@
-package jworkspace.ui.dialog;
+package jworkspace.ui.profiles;
 
 /* ----------------------------------------------------------------------------
    Java Workspace

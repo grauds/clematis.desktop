@@ -24,7 +24,6 @@ $RECYCLE.BIN/
 .gradle
 bin
 build
-/users
 /plugins
 out
 

@@ -49,7 +49,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.dialog.SettingsDialog;
-import jworkspace.ui.dialog.UserDetailsDialog;
+import jworkspace.ui.profiles.UserDetailsDialog;
 import jworkspace.ui.widgets.ImageRenderer;
 
 /**
