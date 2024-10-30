@@ -56,7 +56,6 @@ import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.profiles.LoginPanel;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;
-import jworkspace.ui.widgets.ResourceAnchor;
 import jworkspace.users.LoginValidator;
 import lombok.Getter;
 import lombok.Setter;
@@ -328,7 +327,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         if (systemMenu == null) {
             systemMenu = new JMenuBar();
 
-            JMenu wmenu = new JMenu(jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
+            JMenu wmenu = new JMenu(ResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
             wmenu.setMnemonic(ResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
             /*
              *  My details
@@ -414,7 +413,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
         log.info("Loading configuration for workspace frame");
 
-        boolean visible = false;
+        boolean visible;
 
         int x = 0;
         int y = 0;
@@ -445,14 +444,18 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             actions.getShowPanelAction().setSelected(getControlPanel().isVisible());
             getControlPanel().setVisible(visible);
             getControlPanel().setOrientation(getOrientation());
-
-            getContentManager().load();
-
         } catch (IOException e) {
-            WorkspaceError.exception(jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
+            WorkspaceError.exception(ResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
         }
 
         assemble(x, y, width, height);
+
+        try {
+            getContentManager().load();
+        } catch (IOException e) {
+            WorkspaceError.exception(e.getMessage(), e);
+        }
+
         log.info("Loaded workspace frame");
     }
 
@@ -573,7 +576,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             getContentManager().reset();
         } catch (IOException e) {
-            WorkspaceError.exception(jworkspace.ui.widgets.ResourceAnchor.getString("MainFrame.save.failed"), e);
+            WorkspaceError.exception(ResourceAnchor.getString("MainFrame.save.failed"), e);
         }
         log.info("Saved workspace frame");
     }

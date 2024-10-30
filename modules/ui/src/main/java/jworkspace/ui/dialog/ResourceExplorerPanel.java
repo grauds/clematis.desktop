@@ -68,6 +68,8 @@ import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 import com.hyperrealm.kiwi.util.Task;
 
 import jworkspace.ui.WorkspaceError;
+import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.config.DesktopServiceLocator;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
@@ -218,6 +220,10 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
 
         revalidate();
         pr = new ProgressDialog(parent, "Loading...", true);
+        pr.setLocation(
+            parent.getX() + (parent.getWidth() - pr.getWidth()) / 2,
+            parent.getY() + (parent.getHeight() - pr.getHeight()) / 2
+        );
 
         Loader loader = new Loader();
         pr.track(loader);
@@ -293,8 +299,11 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         }
 
         public void run() {
-
-            if (isTextureChooser()) {
+            /*
+             * First get all KIWI textures if specified flag is set
+             */
+            WorkspaceGUI wgui = DesktopServiceLocator.getInstance().getWorkspaceGUI();
+            if (wgui != null && wgui.isKiwiTextureVisible() && isTextureChooser()) {
                 try {
                     enumLibTextures();
                 } catch (IOException ex) {

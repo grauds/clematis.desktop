@@ -51,7 +51,7 @@ public class SettingsDialog extends ComponentDialog {
 
     private final List<IDialogPanel> additionalPanels = new ArrayList<>();
 
-    private final KTabbedPane tabbedPane = new KTabbedPane();
+    private KTabbedPane tabbedPane;
 
     public SettingsDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString("SettingsDialog.title"), true);
@@ -61,7 +61,7 @@ public class SettingsDialog extends ComponentDialog {
     public void addPanel(@NonNull String title, @NonNull IDialogPanel panel) {
         this.additionalPanels.add(panel);
         if (panel instanceof Component component) {
-            this.tabbedPane.addTab(title, component);
+            this.getTabbedPane().addTab(title, component);
         }
     }
 
@@ -69,9 +69,9 @@ public class SettingsDialog extends ComponentDialog {
         setComment(null);
 
         texturePanel = new TexturePanel();
-        tabbedPane.addTab(WorkspaceResourceAnchor.getString("SettingsDialog.textureTab"), texturePanel);
+        getTabbedPane().addTab(WorkspaceResourceAnchor.getString("SettingsDialog.textureTab"), texturePanel);
 
-        return (tabbedPane);
+        return (getTabbedPane());
     }
 
     protected boolean accept() {
@@ -86,5 +86,12 @@ public class SettingsDialog extends ComponentDialog {
 
     public void setData() {
         texturePanel.setData();
+    }
+
+    public KTabbedPane getTabbedPane() {
+        if (tabbedPane == null) {
+            tabbedPane = new KTabbedPane();
+        }
+        return tabbedPane;
     }
 }

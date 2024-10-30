@@ -28,6 +28,8 @@ package jworkspace.ui.desktop;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -49,6 +51,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.metal.MetalButtonUI;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
@@ -440,7 +443,9 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         bBrowseTop.setActionCommand(Constants.CHOOSE_GRADIENT_COLOR_1);
         bBrowseTop.addActionListener(this);
         bBrowseTop.setBackground(bgColor);
-  //      bBrowseTop.setPreferredSize(new Dimension(20, 20));
+        bBrowseTop.setUI(new MetalButtonUI());
+        bBrowseTop.setPreferredSize(new Dimension(20, 20));
+        bBrowseTop.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         kp1.add(bBrowseTop, BorderLayout.EAST);
 
         KPanel kp2 = new KPanel();
@@ -455,7 +460,9 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         bBrowseBottom.setActionCommand(Constants.CHOOSE_GRADIENT_COLOR_2);
         bBrowseBottom.addActionListener(this);
         bBrowseBottom.setBackground(bgColor2);
-      //  bBrowseBottom.setPreferredSize(new Dimension(20, 20));
+        bBrowseBottom.setUI(new MetalButtonUI());
+        bBrowseBottom.setPreferredSize(new Dimension(20, 20));
+        bBrowseBottom.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         kp2.add(bBrowseBottom, BorderLayout.EAST);
 
         //   chooser.setPreferredSize(new Dimension(150, 20));

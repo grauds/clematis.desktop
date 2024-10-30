@@ -36,7 +36,6 @@ import javax.swing.border.EmptyBorder;
 import com.hyperrealm.kiwi.ui.ButtonPanel;
 import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KLabel;
-import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;
 
@@ -90,18 +89,11 @@ public abstract class ComponentDialog extends KDialog {
 
     protected static final String POSITION_OUT_OF_RANGE = "Position out of range.";
 
-    /**
-     * The OK button.
-     */
     KButton bOk;
-    /**
-     * The Cancel button.
-     */
+
     KButton bCancel = null;
 
     private ActionListener actionListener;
-
-    private KPanel main;
 
     private KLabel iconLabel, commentLabel;
 
@@ -179,12 +171,13 @@ public abstract class ComponentDialog extends KDialog {
 
         actionListener = new ActionListener();
 
-        main = getMainContainer();
-        main.setBorder(new EmptyBorder(DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING));
-        main.setLayout(new BorderLayout(DEFAULT_PADDING, DEFAULT_PADDING));
+        getMainContainer().setBorder(new EmptyBorder(
+            DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING
+        ));
+        getMainContainer().setLayout(new BorderLayout(DEFAULT_PADDING, DEFAULT_PADDING));
 
         commentLabel = new KLabel(loc.getMessage("kiwi.dialog.prompt"));
-        main.add(NORTH_POSITION, commentLabel);
+        getMainContainer().add(NORTH_POSITION, commentLabel);
 
         iconLabel = new KLabel();
         iconLabel.setBorder(new EmptyBorder(DEFAULT_PADDING, 0, DEFAULT_PADDING, 0));
@@ -204,8 +197,7 @@ public abstract class ComponentDialog extends KDialog {
             fixedButtons++;
         }
 
-        main.add(SOUTH_POSITION, buttons);
-
+        getMainContainer().add(SOUTH_POSITION, buttons);
         installDialogUI();
     }
 
@@ -231,7 +223,7 @@ public abstract class ComponentDialog extends KDialog {
     private void installDialogUI() {
         Component c = buildDialogUI();
         if (c != null) {
-            main.add(CENTER_POSITION, c);
+            getMainContainer().add(CENTER_POSITION, c);
             pack();
         }
     }
@@ -328,9 +320,9 @@ public abstract class ComponentDialog extends KDialog {
     public void setIcon(Icon icon) {
         if (icon != null) {
             iconLabel.setIcon(icon);
-            main.add(WEST_POSITION, iconLabel);
+            getMainContainer().add(WEST_POSITION, iconLabel);
         } else {
-            main.remove(iconLabel);
+            getMainContainer().remove(iconLabel);
         }
     }
 

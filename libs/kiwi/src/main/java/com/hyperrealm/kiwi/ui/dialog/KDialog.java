@@ -39,6 +39,8 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.UIChangeManager;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
+import lombok.Getter;
+
 /**
  * <code>KDialog</code> is a trivial extension of <code>JDialog</code>
  * that provides support for tiling the background of the dialog with an
@@ -64,12 +66,18 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 @SuppressWarnings("unused")
 public class KDialog extends JDialog {
 
-    private KPanel main;
+    private KPanel mainContainer;
 
     private PropertyChangeListener propListener;
 
-    private final ArrayList<DialogDismissListener> listeners = new ArrayList<DialogDismissListener>();
+    private final ArrayList<DialogDismissListener> listeners = new ArrayList<>();
 
+    /**
+     *  Get the <i>cancelled</i> state of the dialog. This method should be
+     *  called after the dialog is dismissed to determine if it was cancelled by
+     *  the user.
+     */
+    @Getter
     private boolean cancelled = false;
 
     /**
@@ -108,11 +116,11 @@ public class KDialog extends JDialog {
 
         getContentPane().setLayout(new GridLayout(1, 0));
 
-        main = new KPanel(UIChangeManager.getInstance().getDefaultTexture());
+        mainContainer = new KPanel(UIChangeManager.getInstance().getDefaultTexture());
 
-        main.setOpaque(true);
+        getMainContainer().setOpaque(true);
 
-        getContentPane().add(main);
+        getContentPane().add(getMainContainer());
 
         UIChangeManager.getInstance().registerComponent(getRootPane());
         propListener = new PropertyChangeListener();
@@ -145,7 +153,7 @@ public class KDialog extends JDialog {
      */
 
     protected KPanel getMainContainer() {
-        return (main);
+        return (mainContainer);
     }
 
     /**
@@ -155,7 +163,7 @@ public class KDialog extends JDialog {
      */
 
     public void setTexture(Image image) {
-        main.setTexture(image);
+        getMainContainer().setTexture(image);
         invalidate();
         validate();
         repaint();
@@ -325,20 +333,6 @@ public class KDialog extends JDialog {
         setVisible(false);
         dispose();
         fireDialogDismissed(DialogDismissEvent.CANCEL);
-    }
-
-    /**
-     * Get the <i>cancelled</i> state of the dialog. This method should be
-     * called after the dialog is dismissed to determine if it was cancelled by
-     * the user.
-     *
-     * @return <code>true</code> if the dialog was cancelled, and
-     * <code>false</code> otherwise.
-     * @since Kiwi 2.0
-     */
-
-    public boolean isCancelled() {
-        return (cancelled);
     }
 
     /**

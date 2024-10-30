@@ -78,7 +78,8 @@ class ChangePasswordDlg extends ComponentDialog {
                 );
         } catch (Exception ex) {
             WorkspaceError.exception(WorkspaceResourceAnchor.
-                getString("ChangePasswordDlg.pwdChange.failed"), ex);
+                getString("ChangePasswordDlg.pwdChange.failed"), ex
+            );
         }
         return true;
     }

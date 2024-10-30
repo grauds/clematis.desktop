@@ -27,6 +27,7 @@ package jworkspace.ui.profiles;
 */
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -124,10 +125,13 @@ class UserDetailsPanel extends KPanel {
         tDescription = new JTextArea(5, 1);
         tDescription.setLineWrap(true);
         tDescription.setWrapStyleWord(true);
+        tDescription.setMinimumSize(new Dimension(100, 100));
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
-        add(new JScrollPane(tDescription), gbc);
+        JScrollPane scrollPane = new JScrollPane(tDescription);
+        scrollPane.setMinimumSize(new Dimension(100, 100));
+        add(scrollPane, gbc);
 
         l = new JLabel(WorkspaceResourceAnchor.getString("UserDetailsPanel.security"));
         gbc.gridwidth = 1;

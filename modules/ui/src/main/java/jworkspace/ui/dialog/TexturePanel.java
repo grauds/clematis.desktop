@@ -49,12 +49,12 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.widgets.ResourceAnchor;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.dialog.IDialogPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
+import jworkspace.ui.widgets.ResourceAnchor;
 
 /**
  * General settings panel for settings dialog.

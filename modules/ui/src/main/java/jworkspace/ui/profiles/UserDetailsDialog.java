@@ -27,6 +27,7 @@ package jworkspace.ui.profiles;
 */
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -45,6 +46,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -63,15 +65,24 @@ import jworkspace.ui.WorkspaceGUI;
  * @author Anton Troshin
  */
 public class UserDetailsDialog extends ComponentDialog implements ActionListener {
+
     private static final int MAX_PORTRAIT_WIDTH = 250;
+
     private static final int MAX_PORTRAIT_HEIGHT = 250;
+
     private UserDetailsPanel userDetailsPanel;
+
     private KButton bNew, bDelete;
+
     private JTable table;
+
     private DefaultTableModel tmodel;
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     public UserDetailsDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString("UserDetailsDlg.title"), true);
+
+        getMainContainer().setBorder(new EmptyBorder(5, 15, 5, 5));
     }
 
     protected boolean accept() {
@@ -95,15 +106,19 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         Object o = ev.getSource();
 
         if (o == bNew) {
-            ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
-                getImage("user_var.png"));
+            ImageIcon icon = new ImageIcon(
+                WorkspaceGUI.getResourceManager().getImage("user_var.png")
+            );
 
-            String name = (String) JOptionPane.showInputDialog(this,
-                    WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.question"),
-                    WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.title"),
-                    JOptionPane.INFORMATION_MESSAGE,
-                    icon,
-                    null, null);
+            String name = (String) JOptionPane.showInputDialog(
+                this,
+                WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.question"),
+                WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.title"),
+                JOptionPane.INFORMATION_MESSAGE,
+                icon,
+                null,
+                null
+            );
 
             if (name != null && ServiceLocator
                 .getInstance()
@@ -112,8 +127,10 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
                 .getParameters()
                 .get(name) != null) {
 
-                JOptionPane.showMessageDialog(this,
-                    WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.alreadyExists"));
+                JOptionPane.showMessageDialog(
+                    this,
+                    WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.alreadyExists")
+                );
 
             } else if (name != null){
                 Object[] row = new Object[2];
@@ -128,10 +145,13 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
             }
             String name = (String) table.getValueAt(rows[0], 0);
 
-            if (JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(
+                this,
                 WorkspaceResourceAnchor.getString("UserDetailsDlg.deleteParam.message") + "?",
                 WorkspaceResourceAnchor.getString("UserDetailsDlg.deleteParam.title"),
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                JOptionPane.YES_NO_OPTION
+            ) == JOptionPane.YES_OPTION) {
+
                 tmodel.removeRow(rows[0]);
                 ServiceLocator
                     .getInstance()
@@ -162,12 +182,13 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
 
         if (p != null) {
             ImageIcon photo = new ImageIcon(p);
-
             if (photo.getIconHeight() > 0 && photo.getIconWidth() > 0) {
                 scaleImage(p, photo);
             }
         } else {
-            setIcon(null);
+            p = WorkspaceGUI.getResourceManager().getImage("no_avatar.png");
+            ImageIcon photo = new ImageIcon(p);
+            scaleImage(p, photo);
         }
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -204,13 +225,13 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         pButCarrier.setLayout(new BorderLayout());
         ResourceManager kresmgr = KiwiUtils.getResourceManager();
 
-        bNew = new KButton(kresmgr.getIcon("plus.png"));
+        bNew = new KButton(new ImageIcon(kresmgr.getImage("plus.png")));
         bNew.setToolTipText(WorkspaceResourceAnchor.getString("UserDetailsDlg.addParam.tooltip"));
         bNew.addActionListener(this);
         bNew.setDefaultCapable(false);
         pButtons.add(bNew);
 
-        bDelete = new KButton(kresmgr.getIcon("minus.png"));
+        bDelete = new KButton(new ImageIcon(kresmgr.getImage("minus.png")));
         bDelete.setToolTipText(WorkspaceResourceAnchor.getString("UserDetailsDlg.deleteParam.tooltip"));
         bDelete.addActionListener(this);
         bDelete.setDefaultCapable(false);
@@ -246,7 +267,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         sel.addListSelectionListener(
             ev -> bDelete.setEnabled(!(table.getSelectionModel().isSelectionEmpty()))
         );
-     //   propertyEditor.setPreferredSize(new Dimension(200, 200));
+        propertyEditor.setPreferredSize(new Dimension(200, 200));
         return propertyEditor;
     }
 
