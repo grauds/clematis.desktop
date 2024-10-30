@@ -27,7 +27,6 @@ package jworkspace.ui;
 */
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -57,7 +56,7 @@ import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.profiles.LoginPanel;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;
-import jworkspace.ui.widgets.WorkspaceError;
+import jworkspace.ui.widgets.ResourceAnchor;
 import jworkspace.users.LoginValidator;
 import lombok.Getter;
 import lombok.Setter;
@@ -329,8 +328,8 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         if (systemMenu == null) {
             systemMenu = new JMenuBar();
 
-            JMenu wmenu = new JMenu(WorkspaceGUIResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
-            wmenu.setMnemonic(WorkspaceGUIResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
+            JMenu wmenu = new JMenu(jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
+            wmenu.setMnemonic(ResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
             /*
              *  My details
              */
@@ -450,7 +449,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             getContentManager().load();
 
         } catch (IOException e) {
-            WorkspaceError.exception(WorkspaceGUIResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
+            WorkspaceError.exception(jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
         }
 
         assemble(x, y, width, height);
@@ -574,7 +573,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             getContentManager().reset();
         } catch (IOException e) {
-            WorkspaceError.exception(WorkspaceGUIResourceAnchor.getString("MainFrame.save.failed"), e);
+            WorkspaceError.exception(jworkspace.ui.widgets.ResourceAnchor.getString("MainFrame.save.failed"), e);
         }
         log.info("Saved workspace frame");
     }

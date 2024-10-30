@@ -75,15 +75,15 @@ import com.hyperrealm.kiwi.ui.KDesktopPane;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.ClassCache;
+import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.utils.SwingUtils;
+import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.GlassDragPane;
-import jworkspace.ui.widgets.WorkspaceError;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;

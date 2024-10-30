@@ -53,10 +53,6 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 import com.hyperrealm.kiwi.util.ResourceLoader;
-
-import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.config.DesktopServiceLocator;
-
 /**
  * jEdit's HTML viewer. It uses a Swing JEditorPane to display the HTML,
  * and implements a URL history.
@@ -122,14 +118,14 @@ public class HelpViewer extends JPanel {
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.setBorder(new EmptyBorder(0, 12, 0, 0));
 
-        back = new JButton(new ImageIcon(new ResourceLoader(WorkspaceResourceAnchor.class)
+        back = new JButton(new ImageIcon(new ResourceLoader(ResourceAnchor.class)
             .getResourceAsImage("images/cpanel/normal/back.gif")));
         back.setToolTipText("Back");
         back.addActionListener(actionListener);
         back.setRequestFocusEnabled(false);
         toolBar.add(back);
 
-        forward = new JButton(new ImageIcon(new ResourceLoader(WorkspaceResourceAnchor.class)
+        forward = new JButton(new ImageIcon(new ResourceLoader(ResourceAnchor.class)
             .getResourceAsImage("images/cpanel/normal/forward.gif")));
         forward.addActionListener(actionListener);
         forward.setToolTipText("Forward");
@@ -161,7 +157,7 @@ public class HelpViewer extends JPanel {
             gotoURL(new URL(FILE_PROTOCOL + file));
         } catch (MalformedURLException e) {
             JOptionPane.showMessageDialog(
-                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                null,
                 CANNOT_OPEN_LOCATION_MESSAGE + FILE_PROTOCOL + file,
                 HELP_BROWSER_TITLE,
                 JOptionPane.INFORMATION_MESSAGE

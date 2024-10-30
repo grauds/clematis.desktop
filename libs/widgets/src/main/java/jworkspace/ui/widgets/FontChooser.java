@@ -49,7 +49,6 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jworkspace.WorkspaceResourceAnchor;
 
 /**
  * @author Anton Troshin
@@ -75,7 +74,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
      * Constructs a new JFontChooser component initialized to the supplied font object.
      */
     public FontChooser(Frame parent, Font font) {
-        super(parent, WorkspaceResourceAnchor.getString("FontChooserDialog.title"), true);
+        super(parent, ResourceAnchor.getString("FontChooserDialog.title"), true);
         this.font = font;
         if (font != null) {
             String fontSize = Integer.toString(font.getSize());
@@ -233,7 +232,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
         sizePane.setLayout(new BorderLayout(3, 3));
         KPanel top = new KPanel();
         top.setLayout(new BorderLayout(3, 3));
-        JLabel label = new JLabel(WorkspaceResourceAnchor.getString("FontChooserDialog.size"));
+        JLabel label = new JLabel(ResourceAnchor.getString("FontChooserDialog.size"));
         top.add(label, BorderLayout.WEST);
         sizePane.add(currentSize, BorderLayout.SOUTH);
         sizePane.add(top, BorderLayout.NORTH);
@@ -245,7 +244,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
         stylePane.setLayout(new BorderLayout(3, 3));
         top = new KPanel();
         top.setLayout(new BorderLayout(3, 3));
-        label = new JLabel(WorkspaceResourceAnchor.getString("FontChooserDialog.style"));
+        label = new JLabel(ResourceAnchor.getString("FontChooserDialog.style"));
         top.add(label, BorderLayout.CENTER);
         stylePane.add(top, BorderLayout.NORTH);
         stylePane.add(fontStylesScroll, BorderLayout.CENTER);
@@ -256,7 +255,7 @@ public class FontChooser extends ComponentDialog implements ActionListener, List
         namePane.setLayout(new BorderLayout(3, 3));
         top = new KPanel();
         top.setLayout(new BorderLayout(3, 3));
-        label = new JLabel(WorkspaceResourceAnchor.getString("FontChooserDialog.name"));
+        label = new JLabel(ResourceAnchor.getString("FontChooserDialog.name"));
         top.add(label, BorderLayout.CENTER);
         namePane.add(top, BorderLayout.NORTH);
         namePane.add(fontNamesScroll, BorderLayout.CENTER);

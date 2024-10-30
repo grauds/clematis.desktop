@@ -10,9 +10,6 @@ import javax.swing.filechooser.FileSystemView;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
 
-import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.widgets.WorkspaceError;
-
 public class FileUtils {
 
     private static final int BUFFER = 1024;
@@ -50,7 +47,7 @@ public class FileUtils {
 
                     StreamUtils.readStreamToStream(input, output);
                 } catch (IOException e) {
-                    WorkspaceError.exception(WorkspaceResourceAnchor.getString("Utils.cannotCopyDir"), e);
+                    throw new IOException(e);
                 }
             }
         }

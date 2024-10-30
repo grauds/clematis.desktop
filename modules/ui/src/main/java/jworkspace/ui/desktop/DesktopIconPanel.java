@@ -55,13 +55,13 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.installer.ApplicationDataSource;
-import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
+import jworkspace.ui.dialog.ResourceExplorerDialog;
+import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
-import jworkspace.ui.widgets.ResourceExplorerDialog;
 
 /**
  * This panel gathers user input for desktop icon properties.
@@ -160,7 +160,8 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
             }
         } else if (o == bLibBrowser) {
             ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(
-                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                WorkspaceResourceAnchor.getString("ResourceExplorerDlg.title")
             );
             callResourceBrowser(resBrowser);
         } else if (o == rb1) {

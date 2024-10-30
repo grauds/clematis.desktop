@@ -104,7 +104,7 @@ public class ConsoleFrame extends KFrame implements LoggingEndpoint {
 
         main.add(SOUTH_POSITION, buttons);
 
-        if (getTitle().length() == 0) {
+        if (getTitle().isEmpty()) {
             setTitle(loc.getMessage("kiwi.dialog.title.console"));
         }
 

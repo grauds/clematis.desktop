@@ -1,4 +1,4 @@
-package jworkspace;
+package jworkspace.ui;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -36,11 +36,11 @@ import lombok.extern.java.Log;
  * @author Anton Troshin
  */
 @Log
-public final class WorkspaceResourceAnchor {
+public class ResourceAnchor {
 
     private static ResourceBundle resources = null;
 
-    private WorkspaceResourceAnchor() {}
+    private ResourceAnchor() {}
 
     public static String getString(String id) {
 

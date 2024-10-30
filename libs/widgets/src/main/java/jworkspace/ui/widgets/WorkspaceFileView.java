@@ -33,7 +33,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileView;
 
-import jworkspace.ui.WorkspaceGUI;
+import com.hyperrealm.kiwi.util.ResourceManager;
 
 /**
  * @author Anton Troshin
@@ -41,7 +41,7 @@ import jworkspace.ui.WorkspaceGUI;
 @SuppressWarnings("MagicNumber")
 public class WorkspaceFileView extends FileView {
 
-    private static final Icon HTML_ICON = WorkspaceGUI.getResourceManager().getIcon("filedlg/html.gif");
+    private static final Icon HTML_ICON = getResourceManager().getIcon("filedlg/html.gif");
 
     private final Map<String, Icon> icons = new HashMap<>();
 
@@ -51,18 +51,12 @@ public class WorkspaceFileView extends FileView {
 
     public WorkspaceFileView() {
         super();
-        putIcon("jpg", WorkspaceGUI.getResourceManager().
-            getIcon("filedlg/jpg.gif"));
-        putIcon("gif", WorkspaceGUI.getResourceManager().
-            getIcon("filedlg/gif.gif"));
-        putIcon("jar", WorkspaceGUI.getResourceManager().
-            getIcon("filedlg/jar.gif"));
-        putIcon("java", WorkspaceGUI.getResourceManager().
-            getIcon("filedlg/java.gif"));
-        putIcon("class", WorkspaceGUI.getResourceManager().
-            getIcon("filedlg/class.gif"));
-        putIcon("jsp", WorkspaceGUI.getResourceManager().
-            getIcon("filedlg/jsp.gif"));
+        putIcon("jpg", getResourceManager().getIcon("filedlg/jpg.gif"));
+        putIcon("gif", getResourceManager().getIcon("filedlg/gif.gif"));
+        putIcon("jar", getResourceManager().getIcon("filedlg/jar.gif"));
+        putIcon("java", getResourceManager().getIcon("filedlg/java.gif"));
+        putIcon("class", getResourceManager().getIcon("filedlg/class.gif"));
+        putIcon("jsp", getResourceManager().getIcon("filedlg/jsp.gif"));
         putIcon("html", HTML_ICON);
         putIcon("htm", HTML_ICON);
         putIcon("shtml", HTML_ICON);
@@ -147,5 +141,13 @@ public class WorkspaceFileView extends FileView {
      */
     private void putTypeDescription(String extension, String typeDescription) {
         typeDescriptions.put(typeDescription, extension);
+    }
+
+    public static ResourceManager getResourceManager() {
+        return ResourceManagerHolder.RESOURCE_MANAGER;
+    }
+
+    private static final class ResourceManagerHolder {
+        private static final ResourceManager RESOURCE_MANAGER = new ResourceManager(WorkspaceFileView.class);
     }
 }

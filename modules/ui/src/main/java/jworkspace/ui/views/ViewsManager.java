@@ -66,6 +66,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
+import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
@@ -75,7 +76,6 @@ import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.utils.SwingUtils;
-import jworkspace.ui.widgets.WorkspaceError;
 import lombok.extern.java.Log;
 
 /**
@@ -934,19 +934,9 @@ public class ViewsManager extends AbstractViewsManager {
             for (JRadioButtonMenuItem menu : viewsMenu) {
                 go.remove(menu);
             }
-            /*
-             * Remove last separator
-             */
-            if (go.getMenuComponent(go.getMenuComponentCount() - 1) instanceof JSeparator) {
-                go.remove(go.getMenuComponentCount() - 1);
-            }
         }
 
         viewsMenu = new JRadioButtonMenuItem[names.length];
-
-        if (names.length > 0) {
-            go.addSeparator();
-        }
 
         for (int i = 0; i < names.length; i++) {
             String itemname = names[i];

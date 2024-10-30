@@ -61,11 +61,11 @@ import static jworkspace.ui.api.Constants.TILE_IMAGE;
 import static jworkspace.ui.api.Constants.TOP_LEFT_CORNER_IMAGE;
 import static jworkspace.ui.api.Constants.TOP_RIGHT_CORNER_IMAGE;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.ClassCache;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
 import lombok.extern.java.Log;
 

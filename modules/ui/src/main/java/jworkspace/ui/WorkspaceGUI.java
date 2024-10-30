@@ -70,7 +70,8 @@ import jworkspace.ui.api.IView;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.plugins.PluginsLoaderComponent;
-import jworkspace.ui.widgets.WorkspaceError;
+import jworkspace.ui.widgets.ClassCache;
+import jworkspace.ui.widgets.ResourceAnchor;
 import jworkspace.users.LoginValidator;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.ProfilesManager;
@@ -366,7 +367,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
             getFrame().save(outputStream);
         } catch (IOException e) {
-            WorkspaceError.exception(WorkspaceGUIResourceAnchor.getString("WorkspaceGUI.saveFrame.failed"), e);
+            WorkspaceError.exception(ResourceAnchor.getString("WorkspaceGUI.saveFrame.failed"), e);
         }
 
         try {
@@ -376,13 +377,35 @@ public class WorkspaceGUI implements IWorkspaceUI {
         }
     }
 
+    private String getLoggedUserString() {
+        String userName = ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getUserName();
+        String userFirstName = ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getUserFirstName();
+        String userLastName = ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getUserLastName();
+
+        String result = "";
+
+        if (userFirstName != null && !userFirstName.isEmpty()) {
+            result += userFirstName;
+        }
+        if (userLastName != null && !userLastName.isEmpty()) {
+            result += Constants.LOG_SPACE + userLastName;
+        }
+        if (userName != null && !userName.isEmpty()) {
+            result += " (" + userName + ")";
+        }
+
+        return result.trim();
+    }
+
     /**
      * Update GUI
      */
     public void update() {
-        getFrame().setTitle(Workspace.VERSION
+        getFrame().setTitle(
+            Workspace.VERSION
             + Constants.LOG_SPACE
-            + ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getUserName()
+            + " - Logged in as: "
+            + getLoggedUserString()
         );
         getFrame().update();
     }
@@ -394,7 +417,9 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * @param ex      exception
      */
     @Override
-    public void showError(String usermsg, Throwable ex) {}
+    public void showError(String usermsg, Throwable ex) {
+        WorkspaceError.exception(usermsg, ex);
+    }
 
     /**
      * Show message to user either way it capable of
@@ -402,7 +427,9 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * @param usermsg message
      */
     @Override
-    public void showMessage(String usermsg) {}
+    public void showMessage(String usermsg) {
+        WorkspaceError.msg(usermsg);
+    }
 
     public void setKiwiTextureVisible(boolean visible) {
         DesktopServiceLocator.getInstance().getUiConfig().setKiwiTextureVisible(visible);
@@ -480,8 +507,8 @@ public class WorkspaceGUI implements IWorkspaceUI {
                     ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                         getImage("desktop/desktop_big.png"));
                     JOptionPane.showMessageDialog(getFrame(),
-                        WorkspaceGUIResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
-                        WorkspaceGUIResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
+                        jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
+                        jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
                         JOptionPane.INFORMATION_MESSAGE, icon);
                 }
             }
@@ -566,7 +593,9 @@ public class WorkspaceGUI implements IWorkspaceUI {
             boolean validated = super.validate(name, password);
             if (validated) {
                 try {
-                    Workspace.startSession(name, password, ServiceLocator.getInstance().getProfilesManager().getBasePath());
+                    Workspace.startSession(
+                        name, password, ServiceLocator.getInstance().getProfilesManager().getBasePath()
+                    );
                 } catch (ProfileOperationException e) {
                     WorkspaceError.exception(e.getMessage(), e);
                 }

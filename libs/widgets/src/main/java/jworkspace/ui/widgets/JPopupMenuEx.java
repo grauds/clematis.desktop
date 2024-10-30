@@ -41,7 +41,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
 
-import jworkspace.WorkspaceResourceAnchor;
 import lombok.Getter;
 
 /**
@@ -57,7 +56,7 @@ public class JPopupMenuEx extends JPopupMenu {
     /**
      * More Menu Text - makes changing text easier later
      */
-    private static final String MORE = WorkspaceResourceAnchor.getString("JMoreMenu.more");
+    private static final String MORE = "More...";
     /**
      * Manually keep track of height - getPreferredSize/getSize seems
      * to only work properly after the menu has been dispayed at least

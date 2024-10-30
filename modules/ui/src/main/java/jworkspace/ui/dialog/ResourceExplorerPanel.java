@@ -1,4 +1,4 @@
-package jworkspace.ui.widgets;
+package jworkspace.ui.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -28,6 +28,7 @@ package jworkspace.ui.widgets;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
@@ -66,9 +67,7 @@ import com.hyperrealm.kiwi.util.ResourceManager;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 import com.hyperrealm.kiwi.util.Task;
 
-import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.WorkspaceError;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
@@ -82,8 +81,6 @@ import lombok.extern.java.Log;
 @SuppressWarnings("MagicNumber")
 public class ResourceExplorerPanel extends KPanel implements Scrollable, ComponentListener {
 
-    private static final String LOAD_FAILED_MESSAGE =
-        WorkspaceResourceAnchor.getString("ResourceExplorerPanel.load.failed");
     private static final Dimension THUMBNAIL_DIMENSION;
     private static final Border UNSELECTED_THUMBNAIL_BORDER;
     private static final Border SELECTED_THUMBNAIL_BORDER;
@@ -95,11 +92,9 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         THUMBNAIL_DIMENSION = new Dimension(96, 96);
     }
 
-    /**
-     * This dialog can choose textures or desktop icons in workspace
-     * Hint prevents KIWI textures from loading into desktop icons chooser
-     */
-    boolean isTextureChooser = true;
+    private final Dialog parent;
+
+    private boolean isTextureChooser = true;
     /**
      * Path to repository
      */
@@ -116,8 +111,9 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
 
     private ProgressDialog pr = null;
 
-    ResourceExplorerPanel() {
+    ResourceExplorerPanel(Dialog parent) {
         super();
+        this.parent = parent;
 
         // Align to left, 5 pixels spacing H and V
         setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -221,8 +217,8 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         list.clear();
 
         revalidate();
-        pr = new ProgressDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
-            WorkspaceResourceAnchor.getString("ResourceExplorerPanel.loadingRep"), true);
+        pr = new ProgressDialog(parent, "Loading...", true);
+
         Loader loader = new Loader();
         pr.track(loader);
         setPreferredDimension();
@@ -275,6 +271,18 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
     }
 
     /**
+     * This dialog can choose textures or desktop icons in workspace
+     * Hint prevents KIWI textures from loading into desktop icons chooser
+     */
+    public boolean isTextureChooser() {
+        return isTextureChooser;
+    }
+
+    public void setTextureChooser(boolean textureChooser) {
+        isTextureChooser = textureChooser;
+    }
+
+    /**
      * Inner class to show progress dialog
      */
     class Loader extends Task {
@@ -285,16 +293,12 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         }
 
         public void run() {
-            /*
-             * First get all KIWI textures if specified flag is
-             * set.
-             */
-            WorkspaceGUI wgui = DesktopServiceLocator.getInstance().getWorkspaceGUI();
-            if (wgui != null && wgui.isKiwiTextureVisible() && isTextureChooser) {
+
+            if (isTextureChooser()) {
                 try {
                     enumLibTextures();
                 } catch (IOException ex) {
-                    WorkspaceError.exception(LOAD_FAILED_MESSAGE, ex);
+                    WorkspaceError.exception(ex.getMessage(), ex);
                 }
             }
 
@@ -331,7 +335,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
                     }
                 }
             } catch (IOException ex) {
-                WorkspaceError.exception(LOAD_FAILED_MESSAGE, ex);
+                WorkspaceError.exception(ex.getMessage(), ex);
             }
         }
 

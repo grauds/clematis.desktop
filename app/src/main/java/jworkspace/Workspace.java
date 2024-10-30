@@ -27,7 +27,7 @@ import lombok.extern.java.Log;
 })
 public class Workspace {
 
-    public static final String VERSION = "Java Workspace 2.0.0 SNAPSHOT";
+    public static final String VERSION = "Java Workspace 2.0.0";
 
     public static final String HOME_DIR = ".jworkspace";
 

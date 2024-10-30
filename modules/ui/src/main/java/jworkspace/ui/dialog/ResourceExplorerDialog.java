@@ -1,4 +1,4 @@
-package jworkspace.ui.widgets;
+package jworkspace.ui.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -49,8 +49,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.ClassCache;
-
+import jworkspace.ui.widgets.ClassCache;
 /**
  * Resource explorer dialog is a holder for ResourceExplorerPanel.
  * @author Anton Troshin
@@ -66,8 +65,8 @@ public class ResourceExplorerDialog extends ComponentDialog
 
     private String path;
 
-    public ResourceExplorerDialog(Frame parent) {
-        super(parent, WorkspaceResourceAnchor.getString("ResourceExplorerDlg.title"), true);
+    public ResourceExplorerDialog(Frame parent, String title) {
+        super(parent, title, true);
         setResizable(true);
         addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
@@ -122,7 +121,7 @@ public class ResourceExplorerDialog extends ComponentDialog
         });
         browsePanel.add(tf, BorderLayout.CENTER);
 
-        rexplorer = new ResourceExplorerPanel();
+        rexplorer = new ResourceExplorerPanel(this);
 
         holder.add(browsePanel, BorderLayout.NORTH);
         JScrollPane scroll = new JScrollPane(rexplorer,
@@ -146,7 +145,7 @@ public class ResourceExplorerDialog extends ComponentDialog
     }
 
     public void setHint(boolean isTextureChooser) {
-        rexplorer.isTextureChooser = isTextureChooser;
+        rexplorer.setTextureChooser(isTextureChooser);
     }
 
     public void setData(String path) {

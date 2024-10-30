@@ -49,12 +49,12 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.ClassCache;
+import jworkspace.ui.widgets.ResourceAnchor;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.dialog.IDialogPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
-import jworkspace.ui.widgets.ResourceExplorerDialog;
 
 /**
  * General settings panel for settings dialog.
@@ -151,7 +151,8 @@ class TexturePanel extends KPanel implements ActionListener, IDialogPanel {
             }
         } else if (o == bLibBrowser) {
             ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(
-                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                ResourceAnchor.getString("ResourceExplorerDlg.title")
             );
             callResourceBrowser(resBrowser);
         } else if (o == chShowWTextures) {

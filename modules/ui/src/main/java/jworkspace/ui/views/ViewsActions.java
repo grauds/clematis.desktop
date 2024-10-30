@@ -39,11 +39,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.config.DesktopServiceLocator;
-import jworkspace.ui.widgets.WorkspaceError;
 
 /**
  * Actions of desktop manager
