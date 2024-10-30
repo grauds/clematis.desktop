@@ -61,7 +61,6 @@ import static jworkspace.ui.api.Constants.DISPLAY_PARAMETER;
 import static jworkspace.ui.api.Constants.REGISTER_PARAMETER;
 import static jworkspace.ui.api.Constants.VIEW_PARAMETER;
 import jworkspace.Workspace;
-import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.IWorkspaceUI;
 import jworkspace.config.ServiceLocator;
@@ -72,17 +71,20 @@ import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.plugins.PluginsLoaderComponent;
 import jworkspace.ui.widgets.WorkspaceError;
+import jworkspace.users.LoginValidator;
+import jworkspace.users.ProfileOperationException;
+import jworkspace.users.ProfilesManager;
 import lombok.extern.java.Log;
 
 /**
- * Workspace Desktop user interface
+ * Desktop based user interface
  *
  * @author Anton Troshin
  */
 @Log
 public class WorkspaceGUI implements IWorkspaceUI {
     /**
-     * Workspace UI logo.
+     * User interface splash screen
      */
     private static SplashScreen logo = null;
     /**
@@ -93,10 +95,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Workspace main frame
      */
     private MainFrame frame = null;
-    /**
-     * GUI actions
-     */
-    private UIActions actions = null;
     /**
      * A list of displayed frames
      */
@@ -112,13 +110,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
         UIChangeManager.getInstance().setDefaultFrameIcon(getResourceManager().getImage("jw_16x16.png"));
         registerListeners();
         DesktopServiceLocator.getInstance().setWorkspaceGUI(this);
-    }
-
-    UIActions getActions() {
-        if (actions == null) {
-            actions = new UIActions(this);
-        }
-        return actions;
     }
 
     public static ResourceManager getResourceManager() {
@@ -148,7 +139,9 @@ public class WorkspaceGUI implements IWorkspaceUI {
     @Override
     public MainFrame getFrame() {
         if (frame == null) {
-            frame = new MainFrame(Workspace.VERSION, this);
+            frame = new MainFrame(
+                Workspace.VERSION, new WorkspaceLoginValidator(ServiceLocator.getInstance().getProfilesManager())
+            );
             frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     if (e.getSource() == frame) {
@@ -288,8 +281,8 @@ public class WorkspaceGUI implements IWorkspaceUI {
          * Set undecorated property
          */
         boolean undecorated = DesktopServiceLocator.getInstance().getUiConfig().isDecorated();
-        getFrame().setUndecorated(undecorated);
         if (undecorated) {
+            getFrame().setUndecorated(undecorated);
             getFrame().setSize(Toolkit.getDefaultToolkit().getScreenSize());
         }
 
@@ -318,7 +311,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
          */
         update();
         /*
-         * Load plugins for Workspace Desktop UI
+         * Load plugins for UI
          */
         new PluginsLoaderComponent().loadPlugins();
         /*
@@ -349,7 +342,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
     }
 
     /**
-     * Saves profile data of Workspace GUI on disk.
+     * Saves profile data of GUI on disk.
      */
     public void save() {
         /*
@@ -373,7 +366,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
             getFrame().save(outputStream);
         } catch (IOException e) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString("WorkspaceGUI.saveFrame.failed"), e);
+            WorkspaceError.exception(WorkspaceGUIResourceAnchor.getString("WorkspaceGUI.saveFrame.failed"), e);
         }
 
         try {
@@ -387,6 +380,10 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Update GUI
      */
     public void update() {
+        getFrame().setTitle(Workspace.VERSION
+            + Constants.LOG_SPACE
+            + ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getUserName()
+        );
         getFrame().update();
     }
 
@@ -483,8 +480,8 @@ public class WorkspaceGUI implements IWorkspaceUI {
                     ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                         getImage("desktop/desktop_big.png"));
                     JOptionPane.showMessageDialog(getFrame(),
-                        WorkspaceResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
-                        WorkspaceResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
+                        WorkspaceGUIResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
+                        WorkspaceGUIResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
                         JOptionPane.INFORMATION_MESSAGE, icon);
                 }
             }
@@ -556,5 +553,25 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
     private static final class ResourceManagerHolder {
         private static final ResourceManager RESOURCE_MANAGER = new ResourceManager(WorkspaceGUI.class);
+    }
+
+    private static final class WorkspaceLoginValidator extends LoginValidator {
+
+        WorkspaceLoginValidator(ProfilesManager profilesManager) {
+            super(profilesManager);
+        }
+
+        @Override
+        public boolean validate(String name, String password) {
+            boolean validated = super.validate(name, password);
+            if (validated) {
+                try {
+                    Workspace.startSession(name, password, ServiceLocator.getInstance().getProfilesManager().getBasePath());
+                } catch (ProfileOperationException e) {
+                    WorkspaceError.exception(e.getMessage(), e);
+                }
+            }
+            return validated;
+        }
     }
 }

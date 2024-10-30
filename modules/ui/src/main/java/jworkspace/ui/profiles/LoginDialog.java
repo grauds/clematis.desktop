@@ -61,7 +61,8 @@ public class LoginDialog extends ComponentDialog {
      */
 
     public LoginDialog(Frame parent, String title, String comment,
-                       LoginValidator validator) {
+                       LoginValidator validator
+    ) {
         this(parent, title, comment, null, validator, true);
     }
 
@@ -69,7 +70,8 @@ public class LoginDialog extends ComponentDialog {
      */
     public LoginDialog(Frame parent, String title, String comment,
                        Icon icon,
-                       LoginValidator validator) {
+                       LoginValidator validator
+    ) {
         this(parent, title, comment, icon, validator, true);
     }
 

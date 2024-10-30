@@ -31,13 +31,13 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.hyperrealm.kiwi.ui.DocumentBrowserFrame;
@@ -48,6 +48,7 @@ import jworkspace.Workspace;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.AbstractStateAction;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.SettingsDialog;
 import jworkspace.ui.profiles.UserDetailsDialog;
 import jworkspace.ui.widgets.ImageRenderer;
@@ -56,7 +57,7 @@ import jworkspace.ui.widgets.ImageRenderer;
  * This class contains all actions of workspace frame that are for system use.
  * @author Anton Troshin
  */
-public class UIActions implements Constants {
+public class MenuActions implements Constants {
 
     /**
      * Logoff action name
@@ -100,19 +101,13 @@ public class UIActions implements Constants {
     private static final String NEW_USER_ACTION_NAME =
         WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.newuser") + Constants.LOG_FINISH;
 
-    /**
-     * Full screen action name
-     */
-    private static final String FULL_SCREEN_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.fullscr");
-
     private static final int MARGIN = 10;
 
     private static final int SIZE_FACTOR = 3;
     /**
      * Instance of Workspace GUI
      */
-    protected WorkspaceGUI gui;
+    protected JFrame frame;
     /**
      * All actions
      */
@@ -125,20 +120,14 @@ public class UIActions implements Constants {
     /**
      * Public constructor
      */
-    UIActions(WorkspaceGUI gui) {
+    MenuActions(MainFrame frame) {
         super();
-        this.gui = gui;
+        this.frame = frame;
         createActions();
     }
 
     Action getAction(String name) {
         return actions.get(name);
-    }
-
-    public Action[] getActions() {
-        Collection<Action> e = actions.values();
-        Action[] temp = new Action[actions.size()];
-        return e.toArray(temp);
     }
 
     ShowPanelAction getShowPanelAction() {
@@ -194,7 +183,7 @@ public class UIActions implements Constants {
      */
     private void about() {
 
-        JDialog aboutFrame = new JDialog(gui.getFrame());
+        JDialog aboutFrame = new JDialog(frame);
         Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.png");
 
         aboutFrame.getContentPane().setLayout(new BorderLayout());
@@ -234,7 +223,7 @@ public class UIActions implements Constants {
             );
             dbf.setVisible(true);
         } catch (ResourceNotFoundException ex) {
-            JOptionPane.showMessageDialog(gui.getFrame(),
+            JOptionPane.showMessageDialog(frame,
                 WorkspaceResourceAnchor.getString("UIActions.resource.notFound")
                     + " " + ex.getMessage());
         }
@@ -244,7 +233,7 @@ public class UIActions implements Constants {
      * Show my details dialog
      */
     private void showMyDetails() {
-        UserDetailsDialog dlg = new UserDetailsDialog(gui.getFrame());
+        UserDetailsDialog dlg = new UserDetailsDialog(frame);
         dlg.setData();
         dlg.setVisible(true);
     }
@@ -253,7 +242,7 @@ public class UIActions implements Constants {
      * Show workspace ui settings dialog
      */
     private void showSettings() {
-        SettingsDialog dlg = new SettingsDialog(gui.getFrame());
+        SettingsDialog dlg = new SettingsDialog(frame);
         dlg.setData();
         dlg.setVisible(true);
     }
@@ -327,12 +316,13 @@ public class UIActions implements Constants {
         }
     }
 
-    protected class ShowPanelAction extends AbstractStateAction {
+    protected static class ShowPanelAction extends AbstractStateAction {
         ShowPanelAction() {
             super(SHOW_PANEL_ACTION_NAME);
         }
 
         public void actionPerformed(ActionEvent e) {
+            WorkspaceGUI gui = DesktopServiceLocator.getInstance().getWorkspaceGUI();
             gui.getFrame().switchControlPanel();
             setSelected(gui.getFrame().getControlPanel().isVisible());
         }

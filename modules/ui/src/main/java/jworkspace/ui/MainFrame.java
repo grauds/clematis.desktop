@@ -49,9 +49,6 @@ import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
-import jworkspace.Workspace;
-import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
@@ -61,6 +58,7 @@ import jworkspace.ui.profiles.LoginPanel;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.GlassDragPane;
 import jworkspace.ui.widgets.WorkspaceError;
+import jworkspace.users.LoginValidator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
@@ -80,10 +78,9 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     private static final String MAIN_FRAME_LOAD_FAILED_MESSAGE = "MainFrame.cmLoad.failed";
     /**
-     * A reference to Workspace GUI
+     * Actions
      */
-    @Getter
-    private final WorkspaceGUI gui;
+    private final MenuActions actions;
     /**
      * System menu.
      */
@@ -116,19 +113,21 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     private GlassDragPane dragPane = null;
     /**
-     * Top login panel overlay
+     * User login panel
      */
-    private final LoginPanel loginPanel = new LoginPanel();
+    private LoginPanel loginPanel = null;
     /**
-     * Main frame for Java Workspace GUI is created
-     * with only title. All initialization is made
+     * Login validator
+     */
+    private final LoginValidator loginValidator;
+
+    /**
+     * Main frame for Java Workspace GUI is created with only title. All initialization is made
      * by components of main frame by themselves.
      */
-    MainFrame(String title, WorkspaceGUI gui) {
+    MainFrame(String title, LoginValidator loginValidator) {
         super(title);
-
-        // save reference for the ui
-        this.gui = gui;
+        this.loginValidator = loginValidator;
 
         // insert menu bar on the top.
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -137,6 +136,9 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
         // ui managers
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
+
+        // ui actions
+        actions = new MenuActions(this);
     }
 
     /**
@@ -144,7 +146,27 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     public void create() {
 
+        log.info("Creating workspace frame");
+
+        int x = 0;
+        int y = 0;
+
+        int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+        int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+        getContentManager().create();
+
+        assemble(x, y, width, height);
+        log.info("Frame is loaded with default configuration");
+    }
+
+    private void assemble(int x, int y, int width, int height) {
+
         log.info("Building gui" + Constants.LOG_FINISH);
+        /*
+         * Remove login panel
+         */
+        removeLoginPanel();
         /*
          * Ask for buttons and fill control panel.
          */
@@ -164,15 +186,19 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             }
         }
 
-        // assemble default ui
-        getContentManager().create();
+        setGlassBounds(x, y, width, height);
 
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(0, 0, size.width, size.height);
-
-        assemble();
+        /*
+         * Settle stuff on frame.
+         */
+        setMenuBar(getJMenuBar());
+        getMainContainer().add(getContentManager(), BorderLayout.CENTER);
+        getMainContainer().add(getControlPanel(), getOrientation());
+        /*
+         * Finally display.
+         */
         setVisible(true);
-        log.info("Frame is loaded with default configuration");
+        update();
     }
 
     /*
@@ -215,7 +241,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
             getDragPane().setBounds(
                 getMainContainer().getLocation().x,
-                getMainContainer().getLocation().y 
+                getMainContainer().getLocation().y
                     + getMainContainer().getSize().height
                     - Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
                 getMainContainer().getSize().width,
@@ -279,6 +305,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
                 contentManager = (AbstractViewsManager) object;
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
+
             }
         }
         return contentManager;
@@ -302,13 +329,13 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         if (systemMenu == null) {
             systemMenu = new JMenuBar();
 
-            JMenu wmenu = new JMenu(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
-            wmenu.setMnemonic(WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
+            JMenu wmenu = new JMenu(WorkspaceGUIResourceAnchor.getString("WorkspaceFrame.menu.workspace"));
+            wmenu.setMnemonic(WorkspaceGUIResourceAnchor.getString("WorkspaceFrame.menu.workspace.key").charAt(0));
             /*
              *  My details
              */
-            JMenuItem myDetails = SwingUtils.createMenuItem(getGui().getActions().getAction(
-                UIActions.MY_DETAILS_ACTION_NAME)
+            JMenuItem myDetails = SwingUtils.createMenuItem(actions.getAction(
+                MenuActions.MY_DETAILS_ACTION_NAME)
             );
             myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
             wmenu.add(myDetails);
@@ -316,14 +343,15 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              * Settings
              */
             JMenuItem settings = SwingUtils.createMenuItem(
-                getGui().getActions().getAction(UIActions.SETTINGS_ACTION_NAME)
+                actions.getAction(MenuActions.SETTINGS_ACTION_NAME)
             );
             wmenu.add(settings);
             /*
              * Show control panel
              */
-            JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(getGui().getActions()
-                .getAction(UIActions.SHOW_PANEL_ACTION_NAME));
+            JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(
+                actions.getAction(MenuActions.SHOW_PANEL_ACTION_NAME)
+            );
             showControlPanel.setSelected(getControlPanel().isVisible());
             showControlPanel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
             wmenu.add(showControlPanel);
@@ -331,24 +359,32 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Help
              */
-            JMenuItem help = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.HELP_ACTION_NAME));
+            JMenuItem help = SwingUtils.createMenuItem(
+                actions.getAction(MenuActions.HELP_ACTION_NAME)
+            );
             help.setEnabled(false);
             wmenu.add(help);
             /*
              * About
              */
-            JMenuItem about = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.ABOUT_ACTION_NAME));
+            JMenuItem about = SwingUtils.createMenuItem(
+                actions.getAction(MenuActions.ABOUT_ACTION_NAME)
+            );
             wmenu.add(about);
             wmenu.addSeparator();
             /*
              * Log off
              */
-            JMenuItem logOff = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.LOGOFF_ACTION_NAME));
+            JMenuItem logOff = SwingUtils.createMenuItem(
+                actions.getAction(MenuActions.LOGOFF_ACTION_NAME)
+            );
             wmenu.add(logOff);
             /*
              * Exit
              */
-            JMenuItem exit = SwingUtils.createMenuItem(getGui().getActions().getAction(UIActions.EXIT_ACTION_NAME));
+            JMenuItem exit = SwingUtils.createMenuItem(
+                actions.getAction(MenuActions.EXIT_ACTION_NAME)
+            );
             exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK));
             wmenu.add(exit);
 
@@ -376,7 +412,8 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Loads profile data. Input stream in parameters is from file jwxwin.dat.
      */
     public void load(DataInputStream inputStream) {
-        log.info("Loading workspace frame");
+
+        log.info("Loading configuration for workspace frame");
 
         boolean visible = false;
 
@@ -406,52 +443,18 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             width = inputStream.readInt();
             height = inputStream.readInt();
 
-        } catch (IOException e) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
-        }
-        /*
-         * Control panel
-         */
-        getGui().getActions().getShowPanelAction().setSelected(getControlPanel().isVisible());
-        getControlPanel().setVisible(visible);
-        getControlPanel().setOrientation(getOrientation());
-        /*
-         * Set bounds
-         */
-        setGlassBounds(x, y, width, height);
+            actions.getShowPanelAction().setSelected(getControlPanel().isVisible());
+            getControlPanel().setVisible(visible);
+            getControlPanel().setOrientation(getOrientation());
 
-        try {
-            /*
-             * Ask for buttons and fill control panel.
-             */
-            CButton[] buttons = getContentManager().getButtons();
-            if (buttons != null) {
-                for (CButton button : buttons) {
-                    getControlPanel().addButton(button);
-                }
-            }
-            /*
-             * Ask for menus
-             */
-            JMenu[] menus = getContentManager().getMenu();
-            if (menus != null) {
-                for (JMenu menu : menus) {
-                    getJMenuBar().add(menu);
-                }
-            }
-            /*
-             * Load and update content
-             */
             getContentManager().load();
+
         } catch (IOException e) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString(MAIN_FRAME_LOAD_FAILED_MESSAGE), e);
+            WorkspaceError.exception(WorkspaceGUIResourceAnchor.getString("WorkspaceFrame.load.failed"), e);
         }
-        /*
-         * End of Main Frame config.
-         */
-        assemble();
+
+        assemble(x, y, width, height);
         log.info("Loaded workspace frame");
-        setVisible(true);
     }
 
     /**
@@ -512,8 +515,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
         addLoginPanel();
 
-        invalidate();
-        validate();
         repaint();
     }
 
@@ -573,7 +574,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
              */
             getContentManager().reset();
         } catch (IOException e) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString("MainFrame.save.failed"), e);
+            WorkspaceError.exception(WorkspaceGUIResourceAnchor.getString("MainFrame.save.failed"), e);
         }
         log.info("Saved workspace frame");
     }
@@ -590,23 +591,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     /**
-     * Sets Workspace frame to a full screen wide.
-     */
-    private void assemble() {
-        /*
-         * Settle stuff on frame.
-         */
-        setMenuBar(getJMenuBar());
-        getMainContainer().add(getContentManager(), BorderLayout.CENTER);
-        getMainContainer().add(getControlPanel(), getOrientation());
-        /*
-         * Finally display.
-         */
-        setVisible(true);
-        update();
-    }
-
-    /**
      * Switches control panel on and off.
      */
     void switchControlPanel() {
@@ -619,25 +603,29 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * Updates controls for the component.
      */
     public void update() {
-        setTitle(Workspace.VERSION
-            + Constants.LOG_SPACE
-            + ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getUserName()
-        );
         invalidate();
         validate();
         repaint();
     }
 
     protected void addLoginPanel() {
-        loginPanel.setBounds(0, 0,
-            getMainContainer().getWidth(),
-            getMainContainer().getHeight());
-        getMainContainer().add(loginPanel);
+        getLoginPanel().setBounds(0, 0, getMainContainer().getWidth(), getMainContainer().getHeight());
+        getMainContainer().add(getLoginPanel());
         getMainContainer().repaint();
     }
 
     protected void removeLoginPanel() {
-        getMainContainer().remove(loginPanel);
+        getMainContainer().remove(getLoginPanel());
+        getMainContainer().repaint();
     }
 
+    /**
+     * Top login panel overlay
+     */
+    public LoginPanel getLoginPanel() {
+        if (loginPanel == null) {
+            loginPanel = new LoginPanel(this.loginValidator);
+        }
+        return loginPanel;
+    }
 }

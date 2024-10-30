@@ -154,6 +154,12 @@ public class Workspace {
              * Logout from the current profile
              */
             ServiceLocator.getInstance().getProfilesManager().logout();
+            /*
+             * Set workspace user directory to workspace base directory
+             */
+            ServiceLocator.getInstance().getPluginLocator().getContext().setUserDir(
+                ServiceLocator.getInstance().getProfilesManager().getBasePath()
+            );
         }
     }
 
