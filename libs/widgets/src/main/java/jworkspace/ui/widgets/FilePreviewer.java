@@ -32,7 +32,6 @@ import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -67,7 +66,7 @@ public class FilePreviewer extends JComponent implements PropertyChangeListener 
                 } else {
                     thumbnail = tmpIcon;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 thumbnail = null;
             }
         }
