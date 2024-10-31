@@ -62,15 +62,12 @@ import com.hyperrealm.kiwi.util.LocaleManager;
 @SuppressWarnings("unused")
 public class AboutFrame extends KFrame {
 
-    private KButton bOk, bHome = null;
-
-    private JEditorPane edit;
-
-    private URL startPage;
-
-    private String defaultTitle;
-
-    private LocaleData loc2;
+    private final KButton bOk;
+    private KButton bHome = null;
+    private final JEditorPane edit;
+    private final URL startPage;
+    private final String defaultTitle;
+    private final LocaleData loc2;
 
     /**
      * Construct a new <code>AboutFrame</code> without a <i>Home</i> button.
@@ -154,11 +151,8 @@ public class AboutFrame extends KFrame {
         }
 
         bContent.add(CENTER_POSITION, scroll);
-
         main.add(CENTER_POSITION, bContent);
-
         main.add(SOUTH_POSITION, bButtons);
-
         setSize(DEFAULT_FRAME_SIZE);
     }
 

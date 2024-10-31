@@ -89,13 +89,15 @@ public abstract class ComponentDialog extends KDialog {
 
     protected static final String POSITION_OUT_OF_RANGE = "Position out of range.";
 
-    KButton bOk;
+    protected KLabel iconLabel;
 
-    KButton bCancel = null;
+    protected KButton bOk;
+
+    protected KButton bCancel = null;
 
     private ActionListener actionListener;
 
-    private KLabel iconLabel, commentLabel;
+    private KLabel commentLabel;
 
     private JTextField inputComponent = null;
 
@@ -179,11 +181,6 @@ public abstract class ComponentDialog extends KDialog {
         commentLabel = new KLabel(loc.getMessage("kiwi.dialog.prompt"));
         getMainContainer().add(NORTH_POSITION, commentLabel);
 
-        iconLabel = new KLabel();
-        iconLabel.setBorder(new EmptyBorder(DEFAULT_PADDING, 0, DEFAULT_PADDING, 0));
-        iconLabel.setVerticalAlignment(SwingConstants.CENTER);
-        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
         buttons = new ButtonPanel();
 
         bOk = new KButton(loc.getMessage("kiwi.button.ok"));
@@ -239,7 +236,7 @@ public abstract class ComponentDialog extends KDialog {
      */
 
     public void setIconPosition(int position) {
-        iconLabel.setVerticalAlignment(position);
+        getIconLabel().setVerticalAlignment(position);
     }
 
     /**
@@ -319,11 +316,21 @@ public abstract class ComponentDialog extends KDialog {
 
     public void setIcon(Icon icon) {
         if (icon != null) {
-            iconLabel.setIcon(icon);
-            getMainContainer().add(WEST_POSITION, iconLabel);
+            getIconLabel().setIcon(icon);
+            getMainContainer().add(WEST_POSITION, getIconLabel());
         } else {
-            getMainContainer().remove(iconLabel);
+            getMainContainer().remove(getIconLabel());
         }
+    }
+
+    public KLabel getIconLabel() {
+        if (iconLabel == null) {
+            iconLabel = new KLabel();
+            iconLabel.setBorder(new EmptyBorder(DEFAULT_PADDING, 0, DEFAULT_PADDING, 0));
+            iconLabel.setVerticalAlignment(SwingConstants.CENTER);
+            iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+        return iconLabel;
     }
 
     /* action listener */

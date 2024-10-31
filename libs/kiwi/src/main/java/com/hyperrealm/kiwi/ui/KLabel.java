@@ -27,6 +27,9 @@ import java.awt.RenderingHints;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A trivial extension to <code>JLabel</code> that performs some simple
  * customizations and supports optional anti-aliased rendering.
@@ -34,9 +37,12 @@ import javax.swing.JLabel;
  * @author Mark Lindner
  * @since Kiwi 1.3
  */
-
+@Getter
+@Setter
 public class KLabel extends JLabel {
-
+    /**
+     * Determine if antialiased rendering is enabled for this label.
+     */
     private boolean antialiased = false;
 
     /**
@@ -124,26 +130,6 @@ public class KLabel extends JLabel {
         setForeground(Color.black);
     }
 
-    /**
-     * Determine if antialiased rendering is enabled for this label.
-     *
-     * @since Kiwi 2.2
-     */
-
-    public boolean isAntiAliased() {
-        return (antialiased);
-    }
-
-    /**
-     * Enable or disable antialiased rendering for this label.
-     *
-     * @since Kiwi 2.2
-     */
-
-    public void setAntiAliased(boolean antialiased) {
-        this.antialiased = antialiased;
-    }
-
     /*
      */
 
@@ -151,8 +137,10 @@ public class KLabel extends JLabel {
         if (antialiased) {
             Graphics2D g2d = (Graphics2D) g;
 
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+            );
         }
 
         super.paintComponent(g);

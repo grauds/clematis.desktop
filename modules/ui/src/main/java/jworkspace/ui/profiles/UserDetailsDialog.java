@@ -29,16 +29,20 @@ package jworkspace.ui.profiles;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -59,6 +63,7 @@ import com.hyperrealm.kiwi.util.ResourceManager;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.widgets.AvatarChooser;
 
 /**
  * Carrier class for <code>jworkspace.ui.UserDetailsPanel</code>
@@ -66,9 +71,9 @@ import jworkspace.ui.WorkspaceGUI;
  */
 public class UserDetailsDialog extends ComponentDialog implements ActionListener {
 
-    private static final int MAX_PORTRAIT_WIDTH = 250;
+    public static final String AVATAR_IMAGE = "portrait.jpg";
 
-    private static final int MAX_PORTRAIT_HEIGHT = 250;
+    public static final String USER_VARIABLES = "user_var.png";
 
     private UserDetailsPanel userDetailsPanel;
 
@@ -78,14 +83,58 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
 
     private DefaultTableModel tmodel;
 
+    private AvatarChooser avatarChooser;
+
     @SuppressWarnings("checkstyle:MagicNumber")
     public UserDetailsDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString("UserDetailsDlg.title"), true);
-
         getMainContainer().setBorder(new EmptyBorder(5, 15, 5, 5));
     }
 
+    public void setIcon(Icon icon) {
+        getAvatarChooser().setIcon((ImageIcon) icon);
+    }
+
+    protected AvatarChooser getAvatarChooser() {
+        if (avatarChooser == null) {
+            avatarChooser = new AvatarChooser(
+                new ImageIcon(WorkspaceGUI.getResourceManager().getImage("no_avatar.png"))
+            );
+        }
+        return avatarChooser;
+    }
+
     protected boolean accept() {
+
+        try {
+            File file = ServiceLocator
+                .getInstance()
+                .getProfilesManager()
+                .ensureUserHomePath()
+                .resolve(AVATAR_IMAGE)
+                .toFile();
+
+            ImageIcon image = getAvatarChooser().getIcon();
+            RenderedImage rendered;
+            if (image instanceof RenderedImage) {
+                rendered = (RenderedImage) image;
+            } else {
+                BufferedImage buffered = new BufferedImage(
+                    image.getIconWidth(),
+                    image.getIconHeight(),
+                    BufferedImage.TYPE_INT_RGB
+                );
+                Graphics2D g = buffered.createGraphics();
+                g.drawImage(image.getImage(), 0, 0, null);
+                g.dispose();
+                rendered = buffered;
+            }
+            ImageIO.write(rendered, "JPG", file);
+
+        } catch (IOException e) {
+            // do not pay attention
+        }
+
         String name, value;
         int rows = table.getRowCount();
 
@@ -107,7 +156,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
 
         if (o == bNew) {
             ImageIcon icon = new ImageIcon(
-                WorkspaceGUI.getResourceManager().getImage("user_var.png")
+                WorkspaceGUI.getResourceManager().getImage(USER_VARIABLES)
             );
 
             String name = (String) JOptionPane.showInputDialog(
@@ -164,7 +213,10 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
     }
 
     protected JComponent buildDialogUI() {
+
         setComment(null);
+
+        getMainContainer().add(WEST_POSITION, getAvatarChooser());
 
         Image p = null;
         try {
@@ -172,7 +224,7 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
                 .getInstance()
                 .getProfilesManager()
                 .ensureUserHomePath()
-                .resolve("portrait.jpg")
+                .resolve(AVATAR_IMAGE)
                 .toFile();
 
             p = ImageIO.read(file);
@@ -183,12 +235,8 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         if (p != null) {
             ImageIcon photo = new ImageIcon(p);
             if (photo.getIconHeight() > 0 && photo.getIconWidth() > 0) {
-                scaleImage(p, photo);
+                setIcon(photo);
             }
-        } else {
-            p = WorkspaceGUI.getResourceManager().getImage("no_avatar.png");
-            ImageIcon photo = new ImageIcon(p);
-            scaleImage(p, photo);
         }
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -199,17 +247,6 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         tabbedPane.addTab(WorkspaceResourceAnchor.getString("UserDetailsDlg.variablesTab"), buildPropertyEditor());
 
         return (tabbedPane);
-    }
-
-    private void scaleImage(Image p, ImageIcon photo) {
-
-        if (photo.getIconHeight() > MAX_PORTRAIT_HEIGHT) {
-            setIcon(new ImageIcon(p.getScaledInstance(-1, MAX_PORTRAIT_HEIGHT, Image.SCALE_SMOOTH)));
-        } else if (photo.getIconWidth() > MAX_PORTRAIT_WIDTH) {
-            setIcon(new ImageIcon(p.getScaledInstance(MAX_PORTRAIT_WIDTH, -1, Image.SCALE_SMOOTH)));
-        } else {
-            setIcon(new ImageIcon(p));
-        }
     }
 
     @SuppressWarnings("MagicNumber")
@@ -303,7 +340,6 @@ public class UserDetailsDialog extends ComponentDialog implements ActionListener
         if (flag) {
             refresh();
         }
-
         super.setVisible(flag);
     }
 
