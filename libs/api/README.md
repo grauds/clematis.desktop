@@ -32,7 +32,7 @@ eventsDispatcher.addListener(this);
 eventsDispatcher.fireEvent(NUMERIC_ID, lparam, rparam);  
 ```
 
-This is a well-known Event-Driven architecture pattern.
+This is a well-known Event-Driven Architecture pattern.
 
 
 ## Workspace Components
@@ -45,6 +45,22 @@ and another method to reset the component to its initial state,
 without profile specific information. 
 
 <img src="./doc/workspace_component_life_cycle.png" alt="workspace_component_life_cycle.png" width="500px" align="middle"/>
+
+## Workspace User Interface
+
+Interaction with users is optional and workspace can be run in the background with a set
+of plugins which are purely server-side. But if workspace is installed on a desktop, an implementation
+of ```IWorkspaceGUI``` is needed. Such implementation can be loaded as a system plugin and 
+it should be able to load/save/reset its state for different users since it is an instance of 
+Workspace Component as well. However, there are a few more methods to implement:
+1. A frame is needed to present to the users. Also, this frame has to be able to ask for login information to start user sessions.
+2. User interface implementation has to provide means of showing errors and messages to users, since logging is not enough when running on a desktop.
+3. User interface should be able to tell other components if user has modified something and haven't saved the work yet.
+4. Clipboard is required for any UI components which use copy/paste or drag-n-drop operations.
+5. The frame with its tree of components should be able to repaint itself on demand if other components have changed its state or look and feel.
+
+<img src="./doc/workspace_ui.png" alt="workspace_component_life_cycle.png" width="500px" align="middle"/>
+
 
 ## Definition Node
 
@@ -104,3 +120,10 @@ And a definition node can give its path back:
 ```java
 String path = emptyNode.getLinkString();
 ```
+
+## Workspace Exception
+
+A special exception type to catch a general exception with a specific cause in it. It
+may be useful to present additional exception details to users only if user wants the details
+and requests them.
+
