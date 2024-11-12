@@ -9,6 +9,8 @@ Clematis Desktop is a pet project started back in '99 and being developed at spa
 It is build with Kiwi Library and Springboard - great hobby projects written by Mark Lindner, both gave
 a significant contribution. 
 
+<img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="800px" align="middle"/>
+
 ## Modules
 
 The architecture of the application is modular, it's functionality is extendable via plugins.

@@ -9,7 +9,11 @@ of Workspace Profiles API.
 ## Data Storage
 
 Profiles are stored in the local file system, it can be either a user host OS home folder,
-or current working directory or any other directory. This parameter has to be configured 
+or current working directory or any other directory: 
+
+<img src="./doc/profiles_manager.png" alt="drawing" width="300"/>
+
+This parameter has to be configured 
 with an optional flag before start and should not be changed after it is configured since in that case
 profiles will be reset. For example:
 
@@ -18,9 +22,9 @@ java -jar workspace.jar jworkspace.Workspace --path /some/user/specific/path
 ```
 
 Setting directory back to the original one would restore the
-profiles and the data. The default value if ```.jworkspace``` folder in user's home directory:
+profiles and the data. The default value is ```.jworkspace``` folder in the user home directory:
 
-<img src="./doc/data.png" alt="drawing" width="400"/>
+<img src="./doc/data.jpg" alt="drawing" width="400"/>
 
 The folder has the name of the profile and it is a filesystem's responsibility
 to ensure its uniqueness. Since workspace is usually run under current OS user
