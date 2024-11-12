@@ -24,6 +24,7 @@ import java.awt.Font;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -62,6 +63,7 @@ public class Config extends Properties implements PropertyChangeSource {
     /**
      * use serialVersionUID from JDK 1.1.X for interoperability
      */
+    @Serial
     private static final long serialVersionUID = 4112578634029874841L;
 
     private static final String DEFAULT_DESCRIPTION = "Configuration Parameters";

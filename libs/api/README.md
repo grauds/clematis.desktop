@@ -1,4 +1,4 @@
-# Java Workspace API 
+# Workspace API 
 
 This package contains interfaces and classes for desktop lifecycle, components, messaging 
 and user interface - everything for pluggable modules to implement to be integrated with core (non-UI)

@@ -54,9 +54,6 @@ public class LoginTest {
         assert userManager.getCurrentProfile().getUserName().equals(profile.getUserName());
         assert userManager.getCurrentProfile().getDescription().equals(profile.getDescription());
 
-        //assert userManager.ensureCurrentProfilePath(Workspace.getBasePath())
-       //     .equals(profile.getProfilePath(Workspace.getBasePath()));
-
         assert userManager.getCurrentProfile().getEmail().equals(profile.getEmail());
         assert userManager.getCurrentProfile().getParameters().equals(profile.getParameters());
         assert userManager.getCurrentProfile().getUserFirstName().equals(profile.getUserFirstName());
@@ -66,6 +63,8 @@ public class LoginTest {
         assert !userManager.userLogged();
 
         userManager.removeProfile(profile.getUserName(), "password");
+
+        userManager.getCurrentProfile().getParameters().setProperty("MAX_SIZE", "1Gb");
     }
 
     @AfterEach

@@ -1,27 +1,33 @@
-# jWorkspace - Desktop for Java
+# Clematis Desktop for Java
   
 [![License](https://img.shields.io/badge/License-GPLv2%202.0-blue.svg)](libs/kiwi/src/main/resources/com/hyperrealm/kiwi/html/gpl.html)
 [![codecov](https://codecov.io/gh/grauds/clematis.desktop/branch/master/graph/badge.svg?token=YdupUNe6dl)](https://codecov.io/gh/grauds/clematis.desktop)
 
 ## Introduction
 
-jWorkspace is a pet project started back in 1999 and being developed at spare time. It includes 
-and is build upon Kiwi and Springboard - the other great hobby projects of Mark Lindner, both gave
-a significant contribution. Also, it includes a number of other packages I've been experimenting with 
-and some prototypes too.  
+Clematis Desktop is a pet project started back in '99 and being developed at spare time. 
+It is build with Kiwi Library and Springboard - great hobby projects written by Mark Lindner, both gave
+a significant contribution. 
+
+## Modules
+
+The architecture of the application is modular, it's functionality is extendable via plugins.
+The basis, however, is the following four modules:
+
+1. **Workspace** - the entry point and a controller of a lifecycle [docs](./libs/api/README.md)
+2. **Profiles** - to manage user data and configuration  [docs](./libs/profiles/README.md)
+3. **Runtime** - plugins installer, launcher of third-party applications (with OS command line)  [docs](./libs/runtime/README.md) 
+4. **Installer** - an installer of third-party java applications and libraries  [docs](./libs/installer/README.md)
+
    
 ## License
 
-jWorkspace is licensed under GNU GENERAL PUBLIC LICENSE, v2.
+Clematis Desktop is licensed under GNU GENERAL PUBLIC LICENSE, v2.
 
-Independent modules and plugins of jWorkspace will be licensed under the
+Some plugins are licensed under the
 [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
 
 ## Build
-
-This is a gradle project and is split on modules. The app module contains core classes and API, 
-the libs directory holds Kiwi library and the modules directory contains all other different modules like 
-Weather Archive scripts, Desktop UI and others
 
 The following command builds the entire project
 

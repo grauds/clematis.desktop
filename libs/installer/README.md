@@ -1,2 +1,2 @@
-# jWorkspace Installer
+# Installer Module
 
