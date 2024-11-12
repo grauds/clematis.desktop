@@ -2,7 +2,7 @@
 
 This package contains interfaces and classes which make API for the desktop. 
 
-<img src="./doc/api.png" alt="drawing" width="600px"/>
+<img src="./doc/api.png" alt="drawing" width="800px"/>
 
 ## Events Dispatcher and Workspace Listeners
 
