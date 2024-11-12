@@ -1,6 +1,8 @@
 # Java Workspace API 
 
-This package contains interfaces and classes which make API for the desktop. 
+This package contains interfaces and classes for desktop lifecycle, components, messaging 
+and user interface - everything for pluggable modules to implement to be integrated with core (non-UI)
+workspace functionality. 
 
 <img src="./doc/api.png" alt="drawing" width="800px"/>
 
