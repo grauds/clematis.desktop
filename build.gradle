@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-group 'org.clematis.desktop'
+group = 'org.clematis'
 version '2.0.0-SNAPSHOT'
 
 subprojects {
