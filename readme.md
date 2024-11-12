@@ -1,6 +1,8 @@
 # Clematis Desktop for Java
-  
+
+[![Gradle Package](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml)
 [![License](https://img.shields.io/badge/License-GPLv2%202.0-blue.svg)](libs/kiwi/src/main/resources/com/hyperrealm/kiwi/html/gpl.html)
+
 ## Introduction
 
 Clematis Desktop is a pet project started back in '99 and being developed at spare time. 
