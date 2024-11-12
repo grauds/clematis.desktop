@@ -1,12 +1,10 @@
 # Clematis Desktop for Java
   
 [![License](https://img.shields.io/badge/License-GPLv2%202.0-blue.svg)](libs/kiwi/src/main/resources/com/hyperrealm/kiwi/html/gpl.html)
-[![codecov](https://codecov.io/gh/grauds/clematis.desktop/branch/master/graph/badge.svg?token=YdupUNe6dl)](https://codecov.io/gh/grauds/clematis.desktop)
-
 ## Introduction
 
 Clematis Desktop is a pet project started back in '99 and being developed at spare time. 
-It is build with Kiwi Library and Springboard - great hobby projects written by Mark Lindner, both gave
+It is built with Kiwi Library and Springboard - great hobby projects written by Mark Lindner, both gave
 a significant contribution. 
 
 <img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="800px" align="middle"/>
