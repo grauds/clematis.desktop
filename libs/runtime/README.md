@@ -19,8 +19,8 @@ for any plugin which would like to have it's own plugins:
 
 ### Shared Context 
 
-Also, each plugin gets an instance of <code>WorkspacePluginContext</code> which 
-holds read only information for every plugin, like a currect user directory for a plugin
+Each plugin gets an instance of <code>WorkspacePluginContext</code> which 
+holds read-only information for every plugin, like a currect user directory for a plugin
 to be able to load and save its data from a proper folder during workspace lifecycle.
 
 ### 
