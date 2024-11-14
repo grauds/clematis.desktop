@@ -1,3 +1,7 @@
+plugins {
+    id 'maven-publish'
+}
+
 version '2.0.0-SNAPSHOT'
 
 dependencies {
@@ -15,4 +19,23 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/grauds/clematis.desktop"
+            credentials {
+                username = System.getenv("USERNAME")
+                password = System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            artifactId 'runtime'
+            from(components.java)
+        }
+    }
 }

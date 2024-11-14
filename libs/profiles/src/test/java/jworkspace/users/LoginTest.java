@@ -63,8 +63,6 @@ public class LoginTest {
         assert !userManager.userLogged();
 
         userManager.removeProfile(profile.getUserName(), "password");
-
-        userManager.getCurrentProfile().getParameters().setProperty("MAX_SIZE", "1Gb");
     }
 
     @AfterEach

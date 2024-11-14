@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import org.apache.commons.io.FileUtils;
+import lombok.extern.java.Log;
 
 /**
  * A node for organization of hierarchical structure
  */
+@Log
 public class FolderNode extends DefinitionNode {
 
     public FolderNode(DefinitionNode parent, File file) {
@@ -33,7 +34,9 @@ public class FolderNode extends DefinitionNode {
             ).toFile()
                 : getFile();
 
-            FileUtils.forceMkdir(dir);
+            if (!dir.mkdirs()) {
+                log.warning("Couldn't create directories for: " + dir.getAbsolutePath());
+            }
         }
     }
 }
