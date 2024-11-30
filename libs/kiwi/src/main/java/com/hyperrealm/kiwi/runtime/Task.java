@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util;
+package com.hyperrealm.kiwi.runtime;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * by a <code>ProgressObserver</code>.
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.util.ProgressObserver
+ * @see ProgressObserver
  * @see com.hyperrealm.kiwi.ui.dialog.ProgressDialog
  * @see Runnable
  */

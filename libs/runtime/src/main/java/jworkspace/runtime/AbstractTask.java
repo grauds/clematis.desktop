@@ -4,12 +4,12 @@ import java.io.OutputStream;
 import java.util.Date;
 
 import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
-import com.hyperrealm.kiwi.util.Task;
+import com.hyperrealm.kiwi.runtime.Task;
 
 import lombok.Getter;
 import lombok.Setter;
 /**
- * Abstract observable task for {@link RuntimeManager}
+ * Abstract observable task
  */
 @Getter
 @Setter

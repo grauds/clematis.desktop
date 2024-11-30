@@ -17,7 +17,7 @@
    ----------------------------------------------------------------------------
 */
 
-package com.hyperrealm.kiwi.util;
+package com.hyperrealm.kiwi.runtime;
 
 /**
  * This class defines the behavior of an object that wishes to receive

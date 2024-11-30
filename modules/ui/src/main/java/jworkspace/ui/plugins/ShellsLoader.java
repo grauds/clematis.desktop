@@ -9,8 +9,8 @@ import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
+import com.hyperrealm.kiwi.runtime.Task;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
-import com.hyperrealm.kiwi.util.Task;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;

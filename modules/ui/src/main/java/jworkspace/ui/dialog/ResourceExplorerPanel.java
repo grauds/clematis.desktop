@@ -61,11 +61,11 @@ import javax.swing.JLabel;
 import javax.swing.Scrollable;
 import javax.swing.border.Border;
 
+import com.hyperrealm.kiwi.runtime.Task;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 import com.hyperrealm.kiwi.util.ResourceManager;
 import com.hyperrealm.kiwi.util.ResourceNotFoundException;
-import com.hyperrealm.kiwi.util.Task;
 
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;

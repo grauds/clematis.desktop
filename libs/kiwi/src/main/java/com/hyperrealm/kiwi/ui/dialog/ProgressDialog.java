@@ -30,13 +30,13 @@ import javax.swing.WindowConstants;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.CENTER_POSITION;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_BORDER_LAYOUT;
 import static com.hyperrealm.kiwi.ui.dialog.ComponentDialog.DEFAULT_PADDING;
+import com.hyperrealm.kiwi.runtime.ProgressObserver;
+import com.hyperrealm.kiwi.runtime.Task;
 import com.hyperrealm.kiwi.ui.KLabel;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
 import com.hyperrealm.kiwi.util.LocaleManager;
-import com.hyperrealm.kiwi.util.ProgressObserver;
-import com.hyperrealm.kiwi.util.Task;
 
 /**
  * A simple dialog with a message and progress meter, for use when a
@@ -50,7 +50,7 @@ import com.hyperrealm.kiwi.util.Task;
  * </center>
  *
  * @author Mark Lindner
- * @see com.hyperrealm.kiwi.util.Task
+ * @see Task
  */
 @SuppressWarnings("unused")
 public class ProgressDialog extends KDialog implements ProgressObserver {
