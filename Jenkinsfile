@@ -17,7 +17,7 @@ pipeline {
                     -o "./"
                     -s "./"
                     -f "ALL"
-                    --prettyPrint''', odcInstallation: 'Dependency Checker'
+                    --prettyPrint''', nvdCredentialsId: 'NVD_API_Key', odcInstallation: 'Dependency Checker'
 
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
