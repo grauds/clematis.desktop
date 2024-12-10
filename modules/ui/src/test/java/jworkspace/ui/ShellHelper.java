@@ -2,7 +2,8 @@ package jworkspace.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.jar.Manifest;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
@@ -96,16 +97,16 @@ public class ShellHelper {
         assert testPlugin.getType().equals(PluginDTO.PLUGIN_TYPE_ANY);
     }
 
-    static void preparePlugins(File folder) throws IOException {
+    static void preparePlugins(File folder) throws IOException, URISyntaxException {
         preparePlugins(folder, folder);
     }
 
-    private static void preparePlugins(File source, File target) throws IOException {
+    private static void preparePlugins(File source, File target) throws IOException, URISyntaxException {
 
         WorkspacePluginLocator.compile(new File[] {
-            Paths.get(ShellsTests.class.getResource("TestShell.java").getPath()).toFile(),
-            Paths.get(ShellsTests.class.getResource("ChildTestShell.java").getPath()).toFile(),
-            Paths.get(ShellsTests.class.getResource("TestPluginLocator.java").getPath()).toFile()
+            new File(Objects.requireNonNull(ShellsTests.class.getResource("TestShell.java")).toURI()),
+            new File(Objects.requireNonNull(ShellsTests.class.getResource("ChildTestShell.java")).toURI()),
+            new File(Objects.requireNonNull(ShellsTests.class.getResource("TestPluginLocator.java")).toURI()),
         }, source);
 
         Manifest manifest = getManifest();

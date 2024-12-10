@@ -26,6 +26,7 @@ package jworkspace.ui;
 */
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -49,7 +50,7 @@ public class ShellsTests {
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @BeforeEach
-    public void before() throws IOException {
+    public void before() throws IOException, URISyntaxException {
         testFolder.create();
         ShellHelper.preparePlugins(testFolder.getRoot());
     }
