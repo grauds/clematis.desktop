@@ -38,6 +38,7 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.FileSystems;
 import java.util.Random;
 
 import javax.swing.JComponent;
@@ -100,7 +101,7 @@ public final class KiwiUtils {
     /**
      * The root of the filesystem.
      */
-    public static final File FILESYSTEM_ROOT = new File(System.getProperty("file.separator"));
+    public static final File FILESYSTEM_ROOT = new File(FileSystems.getDefault().getSeparator());
     /**
      * An origin point: (0,0)
      */
@@ -140,7 +141,7 @@ public final class KiwiUtils {
     /**
      *
      */
-    private static Random rand = new Random(System.currentTimeMillis());
+    private static final Random RAND = new Random(System.currentTimeMillis());
     /**
      * A phantom Frame.
      */
@@ -633,7 +634,7 @@ public final class KiwiUtils {
      */
 
     public static int randomInt(int range) {
-        return (rand.nextInt(range));
+        return (RAND.nextInt(range));
     }
 
     /**

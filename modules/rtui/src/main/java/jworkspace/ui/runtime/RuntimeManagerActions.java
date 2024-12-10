@@ -26,6 +26,7 @@ package jworkspace.ui.runtime;
 */
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -235,12 +236,16 @@ class RuntimeManagerActions {
             );
             dlg.setVisible(true);
             if (dlg.getSelectedApplication() != null) {
-                ServiceLocator
-                    .getInstance()
-                    .getRuntimeManager()
-                    .run(
-                        dlg.getSelectedApplication().getLinkString()
-                    );
+                try {
+                    ServiceLocator
+                        .getInstance()
+                        .getRuntimeManager()
+                        .run(
+                            dlg.getSelectedApplication().getLinkString()
+                        );
+                } catch (IOException e) {
+                    log.severe(e.getMessage());
+                }
             }
             manager.update();
         }

@@ -19,8 +19,6 @@
 
 package com.hyperrealm.kiwi.util;
 
-//import java.util.*;
-
 /**
  * An abstract class that represents a pool of instances of some resource.
  * See <code>TimerPool</code> for an example concrete implementation. Accesses
@@ -35,9 +33,10 @@ package com.hyperrealm.kiwi.util;
 
 public abstract class ResourcePool<R extends Resource> {
 
-    private int size;
+    private final int size;
 
-    private Stack<R> reservedList, availableList;
+    private final Stack<R> reservedList;
+    private final Stack<R> availableList;
 
     /**
      * Construct a new <code>ResourcePool</code> of the given size.

@@ -1,5 +1,6 @@
 package jworkspace.runtime;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -64,12 +65,11 @@ public class RuntimeManager {
         this.poolExecutor.execute(runnable);
     }
 
-    public void run(String command) {
-
-    }
-
-    public void executeNativeCommand(String command) {
-
+    public Runnable run(String command) throws IOException {
+        JavaProcess process
+            = new JavaProcess(Runtime.getRuntime().exec(command), String.valueOf(System.currentTimeMillis()));
+        take(process);
+        return process;
     }
 
     public boolean addListener(IWorkspaceListener l) {

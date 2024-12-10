@@ -2,6 +2,7 @@ package jworkspace.runtime;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -97,8 +98,9 @@ public class RuntimeManagerTest {
         testFolder.delete();
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
-    public void testPluginsLoadingForExecution() throws IOException, PluginException {
+    public void testPluginsLoadingForExecution() throws IOException, PluginException, URISyntaxException {
 
         TemporaryFolder testFolder = new TemporaryFolder();
         testFolder.create();

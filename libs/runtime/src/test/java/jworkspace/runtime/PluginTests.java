@@ -27,6 +27,7 @@ package jworkspace.runtime;
 */
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -48,7 +49,7 @@ public class  PluginTests {
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @BeforeEach
-    public void before() throws IOException {
+    public void before() throws IOException, URISyntaxException {
         testFolder.create();
         PluginHelper.preparePlugins(testFolder.getRoot());
     }
@@ -99,7 +100,7 @@ public class  PluginTests {
     @Test
     public void testUpdatePlugin() throws IOException, PluginException {
 
-        final PluginLocator pluginLocator = new WorkspacePluginLocator();
+        final PluginLocator<WorkspacePluginContext> pluginLocator = new WorkspacePluginLocator();
 
 // create version one
         Plugin testPlugin = pluginLocator
@@ -133,7 +134,7 @@ public class  PluginTests {
     @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     public void testPluginsCommunication() throws PluginException {
-        final PluginLocator pluginLocator = new WorkspacePluginLocator();
+        final PluginLocator<WorkspacePluginContext> pluginLocator = new WorkspacePluginLocator();
 
 // create version one
         Plugin testPlugin = pluginLocator
