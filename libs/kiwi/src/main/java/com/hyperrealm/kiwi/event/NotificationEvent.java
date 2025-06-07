@@ -34,7 +34,7 @@ public class NotificationEvent extends EventObject {
     /**
      * The token ID for this event.
      */
-    private int id;
+    private final int id;
 
     /**
      * Construct a new <code>Notification Event</code>.

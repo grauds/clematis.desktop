@@ -34,8 +34,9 @@ import javax.swing.event.EventListenerList;
 @SuppressWarnings("unused")
 public class ActionSupport {
 
-    private EventListenerList listeners;
-    private Object source;
+    private final EventListenerList listeners;
+
+    private final Object source;
 
     /**
      * Construct a new <code>ActionSupport</code> object.

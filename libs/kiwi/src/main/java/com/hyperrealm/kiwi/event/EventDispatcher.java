@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class that implements a reflection-based event dispatcher. The class
@@ -88,8 +89,9 @@ import java.util.HashMap;
 @SuppressWarnings("unused")
 public final class EventDispatcher {
 
-    private HashMap<Class, Method> callMap = new HashMap<>();
-    private Object owner;
+    private final Map<Class<?>, Method> callMap = new HashMap<>();
+
+    private final Object owner;
 
     /**
      * Construct a new <code>EventDispatcher</code>.
@@ -120,7 +122,7 @@ public final class EventDispatcher {
                 continue;
             }
 
-            Class[] params = method.getParameterTypes();
+            Class<?>[] params = method.getParameterTypes();
 
             if ((params.length != 1) || !baseClass.isAssignableFrom(params[0])) {
                 continue;
@@ -140,7 +142,7 @@ public final class EventDispatcher {
     public void dispatch(EventObject event) throws InvocationTargetException {
         Method m = null;
 
-        for (Class clz = event.getClass(); clz != EventObject.class;
+        for (Class<?> clz = event.getClass(); clz != EventObject.class;
              clz = clz.getSuperclass()) {
             m = callMap.get(clz);
             if (m != null) {

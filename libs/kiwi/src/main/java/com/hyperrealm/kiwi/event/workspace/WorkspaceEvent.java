@@ -38,7 +38,7 @@ import com.hyperrealm.kiwi.ui.WorkspaceEditor;
 
 public class WorkspaceEvent extends EventObject {
 
-    private WorkspaceEditor editor;
+    private final WorkspaceEditor editor;
 
     /**
      * Construct a new <code>WorkspaceEvent</code>.

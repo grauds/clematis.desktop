@@ -32,8 +32,10 @@ import javax.swing.event.EventListenerList;
  */
 
 public class ChangeSupport {
-    private EventListenerList listeners;
-    private Object source;
+
+    private final EventListenerList listeners;
+
+    private final Object source;
 
     /**
      * Construct a new <code>ChangeSupport</code> object.
