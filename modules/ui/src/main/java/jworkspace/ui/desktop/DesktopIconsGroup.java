@@ -1,7 +1,7 @@
 package jworkspace.ui.desktop;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003, 2019 Anton Troshin
+   Copyright (C) 1999-2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -26,39 +26,33 @@ package jworkspace.ui.desktop;
 */
 import java.awt.Point;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import jworkspace.ui.widgets.GlassDragPane;
+import jworkspace.ui.widgets.GlassOutlinePane;
 
 /**
- * Icon group - this class manages group icons operations. Inner drag panes are nessesary for visual drag movement.
+ * Icon group - this class manages group icons operations. Inner drag panes are necessary for visual drag movement.
  * @author Anton Troshin
  */
 class DesktopIconsGroup implements Serializable {
 
     private final Desktop desktop;
 
-    private final List<GlassDragPane> dragPanes = new Vector<>();
+    private final List<GlassOutlinePane> dragPanes = new ArrayList<>();
 
     private int xShift = 0;
 
     private int yShift = 0;
 
     DesktopIconsGroup(Desktop desktop) {
-
         super();
         this.desktop = desktop;
-        /*
-         * Create desktop icons group from selected
-         * icons - this happens then
-         */
         for (int i = 0; i < desktop.getDesktopIcons().length; i++) {
             DesktopIcon icon = desktop.getDesktopIcons()[i];
             if (icon.isSelected()) {
-
-                GlassDragPane dragPane = new GlassDragPane();
-                dragPane.setColor(desktop.getSelectionColor());
+                GlassOutlinePane dragPane = new GlassOutlinePane();
+                dragPane.setColor(desktop.getTheme().getSelectionColor(desktop.getBackground()));
                 desktop.setLayer(dragPane, Integer.MAX_VALUE - i);
                 dragPane.setBounds(icon.getX(), icon.getY(), icon.getWidth(), icon.getHeight());
                 desktop.add(dragPane);
@@ -75,8 +69,7 @@ class DesktopIconsGroup implements Serializable {
         for (int i = 0; i < desktop.getDesktopIcons().length; i++) {
             DesktopIcon icon = desktop.getDesktopIcons()[i];
             if (icon.isSelected()) {
-
-                GlassDragPane dragPane = dragPanes.get(counter);
+                GlassOutlinePane dragPane = dragPanes.get(counter);
                 Point location = icon.getLocation();
                 dragPane.setLocation(location.x + xShift, location.y + yShift);
                 counter++;
@@ -93,15 +86,17 @@ class DesktopIconsGroup implements Serializable {
         for (int i = 0; i < desktop.getDesktopIcons().length; i++) {
             DesktopIcon icon = desktop.getDesktopIcons()[i];
             if (icon.isSelected()) {
-
-                GlassDragPane dragPane = dragPanes.get(counter);
+                System.out.println("Icon " + icon.getName()
+                    + " is selected and will be moved to " + xShift + "," + yShift);
+                GlassOutlinePane dragPane = dragPanes.get(counter);
                 desktop.remove(dragPane);
                 desktop.remove(icon);
 
-                icon.setXPos(icon.getXPos() + xShift);
-                icon.setYPos(icon.getYPos() + yShift);
+                icon.setLocation(icon.getX() + xShift, icon.getY() + yShift);
                 desktop.add(icon);
                 counter++;
+            } else {
+                System.out.println("Icon " + icon.getName() + " is not selected.");
             }
         }
         dragPanes.clear();

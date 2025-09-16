@@ -2,7 +2,7 @@ package jworkspace.ui.desktop;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -46,17 +46,11 @@ class DesktopIconSelection implements ClipboardOwner, Transferable {
 
     private final DataFlavor[] flavors = {desktopIconFlavor};
 
-    /**
-     * Public constructor.
-     */
     DesktopIconSelection(DesktopIconSelectionData data) {
         super();
         this.data = data;
     }
 
-    /**
-     * Returns transfer data, that is actually a desktop icon data.
-     */
     @Override
     @NonNull
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {

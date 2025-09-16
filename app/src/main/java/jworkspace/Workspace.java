@@ -99,14 +99,14 @@ public class Workspace {
             )
         );
         /*
-         * Start user session
+         * Start a user session
          */
         startSession(name, password, root);
     }
 
     public static void startSession(@NonNull String name, String password, Path root) throws ProfileOperationException {
         /*
-         * Validate profile name and password to get the configuration stored there
+         * Validate the profile name and password to get the configuration stored there
          */
         ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
         profilesManager.setBasePath(root);
@@ -115,7 +115,7 @@ public class Workspace {
         Profile currentProfile = profilesManager.getCurrentProfile();
         Path profilePath = currentProfile.getProfilePath(profilesManager.getBasePath());
         /*
-         * Set workspace user directory inside workspace base directory to plugins context
+         * Set the workspace user directory inside the workspace base directory to plugins context
          */
         ServiceLocator.getInstance().getPluginLocator().getContext().setUserDir(profilePath);
         /*
@@ -123,7 +123,7 @@ public class Workspace {
          */
         ServiceLocator.loadPlugins(ServiceLocator.getInstance().getSystemPlugins());
         /*
-         * Load plugins from user directory
+         * Load plugins from the user directory
          */
         ServiceLocator.getInstance().getUserPlugins().addAll(
             ServiceLocator.getInstance().loadPlugins(profilePath)

@@ -26,11 +26,10 @@ package jworkspace.ui.installer;
    anton.troshin@gmail.com
    ----------------------------------------------------------------------------
 */
-
+import com.hyperrealm.kiwi.runtime.Task;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.KTable;
 import com.hyperrealm.kiwi.ui.model.TableSorter;
-import com.hyperrealm.kiwi.util.Task;
 import jworkspace.kernel.Workspace;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.installer.table.TableModelFilter;

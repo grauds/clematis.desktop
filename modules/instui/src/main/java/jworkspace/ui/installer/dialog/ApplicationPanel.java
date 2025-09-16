@@ -40,7 +40,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.ResourceManager;
-import com.hyperrealm.kiwi.util.Task;
+import com.hyperrealm.kiwi.runtime.Task;
 import jworkspace.installer.*;
 import jworkspace.installer.InstallationException;
 import jworkspace.ui.WorkspaceClassCache;

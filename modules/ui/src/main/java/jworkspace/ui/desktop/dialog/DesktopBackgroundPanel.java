@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -68,6 +68,7 @@ import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
 import lombok.extern.java.Log;
@@ -77,7 +78,7 @@ import lombok.extern.java.Log;
  */
 @Log
 @SuppressWarnings("MagicNumber")
-class DesktopBackgroundPanel extends KPanel implements ActionListener, PropertiesPanel {
+public class DesktopBackgroundPanel extends KPanel implements ActionListener, PropertiesPanel {
 
     private static final String DESKTOP_BG_PANEL_CENTER = "DesktopBgPanel.center";
     private static final String DESKTOP_BG_PANEL_TILE = "DesktopBgPanel.tile";
@@ -147,19 +148,19 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
      */
     private JButton bBrowseBottom;
 
-    DesktopBackgroundPanel(Desktop desktop) {
+    public DesktopBackgroundPanel(Desktop desktop) {
         super();
         setLayout(new BorderLayout());
         setName(WorkspaceResourceAnchor.getString("DesktopBgPanel.title"));
         setOpaque(false);
 
         bgColor = desktop.getBackground();
-        bgColor2 = desktop.getSecondBackground();
-        cover = desktop.getCover();
-        coverVisible = desktop.isCoverVisible();
-        renderMode = desktop.getRenderMode();
-        gradientFill = desktop.isGradientFill();
-        pathToImage = desktop.getPathToImage();
+        bgColor2 = desktop.getTheme().getSecondaryBackground();
+        cover = desktop.getTheme().getCover();
+        coverVisible = desktop.getTheme().isCoverVisible();
+        renderMode = desktop.getTheme().getRenderMode();
+        gradientFill = desktop.getTheme().isGradientFill();
+        pathToImage = desktop.getTheme().getPathToImage();
 
         this.desktop = desktop;
 
@@ -174,13 +175,13 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
 
     @Override
     public boolean syncData() {
-        desktop.setRenderMode(renderMode);
+        desktop.getTheme().setRenderMode(renderMode);
         desktop.setName(tName.getText());
-        desktop.setCover(pathToImage);
-        desktop.setGradientFill(gradient.isSelected());
-        desktop.setCoverVisible(coverVisibleCheckbox.isSelected());
+        desktop.getTheme().setCover(pathToImage);
+        desktop.getTheme().setGradientFill(gradient.isSelected());
+        desktop.getTheme().setCoverVisible(coverVisibleCheckbox.isSelected());
         desktop.setBackground(bgColor);
-        desktop.setSecondBackground(bgColor2);
+        desktop.getTheme().setSecondaryBackground(bgColor2);
         return true;
     }
 
@@ -264,7 +265,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
             case Constants.CHOOSE_GRADIENT_COLOR_2: {
                 Color color = JColorChooser.showDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                     WorkspaceResourceAnchor.getString("DesktopBgPanel.chooseBg2"),
-                    desktop.getSecondBackground());
+                    desktop.getTheme().getSecondaryBackground());
                 if (color != null) {
                     bgColor2 = color;
                     bBrowseBottom.setBackground(bgColor2);
@@ -351,7 +352,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
                 WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_BOTTOM_RIGHT_CORNER)
             });
         cbStyle.setEditable(false);
-        switch (desktop.getRenderMode()) {
+        switch (desktop.getTheme().getRenderMode()) {
             case TILE_IMAGE:
                 cbStyle.setSelectedItem(WorkspaceResourceAnchor.getString(DESKTOP_BG_PANEL_TILE));
                 break;
@@ -393,7 +394,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         coverVisibleCheckbox.setOpaque(false);
         coverVisibleCheckbox.setActionCommand(Constants.TOGGLE_WALLPAPER);
       //  coverVisibleCheckbox.setPreferredSize(new Dimension(60, 20));
-        if (desktop.isCoverVisible()) {
+        if (desktop.getTheme().isCoverVisible()) {
             coverVisibleCheckbox.setSelected(true);
         }
 
@@ -413,7 +414,7 @@ class DesktopBackgroundPanel extends KPanel implements ActionListener, Propertie
         gradient.setActionCommand(Constants.TOGGLE_GRADIENT);
       //  gradient.setPreferredSize(new Dimension(60, 20));
         gradient.setOpaque(false);
-        if (desktop.isGradientFill()) {
+        if (desktop.getTheme().isGradientFill()) {
             gradient.setSelected(true);
         }
 

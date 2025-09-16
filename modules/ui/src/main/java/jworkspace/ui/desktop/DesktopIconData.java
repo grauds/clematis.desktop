@@ -43,9 +43,9 @@ class DesktopIconData implements Serializable {
     private String name;
     private String commandLine;
     private String workingDir;
-    private Integer xPos;
-    private Integer yPos;
     private ImageIcon icon;
+    private Integer x;
+    private Integer y;
     private Integer width;
     private Integer height;
     private int mode;

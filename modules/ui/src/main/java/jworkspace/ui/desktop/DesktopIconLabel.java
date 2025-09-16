@@ -103,12 +103,12 @@ class DesktopIconLabel extends JLabel {
     private void format() {
         Font font = getFont();
         if (font == null) {
-            font = new Font("Dialog", Font.PLAIN, 12);
+            font = new Font("Dialog", Font.PLAIN, 14);
         }
         fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
         /*
          * If supplied text is narrower than maximum
-         * columns - cols, shrink label horizontally.
+         * columns - cols, shrink the label horizontally.
          */
         if (fm.stringWidth(text) < fm.charWidth('m') * cols) {
             pw = fm.stringWidth(text) + 2 * fm.charWidth('m');

@@ -46,6 +46,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -66,13 +67,14 @@ import lombok.NonNull;
 import lombok.Setter;
 
 /**
- * Desktop icon is a shortcut to command.
+ * The desktop icon is a shortcut to command.
  */
 @SuppressWarnings("MagicNumber")
-class DesktopIcon extends JComponent implements MouseListener, MouseMotionListener, FocusListener, Serializable {
+public class DesktopIcon extends JComponent implements MouseListener, MouseMotionListener, FocusListener, Serializable {
 
     @Serial
     private static final long serialVersionUID = -14567890635540403L;
+    private static final int DESKTOP_ICON_PREFERRED_SIZE = 130;
 
     private static JPopupMenu popupMenu = null;
     private static JMenuItem properties = null;
@@ -86,28 +88,32 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     private final BrightnessReducer br = new BrightnessReducer();
 
     private String command = "";
-    private String workingDir;
+
+    @Setter
+    @Getter
+    private String workingDirectory;
+
+    @Setter
+    @Getter
     private int mode = Constants.JAVA_APP_MODE;
 
     @Getter
     private ImageIcon icon = null;
+
     @Getter
     private ImageIcon darkenedIcon = null;
+
     @Setter
     @Getter
     private boolean selected = false;
-    // DesktopLayout data
-    private int xPos = 0;
-    private int yPos = 0;
-    private int xPressed = 0;
-    private int yPressed = 0;
     // Internal components
     private final DesktopIconLabel textLabel = new DesktopIconLabel("", 11);
+
+    @Getter
     private String comments;
 
     /**
      * Constructor for desktop icon.
-     *
      * @param name    Desktop icon name
      * @param command Command line for new desktop icon
      * @param desktop Parent desktop
@@ -126,12 +132,17 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      * @param icon     Image for desktop icon
      * @param comments Optional comments string
      */
-    private DesktopIcon(String name, String command, String workingDir,
-                        Desktop desktop, ImageIcon icon, String comments) {
+    private DesktopIcon(String name,
+                        String command,
+                        String workingDir,
+                        Desktop desktop,
+                        ImageIcon icon,
+                        String comments
+    ) {
         super();
 
         this.setName(name);
-        this.workingDir = workingDir;
+        this.workingDirectory = workingDir;
         this.desktop = desktop;
         this.setIcon(icon);
         this.comments = comments;
@@ -159,17 +170,14 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     }
 
     /**
-     * Adds itself and text label to layout.
+     * Adds itself and text label to the desktop layout.
      */
     public void add() {
-        if (desktop != null) {
-            desktop.add(this);
-            desktop.add(this.textLabel);
-        }
+        add(desktop);
     }
 
     /**
-     * Adds itself and text label to layout.
+     * Adds itself and text label to the desktop layout.
      */
     public void add(Desktop d) {
         if (d != null) {
@@ -182,8 +190,9 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      * Edit this label.
      */
     private void edit() {
-        DesktopIconDialog dlg = new DesktopIconDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame());
-
+        DesktopIconDialog dlg = new DesktopIconDialog(
+            DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+        );
         dlg.setData(this);
         dlg.setVisible(true);
     }
@@ -191,38 +200,29 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     /**
      * Returns command line for this desktop icon
      */
-    String getCommandLine() {
+    public String getCommandLine() {
         return command;
     }
 
     /**
-     * Sets command line and html tooltip
+     * Sets command line and HTML tooltip
      */
-    void setCommandLine(String command) {
+    public void setCommandLine(String command) {
         this.command = command;
         setTooltip(command, this.comments);
     }
     /**
-     * Sets comments and html tooltip
+     * Sets comments and HTML tooltip
      *
      * @param comments for this desktop icon
      */
-    void setComments(String comments) {
+    public void setComments(String comments) {
         this.comments = comments;
         setTooltip(this.command, comments);
     }
 
     private void setTooltip(String command, String comments) {
         this.setToolTipText("<html>" + (command != null ? command : " ") + "<br>" + " <i>" + comments + "</i></html>");
-    }
-
-    /**
-     * Returns comments.
-     *
-     * @return name java.lang.String
-     */
-    String getComments() {
-        return this.comments;
     }
 
     /**
@@ -294,14 +294,14 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
      * Sets image for this desktop icon
      */
     public void setIcon(ImageIcon icon) {
-        if (icon == null || icon.getIconHeight() == -1 || icon.getIconWidth() == -1) {
+        if (icon == null || icon.getIconHeight() == -1 || icon.getIconWidth() == -1 || icon.getImage() == null) {
             this.icon = (ImageIcon) WorkspaceGUI.getResourceManager().getIcon(Constants.DEFAULT_ICON);
         } else {
             this.icon = icon;
         }
-        if (icon != null) {
+        if (this.icon != null && this.icon.getImage() != null) {
             this.darkenedIcon = new ImageIcon(Toolkit.getDefaultToolkit().
-                createImage(new FilteredImageSource(icon.getImage().getSource(), br)));
+                createImage(new FilteredImageSource(this.icon.getImage().getSource(), br)));
         } else {
             this.darkenedIcon = null;
         }
@@ -315,27 +315,13 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
         return new DesktopIconData(this.getName(),
             getCommandLine(),
             getWorkingDirectory(),
-            getXPos(),
-            getYPos(),
             getIcon(),
+            getX(),
+            getY(),
             getWidth(),
             getHeight(),
             getMode(),
             getComments());
-    }
-
-    /**
-     * Returns execution mode for desktop icon
-     */
-    int getMode() {
-        return mode;
-    }
-
-    /**
-     * Sets execution mode for desktop icon
-     */
-    void setMode(int mode) {
-        this.mode = mode;
     }
 
     /**
@@ -385,7 +371,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(icon.getIconWidth() + 5, icon.getIconHeight() + 5);
+        return new Dimension(DESKTOP_ICON_PREFERRED_SIZE, DESKTOP_ICON_PREFERRED_SIZE);
     }
 
     /**
@@ -404,50 +390,6 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
         return properties;
     }
 
-    /**
-     * Returns x coordinate of desktop icon,
-     * relative to top left corner of parent desktop.
-     */
-    int getXPos() {
-        return xPos;
-    }
-
-    /**
-     * Sets x position of desktop icon
-     */
-    void setXPos(int xPos) {
-        this.xPos = xPos;
-    }
-
-    /**
-     * Sets working directory
-     */
-    String getWorkingDirectory() {
-        return this.workingDir;
-    }
-
-    /**
-     * Sets working directory
-     */
-    void setWorkingDirectory(String workingDir) {
-        this.workingDir = workingDir;
-    }
-
-    /**
-     * Returns y coordinate of desktop icon,
-     * relative to top left corner of parent desktop.
-     */
-    int getYPos() {
-        return yPos;
-    }
-
-    /**
-     * Sets y position of desktop icon
-     */
-    void setYPos(int yPos) {
-        this.yPos = yPos;
-    }
-
     public void focusGained(FocusEvent e) {}
 
     public void focusLost(FocusEvent e) {
@@ -461,7 +403,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     }
 
     /**
-     * Execute command line for this desktop icon
+     * Execute the command line for this desktop icon
      */
     private void launch() {
       /*  if (mode == Constants.SCRIPTED_FILE_MODE) {
@@ -489,8 +431,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
         setToolTipText(getCommandLine());
         setWorkingDirectory(dataStream.readUTF());
         setMode(dataStream.readInt());
-        setXPos(dataStream.readInt());
-        setYPos(dataStream.readInt());
+        setLocation(dataStream.readInt(), dataStream.readInt());
         setComments(dataStream.readUTF());
         
         Object obj = dataStream.readObject();
@@ -500,24 +441,21 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     }
 
     /**
-     * Tells desktop to drag selected
-     * icons in given direction.
+     * Tells desktop to drag selected icons in the given direction.
      */
     public void mouseDragged(MouseEvent e) {
+        System.out.println("mouseDragged: " + e.getX() + " " + e.getY());
         /*
-         * Do not allow dragging with
-         * right button.
+         * Do not allow dragging with the right button.
          */
         if (SwingUtilities.isRightMouseButton(e)) {
             return;
         }
         /*
-         * If dragging occurs, set state isDragging()
-         * to true.
+         * If dragging occurs, set state isDragging() to true.
          */
         desktop.setDraggingState(true);
-        desktop.getIconGroup().moveTo(e.getX() - xPressed,
-            e.getY() - yPressed);
+       // desktop.getIconGroup().moveTo(e.getX() - xPressed, e.getY() - yPressed);
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -530,52 +468,50 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     }
 
     public void mousePressed(MouseEvent e) {
-        /*
-         * Default operations. Remove desktop
-         * menu if any, or remember pressed points.
-         */
+        System.out.println("mousePressed: " + e.getX() + " " + e.getY());
         if (SwingUtilities.isRightMouseButton(e)) {
-            //Workspace.getLogger().info("popup menu removed");
+            /*
+             * Hide a popup menu for this icon or group of icons.
+             */
             remove(getPopupMenu());
             getPopupMenu().setVisible(false);
         } else if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown()) {
             /*
-             * Select or deselect this icon.
+             * Select or deselect this icon from the group (Ctrl + left click).
              */
             setSelected(!isSelected());
-            requestFocus();
-            desktop.repaint();
-        } else if (SwingUtilities.isLeftMouseButton(e) && !desktop.isSelectedInGroup(this)) {
-            //Workspace.getLogger().info("pressed with left button on " + this.getName());
-            xPressed = e.getX();
-            yPressed = e.getY();
-            desktop.deselectAll();
-            setSelected(true);
-            requestFocus();
-            //Workspace.getLogger().info("selected " + getName());
-            desktop.repaint();
-        } else if (SwingUtilities.isLeftMouseButton(e) && desktop.isSelectedInGroup(this)) {
-            //Workspace.getLogger().info("pressed with left button on " + this.getName());
-            xPressed = e.getX();
-            yPressed = e.getY();
-            setSelected(true);
-            requestFocus();
-            //Workspace.getLogger().info("selected " + getName());
-            desktop.repaint();
+        } else if (SwingUtilities.isLeftMouseButton(e)) {
+
+            if (isSelected() || desktop.isSelectedInGroup(this)) {
+                /*
+                 * Start moving selected icons to a new location (left-click drag'n'drop).
+                 */
+                desktop.getGlassDragPane().activate(e.getPoint(), List.of(desktop.getDesktopIcons()));
+            } else {
+                /*
+                 * Deselect all icons and select this one (left click).
+                 */
+                desktop.deselectAll();
+                setSelected(true);
+            }
         }
+        requestFocus();
+        desktop.repaint();
     }
 
     /**
      * Mouse released:
      * <ol>
-     * <li> Move selected group of icons to new location, if it was dragging operation.
-     * <li> If right mouse button or control is down - show popup menu for this icon or group of icons.
-     * <li> If no modifiers and this desktop icon is not a part of group, deselect all and move focus to this icon.
+     * <li> Move the selected group of icons to a new location if it was dragging operation.
+     * <li> If the right mouse button or control is down - show a popup menu for this icon or group of icons.
+     * <li> If no modifiers and this desktop icon is not a part of the group, deselect all and move focus to this icon.
      * </ol>
      */
     public void mouseReleased(MouseEvent e) {
 
+        System.out.println("mouseReleased: " + e.getX() + " " + e.getY());
         if (SwingUtilities.isRightMouseButton(e)) {
+
             if (!desktop.isSelectedInGroup(this)) {
                 desktop.deselectAll();
                 setSelected(true);
@@ -585,59 +521,76 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
             add(getPopupMenu(desktop.isGroupSelected()));
             getPopupMenu().updateUI();
             getPopupMenu().show(this, e.getX(), e.getY());
-        } else if (SwingUtilities.isLeftMouseButton(e) && desktop.isDraggingState()) {
-            /*
-             * It is an end of dragging - move icons.
-             */
-            desktop.getIconGroup().destroy();
-            desktop.setDraggingState(false);
+        } else if (SwingUtilities.isLeftMouseButton(e)) {
+            if (desktop.isDraggingState()) {
+                System.out.println("mouseReleased: isDraggingState()");
+                /*
+                 * It is an end of dragging - move icons.
+                 */
+                desktop.getIconGroup().destroy();
+                desktop.setDraggingState(false);
+            } else {
+                /*
+                 * If not end of dragging, just deselect all and select this one
+                 */
+                desktop.deselectAll();
+                setSelected(true);
+            }
             requestFocus();
-        } else if (SwingUtilities.isLeftMouseButton(e) && !desktop.isDraggingState()) {
-            /*
-             * If not end of dragging, just deselect all
-             * and select this one
-             */
-            xPressed = e.getX();
-            yPressed = e.getY();
-            desktop.deselectAll();
-            setSelected(true);
-            requestFocus();
-            desktop.repaint();
         }
+
+        desktop.revalidate();
+        desktop.repaint();
     }
 
     /**
-     * Paints desktop icon depending on
-     * state of icon - selected or not,
-     * has keyboard focus or not.
+     * Paints desktop icon depending on the state of icon - selected or not, has keyboard focus or not.
      */
     public void paintComponent(Graphics g) {
+       /*
+        * Paint the selected state
+        */
+        if (!isSelected()) {
+            g.setColor(getBackground());
+        } else {
+            g.setColor(UIManager.getColor("textHighlight"));
+        }
+        g.fillRect(0, 0, getWidth(), getHeight());
+        /*
+         * Paint the focus state if the icon has focus.
+         */
+        if (hasFocus()) {
+            SwingUtils.drawDashedRect(g, 0, 0, getWidth(), getHeight());
+        }
+       /*
+        * Draw icon or darkened icon if the icon is selected.
+        */
         Dimension d = getSize();
-        if (icon != null && !isSelected()) {
-            g.drawImage(icon.getImage(), (d.width - icon.getIconWidth()) / 2,
-                (d.height - icon.getIconHeight()) / 2, this);
-        } else if (icon != null) {
-            g.drawImage(darkenedIcon.getImage(),
-                (d.width - darkenedIcon.getIconWidth()) / 2,
-                (d.height - darkenedIcon.getIconHeight()) / 2,
-                this);
+        if (isSelected()) {
+            if (darkenedIcon != null) {
+                g.drawImage(darkenedIcon.getImage(),
+                    (d.width - darkenedIcon.getIconWidth()) / 2,
+                    (d.height - darkenedIcon.getIconHeight()) / 2,
+                    this);
+            }
+        } else {
+            if (icon != null) {
+                g.drawImage(icon.getImage(), (d.width - icon.getIconWidth()) / 2,
+                    (d.height - icon.getIconHeight()) / 2, this);
+            }
         }
 
-        Color desktopSelectionColor = desktop.getSelectionColor();
+        Color desktopSelectionColor = desktop.getTheme().getSelectionColor(desktop.getBackground());
         textLabel.setForeground(desktopSelectionColor);
         textLabel.setSelected(isSelected());
+
         g.setColor(desktopSelectionColor);
-
-        if (hasFocus()) {
-            SwingUtils.drawDashedRect(g, 0, 0, getWidth() - 1, getHeight() - 1);
-        }
-
         textLabel.setBackground(desktop.getBackground());
         textLabel.repaint();
     }
 
     /**
-     * Removes itself and label from layout.
+     * Removes itself and label from the layout.
      */
     public void remove() {
         if (desktop != null) {
@@ -653,10 +606,10 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
 
         outputStream.writeUTF(getName());
         outputStream.writeUTF(command);
-        outputStream.writeUTF(workingDir);
+        outputStream.writeUTF(workingDirectory);
         outputStream.writeInt(mode);
-        outputStream.writeInt(xPos);
-        outputStream.writeInt(yPos);
+        outputStream.writeInt(getX());
+        outputStream.writeInt(getY());
         outputStream.writeUTF(comments);
         outputStream.writeObject(getIcon());
     }
@@ -680,8 +633,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     }
 
     /**
-     * Base class method overriden in order
-     * to set bounds of label accordingly.
+     * Base class method is overridden to set bounds of the label accordingly.
      */
     public void setBounds(@NonNull Rectangle dimensions) {
         super.setBounds(dimensions);
@@ -694,8 +646,7 @@ class DesktopIcon extends JComponent implements MouseListener, MouseMotionListen
     }
 
     /**
-     * Basic method is overriden to
-     * set label text properly.
+     * The basic method is overridden to set label text properly.
      *
      * @param name java.lang.String
      */

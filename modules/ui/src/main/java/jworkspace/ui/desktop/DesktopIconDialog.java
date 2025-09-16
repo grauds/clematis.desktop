@@ -35,9 +35,10 @@ import javax.swing.JComponent;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.ui.desktop.dialog.DesktopIconPanel;
 
 /**
- * Carrier class for <code>jworkspace.ui.desktop.DesktopIconPanel</code>
+ * Carrier class for <code>jworkspace.ui.desktop.dialog.DesktopIconPanel</code>
  * @author Anton Troshin
  */
 class DesktopIconDialog extends ComponentDialog {

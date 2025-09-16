@@ -1,7 +1,7 @@
 package jworkspace.ui.desktop;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003, 2019 Anton Troshin
+   Copyright (C) 1999-2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -31,29 +31,23 @@ import java.awt.LayoutManager;
 import java.io.Serializable;
 
 /**
- * DesktopLayout class lays out desktop with icons.
+ * DesktopLayout class lays out a desktop with icons.
  * @author Anton Troshin
  */
 @SuppressWarnings("MagicNumber")
-class DesktopLayout implements LayoutManager, Serializable {
-
-    private final Desktop desktop;
-
-    DesktopLayout(Desktop desktop) {
-        this.desktop = desktop;
-    }
+record DesktopLayout(Desktop desktop) implements LayoutManager, Serializable {
 
     public void layoutContainer(Container c) {
         for (DesktopIcon icon : desktop.getDesktopIcons()) {
-            icon.setBounds(icon.getXPos(),
-                icon.getYPos(),
+            icon.setBounds(icon.getX(),
+                icon.getY(),
                 icon.getPreferredSize().width,
-                icon.getPreferredSize().height);
+                icon.getPreferredSize().height
+            );
         }
     }
 
-    public void addLayoutComponent(String str, Component c) {
-    }
+    public void addLayoutComponent(String str, Component c) {}
 
     public Dimension minimumLayoutSize(Container c) {
         return c.getPreferredSize();
@@ -63,6 +57,5 @@ class DesktopLayout implements LayoutManager, Serializable {
         return new Dimension(50, 50);
     }
 
-    public void removeLayoutComponent(Component c) {
-    }
+    public void removeLayoutComponent(Component c) {}
 }

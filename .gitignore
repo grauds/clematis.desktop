@@ -67,3 +67,4 @@ jacoco/
 .jworkspace/
 logs/
 users/
+.vscode/settings.json

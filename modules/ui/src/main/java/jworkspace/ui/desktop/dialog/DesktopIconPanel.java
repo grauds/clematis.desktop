@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -58,6 +58,7 @@ import jworkspace.installer.ApplicationDataSource;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.desktop.DesktopIcon;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 import jworkspace.ui.dialog.ResourceExplorerDialog;
 import jworkspace.ui.widgets.ClassCache;
@@ -87,7 +88,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
     /**
      * Default constructor
      */
-    DesktopIconPanel() {
+    public DesktopIconPanel() {
         JTabbedPane tabbedPane = new JTabbedPane();
         setLayout(new BorderLayout());
 
@@ -506,30 +507,24 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         bWdBrowse.setEnabled(false);
     }
 
-    boolean syncData() {
+    public boolean syncData() {
 
         desktopIcon.setName(tName.getText());
-        desktopIcon.setIcon(new ImageIcon(lImage.getImage()));
+        if (lImage.getImage() != null && desktopIcon.getIcon() != null) {
+            desktopIcon.setIcon(new ImageIcon(lImage.getImage()));
+        }
         desktopIcon.setComments(tDesc.getText());
         desktopIcon.setMode(this.mode);
 
         if (mode == Constants.SCRIPTED_METHOD_MODE) {
-
             desktopIcon.setCommandLine(tScriptedMethod.getText());
-
         } else if (mode == Constants.SCRIPTED_FILE_MODE) {
-
             desktopIcon.setCommandLine(tSourceScript.getText());
-
         } else if (mode == Constants.JAVA_APP_MODE) {
-
             desktopIcon.setCommandLine(tJavaApp.getText());
-
         } else if (mode == Constants.NATIVE_COMMAND_MODE) {
-
             desktopIcon.setCommandLine(tNativeCommand.getText());
             desktopIcon.setWorkingDirectory(field.getText());
-
         }
         return (true);
     }

@@ -2,7 +2,7 @@ package jworkspace.ui.desktop;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -28,20 +28,9 @@ package jworkspace.ui.desktop;
 
 import java.io.Serializable;
 
-import lombok.Getter;
-
 /**
  * Desktop icon selection data is necessary for copy/paste of icons groups.
+ * @param iconData  Icon data
  */
-@Getter
-class DesktopIconSelectionData implements Serializable {
-
-    private final Integer size;
-    // Icon data
-    private final DesktopIconData[] iconData;
-
-    DesktopIconSelectionData(int size, DesktopIconData[] iconData) {
-        this.size = size;
-        this.iconData = iconData;
-    }
+record DesktopIconSelectionData(Integer size, DesktopIconData[] iconData) implements Serializable {
 }
