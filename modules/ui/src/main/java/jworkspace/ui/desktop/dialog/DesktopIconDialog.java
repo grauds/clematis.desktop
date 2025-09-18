@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -35,17 +35,17 @@ import javax.swing.JComponent;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.desktop.dialog.DesktopIconPanel;
+import jworkspace.ui.desktop.DesktopIcon;
 
 /**
  * Carrier class for <code>jworkspace.ui.desktop.dialog.DesktopIconPanel</code>
  * @author Anton Troshin
  */
-class DesktopIconDialog extends ComponentDialog {
+public class DesktopIconDialog extends ComponentDialog {
 
     private DesktopIconPanel panel;
 
-    DesktopIconDialog(Frame parent) {
+    public DesktopIconDialog(Frame parent) {
         super(parent, WorkspaceResourceAnchor.getString("DesktopIconDlg.title"), true);
         setResizable(false);
     }

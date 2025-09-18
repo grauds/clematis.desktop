@@ -29,25 +29,26 @@ package jworkspace.ui.desktop;
 import java.io.Serializable;
 
 import javax.swing.ImageIcon;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 /**
- * Desktop icon data is needed for copy/paste operations and dragndrop.
+ * Desktop icon data is needed for copy/paste operations and drag-n-drop.
  * @author Anton Troshin
  */
-@Data
-@AllArgsConstructor
-class DesktopIconData implements Serializable {
-    private String name;
-    private String commandLine;
-    private String workingDir;
-    private ImageIcon icon;
-    private Integer x;
-    private Integer y;
-    private Integer width;
-    private Integer height;
-    private int mode;
-    private String comments;
-}
+record DesktopIconData(String name,
+                      String commandLine,
+                      String workingDir,
+                      ImageIcon icon,
+                      Integer x,
+                      Integer y,
+                      Integer width,
+                      Integer height,
+                      int mode,
+                      String comments
+) implements Serializable {}
+
+/**
+ * Desktop icon selection data is necessary for copy/paste of icons groups.
+ * @param iconData  Icon data
+ */
+record DesktopIconSelectionData(Integer size,
+                                DesktopIconData[] iconData
+) implements Serializable {}

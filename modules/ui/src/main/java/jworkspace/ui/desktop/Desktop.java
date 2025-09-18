@@ -40,6 +40,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
@@ -83,7 +85,13 @@ import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.dialog.DesktopBackgroundPanel;
+import jworkspace.ui.desktop.dialog.DesktopIconDialog;
 import jworkspace.ui.desktop.dialog.DesktopOptionsPanel;
+import jworkspace.ui.desktop.plaf.ClematisDesktopPaneUI;
+import jworkspace.ui.desktop.plaf.DesktopKeyAdapter;
+import jworkspace.ui.desktop.plaf.DesktopMenu;
+import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
+import jworkspace.ui.desktop.plaf.DesktopTheme;
 import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.GlassOutlinePane;
@@ -111,7 +119,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      * Starting selection point.
      */
     private final Point startingSelection = new Point();
-
     /**
      * Ending selection point.
      */
@@ -121,10 +128,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     private final Point menuLeftTopCorner = new Point();
     /**
-     * Desktop Icons group.
-     */
-    private transient DesktopIconsGroup iconGroup = null;
-    /**
      * Glass dragging panel for desktop icons.
      */
     @Getter
@@ -132,6 +135,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Desktop currently dragging icons.
      */
+    @Getter
     private boolean isDraggingState = false;
     /**
      * Desktop popup menu.
@@ -160,29 +164,27 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
 
     public Desktop() {
         super();
-
-        addMouseListener(this);
-        addMouseMotionListener(this);
-       // setLayout(new DesktopLayout(this));
-        addKeyListener(new DesktopKeyAdapter(this));
-        setName(Constants.DESKTOP_NAME_DEFAULT);
-        addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent e) {
-                repaint();
-            }
-
-            public void focusLost(FocusEvent e) {
-                repaint();
-            }
-        });
         /*
          * Install desktop manager
          */
         manager = new ScrollingDesktopManager(this);
         setDesktopManager(manager);
+        /*
+         * Install a pluggable UI with icons and a selection pane.
+         */
+        setUI(new ClematisDesktopPaneUI());
 
-        add(glassDragPane, Integer.MAX_VALUE - 1);
-        glassDragPane.setBounds(0, 0, getWidth(), getHeight());
+        DesktopShortcutsLayer shortcutsLayer = ((ClematisDesktopPaneUI) getUI()).getShortcutsLayer();
+
+        for (int i = 0; i < 12; i++) {
+            DesktopShortcut shortcut = new DesktopShortcut( UIManager.getIcon("FileView.computerIcon"),
+                "App " + (i + 1)
+            );
+            int x = 40 + (i % 4) * 100;
+            int y = 40 + (i / 4) * 100;
+            shortcutsLayer.addShortcut(shortcut, new Point(x, y));
+        }
+
 
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
@@ -463,7 +465,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Copy selected icons to the clipboard
      */
-    void copyIcons() {
+    public void copyIcons() {
 
         List<DesktopIconData> selectedIconsData = new Vector<>();
 
@@ -492,7 +494,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Cut selected desktop icons
      */
-    void cutIcons() {
+    public void cutIcons() {
         copyIcons();
         removeSelectedIcons();
     }
@@ -535,16 +537,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     private JPopupMenu getDesktopMenu() {
         return desktopPopupMenu;
-    }
-
-    /**
-     * Returns the group of currently selected icons.
-     */
-    DesktopIconsGroup getIconGroup() {
-        if (iconGroup == null) {
-            iconGroup = new DesktopIconsGroup(this);
-        }
-        return iconGroup;
     }
 
     /**
@@ -606,17 +598,17 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         for (int i = 0; i < icons.size(); i++) {
             DesktopIconData iconData = icons.iconData()[i];
 
-            int xlocation = iconData.getX();
-            int ylocation = iconData.getY();
+            int xlocation = iconData.x();
+            int ylocation = iconData.y();
 
             topLeft.x = SwingUtils.min(topLeft.x, xlocation + getParent().getLocation().x + getLocation().x);
             topLeft.y = SwingUtils.min(topLeft.y, ylocation + getParent().getLocation().y + getLocation().y);
 
             bottomRight.x = SwingUtils.max(bottomRight.x, xlocation
-                + getParent().getLocation().x + getLocation().x + iconData.getWidth());
+                + getParent().getLocation().x + getLocation().x + iconData.width());
 
             bottomRight.y = SwingUtils.max(bottomRight.y, ylocation
-                + getParent().getLocation().y + getLocation().y + iconData.getHeight());
+                + getParent().getLocation().y + getLocation().y + iconData.height());
         }
 
         Rectangle groupBounds = new Rectangle(topLeft.x, topLeft.y,
@@ -638,24 +630,14 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Is the desktop currently drags icons?
-     */
-    boolean isDraggingState() {
-        return this.isDraggingState;
-    }
-
-    /**
      * Sets dragging state for desktop
      */
     void setDraggingState(boolean state) {
         this.isDraggingState = state;
-        if (!state) {
-            iconGroup = null;
-        }
     }
 
     /**
-     * Is a group selected.
+     * Is a group selected?
      */
     boolean isGroupSelected() {
 
@@ -876,36 +858,62 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
              */
             if (this.theme.getRenderMode() == Constants.CENTER_IMAGE) {
                 g.drawImage(
-                    this.theme.getCover().getImage(), (getWidth() - this.theme.getCover().getIconWidth()) / 2,
-                    (getHeight() - this.theme.getCover().getIconHeight()) / 2, this
+                    this.theme.getCover().getImage(),
+                    (getWidth() - this.theme.getCover().getIconWidth()) / 2,
+                    (getHeight() - this.theme.getCover().getIconHeight()) / 2,
+                    this
                 );
             } else if (this.theme.getRenderMode() == Constants.STRETCH_IMAGE) {
-                g.drawImage(this.theme.getCover().getImage(), 0, 0, getWidth(), getHeight(), this);
+                g.drawImage(
+                    this.theme.getCover().getImage(),
+                    0,
+                    0,
+                    getWidth(),
+                    getHeight(),
+                    this
+                );
             } else if (this.theme.getRenderMode() == Constants.TILE_IMAGE) {
                 int x = 0, y = 0;
                 while (x < getWidth()) {
                     while (y < getHeight()) {
-                        g.drawImage(this.theme.getCover().getImage(), x, y, this);
+                        g.drawImage(
+                            this.theme.getCover().getImage(),
+                            x,
+                            y,
+                            this
+                        );
                         y += this.theme.getCover().getIconHeight();
                     }
                     x += this.theme.getCover().getIconWidth();
                     y = 0;
                 }
             } else if (this.theme.getRenderMode() == Constants.TOP_LEFT_CORNER_IMAGE) {
-                g.drawImage(this.theme.getCover().getImage(), 0, 0, this);
+                g.drawImage(
+                    this.theme.getCover().getImage(),
+                    0,
+                    0,
+                    this
+                );
             } else if (this.theme.getRenderMode() == Constants.BOTTOM_LEFT_CORNER_IMAGE) {
-                g.drawImage(this.theme.getCover().getImage(),
+                g.drawImage(
+                    this.theme.getCover().getImage(),
                     0,
                     this.getHeight() - this.theme.getCover().getIconHeight(),
                     this
                 );
             } else if (this.theme.getRenderMode() == Constants.TOP_RIGHT_CORNER_IMAGE) {
-                g.drawImage(this.theme.getCover().getImage(),
-                    this.getWidth() - this.theme.getCover().getIconWidth(), 0, this
+                g.drawImage(
+                    this.theme.getCover().getImage(),
+                    this.getWidth() - this.theme.getCover().getIconWidth(),
+                    0,
+                    this
                 );
             } else if (this.theme.getRenderMode() == Constants.BOTTOM_RIGHT_CORNER_IMAGE) {
-                g.drawImage(this.theme.getCover().getImage(), this.getWidth() - this.theme.getCover().getIconWidth(),
-                    this.getHeight() - this.theme.getCover().getIconHeight(), this
+                g.drawImage(
+                    this.theme.getCover().getImage(),
+                    this.getWidth() - this.theme.getCover().getIconWidth(),
+                    this.getHeight() - this.theme.getCover().getIconHeight(),
+                    this
                 );
             }
         }
@@ -914,7 +922,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Paste desktop icons from clipboard
      */
-    void pasteIcons() {
+    public void pasteIcons() {
         try {
             Transferable contents = DesktopServiceLocator
                 .getInstance()
@@ -940,11 +948,14 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             for (int i = 0; i < iconSelectionData.size(); i++) {
                 DesktopIconData iconData = iconSelectionData.iconData()[i];
 
-                addDesktopIcon(iconData.getName(), iconData.getCommandLine(),
-                    iconData.getWorkingDir(),
-                    iconData.getMode(), iconData.getIcon(),
-                    iconData.getX() + xShift,
-                    iconData.getY() + yShift);
+                addDesktopIcon(iconData.name(),
+                    iconData.commandLine(),
+                    iconData.workingDir(),
+                    iconData.mode(),
+                    iconData.icon(),
+                    iconData.x() + xShift,
+                    iconData.y() + yShift
+                );
             }
 
             validate();
@@ -959,10 +970,12 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     private void rectSelector() {
         Rectangle selector =
-            new Rectangle(SwingUtils.min(startingSelection.x, endingSelection.x),
+            new Rectangle(
+                SwingUtils.min(startingSelection.x, endingSelection.x),
                 SwingUtils.min(startingSelection.y, endingSelection.y),
                 SwingUtils.distance(endingSelection.x, startingSelection.x),
-                SwingUtils.distance(endingSelection.y, startingSelection.y));
+                SwingUtils.distance(endingSelection.y, startingSelection.y)
+            );
 
         for (DesktopIcon desktopIcon : desktopIcons) {
             Rectangle iconPlace = desktopIcon.getBounds();
@@ -975,7 +988,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Key navigation handler. Select an icon depending on the cursor icon.
      */
-    void selectNextIcon(int direction, DesktopIcon desktopIcon) {
+    public void selectNextIcon(int direction, DesktopIcon desktopIcon) {
 
         /*
          * Get currently selected icons.
@@ -1038,8 +1051,10 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                     minIconPoint = currentIconPoint;
                 }
 
-                if (SwingUtils.distance(cursorIconPoint, minIconPoint)
-                    >= SwingUtils.distance(cursorIconPoint, currentIconPoint)) {
+                if (
+                    SwingUtils.distance(cursorIconPoint, minIconPoint)
+                    >= SwingUtils.distance(cursorIconPoint, currentIconPoint)
+                ) {
                     min = icon;
                     minIconPoint = currentIconPoint;
                 }
@@ -1055,7 +1070,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         }
     }
 
-    void selectNextIcon(int direction) {
+    public void selectNextIcon(int direction) {
         selectNextIcon(direction, getAtCorner(Constants.TOP_RIGHT_ICON));
     }
 
@@ -1109,7 +1124,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Delete selected icons
      */
-    void removeSelectedIcons() {
+    public void removeSelectedIcons() {
 
         DesktopIcon[] irem = getSelectedIcons();
 
@@ -1213,7 +1228,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         }
     }
 
-    void selectAll() {
+    public void selectAll() {
         for (DesktopIcon desktopIcon : desktopIcons) {
             desktopIcon.setSelected(true);
         }
@@ -1226,7 +1241,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         this.repaint();
     }
 
-    void updateMenuItems() {
+    public void updateMenuItems() {
 
         if (this.theme.isGradientFill()) {
             desktopPopupMenu.getGradientFill().setText(

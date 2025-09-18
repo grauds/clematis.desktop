@@ -1,7 +1,7 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.plaf;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003, 2019 Anton Troshin
+   Copyright (C) 1999-2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -28,16 +28,18 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import jworkspace.ui.api.Constants;
+import jworkspace.ui.desktop.Desktop;
+import jworkspace.ui.desktop.DesktopIcon;
 
 /**
  * Desktop key listener
  * @author Anton Troshin
  */
-class DesktopKeyAdapter extends KeyAdapter {
+public class DesktopKeyAdapter extends KeyAdapter {
 
     private final Desktop desktop;
 
-    DesktopKeyAdapter(Desktop desktop) {
+    public DesktopKeyAdapter(Desktop desktop) {
         this.desktop = desktop;
     }
 
@@ -74,13 +76,13 @@ class DesktopKeyAdapter extends KeyAdapter {
             if (e.getSource() instanceof Desktop) {
                 ((Desktop) e.getSource()).pasteIcons();
             } else if (e.getSource() instanceof DesktopIcon) {
-                ((DesktopIcon) e.getSource()).desktop.pasteIcons();
+                ((DesktopIcon) e.getSource()).getDesktop().pasteIcons();
             }
         } else if (e.getKeyCode() == KeyEvent.VK_A && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
             if (e.getSource() instanceof Desktop) {
                 ((Desktop) e.getSource()).selectAll();
             } else if (e.getSource() instanceof DesktopIcon) {
-                ((DesktopIcon) e.getSource()).desktop.selectAll();
+                ((DesktopIcon) e.getSource()).getDesktop().selectAll();
             }
         }
     }

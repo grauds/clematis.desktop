@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.plaf;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003, 2019 Anton Troshin
@@ -37,6 +37,7 @@ import static jworkspace.ui.api.Constants.SELECT_ALL;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.utils.SwingUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,7 +48,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-class DesktopMenu extends JPopupMenu {
+public class DesktopMenu extends JPopupMenu {
 
     private Desktop desktop;
 
@@ -67,7 +68,7 @@ class DesktopMenu extends JPopupMenu {
 
     private JMenuItem chooseBgImage;
 
-    DesktopMenu(Desktop desktop, ActionListener listener) {
+    public DesktopMenu(Desktop desktop, ActionListener listener) {
         super();
         this.desktop = desktop;
 

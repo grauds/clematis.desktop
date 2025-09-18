@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.plaf;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2025 Anton Troshin
