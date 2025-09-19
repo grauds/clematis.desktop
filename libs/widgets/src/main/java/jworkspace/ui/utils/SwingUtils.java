@@ -69,7 +69,6 @@ public final class SwingUtils implements Constants {
      * Draw dashed rectangle.
      */
     public static void drawDashedRect(Graphics g, int x, int y, int width, int height) {
-
         drawUpperLowerDashes(g, x, y, width, height);
         drawLeftRightDashes(g, x, y, width, height);
     }

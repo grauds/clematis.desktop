@@ -47,6 +47,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
@@ -117,6 +118,8 @@ public class DesktopShortcut extends JComponent {
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         installDragSupport();
+
+        setFocusable(true);
     }
 
     @SuppressWarnings("checkstyle:AnonInnerLength")
@@ -193,12 +196,16 @@ public class DesktopShortcut extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g.create();
         if (selected) {
-            Graphics2D g2 = (Graphics2D) g.create();
             g2.setColor(new Color(0, 120, 215, 80));
             g2.fillRoundRect(0, 0,  getWidth(),  getHeight(), 8, 8);
-            g2.dispose();
         }
+        if (hasFocus()) {
+            g2.setColor(UIManager.getColor("Desktop.shortcut.focusColor"));
+            g2.drawRoundRect(0, 0,  getWidth(),  getHeight(), 8, 8);
+        }
+        g2.dispose();
     }
 
     @Override

@@ -26,7 +26,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
@@ -268,84 +267,84 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
             @SuppressWarnings({"checkstyle:NestedIfDepth", "checkstyle:ReturnCount"})
             @Override
             public void mousePressed(MouseEvent e) {
-                if (!SwingUtilities.isLeftMouseButton(e)) {
-                    return;
-                }
-
-                Component c = shortcutsLayer.getComponentAt(e.getPoint());
-                if (c instanceof DesktopShortcut shortcut) {
-                    if (e.isControlDown()) {
-                        if (shortcutsLayer.getSelectedShortcuts().contains(shortcut)) {
-                            shortcutsLayer.removeFromSelection(shortcut);
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    Component c = shortcutsLayer.getComponentAt(e.getPoint());
+                    if (c instanceof DesktopShortcut shortcut) {
+                        if (e.isControlDown()) {
+                            if (shortcutsLayer.getSelectedShortcuts().contains(shortcut)) {
+                                shortcutsLayer.removeFromSelection(shortcut);
+                            } else {
+                                shortcutsLayer.addToSelection(shortcut);
+                            }
                         } else {
-                            shortcutsLayer.addToSelection(shortcut);
+                            if (!shortcutsLayer.getSelectedShortcuts().contains(shortcut)) {
+                                shortcutsLayer.clearSelection();
+                                shortcutsLayer.addToSelection(shortcut);
+                            }
                         }
-                    } else {
-                        if (!shortcutsLayer.getSelectedShortcuts().contains(shortcut)) {
-                            shortcutsLayer.clearSelection();
-                            shortcutsLayer.addToSelection(shortcut);
-                        }
-                    }
 
-                    // prepare drag
-                    dragStart = e.getPoint();
-                    initialPositions.clear();
-                    for (DesktopShortcut s : shortcutsLayer.getSelectedShortcuts()) {
-                        initialPositions.put(s, s.getLocation());
+                        // prepare drag
+                        dragStart = e.getPoint();
+                        initialPositions.clear();
+                        for (DesktopShortcut s : shortcutsLayer.getSelectedShortcuts()) {
+                            initialPositions.put(s, s.getLocation());
+                        }
+                        draggingIcons = true;
+                    } else {
+                        // empty space → rubber band
+                        shortcutsLayer.clearSelection();
+                        bandStart = e.getPoint();
+                        selectionRect = new Rectangle(bandStart);
+                        draggingIcons = false;
                     }
-                    draggingIcons = true;
-                } else {
-                    // empty space → rubber band
-                    shortcutsLayer.clearSelection();
-                    bandStart = e.getPoint();
-                    selectionRect = new Rectangle(bandStart);
-                    draggingIcons = false;
+                    repaint();
                 }
             }
 
+            @SuppressWarnings("checkstyle:NestedIfDepth")
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (!SwingUtilities.isLeftMouseButton(e)) {
-                    return;
-                }
-                if (draggingIcons && dragStart != null) {
-                    int dx = e.getX() - dragStart.x;
-                    int dy = e.getY() - dragStart.y;
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (draggingIcons && dragStart != null) {
+                        int dx = e.getX() - dragStart.x;
+                        int dy = e.getY() - dragStart.y;
 
-                    for (Map.Entry<DesktopShortcut, Point> entry : initialPositions.entrySet()) {
-                        DesktopShortcut s = entry.getKey();
-                        Point startPos = entry.getValue();
-                        s.setLocation(startPos.x + dx, startPos.y + dy);
-                    }
-                } else if (bandStart != null) {
-                    selectionRect.setBounds(
-                        Math.min(bandStart.x, e.getX()),
-                        Math.min(bandStart.y, e.getY()),
-                        Math.abs(bandStart.x - e.getX()),
-                        Math.abs(bandStart.y - e.getY())
-                    );
+                        for (Map.Entry<DesktopShortcut, Point> entry : initialPositions.entrySet()) {
+                            DesktopShortcut s = entry.getKey();
+                            Point startPos = entry.getValue();
+                            s.setLocation(startPos.x + dx, startPos.y + dy);
+                        }
+                    } else if (bandStart != null) {
+                        selectionRect.setBounds(
+                            Math.min(bandStart.x, e.getX()),
+                            Math.min(bandStart.y, e.getY()),
+                            Math.abs(bandStart.x - e.getX()),
+                            Math.abs(bandStart.y - e.getY())
+                        );
 
-                    for (DesktopShortcut s : shortcutsLayer.getShortcuts()) {
-                        boolean inside = selectionRect.intersects(s.getBounds());
-                        if (inside) {
-                            shortcutsLayer.addToSelection(s);
-                        } else {
-                            shortcutsLayer.removeFromSelection(s);
+                        for (DesktopShortcut s : shortcutsLayer.getShortcuts()) {
+                            boolean inside = selectionRect.intersects(s.getBounds());
+                            if (inside) {
+                                shortcutsLayer.addToSelection(s);
+                            } else {
+                                shortcutsLayer.removeFromSelection(s);
+                            }
                         }
                     }
+                    repaint();
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (!SwingUtilities.isLeftMouseButton(e)) {
-                    return;
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    dragStart = null;
+                    bandStart = null;
+                    initialPositions.clear();
+                    selectionRect = null;
+                    draggingIcons = false;
+                    repaint();
                 }
-                dragStart = null;
-                bandStart = null;
-                initialPositions.clear();
-                selectionRect = null;
-                draggingIcons = false;
             }
         };
 
@@ -357,19 +356,25 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                 showPopup(e);
             }
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                //showPopup(e);
-            }
-
+            @SuppressWarnings("checkstyle:NestedIfDepth")
             private void showPopup(MouseEvent e) {
                 if (e.isPopupTrigger()) {
+                    e.consume();
+
                     Component c = shortcutsLayer.getComponentAt(e.getPoint());
-                    if (c instanceof DesktopShortcut) {
-                        shortcutMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
-                    } else {
-                        desktopMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
-                    }
+                    Point p = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), DesktopInteractionLayer.this);
+
+                    SwingUtilities.invokeLater(() -> {
+                        if (c instanceof DesktopShortcut) {
+                            if (!shortcutMenu.isVisible()) {
+                                shortcutMenu.show(DesktopInteractionLayer.this, p.x, p.y);
+                            }
+                        } else {
+                            if (!desktopMenu.isVisible()) {
+                                desktopMenu.show(DesktopInteractionLayer.this, p.x, p.y);
+                            }
+                        }
+                    });
                 }
             }
         };
