@@ -85,6 +85,8 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
 
     private final List<DesktopShortcut> clipboard = new ArrayList<>();
 
+    private long lastPopupTime = 0;
+
     public DesktopInteractionLayer(DesktopShortcutsLayer layer, Desktop desktop) {
         this.shortcutsLayer = layer;
         this.desktop = desktop;
@@ -356,10 +358,18 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                 showPopup(e);
             }
 
-            @SuppressWarnings("checkstyle:NestedIfDepth")
+            @SuppressWarnings({"checkstyle:NestedIfDepth", "checkstyle:MagicNumber"})
             private void showPopup(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     e.consume();
+
+                    if (System.getProperty("os.name").startsWith("Mac")) {
+                        long now = System.currentTimeMillis();
+                        if (now - lastPopupTime < 500) {
+                            return; // ignore events too close to previous
+                        }
+                        lastPopupTime = now;
+                    }
 
                     Component c = shortcutsLayer.getComponentAt(e.getPoint());
                     Point p = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), DesktopInteractionLayer.this);
