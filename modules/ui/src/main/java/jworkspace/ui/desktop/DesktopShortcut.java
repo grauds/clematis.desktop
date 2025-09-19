@@ -33,22 +33,33 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.function.Supplier;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import jworkspace.ui.WorkspaceGUI;
+import jworkspace.ui.api.Constants;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Represents a desktop shortcut component that includes an icon and associated text.
+ * This class supports selection toggling, exclusive selection, and drag-and-drop functionality.
+ * It extends {@link JComponent} to allow customization of its appearance and behavior.
+ */
 public class DesktopShortcut extends JComponent {
 
-    private static final int DESKTOP_ICON_PREFERRED_SIZE = 130;
+    private static final int DESKTOP_ICON_PREFERRED_SIZE = 96;
 
     @Getter
     private boolean selected;
@@ -67,6 +78,22 @@ public class DesktopShortcut extends JComponent {
     @Setter
     private Supplier<Boolean> selectionProvider;
 
+    @Getter
+    @Setter
+    private String commandLine = "";
+
+    @Getter
+    @Setter
+    private String workingDirectory = "";
+
+    @Setter
+    @Getter
+    private String comments = "";
+
+    @Setter
+    @Getter
+    private int mode;
+
     @SuppressWarnings("checkstyle:MagicNumber")
     public DesktopShortcut(Icon icon, String text) {
         setLayout(new BorderLayout());
@@ -74,8 +101,12 @@ public class DesktopShortcut extends JComponent {
 
         textLabel = new DesktopIconLabel(text);
         textLabel.setAlignment(DesktopIconLabel.CENTER);
-        textLabel.setFont(textLabel.getFont().deriveFont(11f));
+        textLabel.setFont(textLabel.getFont().deriveFont(12f));
         add(textLabel, BorderLayout.SOUTH);
+
+        if (icon == null) {
+            icon = new ImageIcon(WorkspaceGUI.getResourceManager().getImage(Constants.DEFAULT_ICON));
+        }
 
         iconLabel = new JLabel(icon, SwingConstants.CENTER);
         add(iconLabel, BorderLayout.CENTER);
@@ -175,7 +206,42 @@ public class DesktopShortcut extends JComponent {
         return textLabel.getText();
     }
 
+    public void setText(String text) {
+        textLabel.setText(text);
+    }
+
     public Icon getIcon() {
         return iconLabel.getIcon();
+    }
+
+    public void setIcon(Icon icon) {
+        iconLabel.setIcon(icon);
+    }
+
+    public void load(ObjectInputStream dataStream) throws IOException, ClassNotFoundException {
+
+        setText(dataStream.readUTF());
+        setCommandLine(dataStream.readUTF());
+        setToolTipText(getCommandLine());
+        setWorkingDirectory(dataStream.readUTF());
+        setMode(dataStream.readInt());
+        setLocation(dataStream.readInt(), dataStream.readInt());
+        setComments(dataStream.readUTF());
+
+        Object obj = dataStream.readObject();
+        if (obj instanceof ImageIcon) {
+            setIcon((ImageIcon) obj);
+        }
+    }
+
+    public void save(ObjectOutputStream outputStream) throws IOException {
+        outputStream.writeUTF(getText());
+        outputStream.writeUTF(commandLine);
+        outputStream.writeUTF(workingDirectory);
+        outputStream.writeInt(mode);
+        outputStream.writeInt(getX());
+        outputStream.writeInt(getY());
+        outputStream.writeUTF(comments);
+        outputStream.writeObject(getIcon());
     }
 }

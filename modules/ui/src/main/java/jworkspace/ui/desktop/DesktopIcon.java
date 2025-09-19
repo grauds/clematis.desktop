@@ -45,7 +45,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -56,7 +55,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
-import jworkspace.ui.desktop.dialog.DesktopIconDialog;
+import jworkspace.ui.desktop.dialog.DesktopShortcutDialog;
 import jworkspace.ui.desktop.plaf.DesktopShortcutMenu;
 import jworkspace.ui.utils.SwingUtils;
 import lombok.Getter;
@@ -188,10 +187,10 @@ public class DesktopIcon extends JComponent implements MouseListener, MouseMotio
      * Edit this label.
      */
     public void edit() {
-        DesktopIconDialog dlg = new DesktopIconDialog(
+        DesktopShortcutDialog dlg = new DesktopShortcutDialog(
             DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
         );
-        dlg.setData(this);
+        //dlg.setData(this);
         dlg.setVisible(true);
     }
 

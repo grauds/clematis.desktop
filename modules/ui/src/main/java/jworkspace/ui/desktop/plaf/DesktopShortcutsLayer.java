@@ -26,11 +26,20 @@ public class DesktopShortcutsLayer extends JComponent {
         setOpaque(false);
     }
 
+    public void addShortcut(DesktopShortcut shortcut) {
+        addShortcut(shortcut, null);
+    }
+
     @SuppressWarnings("checkstyle:MagicNumber")
     public void addShortcut(DesktopShortcut s, Point location) {
         shortcuts.add(s);
         add(s);
-        s.setBounds(location.x, location.y, 80, 80);
+
+        if (location != null) {
+            s.setBounds(location.x, location.y, s.getPreferredSize().width, s.getPreferredSize().height);
+        } else {
+            s.setBounds(s.getLocation().x, s.getLocation().y, s.getPreferredSize().width, s.getPreferredSize().height);
+        }
 
         s.addSelectionHandler(() -> toggleSelection(s));
         s.addExclusiveSelectionHandler(() -> selectOnly(s));

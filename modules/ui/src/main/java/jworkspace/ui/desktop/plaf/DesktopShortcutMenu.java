@@ -15,7 +15,7 @@ import jworkspace.ui.api.action.UISwitchListener;
 
 public class DesktopShortcutMenu extends JPopupMenu {
 
-    // todo private final JMenuItem properties;
+    private final JMenuItem properties;
     private final JMenuItem delete;
     private final JMenuItem cut;
     private final JMenuItem copy;
@@ -72,15 +72,23 @@ public class DesktopShortcutMenu extends JPopupMenu {
             KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK)
         );
 
+        properties = createMenuItem("Properties...",
+            this::fireActionEvent,
+            DesktopInteractionLayer.PROPERTIES,
+            KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK)
+        );
+
         add(open);
         addSeparator();
-        add(rename);
         add(cut);
         add(copy);
         add(paste);
         add(selectAll);
         addSeparator();
         add(delete);
+        addSeparator();
+        add(rename);
+        add(properties);
 
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }

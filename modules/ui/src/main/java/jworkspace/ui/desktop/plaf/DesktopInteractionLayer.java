@@ -29,8 +29,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import jworkspace.ui.api.Constants;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.desktop.DesktopShortcut;
+import jworkspace.ui.desktop.dialog.DesktopShortcutDialog;
 import jworkspace.ui.utils.FileUtils;
 
 /**
@@ -61,6 +63,7 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
     public static final String SELECT_ALL = "Select All";
     public static final String ARRANGE = "Arrange Icons";
     public static final String DELETE = "Delete";
+    public static final String PROPERTIES = "Properties";
 
     public static final String COPY_KEY = "copy";
     public static final String PASTE_KEY = "paste";
@@ -157,6 +160,11 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
 
 
     // === clipboard and selection helpers ===
+
+    private void cutSelection() {
+        copySelection();
+        deleteSelection();
+    }
 
     private void copySelection() {
         clipboard.clear();
@@ -261,11 +269,6 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
             @SuppressWarnings({"checkstyle:NestedIfDepth", "checkstyle:ReturnCount"})
             @Override
             public void mousePressed(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    showPopup(e);
-                    return;
-                }
-
                 if (!SwingUtilities.isLeftMouseButton(e)) {
                     return;
                 }
@@ -335,11 +338,6 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    showPopup(e);
-                    return;
-                }
-
                 dragStart = null;
                 bandStart = null;
                 initialPositions.clear();
@@ -347,18 +345,35 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                 draggingIcons = false;
                 repaint();
             }
+        };
+
+        // Right click (popup)
+        MouseAdapter popupHandler = new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                showPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                showPopup(e);
+            }
 
             private void showPopup(MouseEvent e) {
-                Component c = shortcutsLayer.getComponentAt(e.getPoint());
-                if (c instanceof DesktopShortcut) {
-                    shortcutMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
-                } else {
-                    desktopMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
+                if (e.isPopupTrigger()) {
+                    Component c = shortcutsLayer.getComponentAt(e.getPoint());
+                    if (c instanceof DesktopShortcut) {
+                        shortcutMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
+                    } else {
+                        desktopMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
+                    }
                 }
             }
         };
 
         addMouseListener(adapter);
+        addMouseListener(popupHandler);
         addMouseMotionListener(adapter);
     }
 
@@ -373,6 +388,7 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
         }
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
@@ -383,7 +399,7 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                 break;
 
             case CUT:
-                // todo cutSelection();
+                cutSelection();
                 break;
 
             case COPY:
@@ -410,25 +426,20 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                 showRenameDialog();
                 break;
 
-            case Constants.CREATE_SHORTCUT:
-                DesktopShortcut shortcut = new DesktopShortcut(
-                    UIManager.getIcon("FileView.fileIcon"), "New Shortcut"
-                );
-                shortcutsLayer.addShortcut(shortcut,  new Point(50,  50));
-                getParent().repaint();
-                // todo
-       /*
-                DesktopIconDialog dlg =
-                    new DesktopIconDialog(
+            case PROPERTIES:
+                if (!this.shortcutsLayer.getSelectedShortcuts().isEmpty()) {
+                    DesktopShortcutDialog dlg = new DesktopShortcutDialog(
                         DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
                     );
-               dlg.setData(icon);
-                dlg.setVisible(true);
+                    dlg.setData(this.shortcutsLayer.getSelectedShortcuts().get(0));
+                    dlg.setVisible(true);
+                }
+                break;
 
-                if (!dlg.isCancelled()) {
-                    icon.setLocation(50, 100);
-                    addDesktopIcon(icon);
-                }*/
+            case Constants.CREATE_SHORTCUT:
+                DesktopShortcut shortcut = new DesktopShortcut(null, "New Shortcut");
+                shortcutsLayer.addShortcut(shortcut,  new Point(50,  50));
+                getParent().repaint();
                 break;
 
             default:

@@ -27,11 +27,13 @@ package jworkspace.ui.utils;
 */
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +41,7 @@ import java.io.InputStream;
 
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
@@ -192,6 +195,23 @@ public final class SwingUtils implements Constants {
      */
     public static int min(int i, int j) {
         return Math.min(i, j);
+    }
+
+    public static ImageIcon toImageIcon(Icon icon) {
+        if (icon instanceof ImageIcon imageIcon) {
+            return imageIcon;
+        }
+
+        int w = icon.getIconWidth();
+        int h = icon.getIconHeight();
+
+        // Create a BufferedImage and paint the icon into it
+        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+        icon.paintIcon(null, g2, 0, 0);
+        g2.dispose();
+
+        return new ImageIcon(image);
     }
 
     /**

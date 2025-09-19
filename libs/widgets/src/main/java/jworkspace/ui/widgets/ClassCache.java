@@ -228,7 +228,7 @@ public final class ClassCache {
                 try {
                     BufferedImage icon = ImageIO.read(imf);
                     if (icon != null) {
-                        testCover = new ImageIcon();
+                        testCover = new ImageIcon(icon);
                         return (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1)
                             ? testCover.getImage() : null;
                     }

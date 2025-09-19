@@ -82,8 +82,14 @@ import lombok.Setter;
 import lombok.extern.java.Log;
 
 /**
- * Java Desktop
- * @author Anton Troshin
+ * The Desktop class represents a customizable desktop interface for managing
+ * internal frames, views, and interactions. It provides functionality to add
+ * views, handle internal frames, cascade or tile frames, manage themes, change
+ * background images, and interact with other components.
+ * <p>
+ * This class supports activating or deactivating the desktop, resetting the
+ * desktop by closing all frames, managing menu and option panels, and ensuring
+ * unique views within the workspace.
  */
 @SuppressWarnings({"MagicNumber"})
 @Log
@@ -94,9 +100,7 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
 
     @Getter
     private final DesktopInteractionLayer interactionLayer;
-    /**
-     * New desktop manager
-     */
+
     private final ScrollingDesktopManager manager;
     /**
      * Save path. Relative to user home
@@ -112,9 +116,7 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
 
     public Desktop() {
         super();
-        /*
-         * Install desktop manager
-         */
+
         manager = new ScrollingDesktopManager(this);
         setDesktopManager(manager);
 
@@ -134,15 +136,6 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
                 interactionLayer.setBounds(0, 0, getWidth(), getHeight());
             }
         });
-
-        for (int i = 0; i < 12; i++) {
-            DesktopShortcut shortcut = new DesktopShortcut(UIManager.getIcon("FileView.computerIcon"),
-                "App " + (i + 1)
-            );
-            int x = 40 + (i % 4) * 100;
-            int y = 40 + (i / 4) * 100;
-            shortcutsLayer.addShortcut(shortcut, new Point(x, y));
-        }
 
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
@@ -452,9 +445,9 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
             int size = dataStream.readInt();
 
             for (int i = 0; i < size; i++) {
-             //   DesktopIcon icon = new DesktopIcon(this);
-               // icon.load(dataStream);
-                //this.addDesktopIcon(icon);
+                DesktopShortcut shortcut = new DesktopShortcut(null, "");
+                shortcut.load(dataStream);
+                this.shortcutsLayer.addShortcut(shortcut);
             }
 
             String pathToImage = dataStream.readUTF();
@@ -614,11 +607,11 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
             outputStream.writeInt(this.theme.getVpos());
             outputStream.writeInt(this.theme.getVstep());
             outputStream.writeBoolean(this.theme.isCoverVisible());
-           // outputStream.writeInt(desktopIcons.size());
+            outputStream.writeInt(this.shortcutsLayer.getShortcuts().size());
 
-           /* for (DesktopIcon desktopIcon : desktopIcons) {
-                (desktopIcon).save(outputStream);
-            }*/
+            for (DesktopShortcut desktopShortcut : this.shortcutsLayer.getShortcuts()) {
+                desktopShortcut.save(outputStream);
+            }
 
             outputStream.writeUTF(Objects.requireNonNullElse(this.theme.getPathToImage(), ""));
             outputStream.writeBoolean(getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE);
