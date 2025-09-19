@@ -107,7 +107,6 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
         return new DesktopShortcutMenu(this);
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     private JPopupMenu buildDesktopMenu() {
         return new DesktopMenu(this.desktop.getTheme(), this.desktop, this);
     }
@@ -302,11 +301,13 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                     selectionRect = new Rectangle(bandStart);
                     draggingIcons = false;
                 }
-                repaint();
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                if (!SwingUtilities.isLeftMouseButton(e)) {
+                    return;
+                }
                 if (draggingIcons && dragStart != null) {
                     int dx = e.getX() - dragStart.x;
                     int dy = e.getY() - dragStart.y;
@@ -333,17 +334,18 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                         }
                     }
                 }
-                repaint();
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                if (!SwingUtilities.isLeftMouseButton(e)) {
+                    return;
+                }
                 dragStart = null;
                 bandStart = null;
                 initialPositions.clear();
                 selectionRect = null;
                 draggingIcons = false;
-                repaint();
             }
         };
 
@@ -357,7 +359,7 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                showPopup(e);
+                //showPopup(e);
             }
 
             private void showPopup(MouseEvent e) {

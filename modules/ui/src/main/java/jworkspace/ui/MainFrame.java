@@ -48,6 +48,8 @@ import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
+import static jworkspace.ui.cpanel.ControlPanel.DRAGGED_PROPERTY;
+import static jworkspace.ui.cpanel.ControlPanel.DRAGGING_PROPERTY;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
@@ -60,8 +62,6 @@ import jworkspace.users.LoginValidator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
-import static jworkspace.ui.cpanel.ControlPanel.DRAGGED_PROPERTY;
-import static jworkspace.ui.cpanel.ControlPanel.DRAGGING_PROPERTY;
 
 /**
  * Main frame for Java Workspace UI

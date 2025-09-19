@@ -33,9 +33,11 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.function.Supplier;
 
 import javax.swing.BorderFactory;
@@ -60,6 +62,8 @@ import lombok.Setter;
 public class DesktopShortcut extends JComponent {
 
     private static final int DESKTOP_ICON_PREFERRED_SIZE = 96;
+
+    private static final BrightnessReducer BRIGHTNESS_REDUCER = new BrightnessReducer();
 
     @Getter
     private boolean selected;
@@ -94,7 +98,7 @@ public class DesktopShortcut extends JComponent {
     @Getter
     private int mode;
 
-    @SuppressWarnings("checkstyle:MagicNumber")
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment"})
     public DesktopShortcut(Icon icon, String text) {
         setLayout(new BorderLayout());
         setOpaque(false);
@@ -243,5 +247,33 @@ public class DesktopShortcut extends JComponent {
         outputStream.writeInt(getY());
         outputStream.writeUTF(comments);
         outputStream.writeObject(getIcon());
+    }
+
+    static class BrightnessReducer extends RGBImageFilter implements Serializable {
+        @SuppressWarnings("checkstyle:MagicNumber")
+        public int filterRGB(int x, int y, int rgb) {
+            int a = (rgb >> 24) & 0xff;
+            int r = (rgb >> 16) & 0xff;
+            int g = (rgb >> 8) & 0xff;
+            int b = rgb & 0xff;
+
+            if (r > 50) {
+                r = r - 50;
+            } else {
+                r = 0;
+            }
+            if (g > 50) {
+                g = g - 50;
+            } else {
+                g = 0;
+            }
+            if (b > 50) {
+                b = b - 50;
+            } else {
+                b = 0;
+            }
+
+            return (a << 24 | r << 16 | g << 8 | b);
+        }
     }
 }
