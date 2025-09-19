@@ -108,7 +108,7 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
         if (scrollPane != null) {
 
             calculateArea(point, desktop.getAllFrames());
-            calculateArea(point, desktop.getDesktopIcons());
+          //  calculateArea(point, desktop.getDesktopIcons());
 
             Dimension d = scrollPane.getVisibleRect().getSize();
             if (scrollPane.getBorder() != null) {

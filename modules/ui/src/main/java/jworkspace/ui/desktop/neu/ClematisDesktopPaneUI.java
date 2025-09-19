@@ -1,9 +1,11 @@
-package jworkspace.ui.desktop.plaf;
+package jworkspace.ui.desktop.neu;
 
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.plaf.basic.BasicDesktopPaneUI;
 
+import jworkspace.ui.desktop.plaf.DesktopInteractionLayer;
+import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import lombok.Getter;
 
 /**
@@ -50,7 +52,7 @@ public class ClematisDesktopPaneUI extends BasicDesktopPaneUI {
         desktop.add(shortcutsLayer, JLayeredPane.DEFAULT_LAYER);
         shortcutsLayer.setBounds(0, 0, desktop.getWidth(), desktop.getHeight());
 
-        interactionLayer = new DesktopInteractionLayer(shortcutsLayer);
+        interactionLayer = new DesktopInteractionLayer(shortcutsLayer, null);
         interactionLayer.setBounds(0, 0, desktop.getWidth(), desktop.getHeight());
         desktop.add(interactionLayer, JLayeredPane.DRAG_LAYER);
 

@@ -59,6 +59,10 @@ public class DesktopShortcut extends JComponent {
 
     private Runnable exclusiveSelectionHandler;
 
+    private final JLabel iconLabel;
+
+    private final DesktopIconLabel textLabel;
+
     @Getter
     @Setter
     private Supplier<Boolean> selectionProvider;
@@ -68,12 +72,12 @@ public class DesktopShortcut extends JComponent {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        DesktopIconLabel textLabel = new DesktopIconLabel(text);
+        textLabel = new DesktopIconLabel(text);
         textLabel.setAlignment(DesktopIconLabel.CENTER);
         textLabel.setFont(textLabel.getFont().deriveFont(11f));
         add(textLabel, BorderLayout.SOUTH);
 
-        JLabel iconLabel = new JLabel(icon, SwingConstants.CENTER);
+        iconLabel = new JLabel(icon, SwingConstants.CENTER);
         add(iconLabel, BorderLayout.CENTER);
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -165,5 +169,13 @@ public class DesktopShortcut extends JComponent {
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(DESKTOP_ICON_PREFERRED_SIZE, DESKTOP_ICON_PREFERRED_SIZE);
+    }
+
+    public String getText() {
+        return textLabel.getText();
+    }
+
+    public Icon getIcon() {
+        return iconLabel.getIcon();
     }
 }

@@ -85,4 +85,12 @@ public class DesktopShortcutsLayer extends JComponent {
             s.setSelected(false);
         }
     }
+
+    public void removeShortcut(DesktopShortcut s) {
+        removeFromSelection(s);
+        remove(s); // remove from parent
+        shortcuts.remove(s); // remove from the shortcut list
+        revalidate();
+        repaint();
+    }
 }

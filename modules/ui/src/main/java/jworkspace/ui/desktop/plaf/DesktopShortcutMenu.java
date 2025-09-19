@@ -1,5 +1,8 @@
 package jworkspace.ui.desktop.plaf;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JMenuItem;
@@ -7,143 +10,84 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-import jworkspace.WorkspaceResourceAnchor;
+import static jworkspace.ui.utils.SwingUtils.createMenuItem;
 import jworkspace.ui.api.action.UISwitchListener;
-import jworkspace.ui.desktop.DesktopIcon;
 
-public class DesktopShortcutMenu {
+public class DesktopShortcutMenu extends JPopupMenu {
 
-    private static JPopupMenu popupMenu = null;
-    private static JMenuItem properties = null;
-    private static JMenuItem delete = null;
-    private static JMenuItem execute = null;
-    private static JMenuItem cut = null;
-    private static JMenuItem copy = null;
+    // todo private final JMenuItem properties;
+    private final JMenuItem delete;
+    private final JMenuItem cut;
+    private final JMenuItem copy;
+    private final JMenuItem paste;
+    private final JMenuItem open;
+    private final JMenuItem rename;
+    private final JMenuItem selectAll;
 
-    /**
-     * Returns "copy" menu item
-     */
-    private JMenuItem getCopy() {
-        if (copy == null) {
-            copy = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Copy"));
-            copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
-            copy.addActionListener(e -> {
-                if (popupMenu.getInvoker() instanceof DesktopIcon) {
-                    ((DesktopIcon) popupMenu.getInvoker()).getDesktop().copyIcons();
-                }
-            });
-        }
-        return copy;
+    private final ActionListener[] listeners;
+
+    public DesktopShortcutMenu(ActionListener... listeners) {
+        super();
+        this.listeners = listeners;
+
+        open = createMenuItem(DesktopInteractionLayer.OPEN,
+            this::fireActionEvent,
+            DesktopInteractionLayer.OPEN,
+            null
+        );
+
+        rename = createMenuItem(DesktopInteractionLayer.RENAME,
+            this::fireActionEvent,
+            DesktopInteractionLayer.RENAME,
+            KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0)
+        );
+
+        cut = createMenuItem(DesktopInteractionLayer.CUT,
+            this::fireActionEvent,
+            DesktopInteractionLayer.CUT,
+            KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK)
+        );
+
+        copy = createMenuItem(DesktopInteractionLayer.COPY,
+            this::fireActionEvent,
+            DesktopInteractionLayer.COPY,
+            KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK)
+        );
+
+        paste = createMenuItem(DesktopInteractionLayer.PASTE,
+            this::fireActionEvent,
+            DesktopInteractionLayer.PASTE,
+            KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK)
+        );
+
+        delete = createMenuItem(DesktopInteractionLayer.DELETE,
+            this::fireActionEvent,
+            DesktopInteractionLayer.DELETE,
+            KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)
+        );
+
+        selectAll = createMenuItem(DesktopInteractionLayer.SELECT_ALL,
+            this::fireActionEvent,
+            DesktopInteractionLayer.SELECT_ALL,
+            KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK)
+        );
+
+        add(open);
+        addSeparator();
+        add(rename);
+        add(cut);
+        add(copy);
+        add(paste);
+        add(selectAll);
+        addSeparator();
+        add(delete);
+
+        UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
-    /**
-     * Returns "cut" menu item
-     */
-    private JMenuItem getCut() {
-        if (cut == null) {
-            cut = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Cut"));
-            cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
-            cut.addActionListener(e -> {
-                if (popupMenu.getInvoker() instanceof DesktopIcon) {
-                    ((DesktopIcon) popupMenu.getInvoker()).getDesktop().cutIcons();
-                }
-            });
+    private void fireActionEvent(ActionEvent e) {
+        for (ActionListener listener : listeners) {
+            listener.actionPerformed(e);
         }
-        return cut;
-    }
-
-    /**
-     * Returns "delete" menu item
-     */
-    private JMenuItem getDelete() {
-        if (delete == null) {
-            delete = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Delete"));
-            delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-            delete.addActionListener(e -> {
-                if (popupMenu.getInvoker() instanceof DesktopIcon) {
-                    ((DesktopIcon) popupMenu.getInvoker()).getDesktop().removeSelectedIcons();
-                }
-            });
-        }
-        return delete;
-    }
-
-    /**
-     * Returns "execute" menu item
-     */
-    private JMenuItem getExecute() {
-        if (execute == null) {
-            execute = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Launch"));
-            execute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
-            execute.addActionListener(e -> {
-                if (popupMenu.getInvoker() instanceof DesktopIcon) {
-                    ((DesktopIcon) popupMenu.getInvoker()).launch();
-                }
-            });
-
-        }
-        return execute;
-    }
-
-    /**
-     * Returns "properties" menu item
-     */
-    private JMenuItem getProperties() {
-        if (properties == null) {
-            properties = new JMenuItem(WorkspaceResourceAnchor.getString("DesktopIcon.Properties") + "...");
-            properties.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK));
-            properties.addActionListener(e -> {
-                if (popupMenu.getInvoker() instanceof DesktopIcon) {
-                    ((DesktopIcon) popupMenu.getInvoker()).edit();
-                }
-            });
-        }
-        return properties;
-    }
-
-    /**
-     * Returns popup menu for this desktop icon
-     */
-    public JPopupMenu getPopupMenu() {
-        if (popupMenu == null) {
-            popupMenu = new JPopupMenu();
-            getMenuItems();
-            UIManager.addPropertyChangeListener(new UISwitchListener(popupMenu));
-        }
-        return popupMenu;
-    }
-
-    private void getMenuItems() {
-        popupMenu.add(getExecute());
-        popupMenu.addSeparator();
-        popupMenu.add(getCut());
-        popupMenu.add(getCopy());
-        popupMenu.addSeparator();
-        popupMenu.add(getDelete());
-        popupMenu.addSeparator();
-        popupMenu.add(getProperties());
-    }
-
-    /**
-     * Returns a popup menu, depending on is there a selected group
-     * of icons on the desktop and is this icon selected together
-     * with others in that group.
-     */
-    public JPopupMenu getPopupMenu(boolean flag) {
-        if (popupMenu == null) {
-            popupMenu = new JPopupMenu();
-        } else {
-            popupMenu.removeAll();
-        }
-        if (flag) {
-            popupMenu.add(getCut());
-            popupMenu.add(getCopy());
-            popupMenu.addSeparator();
-            popupMenu.add(getDelete());
-        } else {
-            getMenuItems();
-        }
-        UIManager.addPropertyChangeListener(new UISwitchListener(popupMenu));
-        return popupMenu;
     }
 }

@@ -5,45 +5,70 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.Icon;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
+import jworkspace.ui.api.Constants;
+import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.desktop.DesktopShortcut;
+import jworkspace.ui.utils.FileUtils;
 
 /**
- * The DesktopInteractionLayer class extends {@code JComponent} to provide
- * interaction and user input handling capabilities for a desktop-like graphical interface.
- * This class is intended to work in conjunction with a {@code DesktopShortcutsLayer},
- * acting as an intermediary to capture, process, and respond to events such as mouse
- * clicks, dragging, and selection via a rubber-band mechanism.
+ * The DesktopInteractionLayer class is a Swing component responsible for managing the interaction layer
+ * of a desktop UI, allowing for interactions such as selecting, copying, pasting, renaming, deleting, and
+ * arranging desktop shortcuts. It provides features such as selection handling, context menu building,
+ * and keyboard shortcuts for basic operations.
+ * <p>
+ * It implements functionalities like clipboard management, drag-and-drop handling,
+ * and popup menu interactions. This class cooperates with an underlying layer to display
+ * and operate on desktop shortcuts.
  * <p>
  * Features:
- * - Mouse click handling to manage single and multi-selection of shortcuts.
- * - Support for dragging selected shortcuts as a group.
- * - Rubber-band selection capabilities for multiple shortcuts within a rectangular area.
- * - Highlighting the rubber-band selection overlay for better visual feedback.
- * <p>
- * Key Behavioral Details:
- * - Selection of shortcuts can be toggled with control clicks.
- * - Clicking empty space clears the current selection and starts rubber-band interaction.
- * - Dragging shortcuts during a mouse drag event updates their positions relative to the drag start position.
- * - Rubber-band selection dynamically updates as the mouse is dragged to include shortcuts within the area.
- * <p>
- * Rendering:
- * - This class paints a semi-transparent rectangle during the rubber-band selection to indicate
- *   the current selection bounds.
- * <p>
- * Methods:
- * - {@code installMouseHandlers}: Registers mouse event handlers for interaction logic.
- * - {@code paintComponent}: Handles custom painting for the rubber-band selection overlay.
+ * - Select, copy, paste, and delete shortcuts.
+ * - Rename shortcuts through a dialog.
+ * - Arrange shortcuts automatically.
+ * - Display context menus for shortcuts and desktop background.
+ * - Handle keyboard shortcuts for core operations.
+ * - Track and manage selection rectangle and dragging behavior.
  */
-public class DesktopInteractionLayer extends JComponent {
+public class DesktopInteractionLayer extends JComponent implements ActionListener {
 
+    public static final String OPEN = "Open";
+    public static final String RENAME = "Rename";
+    public static final String CUT = "Cut";
+    public static final String COPY = "Copy";
+    public static final String PASTE = "Paste";
+    public static final String SELECT_ALL = "Select All";
+    public static final String ARRANGE = "Arrange Icons";
+    public static final String DELETE = "Delete";
+
+    public static final String COPY_KEY = "copy";
+    public static final String PASTE_KEY = "paste";
+    public static final String SELECT_ALL_KEY = "selectAll";
+    public static final String DELETE_KEY = "delete";
+    public static final String RENAME_KEY = "rename";
+
+    private final Desktop desktop;
     private final DesktopShortcutsLayer shortcutsLayer;
 
     private Rectangle selectionRect;
@@ -53,18 +78,194 @@ public class DesktopInteractionLayer extends JComponent {
     private final Map<DesktopShortcut, Point> initialPositions = new HashMap<>();
     private boolean draggingIcons = false;
 
-    public DesktopInteractionLayer(DesktopShortcutsLayer layer) {
+    private final JPopupMenu shortcutMenu;
+    private final JPopupMenu desktopMenu;
+
+    private final List<DesktopShortcut> clipboard = new ArrayList<>();
+
+    public DesktopInteractionLayer(DesktopShortcutsLayer layer, Desktop desktop) {
         this.shortcutsLayer = layer;
+        this.desktop = desktop;
         setOpaque(false);
+
+        // Build popup menus
+        shortcutMenu = buildShortcutMenu();
+        desktopMenu = buildDesktopMenu();
+
         installMouseHandlers();
+        installKeyBindings();
+
+        new DesktopShortcutNavigator(shortcutsLayer, this);
+        setFocusable(true);
+        requestFocusInWindow();
     }
 
+    private JPopupMenu buildShortcutMenu() {
+        return new DesktopShortcutMenu(this);
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    private JPopupMenu buildDesktopMenu() {
+        return new DesktopMenu(this.desktop.getTheme(), this.desktop, this);
+    }
+
+    private void installKeyBindings() {
+
+        InputMap im = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = getActionMap();
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), COPY_KEY);
+        am.put(COPY_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                copySelection();
+            }
+        });
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK), PASTE_KEY);
+        am.put(PASTE_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pasteClipboard();
+            }
+        });
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), SELECT_ALL_KEY);
+        am.put(SELECT_ALL_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectAllShortcuts();
+            }
+        });
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_KEY);
+        am.put(DELETE_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteSelection();
+            }
+        });
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), RENAME_KEY);
+        am.put(RENAME_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showRenameDialog();
+            }
+        });
+    }
+
+
+    // === clipboard and selection helpers ===
+
+    private void copySelection() {
+        clipboard.clear();
+        clipboard.addAll(shortcutsLayer.getSelectedShortcuts());
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    private void pasteClipboard() {
+        if (clipboard.isEmpty()) {
+            return;
+        }
+
+        int offset = 20;
+        List<DesktopShortcut> newShortcuts = new ArrayList<>();
+
+        for (DesktopShortcut original : clipboard) {
+            // extract text + icon
+            String text = original.getText();
+            Icon icon = original.getIcon();
+
+            // clone icon if possible
+            Icon clonedIcon = FileUtils.cloneIcon(icon);
+
+            // create new shortcut
+            DesktopShortcut copy = new DesktopShortcut(clonedIcon, text);
+
+            Point pos = original.getLocation();
+            copy.setLocation(pos.x + offset, pos.y + offset);
+
+            shortcutsLayer.addShortcut(copy, new Point(copy.getX(), copy.getY()));
+            newShortcuts.add(copy);
+        }
+
+        shortcutsLayer.clearSelection();
+        for (DesktopShortcut s : newShortcuts) {
+            shortcutsLayer.addToSelection(s);
+        }
+        repaint();
+    }
+
+    private void selectAllShortcuts() {
+        shortcutsLayer.clearSelection();
+        for (DesktopShortcut s : shortcutsLayer.getShortcuts()) {
+            shortcutsLayer.addToSelection(s);
+        }
+        repaint();
+    }
+
+    private void deleteSelection() {
+        for (DesktopShortcut s : new ArrayList<>(shortcutsLayer.getSelectedShortcuts())) {
+            shortcutsLayer.removeShortcut(s);
+        }
+        shortcutsLayer.clearSelection();
+        repaint();
+    }
+
+    private void showRenameDialog() {
+        if (shortcutsLayer.getSelectedShortcuts().isEmpty()) {
+            return;
+        }
+        String newName = JOptionPane.showInputDialog(
+            this,
+            "Enter new name:",
+            "Rename Shortcut",
+            JOptionPane.PLAIN_MESSAGE
+        );
+        if (newName != null && !newName.isBlank()) {
+            for (DesktopShortcut s : shortcutsLayer.getSelectedShortcuts()) {
+                ((JLabel) s.getComponent(0)).setText(newName);
+                s.repaint();
+            }
+        }
+    }
+
+    private void showMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Info", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // === arrange icons ===
+    @SuppressWarnings("checkstyle:MagicNumber")
+    private void arrangeShortcuts() {
+        int x = 20;
+        int y = 20;
+        int spacing = 90;
+
+        for (DesktopShortcut s : shortcutsLayer.getShortcuts()) {
+            s.setLocation(x, y);
+            y += spacing;
+            if (y + spacing > getHeight()) {
+                y = 20;
+                x += spacing;
+            }
+        }
+        repaint();
+    }
+
+    // === selection band and drag handling ===
     @SuppressWarnings("checkstyle:AnonInnerLength")
     private void installMouseHandlers() {
         MouseAdapter adapter = new MouseAdapter() {
-            @SuppressWarnings("checkstyle:NestedIfDepth")
+
+            @SuppressWarnings({"checkstyle:NestedIfDepth", "checkstyle:ReturnCount"})
             @Override
             public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showPopup(e);
+                    return;
+                }
+
                 if (!SwingUtilities.isLeftMouseButton(e)) {
                     return;
                 }
@@ -134,12 +335,26 @@ public class DesktopInteractionLayer extends JComponent {
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showPopup(e);
+                    return;
+                }
+
                 dragStart = null;
                 bandStart = null;
                 initialPositions.clear();
                 selectionRect = null;
                 draggingIcons = false;
                 repaint();
+            }
+
+            private void showPopup(MouseEvent e) {
+                Component c = shortcutsLayer.getComponentAt(e.getPoint());
+                if (c instanceof DesktopShortcut) {
+                    shortcutMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
+                } else {
+                    desktopMenu.show(DesktopInteractionLayer.this, e.getX(), e.getY());
+                }
             }
         };
 
@@ -155,6 +370,69 @@ public class DesktopInteractionLayer extends JComponent {
             g.fillRect(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height);
             g.setColor(Color.BLUE);
             g.drawRect(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height);
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        switch (command) {
+
+            case OPEN:
+                showMessage("Open shortcut");
+                break;
+
+            case CUT:
+                // todo cutSelection();
+                break;
+
+            case COPY:
+                copySelection();
+                break;
+
+            case PASTE:
+                pasteClipboard();
+                break;
+
+            case DELETE:
+                deleteSelection();
+                break;
+
+            case SELECT_ALL:
+                selectAllShortcuts();
+                break;
+
+            case ARRANGE:
+                arrangeShortcuts();
+                break;
+
+            case RENAME:
+                showRenameDialog();
+                break;
+
+            case Constants.CREATE_SHORTCUT:
+                DesktopShortcut shortcut = new DesktopShortcut(
+                    UIManager.getIcon("FileView.fileIcon"), "New Shortcut"
+                );
+                shortcutsLayer.addShortcut(shortcut,  new Point(50,  50));
+                getParent().repaint();
+                // todo
+       /*
+                DesktopIconDialog dlg =
+                    new DesktopIconDialog(
+                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+                    );
+               dlg.setData(icon);
+                dlg.setVisible(true);
+
+                if (!dlg.isCancelled()) {
+                    icon.setLocation(50, 100);
+                    addDesktopIcon(icon);
+                }*/
+                break;
+
+            default:
+                break;
         }
     }
 }

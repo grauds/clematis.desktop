@@ -8,7 +8,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import jworkspace.ui.desktop.DesktopShortcut;
-import jworkspace.ui.desktop.plaf.ClematisDesktopPaneUI;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 
 

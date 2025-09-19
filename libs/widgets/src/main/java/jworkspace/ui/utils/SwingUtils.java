@@ -45,6 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
@@ -187,14 +188,14 @@ public final class SwingUtils implements Constants {
     }
 
     /**
-     * Finds minimum of two values
+     * Finds the minimum of two values
      */
     public static int min(int i, int j) {
         return Math.min(i, j);
     }
 
     /**
-     * Create button from action
+     * Create a button from action
      */
     public static CButton createCButtonFromAction(Action a) {
 
@@ -208,14 +209,33 @@ public final class SwingUtils implements Constants {
         return b;
     }
 
-    /**
-     * Create menu item.
-     */
-    public static JMenuItem createMenuItem(ActionListener listener,
-                                           String name, String actionCommand, Icon icon) {
-        JMenuItem menuItem = new JMenuItem(name, icon);
-        menuItem.addActionListener(listener);
-        menuItem.setActionCommand(actionCommand);
+    public static JMenuItem createMenuItem(String name,
+                                           ActionListener listener,
+                                           String actionCommand,
+                                           KeyStroke accelerator
+    ) {
+        JMenuItem menuItem = new JMenuItem(name);
+        if (listener != null) {
+            menuItem.addActionListener(listener);
+        }
+        if (actionCommand != null) {
+            menuItem.setActionCommand(actionCommand);
+        }
+        if (accelerator != null) {
+            menuItem.setAccelerator(accelerator);
+        }
+        menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
+        return menuItem;
+    }
+
+    public static JMenuItem createMenuItem(String name,
+                                           ActionListener listener,
+                                           String actionCommand,
+                                           KeyStroke accelerator,
+                                           Icon icon
+    ) {
+        JMenuItem menuItem = createMenuItem(name, listener, actionCommand, accelerator);
+        menuItem.setIcon(icon);
         menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
         return menuItem;
     }

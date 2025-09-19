@@ -236,23 +236,6 @@ public class DesktopIcon extends JComponent implements MouseListener, MouseMotio
         this.repaint();
     }
 
-    /**
-     * Returns data, necessary for drag and drop or clipboard operations with desktop icons.
-     */
-    DesktopIconData getIconData() {
-        return new DesktopIconData(this.getName(),
-            getCommandLine(),
-            getWorkingDirectory(),
-            getIcon(),
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            getMode(),
-            getComments());
-    }
-
-
     public Dimension getPreferredSize() {
         return new Dimension(DESKTOP_ICON_PREFERRED_SIZE, DESKTOP_ICON_PREFERRED_SIZE);
     }
@@ -322,7 +305,7 @@ public class DesktopIcon extends JComponent implements MouseListener, MouseMotio
         /*
          * If dragging occurs, set state isDragging() to true.
          */
-        desktop.setDraggingState(true);
+       // desktop.setDraggingState(true);
        // desktop.getIconGroup().moveTo(e.getX() - xPressed, e.getY() - yPressed);
     }
 
@@ -341,8 +324,8 @@ public class DesktopIcon extends JComponent implements MouseListener, MouseMotio
             /*
              * Hide a popup menu for this icon or group of icons.
              */
-            remove(menu.getPopupMenu());
-            menu.getPopupMenu().setVisible(false);
+           // remove(menu.getPopupMenu());
+         //   menu.getPopupMenu().setVisible(false);
         } else if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown()) {
             /*
              * Select or deselect this icon from the group (Ctrl + left click).
@@ -350,16 +333,16 @@ public class DesktopIcon extends JComponent implements MouseListener, MouseMotio
             setSelected(!isSelected());
         } else if (SwingUtilities.isLeftMouseButton(e)) {
 
-            if (isSelected() || desktop.isSelectedInGroup(this)) {
+            if (isSelected()) {
                 /*
                  * Start moving selected icons to a new location (left-click drag'n'drop).
                  */
-                desktop.getGlassDragPane().activate(e.getPoint(), List.of(desktop.getDesktopIcons()));
+             //   desktop.getGlassDragPane().activate(e.getPoint(), List.of(desktop.getDesktopIcons()));
             } else {
                 /*
                  * Deselect all icons and select this one (left click).
                  */
-                desktop.deselectAll();
+              //  desktop.deselectAll();
                 setSelected(true);
             }
         }
@@ -380,30 +363,30 @@ public class DesktopIcon extends JComponent implements MouseListener, MouseMotio
         System.out.println("mouseReleased: " + e.getX() + " " + e.getY());
         if (SwingUtilities.isRightMouseButton(e)) {
 
-            if (!desktop.isSelectedInGroup(this)) {
-                desktop.deselectAll();
+          //  if (!desktop.isSelectedInGroup(this)) {
+               // desktop.deselectAll();
                 setSelected(true);
                 requestFocus();
                 desktop.repaint();
-            }
-            add(menu.getPopupMenu(desktop.isGroupSelected()));
-            menu.getPopupMenu().updateUI();
-            menu.getPopupMenu().show(this, e.getX(), e.getY());
+          //  }
+          //  add(menu.getPopupMenu(desktop.isGroupSelected()));
+          //  menu.getPopupMenu().updateUI();
+          //  menu.getPopupMenu().show(this, e.getX(), e.getY());
         } else if (SwingUtilities.isLeftMouseButton(e)) {
-            if (desktop.isDraggingState()) {
+        //    if (desktop.isDraggingState()) {
                 System.out.println("mouseReleased: isDraggingState()");
                 /*
                  * It is an end of dragging - move icons.
                  */
                 //desktop.getIconGroup().destroy();
-                desktop.setDraggingState(false);
-            } else {
+         //       desktop.setDraggingState(false);
+        //    } else {
                 /*
                  * If not end of dragging, just deselect all and select this one
                  */
-                desktop.deselectAll();
+          //      desktop.deselectAll();
                 setSelected(true);
-            }
+          //  }
             requestFocus();
         }
 
@@ -557,15 +540,15 @@ public class DesktopIcon extends JComponent implements MouseListener, MouseMotio
                 ((DesktopIcon) e.getSource()).launch();
                 e.consume();
             } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                ((DesktopIcon) e.getSource()).desktop.removeSelectedIcons();
+               // ((DesktopIcon) e.getSource()).desktop.removeSelectedIcons();
                 e.consume();
             } else if (e.getKeyCode() == KeyEvent.VK_C
                 && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
-                ((DesktopIcon) e.getSource()).desktop.copyIcons();
+              //  ((DesktopIcon) e.getSource()).desktop.copyIcons();
                 e.consume();
             } else if (e.getKeyCode() == KeyEvent.VK_X
                 && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
-                ((DesktopIcon) e.getSource()).desktop.cutIcons();
+              //  ((DesktopIcon) e.getSource()).desktop.cutIcons();
                 e.consume();
             } else if (e.getKeyCode() == KeyEvent.VK_P
                 && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {

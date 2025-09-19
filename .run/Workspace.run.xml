@@ -1,5 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Workspace" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="ALTERNATIVE_JRE_PATH" value="17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="jworkspace.Workspace" />
     <module name="clematis.jworkspace.main" />
     <option name="PROGRAM_PARAMETERS" value="--name root --password root" />

@@ -37,16 +37,10 @@ import java.awt.Rectangle;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,9 +49,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -66,35 +58,25 @@ import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 
 import com.hyperrealm.kiwi.ui.KDesktopPane;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.dialog.DesktopBackgroundPanel;
-import jworkspace.ui.desktop.dialog.DesktopIconDialog;
 import jworkspace.ui.desktop.dialog.DesktopOptionsPanel;
-import jworkspace.ui.desktop.plaf.ClematisDesktopPaneUI;
-import jworkspace.ui.desktop.plaf.DesktopKeyAdapter;
-import jworkspace.ui.desktop.plaf.DesktopMenu;
+import jworkspace.ui.desktop.plaf.DesktopInteractionLayer;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import jworkspace.ui.desktop.plaf.DesktopTheme;
-import jworkspace.ui.utils.SwingUtils;
 import jworkspace.ui.widgets.ClassCache;
-import jworkspace.ui.widgets.GlassOutlinePane;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
@@ -105,47 +87,13 @@ import lombok.extern.java.Log;
  */
 @SuppressWarnings({"MagicNumber"})
 @Log
-public class Desktop extends KDesktopPane implements IView, MouseListener, MouseMotionListener,
-    ActionListener, ClipboardOwner {
-    /**
-     * List of desktop icons.
-     */
-    private final List<DesktopIcon> desktopIcons = new Vector<>();
-    /**
-     * Selector frame.
-     */
-    private final transient GlassOutlinePane selectPane = new GlassOutlinePane();
-    /**
-     * Starting selection point.
-     */
-    private final Point startingSelection = new Point();
-    /**
-     * Ending selection point.
-     */
-    private final Point endingSelection = new Point();
-    /**
-     * Coordinates of the top left menu corner.
-     */
-    private final Point menuLeftTopCorner = new Point();
-    /**
-     * Glass dragging panel for desktop icons.
-     */
-    @Getter
-    private final transient GlassDragPane glassDragPane = new GlassDragPane();
-    /**
-     * Desktop currently dragging icons.
-     */
-    @Getter
-    private boolean isDraggingState = false;
-    /**
-     * Desktop popup menu.
-     */
-    private final DesktopMenu desktopPopupMenu = new DesktopMenu(this, this);
-    /**
-     * Desktop menu
-     */
-    private JMenu desktopMenu = null;
+public class Desktop extends KDesktopPane implements IView, ActionListener, ClipboardOwner {
 
+    @Getter
+    private final DesktopShortcutsLayer shortcutsLayer;
+
+    @Getter
+    private final DesktopInteractionLayer interactionLayer;
     /**
      * New desktop manager
      */
@@ -169,22 +117,32 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
          */
         manager = new ScrollingDesktopManager(this);
         setDesktopManager(manager);
-        /*
-         * Install a pluggable UI with icons and a selection pane.
-         */
-        setUI(new ClematisDesktopPaneUI());
 
-        DesktopShortcutsLayer shortcutsLayer = ((ClematisDesktopPaneUI) getUI()).getShortcutsLayer();
+        shortcutsLayer = new DesktopShortcutsLayer();
+        add(shortcutsLayer, JLayeredPane.DEFAULT_LAYER);
+        shortcutsLayer.setBounds(0, 0, getWidth(), getHeight());
+
+        interactionLayer = new DesktopInteractionLayer(shortcutsLayer, this);
+        interactionLayer.setBounds(0, 0, getWidth(), getHeight());
+        add(interactionLayer, JLayeredPane.DRAG_LAYER);
+
+        // Keep it sized with the desktop
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                shortcutsLayer.setBounds(0, 0, getWidth(), getHeight());
+                interactionLayer.setBounds(0, 0, getWidth(), getHeight());
+            }
+        });
 
         for (int i = 0; i < 12; i++) {
-            DesktopShortcut shortcut = new DesktopShortcut( UIManager.getIcon("FileView.computerIcon"),
+            DesktopShortcut shortcut = new DesktopShortcut(UIManager.getIcon("FileView.computerIcon"),
                 "App " + (i + 1)
             );
             int x = 40 + (i % 4) * 100;
             int y = 40 + (i / 4) * 100;
             shortcutsLayer.addShortcut(shortcut, new Point(x, y));
         }
-
 
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
@@ -199,7 +157,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      */
     public void activated(boolean flag) {}
 
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void actionPerformed(ActionEvent e) {
 
         String command = e.getActionCommand();
@@ -210,66 +167,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 repaint();
                 break;
 
-            case Constants.CREATE_SHORTCUT:
-                DesktopIcon icon = new DesktopIcon(
-                    WorkspaceResourceAnchor.getString("Desktop.defaultIconName"),
-                    WorkspaceResourceAnchor.getString("Desktop.defaultIconCommand"),
-                    "", this, null);
-
-                DesktopIconDialog dlg =
-                    new DesktopIconDialog(
-                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
-                    );
-
-                dlg.setData(icon);
-                dlg.setVisible(true);
-
-                if (!dlg.isCancelled()) {
-                    icon.setLocation(50, 100);
-                    addDesktopIcon(icon);
-                }
-                break;
-
             case Constants.BACKGROUND:
-                if (!this.theme.isGradientFill()) {
-                    Color color = JColorChooser.showDialog(
-                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
-                        WorkspaceResourceAnchor.getString("Desktop.chooseBg.title"),
-                        getBackground()
-                    );
-
-                    if (color != null) {
-                        setBackground(color);
-                        this.theme.setSecondaryBackground(color);
-                        repaint();
-                    }
-                } else {
-                    Color color1 = JColorChooser.showDialog(
-                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
-                        WorkspaceResourceAnchor.getString("Desktop.chooseBg1.title"),
-                        getBackground()
-                    );
-                    Color color2 = JColorChooser.showDialog(
-                        DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
-                        WorkspaceResourceAnchor.getString("Desktop.chooseBg2.title"),
-                        this.theme.getSecondaryBackground()
-                    );
-                    if (color1 != null) {
-                        setBackground(color1);
-                    }
-                    if (color2 != null) {
-                        this.theme.setSecondaryBackground(color2);
-                    }
-                    repaint();
-                }
-                break;
-
-            case Constants.PASTE:
-                pasteIcons();
-                break;
-
-            case Constants.SELECT_ALL:
-                selectAll();
+                changeBackground();
                 break;
 
             case Constants.CLOSE_ALL_WINDOWS:
@@ -282,76 +181,71 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 break;
 
             case Constants.CHOOSE_BACKGROUND_IMAGE:
-                JFileChooser fch = ClassCache.getIconChooser();
-                if (fch.showOpenDialog(
-                    DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()) != JFileChooser.APPROVE_OPTION
-                ) {
-                    return;
-                }
-                File imf = fch.getSelectedFile();
-                if (imf != null) {
-                    String testPath = imf.getAbsolutePath();
-                    ImageIcon testCover;
-                    try {
-                        testCover = new ImageIcon(ImageIO.read(imf));
-
-                        if (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1) {
-                            this.theme.setPathToImage(testPath);
-                            this.theme.setCover(testCover);
-                            repaint();
-                        }
-                    } catch (IOException e1) {
-                        log.severe(e1.getMessage());
-                    }
-                }
+                changeBackgroundImage();
                 break;
+
             default:
-                throw new IllegalStateException("Unexpected action: " + command);
+                break;
         }
     }
 
-    /**
-     * Create and add desktop icon to desktop.
-     *
-     * @param name        The name of the desktop icon
-     * @param commandLine Command, that will this desktop
-     *                    icon launch, depending on execution mode.
-     * @param mode        Execution mode can be the follows
-     *                    <ol>
-     *                    <li>SCRIPTED_METHOD_MODE = 0 - Executes scripted BSH method;
-     *                    <li>SCRIPTED_FILE_MODE = 1 - Executes scripted BSH file;
-     *                    <li>NATIVE_COMMAND_MODE = 2 - Executes native command;
-     *                    <li>JAVA_APP_MODE = 3 - Executes installed application;
-     *                    </li>
-     *                    </ol>
-     * @param icon        Picture for this desktop icon
-     * @param xPos        Initial x coordinate of desktop icon
-     * @param yPos        Initial y coordinate of desktop icon
-     */
-    private void addDesktopIcon(String name,
-                                String commandLine,
-                                String workingDir,
-                                int mode,
-                                ImageIcon icon,
-                                int xPos,
-                                int yPos) {
-        DesktopIcon desktopIcon = new DesktopIcon(name, commandLine, workingDir, this, icon);
-        desktopIcons.add(desktopIcon);
-        desktopIcon.setLocation(xPos, yPos);
-        desktopIcon.setMode(mode);
-        desktopIcon.add();
-        validate();
-        repaint();
+    public void changeBackgroundImage() {
+        JFileChooser fch = ClassCache.getIconChooser();
+        if (fch.showOpenDialog(
+            DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()) != JFileChooser.APPROVE_OPTION
+        ) {
+            return;
+        }
+        File imf = fch.getSelectedFile();
+        if (imf != null) {
+            String testPath = imf.getAbsolutePath();
+            ImageIcon testCover;
+            try {
+                testCover = new ImageIcon(ImageIO.read(imf));
+
+                if (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1) {
+                    this.theme.setPathToImage(testPath);
+                    this.theme.setCover(testCover);
+                    repaint();
+                }
+            } catch (IOException e1) {
+                log.severe(e1.getMessage());
+            }
+        }
     }
 
-    /**
-     * Add desktop icon to desktop.
-     */
-    private void addDesktopIcon(DesktopIcon icon) {
-        desktopIcons.add(icon);
-        icon.add();
-        validate();
-        repaint();
+    public void changeBackground() {
+        if (!this.theme.isGradientFill()) {
+            Color color = JColorChooser.showDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                WorkspaceResourceAnchor.getString("Desktop.chooseBg.title"),
+                getBackground()
+            );
+
+            if (color != null) {
+                setBackground(color);
+                this.theme.setSecondaryBackground(color);
+                repaint();
+            }
+        } else {
+            Color color1 = JColorChooser.showDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                WorkspaceResourceAnchor.getString("Desktop.chooseBg1.title"),
+                getBackground()
+            );
+            Color color2 = JColorChooser.showDialog(
+                DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                WorkspaceResourceAnchor.getString("Desktop.chooseBg2.title"),
+                this.theme.getSecondaryBackground()
+            );
+            if (color1 != null) {
+                setBackground(color1);
+            }
+            if (color2 != null) {
+                this.theme.setSecondaryBackground(color2);
+            }
+            repaint();
+        }
     }
 
     /**
@@ -365,7 +259,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         }
 
         JInternalFrame existing = findFrame(panel.getName());
-        if (unique && existing != null) {
+        if (unique && existing != null && displayImmediately) {
             getDesktopManager().activateFrame(existing);
             return;
         }
@@ -400,9 +294,11 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             nest.setLocation(this.theme.getHpos(), this.theme.getVpos());
         }
         add(nest);
-
         nest.setVisible(true);
-        getDesktopManager().activateFrame(nest);
+
+        if (displayImmediately) {
+            getDesktopManager().activateFrame(nest);
+        }
     }
 
     /**
@@ -420,7 +316,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
      * Get menu for desktop
      */
     public JMenu[] getMenu() {
-        if (desktopMenu == null) {
+      /*  if (desktopMenu == null) {
             desktopMenu = new JMenu(WorkspaceResourceAnchor.getString("Desktop.menu"));
             desktopMenu.setMnemonic(WorkspaceResourceAnchor.getString("Desktop.mnemonic").charAt(0));
             desktopMenu.addMenuListener(new MenuListener() {
@@ -448,8 +344,8 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
                 public void menuCanceled(MenuEvent e) {}
             });
             UIManager.addPropertyChangeListener(new UISwitchListener(desktopMenu));
-        }
-        return new JMenu[]{desktopMenu};
+        }*/
+        return new JMenu[]{};
     }
 
     /**
@@ -463,52 +359,9 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Copy selected icons to the clipboard
-     */
-    public void copyIcons() {
-
-        List<DesktopIconData> selectedIconsData = new Vector<>();
-
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            if (desktopIcon.isSelected()) {
-                DesktopIconData data = desktopIcon.getIconData();
-                selectedIconsData.add(data);
-            }
-        }
-        DesktopIconData[] iconData = new DesktopIconData[selectedIconsData.size()];
-        DesktopIconSelectionData selectionData =
-            new DesktopIconSelectionData(selectedIconsData.size(), selectedIconsData.toArray(iconData));
-
-        DesktopServiceLocator
-            .getInstance()
-            .getWorkspaceGUI()
-            .getClipboard()
-            .setContents(new DesktopIconSelection(selectionData), this);
-    }
-
-    /**
      * Create the component from scratch. Used for default assembly of ui components.
      */
     public void create() {}
-
-    /**
-     * Cut selected desktop icons
-     */
-    public void cutIcons() {
-        copyIcons();
-        removeSelectedIcons();
-    }
-
-    /**
-     * Deselect all icons
-     */
-    void deselectAll() {
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            desktopIcon.setSelected(false);
-        }
-        validate();
-        repaint();
-    }
 
     /**
      * Find frame with specified title.
@@ -523,147 +376,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         }
 
         return null;
-    }
-
-    /**
-     * Returns desktop icons.
-     */
-    DesktopIcon[] getDesktopIcons() {
-        return desktopIcons.toArray(new DesktopIcon[0]);
-    }
-
-    /**
-     * Returns current desktop menu
-     */
-    private JPopupMenu getDesktopMenu() {
-        return desktopPopupMenu;
-    }
-
-    /**
-     * Calculates vector which points to the direction for desktop icons dragging.
-     */
-    Point getTransferVector(int xshift, int yshift) {
-        Point topLeft = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
-        Point bottomRight = new Point(0, 0);
-
-        for (DesktopIcon icon : desktopIcons) {
-            if (icon.isSelected()) {
-                Point location = icon.getLocation();
-
-                topLeft.x = SwingUtils.min(topLeft.x, location.x + getParent().getLocation().x + getLocation().x);
-                topLeft.y = SwingUtils.min(topLeft.y, location.y + getParent().getLocation().y + getLocation().y);
-
-                bottomRight.x = SwingUtils.max(bottomRight.x, location.x
-                    + getParent().getLocation().x + getLocation().x + icon.getWidth()
-                );
-
-                bottomRight.y = SwingUtils.max(bottomRight.y, location.y
-                    + getParent().getLocation().y + getLocation().y + icon.getHeight()
-                );
-
-            }
-        }
-
-        Rectangle groupBounds = new Rectangle(topLeft.x, topLeft.y,
-            SwingUtils.distance(topLeft.x, bottomRight.x),
-            SwingUtils.distance(topLeft.y, bottomRight.y)
-        );
-
-        int localXShift = xshift;
-        int localYShift = yshift;
-
-        if (groupBounds.x + xshift < 0) {
-            localXShift = -groupBounds.x;
-        } else if (groupBounds.x + xshift + groupBounds.width > getWidth()) {
-            localXShift = getWidth() - groupBounds.x - groupBounds.width;
-        }
-
-        if (groupBounds.y + yshift < 0) {
-            localYShift = -groupBounds.y;
-        } else if (groupBounds.y + yshift + groupBounds.height > getHeight()) {
-            localYShift = getHeight() - groupBounds.y - groupBounds.height;
-        }
-
-        return new Point(localXShift, localYShift);
-    }
-
-    /**
-     * Calculates vector which points to the direction for desktop icons dragging.
-     */
-    private Point getTransferVector(int finalx, int finaly, DesktopIconSelectionData icons) {
-
-        Point topLeft = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
-        Point bottomRight = new Point(0, 0);
-
-        for (int i = 0; i < icons.size(); i++) {
-            DesktopIconData iconData = icons.iconData()[i];
-
-            int xlocation = iconData.x();
-            int ylocation = iconData.y();
-
-            topLeft.x = SwingUtils.min(topLeft.x, xlocation + getParent().getLocation().x + getLocation().x);
-            topLeft.y = SwingUtils.min(topLeft.y, ylocation + getParent().getLocation().y + getLocation().y);
-
-            bottomRight.x = SwingUtils.max(bottomRight.x, xlocation
-                + getParent().getLocation().x + getLocation().x + iconData.width());
-
-            bottomRight.y = SwingUtils.max(bottomRight.y, ylocation
-                + getParent().getLocation().y + getLocation().y + iconData.height());
-        }
-
-        Rectangle groupBounds = new Rectangle(topLeft.x, topLeft.y,
-            SwingUtils.distance(topLeft.x, bottomRight.x),
-            SwingUtils.distance(topLeft.y, bottomRight.y));
-
-        int localFinalX = finalx;
-        int localFinalY = finaly;
-
-        if (finalx + groupBounds.width > getWidth()) {
-            localFinalX = getWidth() - groupBounds.width;
-        }
-
-        if (finaly + groupBounds.height > getHeight()) {
-            localFinalY = getHeight() - groupBounds.height;
-        }
-
-        return new Point(localFinalX - groupBounds.x, localFinalY - groupBounds.y);
-    }
-
-    /**
-     * Sets dragging state for desktop
-     */
-    void setDraggingState(boolean state) {
-        this.isDraggingState = state;
-    }
-
-    /**
-     * Is a group selected?
-     */
-    boolean isGroupSelected() {
-
-        int size = 0;
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            if (desktopIcon.isSelected()) {
-                size++;
-            }
-        }
-
-        return size > 1;
-    }
-
-    /**
-     * Count selected icons.
-     */
-    private DesktopIcon[] getSelectedIcons() {
-
-        List<DesktopIcon> temp = new Vector<>();
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            if (desktopIcon.isSelected()) {
-                temp.add(desktopIcon);
-            }
-        }
-
-        return temp.toArray(new DesktopIcon[0]);
     }
 
     /**
@@ -691,13 +403,6 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Returns true if the argument desktop icon is selected with the group.
-     */
-    boolean isSelectedInGroup(DesktopIcon icon) {
-        return isGroupSelected() && icon.isSelected();
-    }
-
-    /**
      * Set this flag to true if you want the component to be unique among all workspace views.
      * This component will be registered.
      *
@@ -710,6 +415,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     /**
      * Loads desktop data.
      */
+    @SuppressWarnings("checkstyle:EmptyBlock")
     public void load() throws IOException {
 
         File file = ServiceLocator
@@ -746,9 +452,9 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             int size = dataStream.readInt();
 
             for (int i = 0; i < size; i++) {
-                DesktopIcon icon = new DesktopIcon(this);
-                icon.load(dataStream);
-                this.addDesktopIcon(icon);
+             //   DesktopIcon icon = new DesktopIcon(this);
+               // icon.load(dataStream);
+                //this.addDesktopIcon(icon);
             }
 
             String pathToImage = dataStream.readUTF();
@@ -771,76 +477,7 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         }
     }
 
-    public void lostOwnership(Clipboard clipboard, Transferable contents) {
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mouseDragged(MouseEvent e) {
-        endingSelection.x = e.getX();
-        endingSelection.y = e.getY();
-
-        selectPane.setBounds(SwingUtils.min(startingSelection.x, endingSelection.x),
-            SwingUtils.min(startingSelection.y, endingSelection.y),
-            SwingUtils.distance(endingSelection.x, startingSelection.x),
-            SwingUtils.distance(endingSelection.y, startingSelection.y));
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseMoved(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-        deselectAll();
-        startingSelection.x = e.getX();
-        startingSelection.y = e.getY();
-        /*
-         * Hides desktop menu and makes selection rectangle.
-         */
-        if (SwingUtilities.isLeftMouseButton(e) || e.isControlDown()) {
-
-            if (getDesktopMenu() != null) {
-                ((Desktop) e.getComponent()).remove(getDesktopMenu());
-                getDesktopMenu().setVisible(false);
-            }
-
-            setLayer(selectPane, Integer.MAX_VALUE);
-            selectPane.setBounds(startingSelection.x, startingSelection.y, 0, 0);
-            selectPane.setColor(this.theme.getSelectionColor(getBackground()));
-            add(selectPane);
-        }
-    }
-
-    public void mouseReleased(MouseEvent e) {
-        System.out.println("desktop mouseReleased: " + e.getX() + " " + e.getY());
-        requestFocus();
-
-        endingSelection.x = e.getX();
-        endingSelection.y = e.getY();
-
-        if (SwingUtilities.isRightMouseButton(e) || e.isControlDown()) {
-
-            if (getDesktopMenu() != null) {
-                ((Desktop) e.getComponent()).add(getDesktopMenu());
-                getDesktopMenu().show(this, e.getX(), e.getY());
-            }
-
-            menuLeftTopCorner.x = e.getX() + getX();
-            menuLeftTopCorner.y = e.getY() + getY();
-        } else if (SwingUtilities.isLeftMouseButton(e) || e.isControlDown()) {
-
-            remove(selectPane);
-            rectSelector();
-            validate();
-            repaint();
-        }
-    }
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {}
 
     public void paintComponent(Graphics g) {
 
@@ -920,248 +557,9 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
     }
 
     /**
-     * Paste desktop icons from clipboard
-     */
-    public void pasteIcons() {
-        try {
-            Transferable contents = DesktopServiceLocator
-                .getInstance()
-                .getWorkspaceGUI()
-                .getClipboard()
-                .getContents(this);
-
-            if (contents == null) {
-                return;
-            }
-
-            DesktopIconSelectionData iconSelectionData = (DesktopIconSelectionData)
-                contents.getTransferData(DesktopIconSelection.desktopIconFlavor);
-
-            int xShift = menuLeftTopCorner.x;
-            int yShift = menuLeftTopCorner.y;
-
-            Point point = getTransferVector(xShift, yShift, iconSelectionData);
-
-            xShift = point.x;
-            yShift = point.y;
-
-            for (int i = 0; i < iconSelectionData.size(); i++) {
-                DesktopIconData iconData = iconSelectionData.iconData()[i];
-
-                addDesktopIcon(iconData.name(),
-                    iconData.commandLine(),
-                    iconData.workingDir(),
-                    iconData.mode(),
-                    iconData.icon(),
-                    iconData.x() + xShift,
-                    iconData.y() + yShift
-                );
-            }
-
-            validate();
-            repaint();
-        } catch (IOException | UnsupportedFlavorException e) {
-            WorkspaceError.exception(WorkspaceResourceAnchor.getString("Desktop.pasteIcons.failed"), e);
-        }
-    }
-
-    /**
-     * Select the desktop icons by rectangular selector frame.
-     */
-    private void rectSelector() {
-        Rectangle selector =
-            new Rectangle(
-                SwingUtils.min(startingSelection.x, endingSelection.x),
-                SwingUtils.min(startingSelection.y, endingSelection.y),
-                SwingUtils.distance(endingSelection.x, startingSelection.x),
-                SwingUtils.distance(endingSelection.y, startingSelection.y)
-            );
-
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            Rectangle iconPlace = desktopIcon.getBounds();
-            if (iconPlace.intersects(selector)) {
-                desktopIcon.setSelected(true);
-            }
-        }
-    }
-
-    /**
-     * Key navigation handler. Select an icon depending on the cursor icon.
-     */
-    public void selectNextIcon(int direction, DesktopIcon desktopIcon) {
-
-        /*
-         * Get currently selected icons.
-         */
-        DesktopIcon[] selectedIcons = getSelectedIcons();
-        /*
-         * If no icons are selected, select the top left icon
-         * on this desktop.
-         */
-        if (selectedIcons.length == 0) {
-            DesktopIcon topLeft = getAtCorner(Constants.TOP_LEFT_ICON);
-            if (topLeft != null) {
-                topLeft.setSelected(true);
-                topLeft.requestFocus();
-            }
-            return;
-        }
-        /*
-         * The desktop icon, nearest to ours.
-         */
-        DesktopIcon min = null;
-        /*
-         * Declare point to min icon
-         */
-        Point minIconPoint = null;
-        /*
-         * Find cursor icon coordinates
-         */
-        Point cursorIconPoint = new Point(desktopIcon.getX(), desktopIcon.getY());
-        /*
-         * Iterate through all icons and find the closest. If there is only one icon,
-         * return it as a closest to itself.
-         */
-        for (DesktopIcon icon : desktopIcons) {
-            /*
-             * If this is a cursor icon, continue
-             */
-            if (icon.equals(desktopIcon)) {
-                continue;
-            }
-            /*
-             * Measure its coordinates
-             */
-            Point currentIconPoint = new Point(icon.getX(), icon.getY());
-            /*
-             * Divide all icons into groups
-             */
-            if ((direction == Constants.ICON_ON_NORTH
-                && SwingUtils.isNorthernQuadrant(cursorIconPoint, currentIconPoint))
-                || (direction == Constants.ICON_ON_SOUTH
-                && SwingUtils.isSouthernQuadrant(cursorIconPoint, currentIconPoint))
-                || (direction == Constants.ICON_ON_EAST
-                && SwingUtils.isEasternQuadrant(cursorIconPoint, currentIconPoint))
-                || (direction == Constants.ICON_ON_WEST
-                && SwingUtils.isWesternQuadrant(cursorIconPoint, currentIconPoint))) {
-                /*
-                 * Min is becoming the first icon in quadrant
-                 */
-                if (minIconPoint == null) {
-                    minIconPoint = currentIconPoint;
-                }
-
-                if (
-                    SwingUtils.distance(cursorIconPoint, minIconPoint)
-                    >= SwingUtils.distance(cursorIconPoint, currentIconPoint)
-                ) {
-                    min = icon;
-                    minIconPoint = currentIconPoint;
-                }
-            }
-        }
-        /*
-         * Finally, select the chosen icon
-         */
-        if (min != null) {
-            deselectAll();
-            min.setSelected(true);
-            min.requestFocus();
-        }
-    }
-
-    public void selectNextIcon(int direction) {
-        selectNextIcon(direction, getAtCorner(Constants.TOP_RIGHT_ICON));
-    }
-
-    /**
-     * Get corner icons
-     */
-    @SuppressWarnings("CyclomaticComplexity")
-    private DesktopIcon getAtCorner(int corner) {
-        DesktopIcon res = null;
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            switch (corner) {
-                case Constants.TOP_LEFT_ICON:
-                    if (res == null) {
-                        res = desktopIcon;
-                    } else if (desktopIcon.getX() < res.getX()
-                        && desktopIcon.getY() < res.getY()) {
-                        res = desktopIcon;
-                    }
-                    break;
-                case Constants.TOP_RIGHT_ICON:
-                    if (res == null) {
-                        res = desktopIcon;
-                    } else if (desktopIcon.getX() > res.getX()
-                        && desktopIcon.getY() < res.getY()) {
-                        res = desktopIcon;
-                    }
-                    break;
-                case Constants.BOTTOM_LEFT_ICON:
-                    if (res == null) {
-                        res = desktopIcon;
-                    } else if (desktopIcon.getX() < res.getX()
-                        && desktopIcon.getY() > res.getY()) {
-                        res = desktopIcon;
-                    }
-                    break;
-                case Constants.BOTTOM_RIGHT_ICON:
-                    if (res == null) {
-                        res = desktopIcon;
-                    } else if (desktopIcon.getX() > res.getX()
-                        && desktopIcon.getY() > res.getY()) {
-                        res = desktopIcon;
-                    }
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + corner);
-            }
-        }
-        return res;
-    }
-
-    /**
-     * Delete selected icons
-     */
-    public void removeSelectedIcons() {
-
-        DesktopIcon[] irem = getSelectedIcons();
-
-        String dialogMessage = irem.length == 1
-            ? (WorkspaceResourceAnchor.getString("Desktop.removeIcon.question") + " \"" + irem[0].getName() + "\"?")
-            : WorkspaceResourceAnchor.getString("Desktop.removeIcons.question") + Constants.LOG_SPACE
-               + irem.length
-               + Constants.LOG_SPACE
-               + WorkspaceResourceAnchor.getString("Desktop.countIcon") + "?";
-
-        String dialogTitle = irem.length == 1
-            ? WorkspaceResourceAnchor.getString("Desktop.removeIcon.title")
-            : WorkspaceResourceAnchor.getString("Desktop.removeIcons.title");
-
-        if (JOptionPane.showConfirmDialog(
-            DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
-            dialogMessage, dialogTitle, JOptionPane.YES_NO_OPTION
-        ) != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        for (DesktopIcon desktopIcon : irem) {
-            desktopIcons.remove(desktopIcon);
-            desktopIcon.remove();
-        }
-        validate();
-        repaint();
-    }
-
-    /**
      * Reset desktop by closing all frames
      */
     public void reset() {
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            desktopIcon.remove();
-        }
-        desktopIcons.clear();
         validate();
         repaint();
         closeAllFrames();
@@ -1216,11 +614,11 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
             outputStream.writeInt(this.theme.getVpos());
             outputStream.writeInt(this.theme.getVstep());
             outputStream.writeBoolean(this.theme.isCoverVisible());
-            outputStream.writeInt(desktopIcons.size());
+           // outputStream.writeInt(desktopIcons.size());
 
-            for (DesktopIcon desktopIcon : desktopIcons) {
+           /* for (DesktopIcon desktopIcon : desktopIcons) {
                 (desktopIcon).save(outputStream);
-            }
+            }*/
 
             outputStream.writeUTF(Objects.requireNonNullElse(this.theme.getPathToImage(), ""));
             outputStream.writeBoolean(getDragMode() == JDesktopPane.OUTLINE_DRAG_MODE);
@@ -1228,54 +626,9 @@ public class Desktop extends KDesktopPane implements IView, MouseListener, Mouse
         }
     }
 
-    public void selectAll() {
-        for (DesktopIcon desktopIcon : desktopIcons) {
-            desktopIcon.setSelected(true);
-        }
-        validate();
-        repaint();
-    }
-
     public void update() {
         this.revalidate();
         this.repaint();
-    }
-
-    public void updateMenuItems() {
-
-        if (this.theme.isGradientFill()) {
-            desktopPopupMenu.getGradientFill().setText(
-                WorkspaceResourceAnchor.getString("Desktop.menu.hideGradient")
-            );
-        } else {
-            desktopPopupMenu.getGradientFill().setText(
-                WorkspaceResourceAnchor.getString("Desktop.menu.showGradient")
-            );
-        }
-        if (this.theme.getCover() == null) {
-            desktopPopupMenu.getSwitchCover().setEnabled(false);
-            desktopPopupMenu.getSwitchCover().setText(
-                WorkspaceResourceAnchor.getString("Desktop.menu.noCover")
-            );
-        } else {
-            desktopPopupMenu.getSwitchCover().setEnabled(true);
-            if (this.theme.isCoverVisible()) {
-                desktopPopupMenu.getSwitchCover().setText(
-                    WorkspaceResourceAnchor.getString("Desktop.menu.hideCover")
-                );
-            } else {
-                desktopPopupMenu.getSwitchCover().setText(
-                    WorkspaceResourceAnchor.getString("Desktop.menu.showCover")
-                );
-            }
-        }
-        Transferable contents = DesktopServiceLocator.getInstance()
-            .getWorkspaceGUI().getClipboard().getContents(this);
-        if (contents == null) {
-            desktopPopupMenu.getPaste().setEnabled(false);
-        } else {
-            desktopPopupMenu.getPaste().setEnabled(contents instanceof DesktopIconSelection);
-        }
     }
 
     public void setBounds(int x, int y, int w, int h) {
