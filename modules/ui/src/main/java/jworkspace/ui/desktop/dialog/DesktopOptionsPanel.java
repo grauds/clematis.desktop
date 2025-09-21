@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -39,12 +39,13 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.PropertiesPanel;
+import jworkspace.ui.desktop.Desktop;
 
 /**
  * Class to set desktop options.
  * @author Anton Troshin
  */
-class DesktopOptionsPanel extends KPanel implements ActionListener, PropertiesPanel {
+public class DesktopOptionsPanel extends KPanel implements ActionListener, PropertiesPanel {
     /**
      * Toggle drag mode
      */
@@ -70,7 +71,7 @@ class DesktopOptionsPanel extends KPanel implements ActionListener, PropertiesPa
      */
     private boolean outline;
 
-    DesktopOptionsPanel(Desktop desktop) {
+    public DesktopOptionsPanel(Desktop desktop) {
         super();
         this.desktop = desktop;
 

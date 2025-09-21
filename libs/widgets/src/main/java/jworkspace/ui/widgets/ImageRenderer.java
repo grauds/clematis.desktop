@@ -64,8 +64,9 @@ public class ImageRenderer extends JComponent implements ImageObserver, UIElemen
             return;
         }
         this.image = new ImageIcon(image);
-        setPreferredSize(new Dimension(this.image.getIconWidth(),
-            this.image.getIconHeight()));
+        setPreferredSize(
+            new Dimension(this.image.getIconWidth(), this.image.getIconHeight())
+        );
         revalidate();
         repaint();
     }

@@ -40,7 +40,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -59,6 +58,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ControlPanel extends KPanel implements LayoutManager, MouseListener, MouseMotionListener, ActionListener {
+    public static final String ORIENTATION_PROPERTY = "ORIENTATION";
+    public static final String DRAGGING_PROPERTY = "DRAGGING";
+    public static final String DRAGGED_PROPERTY = "DRAGGED";
     /**
      * Specifies that components should be laid out left to right.
      */
@@ -68,12 +70,7 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
      */
     static final int Y_AXIS = 1;
     /**
-     * Orientation property
-     */
-    static final String ORIENTATION_PROPERTY = "ORIENTATION";
-    /**
-     * Orientation of control bar relative to
-     * parent component.
+     * Orientation of the control bar relative to the parent component.
      */
     private int orientation;
 
@@ -89,28 +86,23 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
      */
     private Point pointer = new Point();
     /**
-     * Is this control dragged.
+     * Is this control being dragged?
      */
     private boolean dragged = false;
 
-    /**
-     * Empty constructor for compatibility with beans standard. If control panel created
-     * this way, internal listener for button will <code>null</code>. Therefore, use addLayoutComponent
-     * methods to add new buttons, or set internal listener if you prefer direct events to a single listener.
-     */
     public ControlPanel() {
         this(ControlPanel.Y_AXIS);
     }
 
-    /**
-     * Control panel should be created with specified action listener, that allows listening for action events.
-     */
     private ControlPanel(int orientation) {
         super();
         this.orientation = orientation;
+
         buttonsPane = new CButtonsPane(orientation);
         addPropertyChangeListener(buttonsPane);
+
         createScrollButtons(this);
+
         firePropertyChange(ORIENTATION_PROPERTY, -1, orientation);
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -118,7 +110,12 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     }
 
     /**
-     * Scrolling action handler. One click on scroll button will result in one unit scroll of buttons pane.
+     * Handles action events triggered by user interactions. Depending on the action command,
+     * the viewport's visible rectangle is scrolled either horizontally or vertically. For the
+     * "INCREMENT" command, the viewport moves in one direction, and for other commands, in the
+     * opposite direction. The movement is limited by the bounds of the buttons pane.
+     *
+     * @param e the ActionEvent containing details about the action command and its source
      */
     public void actionPerformed(ActionEvent e) {
 
@@ -179,17 +176,7 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     }
 
     /**
-     * Creates control panel button from parameters and add it to the button's pane layout and internal buttons vector.
-     */
-    public CButton addButton(ActionListener listener, ImageIcon image, ImageIcon hoverImage,
-                             String command, String toolTipText) {
-
-        return buttonsPane.addButton(listener, image, hoverImage, command, toolTipText);
-    }
-
-    /**
-     * Adds control button to the button's pane layout and internal buttons
-     * vector.
+     * Adds a control button to the button's pane layout and internal buttons collection.
      */
     public void addButton(CButton button) {
         buttonsPane.addButton(button);
@@ -203,26 +190,23 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     }
 
     /**
-     * Delegates adding of buttons and separators to
-     * sub-component of control panel.
+     * Delegates adding of buttons and separators to the subcomponent of the control panel.
      */
     public void addLayoutComponent(String name, Component comp) {
         buttonsPane.add(comp);
     }
 
     /**
-     * Creates control panel separator from parameters and
-     * add it to the button's pane layout and internal buttons
-     * vector.
+     * Creates a control panel separator from parameters and adds
+     * it to the button's pane layout and internal buttons collection.
      */
     public void addSeparator() {
         buttonsPane.addSeparator();
     }
 
     /**
-     * Adjusts scroll buttons after pane is dragged.
-     * Also assembles buttons pane if the pane is being
-     * created.
+     * Adjusts scroll buttons after the pane is dragged. Also assembles the buttons pane
+     * if the pane is being created.
      */
     private void createScrollButtons(ActionListener listener) {
         if (downButton == null || upButton == null) {
@@ -326,7 +310,7 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
         Point old = new Point(pointer);
         pointer = new Point(e.getPoint());
 
-        firePropertyChange("DRAGGED", old, pointer);
+        firePropertyChange(DRAGGED_PROPERTY, old, pointer);
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -345,7 +329,7 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     }
 
     /**
-     * Mouse pressed event causes generic property of control bar to change. Control bar sends only NEW
+     * The mouse-pressed event causes generic property of control bar to change. Control bar sends only NEW
      * value, as we don't use old mouse pointer coordinate while dragging.
      */
     public void mousePressed(MouseEvent e) {
@@ -353,20 +337,19 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
             return;
         }
         dragged = true;
-        firePropertyChange("BEGIN_DRAGGING", false, dragged);
+        firePropertyChange(DRAGGING_PROPERTY, false, true);
         e.consume();
     }
 
     /**
-     * Mouse released message handler. By this event control panel sends property change event to
-     * all its subcomponents.
+     * Mouse released message handler. By this event the control panel sends a property change event
      */
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e)) {
             return;
         }
         dragged = false;
-        firePropertyChange("END_DRAGGING", true, dragged);
+        firePropertyChange(DRAGGING_PROPERTY, true, false);
         viewport.setViewPosition(new Point(0, 0));
         e.consume();
     }
@@ -383,8 +366,7 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     }
 
     /**
-     * Delegates removing of buttons and separators
-     * to sub-component of control panel.
+     * Delegates removing of buttons and separators to the button pane of the control panel.
      */
     public void removeLayoutComponent(Component comp) {
         buttonsPane.remove(comp);

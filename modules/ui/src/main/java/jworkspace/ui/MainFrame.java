@@ -48,6 +48,8 @@ import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
+import static jworkspace.ui.cpanel.ControlPanel.DRAGGED_PROPERTY;
+import static jworkspace.ui.cpanel.ControlPanel.DRAGGING_PROPERTY;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
@@ -55,7 +57,7 @@ import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.profiles.LoginPanel;
 import jworkspace.ui.utils.SwingUtils;
-import jworkspace.ui.widgets.GlassDragPane;
+import jworkspace.ui.widgets.GlassOutlinePane;
 import jworkspace.users.LoginValidator;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,13 +70,9 @@ import lombok.extern.java.Log;
 @Log
 public class MainFrame extends KFrame implements PropertyChangeListener {
     /**
-     * The name of content manager
+     * The class name of the content manager
      */
     private static final String CONTENT_MANAGER = "jworkspace.ui.views.ViewsManager";
-    /**
-     * Message to show if this frame has failed to load
-     */
-    private static final String MAIN_FRAME_LOAD_FAILED_MESSAGE = "MainFrame.cmLoad.failed";
     /**
      * Actions
      */
@@ -109,7 +107,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * occurs. Drag pane displays possible position
      * of the panel.
      */
-    private GlassDragPane dragPane = null;
+    private GlassOutlinePane dragPane = null;
     /**
      * User login panel
      */
@@ -119,10 +117,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     private final LoginValidator loginValidator;
 
-    /**
-     * Main frame for Java Workspace GUI is created with only title. All initialization is made
-     * by components of main frame by themselves.
-     */
     MainFrame(String title, LoginValidator loginValidator) {
         super(title);
         this.loginValidator = loginValidator;
@@ -166,7 +160,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
          */
         removeLoginPanel();
         /*
-         * Ask for buttons and fill control panel.
+         * Ask for buttons and fill the control panel.
          */
         CButton[] buttons = getContentManager().getButtons();
         if (buttons != null) {
@@ -187,7 +181,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         setGlassBounds(x, y, width, height);
 
         /*
-         * Settle stuff on frame.
+         * Settle stuff on the frame.
          */
         setMenuBar(getJMenuBar());
         getMainContainer().add(getContentManager(), BorderLayout.CENTER);
@@ -212,7 +206,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     /*
-     * Drags control panel along the frame.
+     * Drags the control panel along the frame.
      */
     @SuppressWarnings("MagicNumber")
     private void dragControlPanel(int x, int y) {
@@ -278,16 +272,16 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         }
     }
 
-    protected GlassDragPane getDragPane() {
+    protected GlassOutlinePane getDragPane() {
         if (dragPane == null) {
-            dragPane = new GlassDragPane();
+            dragPane = new GlassOutlinePane();
         }
         return dragPane;
     }
 
     /*
      * Returns content manager for this frame.
-     * // todo can be a plugin extension point
+     * // todo should be a plugin extension point
      */
     AbstractViewsManager getContentManager() throws RuntimeException {
 
@@ -407,7 +401,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     /*
-     * Loads profile data. Input stream in parameters is from file jwxwin.dat.
+     * Load profile data. The input stream in parameters is from the file jwxwin.dat.
      */
     public void load(DataInputStream inputStream) {
 
@@ -460,47 +454,50 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     /**
-     * This method listens for property changes
-     * of all nested components, such as control panel,
-     * etc.
+     * Handles property change events for the control panel in the main frame.
+     * This method manages actions such as beginning and ending a drag operation
+     * and dynamically updating the control panel's position during a drag event.
+     *
+     * @param evt the property change event containing information about the
+     *            property that has changed, including its name and new value.
      */
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if (evt.getSource() instanceof ControlPanel) {
-            if (evt.getPropertyName().equals("BEGIN_DRAGGING")) {
+            switch (evt.getPropertyName()) {
+                case DRAGGING_PROPERTY -> {
+                    if (evt.getOldValue() == Boolean.FALSE && evt.getNewValue() == Boolean.TRUE) {
+                        getLayeredPane().setLayer(getDragPane(), Integer.MAX_VALUE);
+                        getDragPane().setBounds(
+                            getControlPanel().getX() + getMainContainer().getX(),
+                            getControlPanel().getY() + getMainContainer().getY(),
+                            getControlPanel().getWidth(), getControlPanel().getHeight()
+                        );
+                        getLayeredPane().add(getDragPane());
+                    } else if (evt.getOldValue() == Boolean.TRUE && evt.getNewValue() == Boolean.FALSE) {
+                        getLayeredPane().remove(getDragPane());
+                        dragPane = null;
+                        getMainContainer().remove(getControlPanel());
 
-                getLayeredPane().setLayer(getDragPane(), Integer.MAX_VALUE);
-                getDragPane().setBounds(
-                    getControlPanel().getX() + getMainContainer().getX(),
-                    getControlPanel().getY() + getMainContainer().getY(),
-                    getControlPanel().getWidth(), getControlPanel().getHeight()
-                );
-                getLayeredPane().add(getDragPane());
+                        getControlPanel().setOrientation(getOrientation());
 
-            } else if (evt.getPropertyName().equals("END_DRAGGING")) {
-
-                getLayeredPane().remove(getDragPane());
-                dragPane = null;
-                getMainContainer().remove(getControlPanel());
-
-                getControlPanel().setOrientation(getOrientation());
-
-                getMainContainer().add(getControlPanel(), getOrientation());
-                getContentPane().validate();
-                getContentPane().repaint();
-
-            } else if (evt.getPropertyName().equals("DRAGGED")) {
-
-                // follow mouse pointer
-                dragControlPanel(
-                    ((Point) evt.getNewValue()).x + getControlPanel().getX() + getContentPane().getX(),
-                    ((Point) evt.getNewValue()).y + getControlPanel().getY() + getContentPane().getY()
-                );
+                        getMainContainer().add(getControlPanel(), getOrientation());
+                        getContentPane().validate();
+                        getContentPane().repaint();
+                    }
+                }
+                case DRAGGED_PROPERTY ->
+                    // follow mouse pointer
+                    dragControlPanel(
+                        ((Point) evt.getNewValue()).x + getControlPanel().getX() + getContentPane().getX(),
+                        ((Point) evt.getNewValue()).y + getControlPanel().getY() + getContentPane().getY()
+                    );
+                default -> {}
             }
         }
     }
 
     /**
-     * Resets frame to its initial state.
+     * Resets the frame to its initial state.
      */
     public void reset() {
 

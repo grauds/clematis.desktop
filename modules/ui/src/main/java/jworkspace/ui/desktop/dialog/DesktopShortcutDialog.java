@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -34,18 +34,18 @@ import javax.swing.JComponent;
 
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
-import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.ui.desktop.DesktopShortcut;
 
 /**
- * Carrier class for <code>jworkspace.ui.desktop.DesktopIconPanel</code>
+ * Carrier class for <code>jworkspace.ui.desktop.dialog.DesktopShortcutPanel</code>
  * @author Anton Troshin
  */
-class DesktopIconDialog extends ComponentDialog {
+public class DesktopShortcutDialog extends ComponentDialog {
 
-    private DesktopIconPanel panel;
+    private DesktopShortcutPanel panel;
 
-    DesktopIconDialog(Frame parent) {
-        super(parent, WorkspaceResourceAnchor.getString("DesktopIconDlg.title"), true);
+    public DesktopShortcutDialog(Frame parent) {
+        super(parent, "Shortcut Properties...", true);
         setResizable(false);
     }
 
@@ -55,7 +55,7 @@ class DesktopIconDialog extends ComponentDialog {
 
     protected JComponent buildDialogUI() {
         setComment(null);
-        panel = new DesktopIconPanel();
+        panel = new DesktopShortcutPanel();
         return (panel);
     }
 
@@ -64,7 +64,7 @@ class DesktopIconDialog extends ComponentDialog {
         super.dispose();
     }
 
-    public void setData(DesktopIcon data) {
+    public void setData(DesktopShortcut data) {
         panel.setData(data);
     }
 }

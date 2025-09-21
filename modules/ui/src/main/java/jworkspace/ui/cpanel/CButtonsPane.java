@@ -103,8 +103,7 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
     private static final Border BASIC_NON_ROLLOVER_BORDER = new CompoundBorder(
         BorderFactory.createEmptyBorder(3, 3, 3, 3), new BasicBorders.MarginBorder());
     /**
-     * Orientation of control bar relative to
-     * parent component.
+     * Orientation of the control bar relative to the parent component.
      */
     private int orientation;
     /**

@@ -43,14 +43,11 @@ class CScrollButton extends KButton implements PropertyChangeListener {
     static final String CONTROL_HIGHLIGHT_COLOUR = "controlHighlight";
     static final String CONTROL_SHADOW_COLOUR = "controlShadow";
     /**
-     * Orientation of control bar relative to
-     * parent component.
+     * Orientation of the control bar relative to the parent component.
      */
     private int orientation;
     /**
      * Scroll button can be incremental or decremental.
-     * Incremental button increases the scrolling value and is usually is in the bottom of control panel.
-     * Decremental button decreases scrolling value and is usually on the top of control panel.
      */
     private final boolean incremental;
 
@@ -72,7 +69,7 @@ class CScrollButton extends KButton implements PropertyChangeListener {
     }
 
     /**
-     * Paints button background and two scrolling arrows depending on the control's panel orientation.
+     * Paints the button background and two scrolling arrows depending on the control's panel orientation.
      */
     @SuppressWarnings("MagicNumber")
     public void paint(Graphics g) {
@@ -95,7 +92,7 @@ class CScrollButton extends KButton implements PropertyChangeListener {
     }
 
     /**
-     * Paints single arrow as basic UI does. BUG: this is not nesessarily works on other's laf
+     * Paints a single arrow as basic UI does. BUG: this is not necessarily works on other's laf
      * color schemes. Should be replaced by <code>Color.darker()</code> and <code>Color.lighter</code>
      * methods.
      */
@@ -182,9 +179,7 @@ class CScrollButton extends KButton implements PropertyChangeListener {
     }
 
     /**
-     * Each time control panel will change
-     * its orientation property, this will
-     * handle incoming event.
+     * Each time the control panel changes its orientation property, this handles the incoming event.
      */
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if (evt.getNewValue() instanceof Integer && evt.getPropertyName().equals(ControlPanel.ORIENTATION_PROPERTY)) {

@@ -1,11 +1,16 @@
 package jworkspace.ui.utils;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
@@ -196,5 +201,23 @@ public class FileUtils {
         FileUtils.dest = dest;
 
         doMoveDir(directory, fileSystem);
+    }
+
+    public static Icon cloneIcon(Icon icon) {
+        if (icon instanceof ImageIcon imgIcon) {
+            Image img = imgIcon.getImage();
+            // ensure copy of the underlying image
+            BufferedImage copy = new BufferedImage(
+                img.getWidth(null),
+                img.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB
+            );
+            Graphics2D g2d = copy.createGraphics();
+            g2d.drawImage(img, 0, 0, null);
+            g2d.dispose();
+            return new ImageIcon(copy);
+        }
+        // fallback: just return the original
+        return icon;
     }
 }

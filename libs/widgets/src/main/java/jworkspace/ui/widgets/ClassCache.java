@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -217,6 +218,7 @@ public final class ClassCache {
     /**
      * This method allows to choose icon.
      */
+    @SuppressWarnings("checkstyle:NestedIfDepth")
     private static Image chooseImage(Component parent, String path) {
         if (getIconChooser(path).showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
             File imf = (getIconChooser().getSelectedFile());
@@ -224,9 +226,12 @@ public final class ClassCache {
             if (imf != null) {
                 ImageIcon testCover;
                 try {
-                    testCover = new ImageIcon(ImageIO.read(imf));
-                    return (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1)
-                        ? testCover.getImage() : null;
+                    BufferedImage icon = ImageIO.read(imf);
+                    if (icon != null) {
+                        testCover = new ImageIcon(icon);
+                        return (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1)
+                            ? testCover.getImage() : null;
+                    }
                 } catch (IOException e) {
                     log.severe(e.getLocalizedMessage());
                 }

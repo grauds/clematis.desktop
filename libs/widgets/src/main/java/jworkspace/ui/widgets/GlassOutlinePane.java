@@ -2,7 +2,7 @@ package jworkspace.ui.widgets;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003 Anton Troshin
+   Copyright (C) 1999-2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -33,12 +33,12 @@ import javax.swing.JComponent;
 
 import jworkspace.ui.utils.SwingUtils;
 /**
- * Drag pane is created each time a component is moved in Java Workspace. For example,
- * desktop icons or control panel use this component.
+ * A helper pane to use as an outline for component bounds. It has to be placed on top of the component
+ * and have the same size as the component. Then it can be dragged to change the component bounds.
  *
  * @author Anton Troshin
  */
-public class GlassDragPane extends JComponent {
+public class GlassOutlinePane extends JComponent {
 
     private Color bg = Color.darkGray;
 

@@ -34,7 +34,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -51,7 +50,7 @@ import lombok.Setter;
  * The preferred width of the column may be specified in terms of columns.
  * The resulting minimum and preferred size of the component will be equal
  * to this preferred width and the minimum height required to fully display
- * all of the text. As with all <code>JComponent</code>s, borders may be
+ * all the text. As with all <code>JComponent</code>s, borders may be
  * applied using <code>setBorder()</code>.
  *
  * @author Mark Lindner
@@ -60,7 +59,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @SuppressWarnings("checkstyle:MagicNumber")
-class DesktopIconLabel extends JLabel {
+public class DesktopIconLabel extends JLabel {
     static final int CENTER_ALIGNMENT = 0;
     private static final int LEFT_ALIGNMENT = 1;
     private static final int RIGHT_ALIGNMENT = 2;
@@ -72,7 +71,7 @@ class DesktopIconLabel extends JLabel {
     private FontMetrics fm = null;
     private String text;
     private List<String> lines = new ArrayList<>();
-    private Dimension dim = new Dimension(10, 10);
+    private Dimension dim = new Dimension(5, 5);
     private int alignment = DesktopIconLabel.LEFT_ALIGNMENT;
     private boolean selected = false;
 
@@ -85,13 +84,13 @@ class DesktopIconLabel extends JLabel {
      *             one "column" is the pixel width of the letter 'm' in the current font.
      */
 
-    DesktopIconLabel(String text, int cols) {
+    public DesktopIconLabel(String text, int cols) {
         super();
         this.cols = cols;
         this.text = text;
     }
 
-    DesktopIconLabel(String text) {
+    public DesktopIconLabel(String text) {
         super();
         this.cols = 1;
         this.text = text;
@@ -103,12 +102,12 @@ class DesktopIconLabel extends JLabel {
     private void format() {
         Font font = getFont();
         if (font == null) {
-            font = new Font("Dialog", Font.PLAIN, 12);
+            font = new Font("Dialog", Font.PLAIN, 14);
         }
-        fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
+        fm = this.getFontMetrics(font);
         /*
          * If supplied text is narrower than maximum
-         * columns - cols, shrink label horizontally.
+         * columns - cols, shrink the label horizontally.
          */
         if (fm.stringWidth(text) < fm.charWidth('m') * cols) {
             pw = fm.stringWidth(text) + 2 * fm.charWidth('m');
@@ -128,7 +127,9 @@ class DesktopIconLabel extends JLabel {
             int tw = ((w == 0) ? ww : ww + sw);
 
             if ((w + tw) > pw) {
-                v.add(line.toString());
+                if (!line.toString().isEmpty()) {
+                    v.add(line.toString());
+                }
                 line = new StringBuilder();
                 line.append(word);
                 w = ww;
@@ -143,7 +144,7 @@ class DesktopIconLabel extends JLabel {
 
         // flush
 
-        if (w > 0) {
+        if (w > 0 && !line.toString().isEmpty()) {
             v.add(line.toString());
         }
         lines = v;
@@ -258,8 +259,10 @@ class DesktopIconLabel extends JLabel {
      * @param alignment The new alignment
      */
     public void setAlignment(int alignment) {
-        if (alignment != DesktopIconLabel.CENTER_ALIGNMENT && alignment != DesktopIconLabel.LEFT_ALIGNMENT
-            && alignment != DesktopIconLabel.RIGHT_ALIGNMENT) {
+        if (alignment != DesktopIconLabel.CENTER_ALIGNMENT
+            && alignment != DesktopIconLabel.LEFT_ALIGNMENT
+            && alignment != DesktopIconLabel.RIGHT_ALIGNMENT
+        ) {
             throw new IllegalArgumentException("Invalid alignment");
         }
         this.alignment = alignment;

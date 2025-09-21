@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.dialog;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -52,12 +52,14 @@ import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
+import static jworkspace.ui.utils.SwingUtils.toImageIcon;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 import jworkspace.ui.dialog.ResourceExplorerDialog;
 import jworkspace.ui.widgets.ClassCache;
@@ -68,7 +70,7 @@ import jworkspace.ui.widgets.ImageRenderer;
  * @author Anton Troshin
  */
 @SuppressWarnings("MagicNumber")
-public class DesktopIconPanel extends KPanel implements ActionListener {
+public class DesktopShortcutPanel extends KPanel implements ActionListener {
 
     private JTextField tName, tScriptedMethod, tNativeCommand, tSourceScript, tJavaApp, field;
 
@@ -76,7 +78,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
 
     private JButton bIconBrowse, bScriptBrowse, bAppBrowse, bWdBrowse, bNativeBrowse, bLibBrowser;
 
-    private DesktopIcon desktopIcon;
+    private DesktopShortcut desktopShortcut;
 
     private ImageRenderer lImage;
 
@@ -87,7 +89,7 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
     /**
      * Default constructor
      */
-    DesktopIconPanel() {
+    public DesktopShortcutPanel() {
         JTabbedPane tabbedPane = new JTabbedPane();
         setLayout(new BorderLayout());
 
@@ -454,39 +456,39 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         return modesPanel;
     }
 
-    public void setData(DesktopIcon data) {
+    public void setData(DesktopShortcut data) {
 
-        desktopIcon = data;
-        tName.setText(data.getName());
-        lImage.setImage(data.getIcon().getImage());
+        desktopShortcut = data;
+        tName.setText(data.getText());
+        lImage.setImage(toImageIcon(data.getIcon()).getImage());
         tDesc.setText(data.getComments());
-        mode = desktopIcon.getMode();
+        mode = desktopShortcut.getMode();
 
         if (mode == Constants.SCRIPTED_METHOD_MODE) {
 
             tScriptedMethod.setEnabled(true);
-            tScriptedMethod.setText(desktopIcon.getCommandLine());
+            tScriptedMethod.setText(desktopShortcut.getCommandLine());
             rb1.setSelected(true);
 
         } else if (mode == Constants.SCRIPTED_FILE_MODE) {
 
             tSourceScript.setEnabled(true);
-            tSourceScript.setText(desktopIcon.getCommandLine());
+            tSourceScript.setText(desktopShortcut.getCommandLine());
             bScriptBrowse.setEnabled(true);
             rb2.setSelected(true);
 
         } else if (mode == Constants.JAVA_APP_MODE) {
 
             tJavaApp.setEnabled(true);
-            tJavaApp.setText(desktopIcon.getCommandLine());
+            tJavaApp.setText(desktopShortcut.getCommandLine());
             bAppBrowse.setEnabled(true);
             rb3.setSelected(true);
 
         } else if (mode == Constants.NATIVE_COMMAND_MODE) {
 
             tNativeCommand.setEnabled(true);
-            tNativeCommand.setText(desktopIcon.getCommandLine());
-            field.setText(desktopIcon.getWorkingDirectory());
+            tNativeCommand.setText(desktopShortcut.getCommandLine());
+            field.setText(desktopShortcut.getWorkingDirectory());
             field.setEnabled(true);
             bNativeBrowse.setEnabled(true);
             bWdBrowse.setEnabled(true);
@@ -506,30 +508,24 @@ public class DesktopIconPanel extends KPanel implements ActionListener {
         bWdBrowse.setEnabled(false);
     }
 
-    boolean syncData() {
+    public boolean syncData() {
 
-        desktopIcon.setName(tName.getText());
-        desktopIcon.setIcon(new ImageIcon(lImage.getImage()));
-        desktopIcon.setComments(tDesc.getText());
-        desktopIcon.setMode(this.mode);
+        desktopShortcut.setText(tName.getText());
+        if (lImage.getImage() != null && desktopShortcut.getIcon() != null) {
+            desktopShortcut.setIcon(new ImageIcon(lImage.getImage()));
+        }
+        desktopShortcut.setComments(tDesc.getText());
+        desktopShortcut.setMode(this.mode);
 
         if (mode == Constants.SCRIPTED_METHOD_MODE) {
-
-            desktopIcon.setCommandLine(tScriptedMethod.getText());
-
+            desktopShortcut.setCommandLine(tScriptedMethod.getText());
         } else if (mode == Constants.SCRIPTED_FILE_MODE) {
-
-            desktopIcon.setCommandLine(tSourceScript.getText());
-
+            desktopShortcut.setCommandLine(tSourceScript.getText());
         } else if (mode == Constants.JAVA_APP_MODE) {
-
-            desktopIcon.setCommandLine(tJavaApp.getText());
-
+            desktopShortcut.setCommandLine(tJavaApp.getText());
         } else if (mode == Constants.NATIVE_COMMAND_MODE) {
-
-            desktopIcon.setCommandLine(tNativeCommand.getText());
-            desktopIcon.setWorkingDirectory(field.getText());
-
+            desktopShortcut.setCommandLine(tNativeCommand.getText());
+            desktopShortcut.setWorkingDirectory(field.getText());
         }
         return (true);
     }

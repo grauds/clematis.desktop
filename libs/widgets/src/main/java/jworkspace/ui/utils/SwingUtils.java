@@ -27,11 +27,13 @@ package jworkspace.ui.utils;
 */
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,12 +41,14 @@ import java.io.InputStream;
 
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
@@ -65,7 +69,6 @@ public final class SwingUtils implements Constants {
      * Draw dashed rectangle.
      */
     public static void drawDashedRect(Graphics g, int x, int y, int width, int height) {
-
         drawUpperLowerDashes(g, x, y, width, height);
         drawLeftRightDashes(g, x, y, width, height);
     }
@@ -187,14 +190,31 @@ public final class SwingUtils implements Constants {
     }
 
     /**
-     * Finds minimum of two values
+     * Finds the minimum of two values
      */
     public static int min(int i, int j) {
         return Math.min(i, j);
     }
 
+    public static ImageIcon toImageIcon(Icon icon) {
+        if (icon instanceof ImageIcon imageIcon) {
+            return imageIcon;
+        }
+
+        int w = icon.getIconWidth();
+        int h = icon.getIconHeight();
+
+        // Create a BufferedImage and paint the icon into it
+        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+        icon.paintIcon(null, g2, 0, 0);
+        g2.dispose();
+
+        return new ImageIcon(image);
+    }
+
     /**
-     * Create button from action
+     * Create a button from action
      */
     public static CButton createCButtonFromAction(Action a) {
 
@@ -208,14 +228,33 @@ public final class SwingUtils implements Constants {
         return b;
     }
 
-    /**
-     * Create menu item.
-     */
-    public static JMenuItem createMenuItem(ActionListener listener,
-                                           String name, String actionCommand, Icon icon) {
-        JMenuItem menuItem = new JMenuItem(name, icon);
-        menuItem.addActionListener(listener);
-        menuItem.setActionCommand(actionCommand);
+    public static JMenuItem createMenuItem(String name,
+                                           ActionListener listener,
+                                           String actionCommand,
+                                           KeyStroke accelerator
+    ) {
+        JMenuItem menuItem = new JMenuItem(name);
+        if (listener != null) {
+            menuItem.addActionListener(listener);
+        }
+        if (actionCommand != null) {
+            menuItem.setActionCommand(actionCommand);
+        }
+        if (accelerator != null) {
+            menuItem.setAccelerator(accelerator);
+        }
+        menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
+        return menuItem;
+    }
+
+    public static JMenuItem createMenuItem(String name,
+                                           ActionListener listener,
+                                           String actionCommand,
+                                           KeyStroke accelerator,
+                                           Icon icon
+    ) {
+        JMenuItem menuItem = createMenuItem(name, listener, actionCommand, accelerator);
+        menuItem.setIcon(icon);
         menuItem.addPropertyChangeListener(createActionChangeListener(menuItem));
         return menuItem;
     }

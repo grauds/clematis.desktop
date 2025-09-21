@@ -71,11 +71,12 @@ import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.config.DesktopServiceLocator;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.java.Log;
 
 /**
  * This is a graphic resources explorer panel. Graphic resources can reside inside of a jar file or directory.
- * This panel traverses directory or jar file recursively and shows all graphic files.
+ * This panel traverses a directory or jar file recursively and shows all graphic files.
  *
  * @author Anton Troshin
  */
@@ -96,6 +97,13 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
 
     private final Dialog parent;
 
+    /**
+     * -- GETTER --
+     *  This dialog can choose textures or desktop icons in workspace
+     *  Hint prevents KIWI textures from loading into desktop icons chooser
+     */
+    @Setter
+    @Getter
     private boolean isTextureChooser = true;
     /**
      * Path to repository
@@ -124,19 +132,19 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
     }
 
     /**
-     * In order to do flow layout properly, we must compute
-     * the height. This panel must be at it's set width so
+     * To do the flow layout properly, we must compute
+     * the height. This panel must be at its set width so
      * that all components fit into it.
      */
     private void setPreferredDimension() {
         int w, h;
-        w = setWidth; // this is fixed by user resizing the panel
-        // We should compute this, based upon knowledge of FlowLayout
+        w = setWidth; // this is fixed by the user resizing the panel
+        // We should compute this based upon knowledge of FlowLayout
         int componentCount = getComponentCount();
         if (componentCount > 0 && isVisible()) {
             Component lastcomponent = getComponent(componentCount - 1);
             Point p = lastcomponent.getLocation();
-            h = p.y; // top of last component
+            h = p.y; // top of the last component
             h += THUMBNAIL_DIMENSION.height;
             h += 5; // plus y border size for neatness
         } else {
@@ -277,18 +285,6 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
     }
 
     /**
-     * This dialog can choose textures or desktop icons in workspace
-     * Hint prevents KIWI textures from loading into desktop icons chooser
-     */
-    public boolean isTextureChooser() {
-        return isTextureChooser;
-    }
-
-    public void setTextureChooser(boolean textureChooser) {
-        isTextureChooser = textureChooser;
-    }
-
-    /**
      * Inner class to show progress dialog
      */
     class Loader extends Task {
@@ -300,7 +296,7 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
 
         public void run() {
             /*
-             * First get all KIWI textures if specified flag is set
+             * First, get all KIWI textures if a specified flag is set
              */
             WorkspaceGUI wgui = DesktopServiceLocator.getInstance().getWorkspaceGUI();
             if (wgui != null && wgui.isKiwiTextureVisible() && isTextureChooser()) {
@@ -390,19 +386,20 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
         private float loadImage(float step, float progress, File value) {
             try {
                 Image image = ImageIO.read(value);
-                ImageIcon imageIcon = new ImageIcon(image);
+                if (image != null) {
+                    ImageIcon imageIcon = new ImageIcon(image);
+                    if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
 
-                if (imageIcon.getIconHeight() != -1 && imageIcon.getIconWidth() != -1) {
-
-                    Thumbnail thumb = new Thumbnail();
-                    thumb.doSetIcon(imageIcon);
-                    thumb.setText(value.getName());
-                    list.add(thumb);
-                    add(thumb);
+                        Thumbnail thumb = new Thumbnail();
+                        thumb.doSetIcon(imageIcon);
+                        thumb.setText(value.getName());
+                        list.add(thumb);
+                        add(thumb);
+                    }
+                    pr.setProgress(Math.round(progress + step));
                 }
-                pr.setProgress(Math.round(progress + step));
             } catch (IOException ignored) {
-
+                log.warning("Can't load image: " + value.getAbsolutePath());
             }
             return progress + step;
         }

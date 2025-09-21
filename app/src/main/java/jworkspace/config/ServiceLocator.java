@@ -60,7 +60,7 @@ public class ServiceLocator {
                 if (pluginObject instanceof IWorkspaceComponent component) {
                     component.load();
                 }
-                // Send plugins to runtime manager if they are instances of Runnable
+                // Send plugins to the runtime manager if they are instances of Runnable
                 if (pluginObject instanceof Runnable runnable) {
                     ServiceLocator.getInstance().getRuntimeManager().take(runnable);
                 }
