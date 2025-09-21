@@ -100,8 +100,6 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
         installKeyBindings();
 
         new DesktopShortcutNavigator(shortcutsLayer, this);
-        setFocusable(true);
-        requestFocusInWindow();
     }
 
     private JPopupMenu buildShortcutMenu() {
@@ -114,7 +112,7 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
 
     private void installKeyBindings() {
 
-        InputMap im = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        InputMap im = getInputMap();
         ActionMap am = getActionMap();
 
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), COPY_KEY);
@@ -270,7 +268,12 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    Component c = shortcutsLayer.getComponentAt(e.getPoint());
+                    Point pToShortcuts = SwingUtilities.convertPoint(
+                        DesktopInteractionLayer.this,    // from
+                        e.getPoint(),                    // point in this layer
+                        shortcutsLayer                   // to
+                    );
+                    Component c = shortcutsLayer.getComponentAt(pToShortcuts);
                     if (c instanceof DesktopShortcut shortcut) {
                         if (e.isControlDown()) {
                             if (shortcutsLayer.getSelectedShortcuts().contains(shortcut)) {
@@ -354,13 +357,13 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
         MouseAdapter popupHandler = new MouseAdapter() {
 
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void mouseReleased(MouseEvent e) {
                 showPopup(e);
             }
 
             @SuppressWarnings({"checkstyle:NestedIfDepth", "checkstyle:MagicNumber"})
             private void showPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
+                if (SwingUtilities.isRightMouseButton(e)) {
                     e.consume();
 
                     if (System.getProperty("os.name").startsWith("Mac")) {
@@ -371,20 +374,25 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                         lastPopupTime = now;
                     }
 
-                    Component c = shortcutsLayer.getComponentAt(e.getPoint());
-                    Point p = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), DesktopInteractionLayer.this);
-
-                    SwingUtilities.invokeLater(() -> {
-                        if (c instanceof DesktopShortcut) {
+                    Point p = SwingUtilities.convertPoint(
+                        DesktopInteractionLayer.this,    // from
+                        e.getPoint(),                    // point in this layer
+                        shortcutsLayer                   // to
+                    );
+                    Component c = shortcutsLayer.getComponentAt(p);
+                    if (c instanceof DesktopShortcut shortcut) {
+                        shortcutsLayer.clearSelection();
+                        shortcutsLayer.addToSelection(shortcut);
+                        SwingUtilities.invokeLater(() -> {
                             if (!shortcutMenu.isVisible()) {
                                 shortcutMenu.show(DesktopInteractionLayer.this, p.x, p.y);
                             }
-                        } else {
-                            if (!desktopMenu.isVisible()) {
-                                desktopMenu.show(DesktopInteractionLayer.this, p.x, p.y);
-                            }
+                        });
+                    } else {
+                        if (!desktopMenu.isVisible()) {
+                            SwingUtilities.invokeLater(() -> desktopMenu.show(DesktopInteractionLayer.this, p.x, p.y));
                         }
-                    });
+                    }
                 }
             }
         };

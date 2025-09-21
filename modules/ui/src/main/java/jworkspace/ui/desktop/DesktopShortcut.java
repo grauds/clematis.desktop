@@ -47,7 +47,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
@@ -201,9 +200,9 @@ public class DesktopShortcut extends JComponent {
             g2.setColor(new Color(0, 120, 215, 80));
             g2.fillRoundRect(0, 0,  getWidth(),  getHeight(), 8, 8);
         }
-        if (hasFocus()) {
-            g2.setColor(UIManager.getColor("Desktop.shortcut.focusColor"));
-            g2.drawRoundRect(0, 0,  getWidth(),  getHeight(), 8, 8);
+        if (isFocusOwner()) {
+            g2.setColor(Color.BLUE);
+            g2.drawRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
         }
         g2.dispose();
     }

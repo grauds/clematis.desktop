@@ -130,6 +130,7 @@ public class DesktopTheme {
     /**
      * Get contrast color for desktop selection borders and other marker components.
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
     public Color getSelectionColor(Color background) {
         float[] comp = background.getColorComponents(null);
 
