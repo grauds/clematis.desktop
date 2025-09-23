@@ -137,6 +137,7 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
             }
         });
 
+        interactionLayer.setFocusable(true);
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 

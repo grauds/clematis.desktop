@@ -336,7 +336,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
     }
 
     /**
-     * Get human readable name for this UI component
+     * Get a human-readable name for this UI component
      */
     public String getName() {
         return "Clematis Desktop";

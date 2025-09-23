@@ -39,11 +39,7 @@ import javax.swing.Icon;
 import com.hyperrealm.kiwi.ui.KButton;
 
 /**
- * A special kind of buttons that are to be inserted into control panel. This pecularity is expressed in
- * boolean reverse field, that is used by control panel's layout algorythm. Use <code>addLayoutComponent()</code>
- * method with specified parameters to insert buttons and separators into control panel.
  *
- * @author Anton Troshin
  */
 public class CButton extends KButton {
     /**
