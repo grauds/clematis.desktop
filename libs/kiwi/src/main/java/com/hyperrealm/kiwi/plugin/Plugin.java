@@ -60,7 +60,8 @@ public final class Plugin extends PluginDTO {
     @Getter
     private Object pluginObject = null;
 
-    private final Properties props = new Properties();
+    @Getter
+    private final Properties properties = new Properties();
 
     private final PluginLocator<?> locator;
 
@@ -77,9 +78,9 @@ public final class Plugin extends PluginDTO {
      * a jar file for plugin entries. When it's reloaded, it reopens the jar file
      * and rescans everything.
      */
-    <T extends PluginContext> Plugin(PluginLocator<T> locator, String jarFile, String expectedType)
+    <T extends PluginContext> Plugin(PluginLocator<T> locator, String jarFile, String type)
         throws PluginException {
-        super(expectedType, jarFile);
+        super(type, jarFile);
 
         this.locator = locator;
         load();
@@ -140,7 +141,6 @@ public final class Plugin extends PluginDTO {
             className = PluginClassLoader.pathToClassName(classFile);
 
             // read in the attributes
-
             for (Object o : attrs.keySet()) {
 
                 Attributes.Name nm = (Attributes.Name) o;
@@ -152,7 +152,14 @@ public final class Plugin extends PluginDTO {
                         setName(v);
                         break;
                     case PLUGIN_TYPE:
-                        setType(v);
+                        // ANY plugin type can be used as SYSTEM or USER or else, the others' have to match
+                        if (!(PluginDTO.PLUGIN_TYPE_ANY.equalsIgnoreCase(v)
+                            || (getType() != null && !getType().isEmpty() && getType().equalsIgnoreCase(v)))
+                        ) {
+                            throw new PluginException(
+                                String.format("Plugin type mismatch: %s loaded as %s", v, getType())
+                            );
+                        }
                         break;
                     case PLUGIN_DESCRIPTION:
                         setDescription(v);
@@ -167,17 +174,13 @@ public final class Plugin extends PluginDTO {
                         setHelpUrl(v);
                         break;
                     default:
-                        props.put(a, v);
+                        properties.put(a, v);
                         break;
                 }
             }
 
             if ((type == null) || (name == null)) {
                 throw new PluginException("Invalid plugin manifest entry");
-            }
-
-            if (!type.equals(expectedType)) {
-                throw new PluginException("Plugin type mismatch");
             }
 
             // create the classloader
@@ -373,7 +376,7 @@ public final class Plugin extends PluginDTO {
      */
 
     public String getProperty(String name) {
-        return props.getProperty(name);
+        return properties.getProperty(name);
     }
 
     /**
@@ -386,6 +389,6 @@ public final class Plugin extends PluginDTO {
      */
 
     public String getProperty(String name, String defaultValue) {
-        return props.getProperty(name, defaultValue);
+        return properties.getProperty(name, defaultValue);
     }
 }

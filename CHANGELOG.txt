@@ -1,0 +1,6 @@
+1. Removed Kiwi Plugin expected type.
+2. Kiwi Plugin type control: ANY type can be loaded as SYSTEM or USER types of plugins, otherwise the types have to match
+3. Replaced plugin list with plugin table in Runtime Manager UI
+4. Fixed Kiwi Plugin classloader resource bundle issue
+5. Improved layout of the monitors' section
+6. Improved layout of the tabbed pane

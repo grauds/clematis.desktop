@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.monitor;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2016 Anton Troshin
@@ -24,38 +24,20 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
+import java.awt.BorderLayout;
 
-import lombok.extern.java.Log;
+import javax.swing.JComponent;
+import javax.swing.border.TitledBorder;
 
-/**
- * International resources for runtime manager.
- *
- * @author Anton Troshin
- */
-@Log
-public class LangResource {
-    /**
-     * Support for i18n strings
-     */
-    private static ResourceBundle strings;
+import com.hyperrealm.kiwi.ui.KPanel;
 
-    private LangResource() {}
-
-    public static String getString(String id) {
-
-        String message = id;
-        try {
-            if (strings == null) {
-                strings = ResourceBundle.getBundle("i18n.rmstrings");
-            }
-            message = strings.getString(id);
-        } catch (MissingResourceException ignored) {
-            log.log(Level.WARNING, "Cannot find resource:" + id);
-        }
-
-        return message;
+public class Monitor extends KPanel {
+    public Monitor(String title, JComponent component) {
+        super();
+        setBorder(new TitledBorder(title));
+        setLayout(new BorderLayout());
+        add(component, BorderLayout.CENTER);
+        setMaximumSize(component.getPreferredSize());
+        setMinimumSize(component.getPreferredSize());
     }
 }

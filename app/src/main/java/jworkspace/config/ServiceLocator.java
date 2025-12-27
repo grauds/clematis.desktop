@@ -41,10 +41,10 @@ public class ServiceLocator {
 
     private ServiceLocator() {}
 
-    public List<Plugin> loadPlugins(Path root) {
+    public List<Plugin> loadPlugins(Path root, String type) {
 
         List<Plugin> plugins = pluginLocator.loadPlugins(
-            root.resolve(PLUGINS_DIRECTORY)
+            root.resolve(PLUGINS_DIRECTORY), type
         );
         loadPlugins(plugins);
         return plugins;

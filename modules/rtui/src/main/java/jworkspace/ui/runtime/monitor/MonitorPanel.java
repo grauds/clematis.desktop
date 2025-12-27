@@ -1,7 +1,7 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.monitor;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2016 Anton Troshin
+   Copyright (C) 2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,38 +24,30 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
 
-import lombok.extern.java.Log;
+import javax.swing.JScrollPane;
 
-/**
- * International resources for runtime manager.
- *
- * @author Anton Troshin
- */
-@Log
-public class LangResource {
-    /**
-     * Support for i18n strings
-     */
-    private static ResourceBundle strings;
+import com.hyperrealm.kiwi.ui.KPanel;
 
-    private LangResource() {}
+import jworkspace.ui.runtime.LangResource;
 
-    public static String getString(String id) {
+public class MonitorPanel extends KPanel {
 
-        String message = id;
-        try {
-            if (strings == null) {
-                strings = ResourceBundle.getBundle("i18n.rmstrings");
-            }
-            message = strings.getString(id);
-        } catch (MissingResourceException ignored) {
-            log.log(Level.WARNING, "Cannot find resource:" + id);
-        }
+    public MonitorPanel() {
+        List<Monitor> monitors = new ArrayList<>();
+        // Monitors
+        monitors.add(new Monitor(LangResource.getString("message#244"), new IPAddressPanel()));
+        monitors.add(new Monitor(LangResource.getString("message#245"), new MemoryMonitor()));
+        monitors.add(new Monitor(LangResource.getString("message#248"), new MemoryCompactorPanel()));
 
-        return message;
+        JScrollPane nestScroller = new JScrollPane(new Nest(monitors));
+        nestScroller.getViewport().setOpaque(false);
+        nestScroller.setOpaque(false);
+
+        setLayout(new BorderLayout());
+        add(new JScrollPane(new Nest(monitors)), BorderLayout.CENTER);
     }
 }

@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.monitor;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
@@ -41,11 +41,13 @@ import java.awt.image.BufferedImage;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
+import jworkspace.ui.runtime.LangResource;
+
 /**
  * Monitor component. Shows amount of memory, available to system.
  */
 @SuppressWarnings("checkstyle:MagicNumber")
-class MemoryMonitor extends KPanel implements Runnable {
+public class MemoryMonitor extends KPanel implements Runnable {
 
     private Thread thread;
     private int w, h;
@@ -65,7 +67,7 @@ class MemoryMonitor extends KPanel implements Runnable {
     private final Color graphColor = new Color(46, 139, 87);
     private final Color mfColor = new Color(0, 100, 0);
 
-    MemoryMonitor() {
+    public MemoryMonitor() {
         setBackground(Color.black);
 
         addMouseListener(new MouseAdapter() {
@@ -136,7 +138,7 @@ class MemoryMonitor extends KPanel implements Runnable {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(300, 230);
+        return new Dimension(200, 150);
     }
 
     public void paint(Graphics g) {

@@ -126,18 +126,22 @@ public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext
      * @param directory path to directory to load plugins. Note, that this is not the directory
      *                  there the plugins will load their data from.
      */
-    public List<Plugin> loadPlugins(Path directory) {
+    public List<Plugin> loadPlugins(Path directory, String type) {
         if (directory != null) {
 
             log.log(Level.INFO, "Loading plugins from " + directory);
-            return scanPluginsDir(directory.toFile());
+            return scanPluginsDir(directory.toFile(), type);
         } else {
 
             return Collections.emptyList();
         }
     }
 
-    private List<Plugin> scanPluginsDir(@NonNull File dir) {
+    public List<Plugin> loadPlugins(Path directory) {
+        return loadPlugins(directory, PluginDTO.PLUGIN_TYPE_ANY);
+    }
+
+    private List<Plugin> scanPluginsDir(@NonNull File dir, String type) {
 
         List<Plugin> plugins = new ArrayList<>();
         try {
@@ -145,18 +149,13 @@ public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext
 
                 File[] files = dir.listFiles();
                 if (files != null) {
-                    /*
-                     * As there is no guarantee, that files will be in alphabetical order, lets sort
-                     * directories and files.
-                     */
                     Arrays.sort(files, Comparator.comparing(File::getName));
-
                     for (File file : files) {
-                        plugins.addAll(scanPluginsDir(file));
+                        plugins.addAll(scanPluginsDir(file, type));
                     }
                 }
             } else if (dir.getName().endsWith("jar")) {
-                Plugin plugin = loadPlugin(dir, PluginDTO.PLUGIN_TYPE_ANY);
+                Plugin plugin = loadPlugin(dir, type);
                 plugins.add(plugin);
             }
         } catch (PluginException ex) {

@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.monitor;
 /* ----------------------------------------------------------------------------
  * Part of the org.flat222.mac package of Java utilities, libraries and applications.
  * <p>
@@ -36,6 +36,8 @@ import org.joda.time.DateTimeConstants;
 import com.hyperrealm.kiwi.ui.KButton;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jworkspace.ui.runtime.LangResource;
+
 /**
  * Runs as a separate thread and measures amount of available memory.
  * @author Michael Anthony Connell

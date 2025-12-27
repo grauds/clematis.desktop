@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.monitor;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2016 Anton Troshin
@@ -33,11 +33,11 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-class MemoryCompactorPanel extends KPanel {
+public class MemoryCompactorPanel extends KPanel {
 
     private static final int DEFAULT_PERCENT_OF_FREE_MEMORY = 50;
 
-    MemoryCompactorPanel() {
+    public MemoryCompactorPanel() {
         super();
 
         GridBagLayout gb = new GridBagLayout();
@@ -63,6 +63,6 @@ class MemoryCompactorPanel extends KPanel {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(300, 130);
+        return new Dimension(200, 70);
     }
 }

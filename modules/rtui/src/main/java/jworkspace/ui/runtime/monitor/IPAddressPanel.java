@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.monitor;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2016 Anton Troshin
@@ -35,14 +35,16 @@ import javax.swing.JTextField;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
+import jworkspace.ui.runtime.LangResource;
+
 /**
  * Shows machine name and ip address.
  *
  * @author Anton Troshin
  */
-class IPAddressPanel extends KPanel {
+public class IPAddressPanel extends KPanel {
 
-    IPAddressPanel() {
+    public IPAddressPanel() {
         super();
         JTextField tf = new JTextField() {
             public void updateUI() {
@@ -65,6 +67,6 @@ class IPAddressPanel extends KPanel {
 
     @SuppressWarnings("checkstyle:MagicNumber")
     public Dimension getPreferredSize() {
-        return new Dimension(300, 100);
+        return new Dimension(200, 50);
     }
 }

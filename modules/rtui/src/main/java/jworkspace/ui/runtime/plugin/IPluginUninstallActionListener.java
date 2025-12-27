@@ -1,7 +1,7 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.plugin;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2016 Anton Troshin
+   Copyright (C) 2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,38 +24,9 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
+import com.hyperrealm.kiwi.plugin.Plugin;
 
-import lombok.extern.java.Log;
+public interface IPluginUninstallActionListener {
 
-/**
- * International resources for runtime manager.
- *
- * @author Anton Troshin
- */
-@Log
-public class LangResource {
-    /**
-     * Support for i18n strings
-     */
-    private static ResourceBundle strings;
-
-    private LangResource() {}
-
-    public static String getString(String id) {
-
-        String message = id;
-        try {
-            if (strings == null) {
-                strings = ResourceBundle.getBundle("i18n.rmstrings");
-            }
-            message = strings.getString(id);
-        } catch (MissingResourceException ignored) {
-            log.log(Level.WARNING, "Cannot find resource:" + id);
-        }
-
-        return message;
-    }
+    void pluginUninstallSelected(Plugin p);
 }

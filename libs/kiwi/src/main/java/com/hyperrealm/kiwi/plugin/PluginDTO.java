@@ -45,6 +45,10 @@ public class PluginDTO {
 
     public static final String PLUGIN_TYPE_ANY = "ANY";
 
+    public static final String PLUGIN_TYPE_USER = "USER";
+
+    public static final String PLUGIN_TYPE_SYSTEM = "SYSTEM";
+
     public static final String PLUGIN_NAME = "PluginName";
 
     public static final String PLUGIN_TYPE = "PluginType";
@@ -69,16 +73,14 @@ public class PluginDTO {
 
     protected String version;
 
-    protected String expectedType;
-
     protected String jarFile;
 
     protected Icon icon = null;
 
     protected URL helpURL = null;
 
-    PluginDTO(String expectedType, String jarFile) {
-        this.expectedType = expectedType;
+    PluginDTO(String type, String jarFile) {
+        this.type = type;
         this.jarFile = jarFile;
     }
 
@@ -117,7 +119,7 @@ public class PluginDTO {
         attributes.put(new Attributes.Name(PLUGIN_VERSION), plugin.getVersion());
         attributes.put(new Attributes.Name(PLUGIN_HELP_URL), plugin.getHelpURL().toString());
         attributes.put(new Attributes.Name(PLUGIN_ICON), plugin.getIcon());
-        attributes.put(new Attributes.Name(PLUGIN_TYPE), PLUGIN_TYPE_ANY);
+        attributes.put(new Attributes.Name(PLUGIN_TYPE), plugin.getType());
 
         manifest.getEntries().put(plugin.getClassName(), attributes);
         return manifest;

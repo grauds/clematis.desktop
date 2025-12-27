@@ -8,6 +8,7 @@ import javax.swing.Icon;
 import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 import com.hyperrealm.kiwi.runtime.Task;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
@@ -59,7 +60,7 @@ public class ShellsLoader extends Task {
         WorkspacePluginLocator pluginLocator = ServiceLocator.getInstance().getPluginLocator();
         pluginLocator.setParentPluginClassLoader(this.getClass().getClassLoader());
         List<Plugin> plugins = pluginLocator.loadPlugins(
-            pluginPath
+            pluginPath, PluginDTO.PLUGIN_TYPE_USER
         );
         // add shells to user plugins means they do care about their lifecycle between logins/logouts themselves
         ServiceLocator.getInstance().getUserPlugins().addAll(plugins);

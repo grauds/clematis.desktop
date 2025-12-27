@@ -23,12 +23,13 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.java.Log;
 
 /**
@@ -241,30 +242,46 @@ public class PluginClassLoader extends ClassLoader {
         return ret;
     }
 
-    @SuppressFBWarnings("OS_OPEN_STREAM")
-    public synchronized InputStream getResourceAsStream(String name) {
-        /* Scan through JAR files looking for the resource */
+    @SuppressWarnings("checkstyle:ReturnCount")
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        URL url = getResource(name);
+        if (url == null) {
+            return null;
+        }
+        try {
+            return url.openStream();
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
+    @SuppressWarnings("checkstyle:ReturnCount")
+    @Override
+    public URL getResource(String name) {
+        // First: delegate to parent
+        URL url = getParent() != null ? getParent().getResource(name) : null;
+        if (url != null) {
+            return url;
+        }
+
+        // Then: search plugin JARs
         for (String jarPath : jars) {
-
             try {
-                JarFile jar = new JarFile(new File(jarPath)); // avoid autoclosing of the stream!
-                JarEntry entry = jar.getJarEntry(name);
-                if (entry != null) {
-                    try {
-                        return (jar.getInputStream(entry));
-                    } catch (IOException ex) {
-                        /* ignore error, & continue */
-                        log.log(Level.SEVERE, ex.getMessage(), ex);
-                    }
+                File file = new File(jarPath);
+                URL jarUrl = new URL(
+                    "jar:file:" + file.getAbsolutePath() + "!/" + name
+                );
+                try (InputStream ignored = jarUrl.openStream()) {
+                    return jarUrl;
+                } catch (IOException ignored) {
+                    // not found in this jar
                 }
-            } catch (IOException ex) {
-                /* ignore error, & continue */
-                log.log(Level.SEVERE, ex.getMessage(), ex);
+            } catch (MalformedURLException ignored) {
             }
         }
 
-        return (null);
+        return null;
     }
 
 }

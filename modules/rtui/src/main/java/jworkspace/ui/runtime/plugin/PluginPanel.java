@@ -1,7 +1,7 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.plugin;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2002, 2019 Anton Troshin
+   Copyright (C) 2025 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,7 +24,6 @@ package jworkspace.ui.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -39,32 +38,24 @@ import javax.swing.border.EtchedBorder;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.ui.KPanel;
-import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
-import jworkspace.runtime.JavaProcess;
-import jworkspace.ui.runtime.plugin.IPluginSelectionListener;
+import jworkspace.ui.runtime.LangResource;
 
-/**
- * @author Anton Troshin
- */
-@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals"})
-public class PropertiesPanel extends KPanel implements IPluginSelectionListener {
+public class PluginPanel extends KPanel implements IPluginSelectionListener {
 
-    private JTextPane l;
-
+    private final JTextPane l;
     private JComponent log = null;
 
-    PropertiesPanel() {
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public PluginPanel() {
         super();
         setLayout(new BorderLayout(5, 5));
         l = createDefaultLabel();
         add(l, BorderLayout.CENTER);
     }
 
-    /**
-     * Get performance label
-     */
+    @SuppressWarnings("checkstyle:MagicNumber")
     private JTextPane createDefaultLabel() {
 
         JTextPane label = new JTextPane();
@@ -90,42 +81,16 @@ public class PropertiesPanel extends KPanel implements IPluginSelectionListener 
     }
 
     /**
-     * Create process report
-     */
-    void createProcessReport(JavaProcess pr) {
-        if (log != null) {
-            remove(log);
-            log = null;
-        }
-        String sb = "<html><font color=black><b>"
-            + LangResource.getString("Name") + ": "
-            + "</b>"
-            + pr.getName()
-            + "<br><b>"
-            + LangResource.getString("Started_at") + ": "
-            + "</b>"
-            + pr.getStartTime().toString()
-            + "<br></html>";
-//        log = pr.getVLog();
-//        log.setPreferredSize(new Dimension(200, 200));
-        layoutReport(
-            sb,
-            new ImageIcon(
-                new ResourceLoader(RuntimeManagerWindow.class).getResourceAsImage("images/process.png")
-            )
-        );
-    }
-
-    /**
      * Create plugin report
      */
+    @SuppressWarnings("checkstyle:MultipleStringLiterals")
     void createPluginReport(Plugin plugin) {
         if (log != null) {
             remove(log);
             log = null;
         }
         String sb = "<html><font color=\"black\">"
-            + "<br><b>"
+            + "<b>"
             + LangResource.getString("Name") + ": "
             + "</b>"
             + plugin.getName()
@@ -150,6 +115,7 @@ public class PropertiesPanel extends KPanel implements IPluginSelectionListener 
             + "</b><a href=\""
             + plugin.getHelpURL().toString()
             + "\">" + plugin.getHelpURL() + "</a><br>"
+            + "<br>"
             + "</font></html>";
 
 
@@ -181,18 +147,6 @@ public class PropertiesPanel extends KPanel implements IPluginSelectionListener 
             icon = new ImageIcon(getResourceManager().getImage("unknown_big.png"));
         }
         layoutReport(sb, icon);
-    }
-
-    void createDefaultReport() {
-        if (log != null) {
-            remove(log);
-            log = null;
-        }
-        remove(l);
-        l = createDefaultLabel();
-        add(l, BorderLayout.CENTER);
-        revalidate();
-        repaint();
     }
 
     private void layoutReport(String text, Icon icon) {

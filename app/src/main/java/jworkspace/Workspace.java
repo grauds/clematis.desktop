@@ -9,6 +9,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
 import jworkspace.config.ServiceLocator;
@@ -95,7 +96,7 @@ public class Workspace {
          */
         ServiceLocator.getInstance().getSystemPlugins().addAll(
             ServiceLocator.getInstance().getPluginLocator().loadPlugins(
-                root.resolve(PLUGINS_DIRECTORY)
+                root.resolve(PLUGINS_DIRECTORY), PluginDTO.PLUGIN_TYPE_SYSTEM
             )
         );
         /*
@@ -126,7 +127,7 @@ public class Workspace {
          * Load plugins from the user directory
          */
         ServiceLocator.getInstance().getUserPlugins().addAll(
-            ServiceLocator.getInstance().loadPlugins(profilePath)
+            ServiceLocator.getInstance().loadPlugins(profilePath, PluginDTO.PLUGIN_TYPE_USER)
         );
     }
 
