@@ -200,7 +200,7 @@ class RuntimeManagerActions {
         }
 
         public void actionPerformed(ActionEvent evt) {
-            manager.killAllAndRemove();
+            manager.killAndRemoveAll();
             setEnabled(false);
         }
     }

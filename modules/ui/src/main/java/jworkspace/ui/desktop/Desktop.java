@@ -310,35 +310,6 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
      * Get menu for desktop
      */
     public JMenu[] getMenu() {
-      /*  if (desktopMenu == null) {
-            desktopMenu = new JMenu(WorkspaceResourceAnchor.getString("Desktop.menu"));
-            desktopMenu.setMnemonic(WorkspaceResourceAnchor.getString("Desktop.mnemonic").charAt(0));
-            desktopMenu.addMenuListener(new MenuListener() {
-
-                public void menuSelected(MenuEvent e) {
-                    desktopMenu.removeAll();
-                    desktopMenu.add(desktopPopupMenu.getCreateShortcut());
-                    desktopMenu.add(desktopPopupMenu.getGradientFill());
-                    desktopMenu.add(desktopPopupMenu.getPaste());
-
-                    desktopMenu.addSeparator();
-
-                    desktopMenu.add(desktopPopupMenu.getSelectAll());
-                    desktopMenu.add(desktopPopupMenu.getChangeBackgroundColour());
-                    desktopMenu.add(desktopPopupMenu.getChooseBgImage());
-                    desktopMenu.add(desktopPopupMenu.getSwitchCover());
-
-                    desktopMenu.addSeparator();
-
-                    desktopMenu.add(desktopPopupMenu.getCloseAllWindows());
-
-                    updateMenuItems();
-                }
-                public void menuDeselected(MenuEvent e) {}
-                public void menuCanceled(MenuEvent e) {}
-            });
-            UIManager.addPropertyChangeListener(new UISwitchListener(desktopMenu));
-        }*/
         return new JMenu[]{};
     }
 

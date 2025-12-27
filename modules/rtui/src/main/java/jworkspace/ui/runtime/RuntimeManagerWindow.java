@@ -299,7 +299,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     /**
      * Kill all processes and remove them from list
      */
-    void killAllAndRemove() {
+    void killAndRemoveAll() {
         RuntimeManager runtimeManager = ServiceLocator.getInstance().getRuntimeManager();
      /* todo runtimeManager.getAllProcesses().forEach(JavaProcess::kill);
         todo runtimeManager.removeTerminated();

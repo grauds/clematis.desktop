@@ -389,9 +389,11 @@ public class DesktopInteractionLayer extends JComponent implements ActionListene
                             }
                         });
                     } else {
-                        if (!desktopMenu.isVisible()) {
-                            SwingUtilities.invokeLater(() -> desktopMenu.show(DesktopInteractionLayer.this, p.x, p.y));
-                        }
+                        SwingUtilities.invokeLater(() -> {
+                            if (!desktopMenu.isVisible()) {
+                                desktopMenu.show(DesktopInteractionLayer.this, p.x, p.y);
+                            }
+                        });
                     }
                 }
             }

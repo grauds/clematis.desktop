@@ -30,21 +30,20 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import com.hyperrealm.kiwi.ui.KPanel;
-import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.ui.WorkspaceGUI;
 
@@ -125,20 +124,17 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
         setTimer();
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private void setTimer() {
-        Thread motor = new Thread(() -> {
-            do {
-                if (isVisible()) {
-                    repaint();
-                }
-                try {
-                    Thread.sleep(KiwiUtils.MILLISEC_IN_SECOND);
-                } catch (Exception ignored) {
-                }
-            } while (true);
+        DateTimeFormatter fmt =
+            DateTimeFormatter.ofPattern("EEE dd MMM HH:mm:ss", Locale.ENGLISH);
+
+        javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
+            LocalDateTime now = LocalDateTime.now();
+            clockLabel.setText(now.format(fmt));
+            clockLabel.repaint();
         });
-        motor.setPriority(Thread.MIN_PRIORITY);
-        motor.start();
+        timer.start();
     }
 
     public void addLayoutComponent(String name, Component comp) {
@@ -227,8 +223,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
         return minimumLayoutSize(parent);
     }
 
-    public void removeLayoutComponent(Component comp) {
-    }
+    public void removeLayoutComponent(Component comp) {}
 
     /**
      * Sets header text.
@@ -244,48 +239,9 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
      */
     @SuppressWarnings("MagicNumber")
     static class ClockLabel extends JLabel {
-
-        static final String LEADING_ZERO = "0";
-
-        private static final String COLON = ":";
-
         private ClockLabel() {
             super();
             setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().getImage("clock.png")));
-        }
-
-        public void paintComponent(Graphics g) {
-            if (g == null) {
-                return;
-            }
-            super.paintComponent(g);
-            /*
-             * Draw clock
-             */
-            Calendar c = new GregorianCalendar();
-            int hi = c.get(Calendar.HOUR_OF_DAY);
-            int mi = c.get(Calendar.MINUTE);
-            int si = c.get(Calendar.SECOND);
-            String s, m, h;
-
-            if (si < 10) {
-                s = LEADING_ZERO + si;
-            } else {
-                s = "" + si;
-            }
-            if (mi < 10) {
-                m = LEADING_ZERO + mi;
-            } else {
-                m = "" + mi;
-            }
-            if (hi < 10) {
-                h = LEADING_ZERO + hi;
-            } else {
-                h = "" + hi;
-            }
-
-            String ss = h + COLON + m + COLON + s;
-            setText(ss);
         }
     }
 }
