@@ -36,6 +36,7 @@ import lombok.extern.java.Log;
 public class ShellsLoader extends Task {
 
     static final int PROGRESS_COMPLETED = 100;
+    static final String SHELLS_DIRECTORY = "shells";
 
     private final ProgressDialog progressDialog;
 
@@ -44,26 +45,30 @@ public class ShellsLoader extends Task {
         this.progressDialog = progressDialog;
     }
 
+    private List<Plugin> loadPlugins(WorkspacePluginLocator pluginLocator, Path pluginPath, String type) {
+        List<Plugin> plugins = pluginLocator.loadPlugins(
+            pluginPath.resolve(SHELLS_DIRECTORY), type
+        );
+        // add shells to user plugins means they do care about their lifecycle between logins/logouts themselves
+        ServiceLocator.getInstance().getUserPlugins().addAll(plugins);
+        return plugins;
+    }
+
     public void run() {
 
         ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
         Profile currentProfile = profilesManager.getCurrentProfile();
-        Path pluginPath;
-
-        if (currentProfile != null) {
-            pluginPath = currentProfile.getProfilePath(profilesManager.getBasePath());
-        } else {
-            pluginPath = profilesManager.getBasePath();
-        }
-        pluginPath = pluginPath.resolve("shells");
 
         WorkspacePluginLocator pluginLocator = ServiceLocator.getInstance().getPluginLocator();
         pluginLocator.setParentPluginClassLoader(this.getClass().getClassLoader());
-        List<Plugin> plugins = pluginLocator.loadPlugins(
-            pluginPath, PluginDTO.PLUGIN_TYPE_USER
-        );
-        // add shells to user plugins means they do care about their lifecycle between logins/logouts themselves
-        ServiceLocator.getInstance().getUserPlugins().addAll(plugins);
+
+        Path pluginPath = profilesManager.getBasePath();
+        List<Plugin> plugins = loadPlugins(pluginLocator, pluginPath, PluginDTO.PLUGIN_TYPE_SYSTEM);
+
+        if (currentProfile != null) {
+            pluginPath = currentProfile.getProfilePath(profilesManager.getBasePath());
+            plugins.addAll(loadPlugins(pluginLocator, pluginPath, PluginDTO.PLUGIN_TYPE_USER));
+        }
 
         if (plugins.isEmpty()) {
             showMessageInProgressDialog(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));
