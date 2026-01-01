@@ -24,6 +24,7 @@ dependencies {
     compileOnly project(':ui')
     compileOnly "org.jdom:jdom2:2.0.6.1"
 
+    implementation project(':widgets')
     implementation project(':runtime')
 
     implementation "joda-time:joda-time:2.10.3"

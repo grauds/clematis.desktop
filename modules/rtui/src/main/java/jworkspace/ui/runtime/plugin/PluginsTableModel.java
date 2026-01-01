@@ -29,6 +29,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
 
 public class PluginsTableModel extends AbstractTableModel {
 
@@ -73,6 +74,11 @@ public class PluginsTableModel extends AbstractTableModel {
         plugins.clear();
         plugins.addAll(newData);
         fireTableDataChanged();
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return column == 2 && PluginDTO.PLUGIN_TYPE_USER.equalsIgnoreCase(this.plugins.get(row).getType());
     }
 
     @Override

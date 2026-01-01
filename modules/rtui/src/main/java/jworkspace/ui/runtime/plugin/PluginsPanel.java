@@ -47,19 +47,24 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.ui.runtime.LangResource;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
+import jworkspace.ui.widgets.ButtonColumn;
 
 public class PluginsPanel extends KPanel {
 
     private static final String PLUGINS = LangResource.getString("Installed Plugins");
-    private final List<IPluginSelectionListener> listeners = new ArrayList<>();
-    private final UninstallButtonEditor uninstallButtonEditor = new UninstallButtonEditor();
+
     private JTable pluginsTable = null;
-    private final PluginPanel pluginPanel = new PluginPanel();
+
+    private final List<IPluginSelectionListener> listeners = new ArrayList<>();
+    private final List<IPluginUninstallActionListener> uninstallActionListeners = new ArrayList<>();
 
     public PluginsPanel() {
+
         setLayout(new BorderLayout());
         add(createPluginsLabel(), BorderLayout.NORTH);
         add(new JScrollPane(getPluginsTable()), BorderLayout.CENTER);
+
+        PluginPanel pluginPanel = new PluginPanel();
         add(pluginPanel, BorderLayout.SOUTH);
         this.addPluginSelectionListener(pluginPanel);
     }
@@ -68,13 +73,19 @@ public class PluginsPanel extends KPanel {
         this.listeners.add(l);
     }
 
-    public void addPluginUninstallActionListener(IPluginUninstallActionListener l) {
-        this.uninstallButtonEditor.addPluginUninstallActionListener(l);
+    public void addPluginUninstallListener(IPluginUninstallActionListener l) {
+        this.uninstallActionListeners.add(l);
     }
 
     private void fireSelectionEvent(Plugin p) {
         for (IPluginSelectionListener l : listeners) {
             l.pluginSelected(p);
+        }
+    }
+
+    private void fireUninstallationEvent(Plugin p) {
+        for (IPluginUninstallActionListener l : uninstallActionListeners) {
+            l.pluginUninstallSelected(p);
         }
     }
 
@@ -130,8 +141,15 @@ public class PluginsPanel extends KPanel {
             this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(90);
             this.pluginsTable.getColumnModel().getColumn(1).setMaxWidth(90);
 
-            this.pluginsTable.getColumnModel().getColumn(2).setCellRenderer(new UninstallButtonRenderer());
-            this.pluginsTable.getColumnModel().getColumn(2).setCellEditor(uninstallButtonEditor);
+            ButtonColumn uninstallColumn = new ButtonColumn("Uninstall", (row, col) -> {
+                PluginsTableModel model = (PluginsTableModel) pluginsTable.getModel();
+                Plugin plugin = model.getItem(row);
+                fireUninstallationEvent(plugin);
+            });
+
+            pluginsTable.getColumnModel().getColumn(2).setCellRenderer(uninstallColumn);
+            pluginsTable.getColumnModel().getColumn(2).setCellEditor(uninstallColumn);
+
             this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(90);
             this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(120);
 

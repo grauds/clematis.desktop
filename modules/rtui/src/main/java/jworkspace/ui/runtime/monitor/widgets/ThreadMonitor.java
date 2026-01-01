@@ -24,6 +24,8 @@ package jworkspace.ui.runtime.monitor.widgets;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import java.awt.Color;
+import java.awt.event.MouseEvent;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
@@ -41,11 +43,37 @@ public class ThreadMonitor extends AbstractJvmGraphMonitor {
 
     @Override
     protected String title() {
-        return "Threads: " + bean.getThreadCount();
+        return "Threads";
     }
 
     @Override
     protected String unit() {
         return "";
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @Override
+    protected void drawLegend(int x) {
+        g2.setColor(Color.green);
+        g2.drawString(title(), x, ascent + 1);
+
+        if (ptNum > 0) {
+            String cur = String.format("%d %s", (int) pts[ptNum - 1], unit());
+            g2.drawString(cur, w - g2.getFontMetrics().stringWidth(cur) - 5, ascent + 1);
+        }
+    }
+
+    @SuppressWarnings("checkstyle:ReturnCount")
+    @Override
+    public String getToolTipText(MouseEvent e) {
+        if (pts == null || ptNum == 0) {
+            return null;
+        }
+        int idx = ptNum - (getWidth() - e.getX());
+        if (idx < 0 || idx >= ptNum) {
+            return null;
+        }
+
+        return String.format("%d threads", (int) pts[idx]);
     }
 }

@@ -24,6 +24,9 @@ package jworkspace.ui.runtime.monitor.widgets;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+
+import java.awt.Color;
+import java.awt.event.MouseEvent;
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;
 
@@ -31,21 +34,48 @@ import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
 
 public class ClassLoadingMonitor extends AbstractJvmGraphMonitor {
 
-    private final ClassLoadingMXBean bean =
-        ManagementFactory.getClassLoadingMXBean();
+    private final ClassLoadingMXBean bean = ManagementFactory.getClassLoadingMXBean();
 
     @Override
     protected float sampleValue() {
-        return bean.getLoadedClassCount();
+        // Float for smooth graph
+        return (float) bean.getLoadedClassCount();
     }
 
     @Override
     protected String title() {
-        return "Loaded classes";
+        // Integer display
+        return "Loaded Classes";
     }
 
     @Override
     protected String unit() {
-        return "";
+        return "classes";
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @Override
+    protected void drawLegend(int x) {
+        g2.setColor(Color.green);
+        g2.drawString(title(), x, ascent + 1);
+
+        if (ptNum > 0) {
+            String cur = String.format("%d %s", (int) pts[ptNum - 1], unit());
+            g2.drawString(cur, w - g2.getFontMetrics().stringWidth(cur) - 5, ascent + 1);
+        }
+    }
+
+    @SuppressWarnings("checkstyle:ReturnCount")
+    @Override
+    public String getToolTipText(MouseEvent e) {
+        if (pts == null || ptNum == 0) {
+            return null;
+        }
+        int idx = ptNum - (getWidth() - e.getX());
+        if (idx < 0 || idx >= ptNum) {
+            return null;
+        }
+
+        return String.format("%d classes", (int) pts[idx]);
     }
 }

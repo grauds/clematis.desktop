@@ -49,6 +49,7 @@ import javax.swing.event.ChangeListener;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.config.ServiceLocator;
@@ -58,7 +59,9 @@ import jworkspace.runtime.WorkspacePluginContext;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.api.views.DefaultCompoundView;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.runtime.downloader.PluginsDownloaderPanel;
 import jworkspace.ui.runtime.monitor.MonitorPanel;
+import jworkspace.ui.runtime.plugin.IPluginUninstallActionListener;
 import jworkspace.ui.runtime.plugin.PluginsPanel;
 import jworkspace.ui.utils.SwingUtils;
 
@@ -69,9 +72,7 @@ import jworkspace.ui.utils.SwingUtils;
  * @author Anton Troshin
  */
 public class RuntimeManagerWindow extends DefaultCompoundView
-    implements ChangeListener {
-
-    private static final String PLUGINS = LangResource.getString("Installed Plugins");
+    implements ChangeListener, IPluginUninstallActionListener {
 
     private static final String PROCESSES = LangResource.getString("Processes");
 
@@ -93,7 +94,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
         this.pluginContext = pluginContext;
 
-        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pluginsPanel, new KPanel());
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pluginsPanel, new PluginsDownloaderPanel());
         split.setOpaque(false);
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -107,6 +108,8 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
         tabbedPane.addChangeListener(this);
         tabbedPane.setOpaque(false);
+
+        pluginsPanel.addPluginUninstallListener(this);
 
         setName(RUNTIME_MANAGER);
     }
@@ -375,5 +378,14 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
         getActions().enableActions(!processes.isSelectionEmpty());
         super.update();
+    }
+
+    @Override
+    public void pluginUninstallSelected(Plugin p) {
+        KQuestionDialog questionDialog = new KQuestionDialog(
+            DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
+        );
+        questionDialog.setMessage(String.format("Are you sure to uninstall %s?", p));
+        questionDialog.setVisible(true);
     }
 }

@@ -1,10 +1,5 @@
 package jworkspace.ui.runtime.monitor.widgets;
 
-import java.lang.management.ManagementFactory;
-import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
-
-import com.sun.management.OperatingSystemMXBean;
-
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -30,6 +25,13 @@ import com.sun.management.OperatingSystemMXBean;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+
+import java.lang.management.ManagementFactory;
+
+import com.sun.management.OperatingSystemMXBean;
+
+import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
+
 public class CpuLoadMonitor extends AbstractJvmGraphMonitor {
 
     private final OperatingSystemMXBean os =
