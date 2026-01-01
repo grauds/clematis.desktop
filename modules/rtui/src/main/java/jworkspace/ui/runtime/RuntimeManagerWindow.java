@@ -29,7 +29,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Image;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +53,7 @@ import javax.swing.event.ChangeListener;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
 import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
@@ -382,9 +387,28 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
     @Override
     public void pluginUninstallSelected(Plugin p) {
+        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
         KQuestionDialog questionDialog = new KQuestionDialog(
-            DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame()
-        );
+            parent
+        ) {
+            @Override
+            protected boolean accept() {
+                KMessageDialog messageDialog = new KMessageDialog(parent);
+                try {
+                    if (Files.deleteIfExists(Path.of(p.getJarFile()))) {
+                        messageDialog.setMessage("Deleted successfully.");
+                    } else {
+                        messageDialog.setMessage(String.format("File %s doesn't exist.", p.getJarFile()));
+                    }
+                } catch (IOException e) {
+                    messageDialog.setMessage(
+                        String.format("Error deleting the file: %s. %s", p.getJarFile(), e.getMessage())
+                    );
+                }
+                messageDialog.setVisible(true);
+                return true;
+            }
+        };
         questionDialog.setMessage(String.format("Are you sure to uninstall %s?", p));
         questionDialog.setVisible(true);
     }
