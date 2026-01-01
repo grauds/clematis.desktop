@@ -204,12 +204,12 @@ public class PluginsDownloaderPanel extends KPanel {
 
     private void refreshSelectedLog() {
         int row = table.getSelectedRow();
-        if (row < 0) {
-            return;
+        if (row >= 0) {
+            DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
+            updateLogArea(item);
+        } else {
+            getLogArea().setText("");
         }
-
-        DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
-        updateLogArea(item);
     }
 
     private void updateLogArea(DownloadItem item) {
