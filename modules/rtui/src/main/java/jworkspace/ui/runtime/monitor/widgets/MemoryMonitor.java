@@ -1,4 +1,7 @@
-package jworkspace.ui.runtime.monitor;
+package jworkspace.ui.runtime.monitor.widgets;
+
+import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
+
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2016 Anton Troshin
@@ -24,19 +27,22 @@ package jworkspace.ui.runtime.monitor;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.awt.BorderLayout;
+public class MemoryMonitor extends AbstractJvmGraphMonitor {
 
-import javax.swing.JComponent;
-import javax.swing.border.TitledBorder;
+    private final Runtime rt = Runtime.getRuntime();
 
-import com.hyperrealm.kiwi.ui.KPanel;
+    @Override
+    protected float sampleValue() {
+        return rt.totalMemory() - rt.freeMemory();
+    }
 
-public class Monitor extends KPanel {
-    public Monitor(String title, JComponent component) {
-        super();
-        setBorder(new TitledBorder(title));
-        setLayout(new BorderLayout());
-        add(component, BorderLayout.CENTER);
-        setOpaque(false);
+    @Override
+    protected String title() {
+        return "Heap usage";
+    }
+
+    @Override
+    protected String unit() {
+        return "MB";
     }
 }

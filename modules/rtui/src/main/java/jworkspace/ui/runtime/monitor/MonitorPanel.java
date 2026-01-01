@@ -33,6 +33,12 @@ import javax.swing.JScrollPane;
 import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.ui.runtime.LangResource;
+import jworkspace.ui.runtime.monitor.widgets.ClassLoadingMonitor;
+import jworkspace.ui.runtime.monitor.widgets.CpuLoadMonitor;
+import jworkspace.ui.runtime.monitor.widgets.GcTimeMonitor;
+import jworkspace.ui.runtime.monitor.widgets.IPAddressPanel;
+import jworkspace.ui.runtime.monitor.widgets.MemoryMonitor;
+import jworkspace.ui.runtime.monitor.widgets.ThreadMonitor;
 
 public class MonitorPanel extends KPanel {
 
@@ -42,12 +48,17 @@ public class MonitorPanel extends KPanel {
         monitors.add(new Monitor(LangResource.getString("message#244"), new IPAddressPanel()));
         monitors.add(new Monitor(LangResource.getString("message#245"), new MemoryMonitor()));
         monitors.add(new Monitor(LangResource.getString("message#248"), new MemoryCompactorPanel()));
+        monitors.add(new Monitor(LangResource.getString("message#254"), new ClassLoadingMonitor()));
+        monitors.add(new Monitor(LangResource.getString("message#255"), new CpuLoadMonitor()));
+        monitors.add(new Monitor(LangResource.getString("message#256"), new GcTimeMonitor()));
+        monitors.add(new Monitor(LangResource.getString("message#257"), new ThreadMonitor()));
 
-        JScrollPane nestScroller = new JScrollPane(new Nest(monitors));
+        JScrollPane nestScroller = new JScrollPane(new Dashboard(monitors));
         nestScroller.getViewport().setOpaque(false);
         nestScroller.setOpaque(false);
 
         setLayout(new BorderLayout());
-        add(new JScrollPane(new Nest(monitors)), BorderLayout.CENTER);
+        add(new HeaderPanel(), BorderLayout.NORTH);
+        add(nestScroller, BorderLayout.CENTER);
     }
 }

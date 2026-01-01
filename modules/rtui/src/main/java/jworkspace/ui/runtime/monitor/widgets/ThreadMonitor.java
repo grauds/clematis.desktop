@@ -1,7 +1,7 @@
-package jworkspace.ui.runtime.monitor;
+package jworkspace.ui.runtime.monitor.widgets;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2016,2025 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,22 +24,28 @@ package jworkspace.ui.runtime.monitor;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.util.List;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
 
-public class Nest extends Box {
+public class ThreadMonitor extends AbstractJvmGraphMonitor {
 
-    public Nest(List<Monitor> monitors) {
-        super(BoxLayout.Y_AXIS);
-        setOpaque(false);
-        add(new HeaderPanel());
-        for (Monitor monitor : monitors) {
-            add(monitor);
-        }
+    private final ThreadMXBean bean =
+        ManagementFactory.getThreadMXBean();
+
+    @Override
+    protected float sampleValue() {
+        return bean.getThreadCount();
     }
 
+    @Override
+    protected String title() {
+        return "Threads: " + bean.getThreadCount();
+    }
 
-
+    @Override
+    protected String unit() {
+        return "";
+    }
 }

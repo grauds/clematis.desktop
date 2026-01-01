@@ -63,6 +63,6 @@ public class MemoryCompactorPanel extends KPanel {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(200, 70);
+        return new Dimension(200, 50);
     }
 }

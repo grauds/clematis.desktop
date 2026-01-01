@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime.monitor;
+package jworkspace.ui.runtime.monitor.widgets;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2016 Anton Troshin

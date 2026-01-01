@@ -1,7 +1,7 @@
-package jworkspace.ui.runtime.monitor;
+package jworkspace.ui.runtime.monitor.widgets;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2016 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,19 +24,37 @@ package jworkspace.ui.runtime.monitor;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.awt.BorderLayout;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.util.List;
 
-import javax.swing.JComponent;
-import javax.swing.border.TitledBorder;
+import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
 
-import com.hyperrealm.kiwi.ui.KPanel;
+public class GcTimeMonitor extends AbstractJvmGraphMonitor {
 
-public class Monitor extends KPanel {
-    public Monitor(String title, JComponent component) {
-        super();
-        setBorder(new TitledBorder(title));
-        setLayout(new BorderLayout());
-        add(component, BorderLayout.CENTER);
-        setOpaque(false);
+    private final List<GarbageCollectorMXBean> beans =
+        ManagementFactory.getGarbageCollectorMXBeans();
+    private long lastTime;
+
+    @Override
+    protected float sampleValue() {
+        long total = 0;
+        for (GarbageCollectorMXBean b : beans) {
+            total += Math.max(0, b.getCollectionTime());
+        }
+        long delta = total - lastTime;
+        lastTime = total;
+        return delta;
     }
+
+    @Override
+    protected String title() {
+        return "GC ms/sec";
+    }
+
+    @Override
+    protected String unit() {
+        return "ms";
+    }
+
 }

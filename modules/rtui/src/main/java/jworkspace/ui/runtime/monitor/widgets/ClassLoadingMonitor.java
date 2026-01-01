@@ -1,7 +1,7 @@
-package jworkspace.ui.runtime.monitor;
+package jworkspace.ui.runtime.monitor.widgets;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2016 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,19 +24,28 @@ package jworkspace.ui.runtime.monitor;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.awt.BorderLayout;
+import java.lang.management.ClassLoadingMXBean;
+import java.lang.management.ManagementFactory;
 
-import javax.swing.JComponent;
-import javax.swing.border.TitledBorder;
+import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
 
-import com.hyperrealm.kiwi.ui.KPanel;
+public class ClassLoadingMonitor extends AbstractJvmGraphMonitor {
 
-public class Monitor extends KPanel {
-    public Monitor(String title, JComponent component) {
-        super();
-        setBorder(new TitledBorder(title));
-        setLayout(new BorderLayout());
-        add(component, BorderLayout.CENTER);
-        setOpaque(false);
+    private final ClassLoadingMXBean bean =
+        ManagementFactory.getClassLoadingMXBean();
+
+    @Override
+    protected float sampleValue() {
+        return bean.getLoadedClassCount();
+    }
+
+    @Override
+    protected String title() {
+        return "Loaded classes";
+    }
+
+    @Override
+    protected String unit() {
+        return "";
     }
 }

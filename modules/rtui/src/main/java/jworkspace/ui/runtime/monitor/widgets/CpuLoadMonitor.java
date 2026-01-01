@@ -1,7 +1,13 @@
-package jworkspace.ui.runtime.monitor;
+package jworkspace.ui.runtime.monitor.widgets;
+
+import java.lang.management.ManagementFactory;
+import jworkspace.ui.runtime.monitor.AbstractJvmGraphMonitor;
+
+import com.sun.management.OperatingSystemMXBean;
+
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2016 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,19 +30,25 @@ package jworkspace.ui.runtime.monitor;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.awt.BorderLayout;
+public class CpuLoadMonitor extends AbstractJvmGraphMonitor {
 
-import javax.swing.JComponent;
-import javax.swing.border.TitledBorder;
+    private final OperatingSystemMXBean os =
+        (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
-import com.hyperrealm.kiwi.ui.KPanel;
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @Override
+    protected float sampleValue() {
+        double load = os.getProcessCpuLoad();
+        return load < 0 ? 0f : (float) (load * 100f);
+    }
 
-public class Monitor extends KPanel {
-    public Monitor(String title, JComponent component) {
-        super();
-        setBorder(new TitledBorder(title));
-        setLayout(new BorderLayout());
-        add(component, BorderLayout.CENTER);
-        setOpaque(false);
+    @Override
+    protected String title() {
+        return "CPU Load (%)";
+    }
+
+    @Override
+    protected String unit() {
+        return "";
     }
 }
