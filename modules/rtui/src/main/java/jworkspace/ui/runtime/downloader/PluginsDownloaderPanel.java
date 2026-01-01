@@ -26,6 +26,7 @@ package jworkspace.ui.runtime.downloader;
 */
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ import jworkspace.runtime.downloader.service.DownloadItem;
 import jworkspace.runtime.downloader.service.DownloadService;
 import jworkspace.runtime.downloader.service.DownloadStatus;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
+import jworkspace.ui.widgets.ButtonColumn;
 
 public class PluginsDownloaderPanel extends KPanel {
 
@@ -88,12 +90,47 @@ public class PluginsDownloaderPanel extends KPanel {
             ProgressBarRenderer progressRenderer = new ProgressBarRenderer();
             table.getColumnModel().getColumn(2)
                 .setCellRenderer(progressRenderer);
-            table.getColumnModel().getColumn(5)
-                .setCellRenderer(new ButtonRenderer());
-            table.getColumnModel().getColumn(5)
-                .setCellEditor(new ButtonEditor(downloadController));
+
+            ButtonColumn downloadButtonColumn = getDownloadButtonColumn(downloadController);
+            table.getColumnModel().getColumn(5).setCellRenderer(downloadButtonColumn);
+            table.getColumnModel().getColumn(5).setCellEditor(downloadButtonColumn);
         }
         return table;
+    }
+
+    private ButtonColumn getDownloadButtonColumn(DownloadController downloadController) {
+
+        return new ButtonColumn("Action", (row, col) -> {
+            DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
+
+            switch (item.getStatus()) {
+                case QUEUED -> downloadController.start(row);
+                case DOWNLOADING, VERIFYING -> downloadController.cancel(row);
+                default -> downloadController.remove(row);
+            }
+
+            // Refresh table so the button text updates dynamically
+            table.repaint();
+        }) {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
+                DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
+
+                // Dynamically set button text based on DownloadStatus
+                renderButton.setText(switch (item.getStatus()) {
+                    case QUEUED -> "Start";
+                    case DOWNLOADING, VERIFYING -> "Cancel";
+                    default -> "Remove";
+                });
+
+                // Call the parent method to handle enabled/disabled state, background, cursor
+                setupButtonForCell(table, renderButton, row, column, isSelected);
+                installHoverCursor(table, column);
+                return renderButton;
+            }
+        };
     }
 
     private DownloadTableModel getModel() {
