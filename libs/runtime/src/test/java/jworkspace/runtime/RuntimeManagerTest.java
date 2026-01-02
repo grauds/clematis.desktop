@@ -19,6 +19,8 @@ import jworkspace.api.IWorkspaceListener;
 import jworkspace.installer.Application;
 import jworkspace.installer.JVM;
 import jworkspace.installer.WorkspaceInstaller;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
+import jworkspace.runtime.process.JavaProcess;
 
 public class RuntimeManagerTest {
 

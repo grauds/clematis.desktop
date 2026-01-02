@@ -49,7 +49,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import jworkspace.runtime.WorkspacePluginContext;
+import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
 import lombok.Getter;

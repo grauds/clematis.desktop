@@ -43,7 +43,7 @@ import com.hyperrealm.kiwi.util.StringUtils;
 import jworkspace.api.DefinitionDataSource;
 import jworkspace.api.DefinitionNode;
 import jworkspace.api.IWorkspaceComponent;
-import jworkspace.runtime.WorkspacePluginContext;
+import jworkspace.runtime.plugin.WorkspacePluginContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;

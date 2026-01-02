@@ -39,7 +39,7 @@ import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
-import jworkspace.runtime.WorkspacePluginLocator;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.MainFrame;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;

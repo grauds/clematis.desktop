@@ -1,4 +1,4 @@
-package jworkspace.runtime;
+package jworkspace.runtime.plugin;
 
 /* ----------------------------------------------------------------------------
    Java Workspace

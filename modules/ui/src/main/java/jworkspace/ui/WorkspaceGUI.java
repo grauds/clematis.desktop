@@ -64,7 +64,7 @@ import jworkspace.Workspace;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.IWorkspaceUI;
 import jworkspace.config.ServiceLocator;
-import jworkspace.runtime.WorkspacePluginContext;
+import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.config.DesktopServiceLocator;

@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.jar.Manifest;
+import jworkspace.runtime.plugin.WorkspacePluginContext;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

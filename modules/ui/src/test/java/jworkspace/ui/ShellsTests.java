@@ -38,7 +38,7 @@ import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
-import jworkspace.runtime.WorkspacePluginLocator;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.UIConfig;
 

@@ -45,9 +45,9 @@ import javax.swing.border.EtchedBorder;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
-import jworkspace.runtime.downloader.service.DownloadItem;
-import jworkspace.runtime.downloader.service.DownloadService;
-import jworkspace.runtime.downloader.service.DownloadStatus;
+import jworkspace.runtime.downloader.DownloadItem;
+import jworkspace.runtime.downloader.DownloadService;
+import jworkspace.runtime.downloader.DownloadStatus;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
 import jworkspace.ui.widgets.ButtonColumn;
 

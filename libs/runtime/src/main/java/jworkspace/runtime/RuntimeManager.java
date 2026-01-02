@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import jworkspace.api.EventsDispatcher;
 import jworkspace.api.IWorkspaceListener;
+import jworkspace.runtime.process.JavaProcess;
 
 /**
  * Runtime manager component

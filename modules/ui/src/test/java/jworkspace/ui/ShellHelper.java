@@ -9,7 +9,7 @@ import java.util.jar.Manifest;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 
-import jworkspace.runtime.WorkspacePluginLocator;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 
 /**
  * @author Anton Troshin

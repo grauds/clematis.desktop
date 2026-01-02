@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jworkspace.runtime.JavaProcess;
+import jworkspace.runtime.process.JavaProcess;
 import lombok.extern.java.Log;
 
 /**

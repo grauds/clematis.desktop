@@ -1,4 +1,6 @@
-package jworkspace.runtime;
+package jworkspace.runtime.plugin;
+
+import jworkspace.runtime.AbstractTask;
 
 /**
  * Plugin objects should extend this class to be able to run in a separate thread

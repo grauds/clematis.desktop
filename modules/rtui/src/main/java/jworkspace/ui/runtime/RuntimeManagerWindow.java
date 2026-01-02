@@ -58,9 +58,9 @@ import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.config.ServiceLocator;
-import jworkspace.runtime.JavaProcess;
 import jworkspace.runtime.RuntimeManager;
-import jworkspace.runtime.WorkspacePluginContext;
+import jworkspace.runtime.plugin.WorkspacePluginContext;
+import jworkspace.runtime.process.JavaProcess;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.api.views.DefaultCompoundView;
 import jworkspace.ui.config.DesktopServiceLocator;

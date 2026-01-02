@@ -1,5 +1,7 @@
 package jworkspace.runtime;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
@@ -19,9 +21,16 @@ public abstract class AbstractTask extends Task {
 
     private Date startTime;
 
-    AbstractTask(String name) {
+    /**
+     * Output stream for process logs
+     */
+    private final OutputStream logs = new BufferedOutputStream(new ByteArrayOutputStream());
+
+    public AbstractTask(String name) {
         this.name = name;
     }
+
+    protected AbstractTask() {}
 
     /**
      * Returns time, elapsed from process start.
@@ -29,6 +38,4 @@ public abstract class AbstractTask extends Task {
     public long getElapsedTime() {
         return (System.currentTimeMillis() - getStartTime().getTime()) / MILLISEC_IN_SECOND;
     }
-
-    public abstract OutputStream getLogs();
 }

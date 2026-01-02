@@ -1,10 +1,11 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Workspace" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
+    <option name="ALTERNATIVE_JRE_PATH" value="homebrew-21" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="jworkspace.Workspace" />
     <module name="clematis.jworkspace.main" />
     <option name="PROGRAM_PARAMETERS" value="--name root --password root" />
+    <option name="VM_PARAMETERS" value="-Dsun.java2d.opengl=true -Dsun.java2d.metal=false -Dapple.awt.live-resize=false" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="jworkspace.*" />

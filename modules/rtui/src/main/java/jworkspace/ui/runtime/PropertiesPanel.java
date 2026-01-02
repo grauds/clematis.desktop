@@ -42,7 +42,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
-import jworkspace.runtime.JavaProcess;
+import jworkspace.runtime.process.JavaProcess;
 import jworkspace.ui.runtime.plugin.IPluginSelectionListener;
 
 /**

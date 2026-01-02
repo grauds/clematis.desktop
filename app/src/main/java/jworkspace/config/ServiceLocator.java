@@ -38,7 +38,7 @@ import static jworkspace.Workspace.PLUGINS_DIRECTORY;
 import jworkspace.api.EventsDispatcher;
 import jworkspace.api.IWorkspaceComponent;
 import jworkspace.runtime.RuntimeManager;
-import jworkspace.runtime.WorkspacePluginLocator;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.users.ProfilesManager;
 import lombok.Getter;
 import lombok.extern.java.Log;
