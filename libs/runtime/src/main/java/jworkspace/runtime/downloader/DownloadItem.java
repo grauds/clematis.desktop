@@ -106,6 +106,9 @@ public class DownloadItem {
      */
     private final List<String> logs = new CopyOnWriteArrayList<>();
 
+    /** Listeners for live log updates */
+    private final List<IDownloadLogListener> listeners = new CopyOnWriteArrayList<>();
+
     /**
      * Creates a new download item and initializes its log.
      */
@@ -142,21 +145,37 @@ public class DownloadItem {
     }
 
     /**
-     * Adds a timestamped log entry to this download.
-     *
-     * @param message log message
-     */
-    public void addLog(String message) {
-        logs.add(time() + " " + message);
-    }
-
-    /**
      * Returns an immutable snapshot of the log entries.
      *
      * @return list of log messages
      */
     public List<String> getLogs() {
         return List.copyOf(logs);
+    }
+
+    /** Add a listener for live log updates */
+    public void addListener(IDownloadLogListener listener) {
+        listeners.add(listener);
+    }
+
+    /** Remove a listener */
+    public void removeListener(IDownloadLogListener listener) {
+        listeners.remove(listener);
+    }
+
+    /**
+     * Adds a timestamped log entry to this download.
+     *
+     * @param message log message
+     */
+    public void addLog(String message) {
+        String line = LocalTime.now().withNano(0) + " " + message;
+        logs.add(line);
+
+        // push to all listeners
+        for (IDownloadLogListener l : listeners) {
+            l.log(line);
+        }
     }
 
     /**

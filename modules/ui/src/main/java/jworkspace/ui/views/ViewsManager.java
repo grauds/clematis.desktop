@@ -74,7 +74,7 @@ import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
-import jworkspace.ui.utils.SwingUtils;
+import jworkspace.ui.util.SwingUtils;
 import lombok.extern.java.Log;
 
 /**

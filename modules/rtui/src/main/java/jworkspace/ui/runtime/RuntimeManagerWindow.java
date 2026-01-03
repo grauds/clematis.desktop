@@ -31,6 +31,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Image;
+import java.awt.Insets;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,6 +49,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeListener;
 
@@ -68,7 +70,7 @@ import jworkspace.ui.runtime.downloader.PluginsDownloaderPanel;
 import jworkspace.ui.runtime.monitor.MonitorPanel;
 import jworkspace.ui.runtime.plugin.IPluginUninstallActionListener;
 import jworkspace.ui.runtime.plugin.PluginsPanel;
-import jworkspace.ui.utils.SwingUtils;
+import jworkspace.ui.util.SwingUtils;
 
 /**
  * Runtime Manager window shows information about loaded shells,
@@ -100,6 +102,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         this.pluginContext = pluginContext;
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pluginsPanel, new PluginsDownloaderPanel());
+        split.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
         split.setOpaque(false);
 
         JTabbedPane tabbedPane = new JTabbedPane();

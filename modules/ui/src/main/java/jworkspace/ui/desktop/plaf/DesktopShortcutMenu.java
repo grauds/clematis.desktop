@@ -10,7 +10,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-import static jworkspace.ui.utils.SwingUtils.createMenuItem;
+import static jworkspace.ui.util.SwingUtils.createMenuItem;
 import jworkspace.ui.api.action.UISwitchListener;
 
 public class DesktopShortcutMenu extends JPopupMenu {

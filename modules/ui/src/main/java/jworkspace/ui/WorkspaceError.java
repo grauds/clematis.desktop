@@ -48,7 +48,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.api.WorkspaceException;
 import jworkspace.ui.config.DesktopServiceLocator;
-import jworkspace.ui.utils.SwingUtils;
+import jworkspace.ui.util.SwingUtils;
 import lombok.extern.java.Log;
 
 /**

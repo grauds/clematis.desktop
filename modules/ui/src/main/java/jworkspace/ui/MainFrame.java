@@ -56,7 +56,7 @@ import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.profiles.LoginPanel;
-import jworkspace.ui.utils.SwingUtils;
+import jworkspace.ui.util.SwingUtils;
 import jworkspace.ui.widgets.GlassOutlinePane;
 import jworkspace.users.LoginValidator;
 import lombok.Getter;

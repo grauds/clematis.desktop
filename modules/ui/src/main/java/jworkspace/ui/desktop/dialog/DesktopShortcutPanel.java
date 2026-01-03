@@ -52,7 +52,7 @@ import com.hyperrealm.kiwi.ui.KButton;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import static jworkspace.ui.utils.SwingUtils.toImageIcon;
+import static jworkspace.ui.util.SwingUtils.toImageIcon;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.installer.ApplicationDataSource;

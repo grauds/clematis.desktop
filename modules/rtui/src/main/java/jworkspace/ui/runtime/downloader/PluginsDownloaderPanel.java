@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +39,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import com.hyperrealm.kiwi.ui.KPanel;
@@ -48,6 +49,7 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 import jworkspace.runtime.downloader.DownloadItem;
 import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
+import jworkspace.ui.logging.LogViewerPanel;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
 import jworkspace.ui.widgets.ButtonColumn;
 
@@ -55,11 +57,12 @@ public class PluginsDownloaderPanel extends KPanel {
 
     private DownloadTableModel model;
     private JTable table;
-    private JTextArea logArea;
+    private LogViewerPanel logViewer;
 
     @SuppressWarnings("checkstyle:MagicNumber")
     public PluginsDownloaderPanel() {
         setLayout(new BorderLayout());
+
         add(createPluginsLabel(), BorderLayout.NORTH);
 
         KPanel c = new KPanel(new BorderLayout());
@@ -67,33 +70,49 @@ public class PluginsDownloaderPanel extends KPanel {
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
             new JScrollPane(getTable()),
-            new JScrollPane(getLogArea())
+            new JScrollPane(getLogViewer())
         );
+        splitPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
         splitPane.setDividerLocation(300);
         c.add(splitPane, BorderLayout.CENTER);
 
         add(c, BorderLayout.CENTER);
+    }
 
-        new javax.swing.Timer(300, e -> refreshSelectedLog()).start();
+    private LogViewerPanel getLogViewer() {
+        if (logViewer == null) {
+            logViewer = new LogViewerPanel(getPreferredSize().width);
+        }
+        return logViewer;
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
     private JTable getTable() {
-        if (table == null) {
+        if (this.table == null) {
             DownloadController downloadController = new DownloadController(
                 getModel(), new DownloadService()
             );
 
-            table = new JTable(model);
-            table.setRowHeight(30);
+            this.table = new JTable(this.model);
+            this.table.setRowHeight(30);
 
             ProgressBarRenderer progressRenderer = new ProgressBarRenderer();
-            table.getColumnModel().getColumn(2)
+            this.table.getColumnModel().getColumn(2)
                 .setCellRenderer(progressRenderer);
 
             ButtonColumn downloadButtonColumn = getDownloadButtonColumn(downloadController);
-            table.getColumnModel().getColumn(5).setCellRenderer(downloadButtonColumn);
-            table.getColumnModel().getColumn(5).setCellEditor(downloadButtonColumn);
+            this.table.getColumnModel().getColumn(5).setCellRenderer(downloadButtonColumn);
+            this.table.getColumnModel().getColumn(5).setCellEditor(downloadButtonColumn);
+
+            this.table.getColumnModel().getColumn(1).setMaxWidth(90);
+            this.table.getColumnModel().getColumn(2).setMaxWidth(90);
+            this.table.getColumnModel().getColumn(3).setMaxWidth(90);
+            this.table.getColumnModel().getColumn(4).setMaxWidth(90);
+            this.table.getColumnModel().getColumn(5).setMaxWidth(90);
+
+            this.table.getSelectionModel().addListSelectionListener(e -> {
+                switchItemLogs();
+            });
         }
         return table;
     }
@@ -140,14 +159,6 @@ public class PluginsDownloaderPanel extends KPanel {
         return model;
     }
 
-    private JTextArea getLogArea() {
-        if (logArea == null) {
-            logArea = new JTextArea();
-            logArea.setEditable(false);
-        }
-        return logArea;
-    }
-
     @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ReturnCount"})
     private KPanel getAddressPanel() {
         KPanel inputPanel = new KPanel(new BorderLayout(5, 5));
@@ -169,6 +180,9 @@ public class PluginsDownloaderPanel extends KPanel {
             DownloadItem item = new DownloadItem(url, DownloadStatus.QUEUED, 0, -1);
             model.addItem(item);
             model.fireTableDataChanged();
+
+            // Attach log listener to update the viewer
+            item.addListener(s -> logViewer.append(s));
 
             urlField.setText("");
         });
@@ -202,18 +216,13 @@ public class PluginsDownloaderPanel extends KPanel {
         return l;
     }
 
-    private void refreshSelectedLog() {
+    private void switchItemLogs() {
         int row = table.getSelectedRow();
+        getLogViewer().clear();
         if (row >= 0) {
             DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
-            updateLogArea(item);
-        } else {
-            getLogArea().setText("");
+            List<String> logs = item.getLogs();
+            logs.forEach(getLogViewer()::append);
         }
-    }
-
-    private void updateLogArea(DownloadItem item) {
-        List<String> log = item.getLogs();
-        getLogArea().setText(String.join("\n", log));
     }
 }

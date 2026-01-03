@@ -21,9 +21,6 @@ public abstract class AbstractTask extends Task {
 
     private Date startTime;
 
-    /**
-     * Output stream for process logs
-     */
     private final OutputStream logs = new BufferedOutputStream(new ByteArrayOutputStream());
 
     public AbstractTask(String name) {

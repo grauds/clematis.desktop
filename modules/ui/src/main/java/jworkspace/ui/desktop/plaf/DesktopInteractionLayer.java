@@ -32,7 +32,7 @@ import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.desktop.dialog.DesktopShortcutDialog;
-import jworkspace.ui.utils.FileUtils;
+import jworkspace.ui.util.FileUtils;
 
 /**
  * The DesktopInteractionLayer class is a Swing component responsible for managing the interaction layer

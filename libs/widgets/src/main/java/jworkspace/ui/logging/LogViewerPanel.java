@@ -27,6 +27,8 @@ package jworkspace.ui.logging;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.AdjustmentListener;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,16 +39,26 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.BoxView;
+import javax.swing.text.ComponentView;
+import javax.swing.text.Element;
+import javax.swing.text.IconView;
+import javax.swing.text.LabelView;
+import javax.swing.text.ParagraphView;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 
 /**
  * Reusable Swing component for displaying streaming logs.
@@ -62,6 +74,7 @@ import javax.swing.text.StyledDocument;
  */
 public final class LogViewerPanel extends JPanel {
 
+    private final int preferredWidth;
     private JTextPane textPane;
     private final StyledDocument document = getTextPane().getStyledDocument();
 
@@ -72,21 +85,23 @@ public final class LogViewerPanel extends JPanel {
     private final AttributeSet errorStyle;
 
     @SuppressWarnings("checkstyle:MagicNumber")
-    public LogViewerPanel() {
+    public LogViewerPanel(int preferredWidth) {
         super(new BorderLayout());
-
-        textPane.setEditable(false);
+        this.preferredWidth = preferredWidth;
 
         infoStyle = createStyle(Color.BLACK, false);
         warnStyle = createStyle(new Color(255, 140, 0), false);
         errorStyle = createStyle(Color.RED, true);
 
-        JScrollPane scrollPane = new JScrollPane(textPane);
+        JScrollPane scrollPane = new JScrollPane(getTextPane());
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
         installAutoScrollDetection(scrollPane);
 
         add(createToolbar(), BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+
+        setPreferredSize(new Dimension(preferredWidth, 200));
     }
 
     private JTextPane getTextPane() {
@@ -94,11 +109,12 @@ public final class LogViewerPanel extends JPanel {
             this.textPane = new JTextPane() {
                 @Override
                 public boolean getScrollableTracksViewportWidth() {
-                    // Wrap lines if viewport is narrower than content
-                    return getUI().getPreferredSize(this).width <= getParent().getSize().width;
+                    // Always wrap to viewport width, never expand horizontally
+                    return getParent() != null && getParent().getWidth() >= preferredWidth;
                 }
             };
-
+            this.textPane.setEditable(false);
+            this.textPane.setEditorKit(new WrapEditorKit());
         }
         return this.textPane;
     }
@@ -111,7 +127,7 @@ public final class LogViewerPanel extends JPanel {
 
         SwingUtilities.invokeLater(() -> {
             try {
-                StyledDocument doc = textPane.getStyledDocument();
+                StyledDocument doc = getTextPane().getStyledDocument();
                 LogSeverity severity = LogSeverityDetector.detect(message);
                 AttributeSet style = switch (severity) {
                     case INFO -> infoStyle;
@@ -121,7 +137,7 @@ public final class LogViewerPanel extends JPanel {
 
                 doc.insertString(doc.getLength(), message + "\n", style);
                 if (autoScroll) {
-                    textPane.setCaretPosition(document.getLength());
+                    getTextPane().setCaretPosition(document.getLength());
                 }
             } catch (BadLocationException ignored) {
                 /* should not happen */
@@ -170,9 +186,9 @@ public final class LogViewerPanel extends JPanel {
     }
 
     private void copyAll() {
-        textPane.selectAll();
-        textPane.copy();
-        textPane.select(0, 0);
+        getTextPane().selectAll();
+        getTextPane().copy();
+        getTextPane().select(0, 0);
     }
 
     private void save() {
@@ -181,7 +197,7 @@ public final class LogViewerPanel extends JPanel {
             try {
                 Files.writeString(
                     fc.getSelectedFile().toPath(),
-                    textPane.getText(),
+                    getTextPane().getText(),
                     StandardCharsets.UTF_8
                 );
             } catch (IOException ex) {
@@ -210,5 +226,44 @@ public final class LogViewerPanel extends JPanel {
         StyleConstants.setForeground(s, color);
         StyleConstants.setBold(s, bold);
         return s;
+    }
+
+    private static class WrapEditorKit extends StyledEditorKit {
+        @Override
+        public ViewFactory getViewFactory() {
+            return new WrapColumnFactory();
+        }
+
+        private static class WrapColumnFactory implements ViewFactory {
+            @SuppressWarnings({"checkstyle:MissingSwitchDefault", "checkstyle:ReturnCount"})
+            @Override
+            public View create(Element elem) {
+                String kind = elem.getName();
+                if (kind != null) {
+                    switch (kind) {
+                        case AbstractDocument.ContentElementName:
+                            return new LabelView(elem);
+                        case AbstractDocument.ParagraphElementName:
+                            return new ParagraphView(elem) {
+                                @Override
+                                public float getMinimumSpan(int axis) {
+                                    // Forces wrapping horizontally
+                                    if (axis == View.X_AXIS) {
+                                        return 0;
+                                    }
+                                    return super.getMinimumSpan(axis);
+                                }
+                            };
+                        case AbstractDocument.SectionElementName:
+                            return new BoxView(elem, View.Y_AXIS);
+                        case StyleConstants.ComponentElementName:
+                            return new ComponentView(elem);
+                        case StyleConstants.IconElementName:
+                            return new IconView(elem);
+                    }
+                }
+                return new LabelView(elem);
+            }
+        }
     }
 }

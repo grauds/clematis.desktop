@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -59,6 +61,8 @@ public class PluginsPanel extends KPanel {
     private final List<IPluginUninstallActionListener> uninstallActionListeners = new ArrayList<>();
 
     public PluginsPanel() {
+
+        setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
 
         setLayout(new BorderLayout());
         add(createPluginsLabel(), BorderLayout.NORTH);
