@@ -344,7 +344,7 @@ public class InternalToolBar extends KPanel implements MouseListener, MouseMotio
 
     static class InternalFrame extends JInternalFrame {
 
-        private InternalToolBar tb;
+        private final InternalToolBar tb;
 
 
         InternalFrame(String title, JPanel c, JDesktopPane d, InternalToolBar toolbar) {

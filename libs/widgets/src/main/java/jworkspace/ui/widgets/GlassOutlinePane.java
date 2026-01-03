@@ -31,7 +31,7 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
-import jworkspace.ui.utils.SwingUtils;
+import jworkspace.ui.util.SwingUtils;
 /**
  * A helper pane to use as an outline for component bounds. It has to be placed on top of the component
  * and have the same size as the component. Then it can be dragged to change the component bounds.

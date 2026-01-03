@@ -49,7 +49,7 @@ import lombok.Getter;
 public class JPopupMenuEx extends JPopupMenu {
     /**
      * Take into account most window managers have a task or system
-     * bar always on top on the bottom of the screen.  Empirically
+     * bar always on top or at the bottom of the screen.  Empirically
      * determined value.
      */
     private static final int TASKBAR_HEIGHT = 55;

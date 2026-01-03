@@ -1,4 +1,4 @@
-package jworkspace.ui.utils;
+package jworkspace.ui.util;
 
 import java.awt.Graphics2D;
 import java.awt.Image;

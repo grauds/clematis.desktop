@@ -1,4 +1,4 @@
-package jworkspace.ui.utils;
+package jworkspace.ui.util;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
