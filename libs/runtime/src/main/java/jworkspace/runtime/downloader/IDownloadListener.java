@@ -28,4 +28,5 @@ public interface IDownloadListener {
 
     void update(int row);
 
+    void finished(int row);
 }

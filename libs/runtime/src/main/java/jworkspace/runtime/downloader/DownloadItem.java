@@ -265,9 +265,9 @@ public class DownloadItem {
         }
 
         Path targetFile = Files.createDirectories(targetDirectory).resolve(fileName);
-        Files.move(tempFile, targetFile);
-
         completedFile = targetFile;
+
+        Files.move(tempFile, targetFile);
         tempFile = null;
 
         addLog("Download finalized: " + completedFile);

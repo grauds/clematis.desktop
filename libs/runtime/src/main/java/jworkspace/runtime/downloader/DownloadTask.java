@@ -157,6 +157,7 @@ public final class DownloadTask extends AbstractTask {
             item.setStatus(DownloadStatus.COMPLETED);
             item.addLog("Download completed.");
             listener.update(row);
+            listener.finished(row);
 
         } catch (Exception e) {
             // Any exception is treated as a download failure

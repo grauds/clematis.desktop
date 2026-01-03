@@ -24,7 +24,16 @@ package jworkspace.ui.runtime.downloader;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import java.awt.Frame;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+
+import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.PluginException;
+import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
+import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.downloader.DownloadItem;
@@ -32,6 +41,8 @@ import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
 import jworkspace.runtime.downloader.DownloadTask;
 import jworkspace.runtime.downloader.IDownloadListener;
+import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.plugins.ShellsLoader;
 
 public class DownloadController implements IDownloadListener {
 
@@ -72,7 +83,9 @@ public class DownloadController implements IDownloadListener {
         update(row);
     }
 
-    public void remove(int row) {
+    public void remove(int row) throws IOException {
+        DownloadItem item = model.getItem(row);
+        Files.deleteIfExists(item.getCompletedFile());
         model.removeRow(row);
     }
 
@@ -87,5 +100,37 @@ public class DownloadController implements IDownloadListener {
     @Override
     public void update(int row) {
         this.model.updateRow(row);
+    }
+
+    @Override
+    public void finished(int row) {
+        DownloadItem item = model.getItem(row);
+        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
+
+        KQuestionDialog questionDialog = new KQuestionDialog(parent) {
+            @Override
+            protected boolean accept() {
+                KMessageDialog messageDialog = new KMessageDialog(parent);
+                try {
+                    Plugin plugin = ServiceLocator.getInstance().getPluginLocator().loadPlugin(
+                         item.getCompletedFile().toFile(), PluginDTO.PLUGIN_TYPE_ANY
+                    );
+                    Files.move(item.getCompletedFile(), Path.of(
+                        ShellsLoader.SHELLS_DIRECTORY, item.getFileName()
+                    ));
+                    messageDialog.setMessage(
+                        String.format("Plugin %s installed successfully.", plugin)
+                    );
+                } catch (IOException | PluginException e) {
+                    messageDialog.setMessage(
+                        String.format("Error installing the plugin: %s.", e.getMessage())
+                    );
+                }
+                messageDialog.setVisible(true);
+                return true;
+            }
+        };
+        questionDialog.setMessage(String.format("Are you sure to install a plugin from %s?", item.getCompletedFile()));
+        questionDialog.setVisible(true);
     }
 }

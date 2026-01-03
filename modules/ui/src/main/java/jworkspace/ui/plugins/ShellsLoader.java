@@ -68,11 +68,11 @@ import lombok.extern.java.Log;
 @Log
 public class ShellsLoader extends Task {
 
+    /** Directory name under which shell plugins are located */
+    public static final String SHELLS_DIRECTORY = "shells";
+
     /** Constant representing 100% progress */
     static final int PROGRESS_COMPLETED = 100;
-
-    /** Directory name under which shell plugins are located */
-    static final String SHELLS_DIRECTORY = "shells";
 
     /** Reference to the progress dialog used to show progress messages and percentage */
     private final ProgressDialog progressDialog;

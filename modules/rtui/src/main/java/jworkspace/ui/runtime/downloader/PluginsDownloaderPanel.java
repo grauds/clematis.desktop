@@ -29,6 +29,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +45,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.runtime.downloader.DownloadItem;
 import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.logging.LogViewerPanel;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
 import jworkspace.ui.widgets.ButtonColumn;
@@ -125,7 +128,18 @@ public class PluginsDownloaderPanel extends KPanel {
             switch (item.getStatus()) {
                 case QUEUED -> downloadController.start(row);
                 case DOWNLOADING, VERIFYING -> downloadController.cancel(row);
-                default -> downloadController.remove(row);
+                default -> {
+                    try {
+                        downloadController.remove(row);
+                    } catch (IOException e) {
+                        ExceptionDialog exceptionDialog = new ExceptionDialog(
+                            DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
+                            "Error removing downloaded file"
+                        );
+                        exceptionDialog.setException("Cannot delete file", e);
+                        exceptionDialog.setVisible(true);
+                    }
+                }
             }
 
             // Refresh table so the button text updates dynamically
