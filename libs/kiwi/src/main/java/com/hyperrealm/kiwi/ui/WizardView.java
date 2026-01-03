@@ -80,27 +80,20 @@ public abstract class WizardView extends KPanel {
 
     private static final Insets DEFAULT_INSETS = new Insets(1, 5, 1, 5);
 
-    private KButton bPrev, bNext, bCancel;
+    private final WizardPanelSequence sequence;
 
-    private KLabel iconLabel;
-
-    private WizardPanelSequence sequence;
-
-    private KPanel content;
-
+    private final KButton bPrev;
+    private final KButton bNext;
+    private final KButton bCancel;
+    private final KLabel iconLabel;
+    private final KPanel content;
     private WizardPanel curPanel = null;
-
-    private Icon iNext;
-
+    private final Icon iNext;
     private boolean finish = false;
-
-    private ActionSupport support;
-
-    private String sNext;
-
-    private String sFinish;
-
-    private ButtonPanel bButtons;
+    private final ActionSupport support;
+    private final String sNext;
+    private final String sFinish;
+    private final ButtonPanel bButtons;
 
     /**
      * Construct a new <code>WizardView</code>. The <code>buildSequence()</code>
