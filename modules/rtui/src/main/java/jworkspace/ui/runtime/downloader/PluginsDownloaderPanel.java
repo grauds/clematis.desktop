@@ -215,6 +215,5 @@ public class PluginsDownloaderPanel extends KPanel {
     private void updateLogArea(DownloadItem item) {
         List<String> log = item.getLogs();
         getLogArea().setText(String.join("\n", log));
-        getLogArea().setCaretPosition(getLogArea().getDocument().getLength());
     }
 }

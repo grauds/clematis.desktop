@@ -24,6 +24,10 @@ package jworkspace.runtime.downloader;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -51,8 +55,14 @@ public class DownloadItem {
     /** Total size of the file in bytes, or -1 if unknown */
     private volatile long totalBytes = -1;
 
-    /** Number of bytes downloaded so far */
+    /** Bytes downloaded */
     private volatile long downloadedBytes = 0;
+
+    /** Temporary file where binary data is written during download */
+    private volatile Path tempFile;
+
+    /** Final file path after successful download */
+    private volatile Path completedFile;
 
     /** Current download speed in bytes per second */
     private volatile long speedBytesPerSec = 0;
@@ -193,5 +203,72 @@ public class DownloadItem {
             || status == DownloadStatus.FAILED
             || status == DownloadStatus.CANCELED;
     }
+
+    /**
+     * Creates a temporary file for storing downloaded binary data.
+     *
+     * <p>The file is created lazily and should be written to using
+     * {@link #openTempOutputStream()}.</p>
+     *
+     * @throws IOException if the temp file cannot be created
+     */
+    public synchronized void createTempFile() throws IOException {
+        if (tempFile == null) {
+            tempFile = Files.createTempFile("download-", ".part");
+            addLog("Temporary file created: " + tempFile);
+        }
+    }
+
+    /**
+     * Opens an output stream to the temporary download file.
+     *
+     * @return output stream for writing binary data
+     * @throws IOException if the file cannot be opened
+     */
+    public OutputStream openTempOutputStream() throws IOException {
+        if (tempFile == null) {
+            throw new IllegalStateException("Temporary file not created");
+        }
+        return Files.newOutputStream(tempFile);
+    }
+
+    /**
+     * Finalizes the download by renaming the temporary file to its final name.
+     *
+     * <p>This method should be called only after a successful download.</p>
+     *
+     * @param targetDirectory directory where the file should be placed
+     * @throws IOException if the file cannot be moved
+     */
+    public synchronized void completeDownload(Path targetDirectory) throws IOException {
+        if (tempFile == null) {
+            throw new IllegalStateException("No temporary file to finalize");
+        }
+
+        Path targetFile = Files.createDirectories(targetDirectory).resolve(fileName);
+        Files.move(tempFile, targetFile);
+
+        completedFile = targetFile;
+        tempFile = null;
+
+        addLog("Download finalized: " + completedFile);
+    }
+
+    /**
+     * Deletes the temporary file if the download was canceled or failed.
+     */
+    public synchronized void cleanupTempFile() {
+        try {
+            if (tempFile != null) {
+                Files.deleteIfExists(tempFile);
+                addLog("Temporary file deleted");
+            }
+        } catch (IOException ignored) {
+            // Best-effort cleanup
+        } finally {
+            tempFile = null;
+        }
+    }
+
 }
 

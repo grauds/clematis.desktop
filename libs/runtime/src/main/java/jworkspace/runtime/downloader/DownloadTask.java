@@ -25,9 +25,11 @@ package jworkspace.runtime.downloader;
   ----------------------------------------------------------------------------
 */
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.util.Date;
 
 import jworkspace.runtime.AbstractTask;
@@ -48,6 +50,8 @@ import lombok.EqualsAndHashCode;
 @Data
 public final class DownloadTask extends AbstractTask {
 
+    public static final String DEFAULT_PATH = ".downloads";
+
     /** Buffer size (8 KB) used for streaming data from the network */
     private static final int BUFFER_SIZE = 8192;
     /**
@@ -62,11 +66,20 @@ public final class DownloadTask extends AbstractTask {
      * UI row index associated with this download
      */
     private int row;
+    /**
+     * Path to store the downloaded file
+     */
+    private Path path = Path.of(DEFAULT_PATH);
 
     public DownloadTask(DownloadItem item, IDownloadListener listener, int row) {
         this.item = item;
         this.listener = listener;
         this.row = row;
+    }
+
+    public DownloadTask(DownloadItem item, IDownloadListener listener, Path path, int row) {
+        this(item, listener, row);
+        this.path = path;
     }
 
     /**
@@ -85,6 +98,7 @@ public final class DownloadTask extends AbstractTask {
     @Override
     public void run() {
         setStartTime(new Date());
+
         try {
             // Transition the item into the active downloading state
             item.setStatus(DownloadStatus.DOWNLOADING);
@@ -95,28 +109,33 @@ public final class DownloadTask extends AbstractTask {
             URL url = URI.create(item.getUrl()).toURL();
             URLConnection conn = url.openConnection();
 
-            // Retrieve the expected content length (may be -1 if unknown)
+            // Retrieve the expected content length (it may be -1 if unknown)
             long total = conn.getContentLengthLong();
+            item.createTempFile();
 
-            // Open input stream and ensure it is closed automatically
-            try (InputStream in = conn.getInputStream()) {
-                byte[] buffer = new byte[BUFFER_SIZE];
+            try (InputStream in = conn.getInputStream();
+                 OutputStream out = item.openTempOutputStream()) {
+
                 long downloaded = 0;
 
                 // Used for calculating average download speed
                 long start = System.currentTimeMillis();
 
+                byte[] buffer = new byte[BUFFER_SIZE];
                 int read;
+
                 while ((read = in.read(buffer)) != -1) {
 
                     // Check for cancellation request
                     if (item.getCancelled().get()) {
-                        item.addLog("Canceled.");
+                        item.cleanupTempFile();
                         item.setStatus(DownloadStatus.CANCELED);
+                        item.addLog("Canceled.");
                         listener.update(row);
                         return;
                     }
 
+                    out.write(buffer, 0, read);
                     // Update downloaded byte count
                     downloaded += read;
                     item.setDownloadedBytes(downloaded);
@@ -134,16 +153,19 @@ public final class DownloadTask extends AbstractTask {
             }
 
             // Download completed successfully
+            item.completeDownload(path);
             item.setStatus(DownloadStatus.COMPLETED);
             item.addLog("Download completed.");
             listener.update(row);
 
         } catch (Exception e) {
             // Any exception is treated as a download failure
+            item.cleanupTempFile();
             item.setStatus(DownloadStatus.FAILED);
             item.addLog("Download failed: " + e.getMessage());
             listener.update(row);
         }
     }
+
 }
 
