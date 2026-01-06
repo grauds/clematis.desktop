@@ -31,18 +31,13 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.Action;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
@@ -57,10 +52,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ControlPanel extends KPanel implements LayoutManager, MouseListener, MouseMotionListener, ActionListener {
+public class ControlPanel extends KPanel implements LayoutManager, ActionListener {
     public static final String ORIENTATION_PROPERTY = "ORIENTATION";
-    public static final String DRAGGING_PROPERTY = "DRAGGING";
-    public static final String DRAGGED_PROPERTY = "DRAGGED";
     /**
      * Specifies that components should be laid out left to right.
      */
@@ -74,21 +67,11 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
      */
     private int orientation;
 
+    private final CButtonsPane buttonsPane;
     private CScrollButton upButton = null;
-
     private CScrollButton downButton = null;
 
     private final JViewport viewport = new JViewport();
-
-    private final CButtonsPane buttonsPane;
-    /**
-     * Mouse pointer coordinate.
-     */
-    private Point pointer = new Point();
-    /**
-     * Is this control being dragged?
-     */
-    private boolean dragged = false;
 
     public ControlPanel() {
         this(ControlPanel.Y_AXIS);
@@ -97,15 +80,10 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
     private ControlPanel(int orientation) {
         super();
         this.orientation = orientation;
-
         buttonsPane = new CButtonsPane(orientation);
-        addPropertyChangeListener(buttonsPane);
-
         createScrollButtons(this);
-
+        addPropertyChangeListener(buttonsPane);
         firePropertyChange(ORIENTATION_PROPERTY, -1, orientation);
-        addMouseListener(this);
-        addMouseMotionListener(this);
         viewport.setOpaque(false);
     }
 
@@ -253,30 +231,30 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
 
     }
 
-    /**
-     * Layouts control panel with scroll buttons and
-     * button's pane.
-     */
     @SuppressWarnings("MagicNumber")
     public void layoutContainer(Container parent) {
         if (orientation == ControlPanel.Y_AXIS) {
-            upButton.setBounds(0, 0, getWidth(),
-                upButton.getPreferredSize().height);
+            upButton.setBounds(0, 0, getWidth(), upButton.getPreferredSize().height);
             downButton.setBounds(0, getHeight() - downButton.getPreferredSize().height,
                 getWidth(),
-                downButton.getPreferredSize().height);
+                downButton.getPreferredSize().height
+            );
             viewport.reshape(0, upButton.getPreferredSize().height + 3,
-                getWidth(), getHeight() - downButton.getPreferredSize().height
-                    - upButton.getPreferredSize().height - 6);
+                getWidth(), getHeight()
+                    - downButton.getPreferredSize().height
+                    - upButton.getPreferredSize().height - 6
+            );
         } else if (orientation == ControlPanel.X_AXIS) {
             upButton.setBounds(0, 0, upButton.getPreferredSize().width, getHeight());
             downButton.setBounds(getWidth() - downButton.getPreferredSize().width,
                 0, downButton.getPreferredSize().width,
-                getHeight());
+                getHeight()
+            );
             viewport.reshape(upButton.getPreferredSize().width + 3,
                 0, getWidth() - downButton.getPreferredSize().width
                     - upButton.getPreferredSize().width - 6,
-                getHeight());
+                getHeight()
+            );
         }
     }
 
@@ -292,66 +270,8 @@ public class ControlPanel extends KPanel implements LayoutManager, MouseListener
         return new Dimension(40, 40);
     }
 
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    /**
-     * Note: this method sends property change event
-     * with new point, there mouse pointer was dragged
-     * relative to Control panel. Property event handler
-     * should always account for it with top left coordinates
-     * of control panel.
-     */
-    public void mouseDragged(MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e)) {
-            return;
-        }
-
-        Point old = new Point(pointer);
-        pointer = new Point(e.getPoint());
-
-        firePropertyChange(DRAGGED_PROPERTY, old, pointer);
-    }
-
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    public void mouseExited(MouseEvent e) {
-
-    }
-
     public boolean isFocusCycleRoot() {
         return false;
-    }
-
-    public void mouseMoved(MouseEvent e) {
-    }
-
-    /**
-     * The mouse-pressed event causes generic property of control bar to change. Control bar sends only NEW
-     * value, as we don't use old mouse pointer coordinate while dragging.
-     */
-    public void mousePressed(MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e)) {
-            return;
-        }
-        dragged = true;
-        firePropertyChange(DRAGGING_PROPERTY, false, true);
-        e.consume();
-    }
-
-    /**
-     * Mouse released message handler. By this event the control panel sends a property change event
-     */
-    public void mouseReleased(MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e)) {
-            return;
-        }
-        dragged = false;
-        firePropertyChange(DRAGGING_PROPERTY, true, false);
-        viewport.setViewPosition(new Point(0, 0));
-        e.consume();
     }
 
     /**

@@ -31,8 +31,12 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -40,6 +44,7 @@ import java.io.IOException;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -48,8 +53,8 @@ import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.ui.KFrame;
 
-import static jworkspace.ui.cpanel.ControlPanel.DRAGGED_PROPERTY;
-import static jworkspace.ui.cpanel.ControlPanel.DRAGGING_PROPERTY;
+import static jworkspace.ui.widgets.GlassOutlinePane.DRAGGED_PROPERTY;
+import static jworkspace.ui.widgets.GlassOutlinePane.DRAGGING_PROPERTY;
 import jworkspace.ui.api.AbstractViewsManager;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.action.UISwitchListener;
@@ -97,7 +102,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     @Setter
     private String orientation = BorderLayout.EAST;
     /**
-     * System clipboard- can be used for copy/paste
+     * System clipboard can be used for copy/paste
      * or dragControlPanel and drop operations.
      */
     @Getter
@@ -121,14 +126,13 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         super(title);
         this.loginValidator = loginValidator;
 
-        // insert menu bar on the top.
+        // insert the menu bar on the top.
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.getMainContainer().setLayout(new BorderLayout());
         this.getMainContainer().setOpaque(false);
 
         // ui managers
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
-
         // ui actions
         actions = new MenuActions(this);
     }
@@ -178,7 +182,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             }
         }
 
-        setGlassBounds(x, y, width, height);
+        restoreBounds(x, y, width, height);
 
         /*
          * Settle stuff on the frame.
@@ -210,71 +214,70 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      */
     @SuppressWarnings("MagicNumber")
     private void dragControlPanel(int x, int y) {
-        
-        if ((y < getMainContainer().getSize().height / 3) 
+        if ((y < getMainContainer().getSize().height / 3)
             && (x > getMainContainer().getSize().width / 3) 
             && (x < 2 * getMainContainer().getSize().width / 3)
         ) {
 
-            getDragPane().setBounds(
-                getMainContainer().getLocation().x,
-                getMainContainer().getLocation().y,
+            getDragPane().setPaintingBounds(0, 0,
                 getMainContainer().getSize().width,
                 Math.min(getControlPanel().getWidth(), getControlPanel().getHeight())
             );
-
             setOrientation(BorderLayout.NORTH);
-            getMainContainer().repaint();
 
         } else if ((y > 2 * getMainContainer().getSize().height / 3) 
             && (x > getMainContainer().getSize().width / 3) 
             && (x < 2 * getMainContainer().getSize().width / 3)
         ) {
 
-            getDragPane().setBounds(
-                getMainContainer().getLocation().x,
-                getMainContainer().getLocation().y
-                    + getMainContainer().getSize().height
+            getDragPane().setPaintingBounds(0,
+                getMainContainer().getSize().height
                     - Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
                 getMainContainer().getSize().width,
                 Math.min(getControlPanel().getWidth(), getControlPanel().getHeight())
             );
-
-
             setOrientation(BorderLayout.SOUTH);
-            getMainContainer().repaint();
 
         } else if (x < getMainContainer().getSize().width / 3) {
 
-            getDragPane().setBounds(
-                getMainContainer().getLocation().x,
-                getMainContainer().getLocation().y,
+            getDragPane().setPaintingBounds(0, 0,
                 Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
                 getMainContainer().getSize().height
             );
-
             setOrientation(BorderLayout.WEST);
-            getMainContainer().repaint();
 
         } else if ((x > 2 * getMainContainer().getSize().width / 3)) {
 
-            getDragPane().setBounds(
-                getMainContainer().getLocation().x
-                    + getMainContainer().getSize().width
+            getDragPane().setPaintingBounds(
+                getMainContainer().getSize().width
                     - Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
-                getMainContainer().getLocation().y,
+                0,
                 Math.min(getControlPanel().getWidth(), getControlPanel().getHeight()),
                 getMainContainer().getSize().height
             );
-
             setOrientation(BorderLayout.EAST);
-            getMainContainer().repaint();
         }
+        getMainContainer().validate();
+        getMainContainer().repaint();
     }
 
     protected GlassOutlinePane getDragPane() {
         if (dragPane == null) {
             dragPane = new GlassOutlinePane();
+            dragPane.addPropertyChangeListener(this);
+            dragPane.setBounds(getMainContainer().getBounds());
+            getMainContainer().addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    dragPane.setBounds(getMainContainer().getBounds());
+                }
+
+                @Override
+                public void componentMoved(ComponentEvent e) {
+                    dragPane.setBounds(getMainContainer().getBounds());
+                }
+            });
+            getLayeredPane().add(dragPane, JLayeredPane.DRAG_LAYER);
         }
         return dragPane;
     }
@@ -304,12 +307,17 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     /**
-     * Returns control panel for this frame.
+     * Returns the control panel for this frame.
      */
     public ControlPanel getControlPanel() {
         if (controlPanel == null) {
             controlPanel = new ControlPanel();
-            controlPanel.addPropertyChangeListener(this);
+            controlPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    getDragPane().mousePressed(e);
+                }
+            });
         }
         return controlPanel;
     }
@@ -339,7 +347,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             );
             wmenu.add(settings);
             /*
-             * Show control panel
+             * Show the control panel
              */
             JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(
                 actions.getAction(MenuActions.SHOW_PANEL_ACTION_NAME)
@@ -393,8 +401,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     public void setJMenuBar(JMenuBar menuBar) {}
 
     /*
-     * Returns true if any of views claimed it is modified
-     * by user.
+     * Returns true if the user modifies any of the views
      */
     public boolean isModified() {
         return getContentManager() != null && getContentManager().isModified();
@@ -454,7 +461,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     /**
-     * Handles property change events for the control panel in the main frame.
+     * Handles the property change events for the control panel in the main frame.
      * This method manages actions such as beginning and ending a drag operation
      * and dynamically updating the control panel's position during a drag event.
      *
@@ -462,35 +469,26 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      *            property that has changed, including its name and new value.
      */
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
-        if (evt.getSource() instanceof ControlPanel) {
+        if (evt.getSource() instanceof GlassOutlinePane) {
             switch (evt.getPropertyName()) {
                 case DRAGGING_PROPERTY -> {
-                    if (evt.getOldValue() == Boolean.FALSE && evt.getNewValue() == Boolean.TRUE) {
-                        getLayeredPane().setLayer(getDragPane(), Integer.MAX_VALUE);
-                        getDragPane().setBounds(
-                            getControlPanel().getX() + getMainContainer().getX(),
-                            getControlPanel().getY() + getMainContainer().getY(),
-                            getControlPanel().getWidth(), getControlPanel().getHeight()
-                        );
-                        getLayeredPane().add(getDragPane());
-                    } else if (evt.getOldValue() == Boolean.TRUE && evt.getNewValue() == Boolean.FALSE) {
-                        getLayeredPane().remove(getDragPane());
-                        dragPane = null;
+                    if ((Boolean) evt.getNewValue()) {
+                        getDragPane().setPaintingBounds(getControlPanel().getBounds());
+                        getDragPane().setVisible(true);
+                    } else {
+                        getDragPane().setVisible(false);
+
                         getMainContainer().remove(getControlPanel());
-
                         getControlPanel().setOrientation(getOrientation());
-
                         getMainContainer().add(getControlPanel(), getOrientation());
-                        getContentPane().validate();
-                        getContentPane().repaint();
                     }
+                    getContentPane().validate();
+                    getContentPane().repaint();
                 }
-                case DRAGGED_PROPERTY ->
-                    // follow mouse pointer
-                    dragControlPanel(
-                        ((Point) evt.getNewValue()).x + getControlPanel().getX() + getContentPane().getX(),
-                        ((Point) evt.getNewValue()).y + getControlPanel().getY() + getContentPane().getY()
-                    );
+                case DRAGGED_PROPERTY -> {
+                    Point p = (Point) evt.getNewValue();
+                    dragControlPanel(p.x, p.y);
+                }
                 default -> {}
             }
         }
@@ -518,7 +516,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     @SuppressWarnings("MagicNumber")
-    private void setGlassBounds(int x, int y, int width, int height) {
+    private void restoreBounds(int x, int y, int width, int height) {
         /*
          * Set bounds only if this frame is decorated
          */
@@ -590,7 +588,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
     }
 
     /**
-     * Switches control panel on and off.
+     * Switches the control panel on and off.
      */
     void switchControlPanel() {
         getControlPanel().setVisible(!getControlPanel().isVisible());
