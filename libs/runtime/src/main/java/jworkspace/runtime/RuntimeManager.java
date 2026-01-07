@@ -67,8 +67,9 @@ public class RuntimeManager {
     }
 
     public Runnable run(String command) throws IOException {
-        JavaProcess process
-            = new JavaProcess(Runtime.getRuntime().exec(command), String.valueOf(System.currentTimeMillis()));
+        JavaProcess process = new JavaProcess(
+                Runtime.getRuntime().exec(command), String.valueOf(System.currentTimeMillis())
+        );
         take(process);
         return process;
     }

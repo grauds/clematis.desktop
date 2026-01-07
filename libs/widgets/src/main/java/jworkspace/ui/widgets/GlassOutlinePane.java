@@ -120,7 +120,6 @@ public class GlassOutlinePane extends JComponent {
     @SuppressWarnings("checkstyle:ReturnCount")
     public void mouseDragged(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e) && dragged) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             firePropertyChange(DRAGGED_PROPERTY, pointer, e.getPoint());
             pointer = e.getPoint();
         } else {

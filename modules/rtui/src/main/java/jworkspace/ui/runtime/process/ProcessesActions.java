@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime;
+package jworkspace.ui.runtime.process;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2002 Anton Troshin
@@ -39,6 +39,8 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 import jworkspace.config.ServiceLocator;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
+import jworkspace.ui.runtime.LangResource;
+import jworkspace.ui.runtime.RuntimeManagerWindow;
 import lombok.extern.java.Log;
 
 /**
@@ -46,7 +48,7 @@ import lombok.extern.java.Log;
  * @author Anton Troshin
  */
 @Log
-class RuntimeManagerActions {
+class ProcessesActions {
     /**
      * Action property - this action work for editor
      */
@@ -86,7 +88,7 @@ class RuntimeManagerActions {
     /**
      * Runtime manager window
      */
-    private final RuntimeManagerWindow manager;
+    private final ProcessesController controller;
     /**
      * All actions
      */
@@ -95,9 +97,9 @@ class RuntimeManagerActions {
     /**
      * Default public constructor
      */
-    RuntimeManagerActions(RuntimeManagerWindow manager) {
+    ProcessesActions() {
         super();
-        this.manager = manager;
+        this.controller = new ProcessesController();
         createActions();
         enableActions(false);
     }
@@ -155,13 +157,14 @@ class RuntimeManagerActions {
             super(KILL_ACTION_NAME);
             putValue(Action.SMALL_ICON,
                 new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                    .getResourceAsImage("images/stop.png")));
+                    .getResourceAsImage("images/stop.png"))
+            );
             putValue(Action.SHORT_DESCRIPTION, LangResource.getString(KILL_ACTION_NAME));
             putValue(ACTION_TYPE, PROCESS_ALIVE_ACTION);
         }
 
         public void actionPerformed(ActionEvent evt) {
-            manager.kill();
+            controller.kill();
             setEnabled(false);
         }
     }
@@ -174,7 +177,7 @@ class RuntimeManagerActions {
         }
 
         public void actionPerformed(ActionEvent evt) {
-            manager.killAll();
+            controller.killAll();
             setEnabled(false);
         }
     }
@@ -187,7 +190,7 @@ class RuntimeManagerActions {
         }
 
         public void actionPerformed(ActionEvent evt) {
-            manager.killAndRemove();
+            controller.killAndRemove();
             setEnabled(false);
         }
     }
@@ -200,7 +203,7 @@ class RuntimeManagerActions {
         }
 
         public void actionPerformed(ActionEvent evt) {
-            manager.killAndRemoveAll();
+            controller.killAndRemoveAll();
             setEnabled(false);
         }
     }
@@ -210,13 +213,14 @@ class RuntimeManagerActions {
             super(COPY_LOG_ACTION_NAME);
             putValue(Action.SMALL_ICON,
                 new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                    .getResourceAsImage("images/save.gif")));
+                    .getResourceAsImage("images/save.gif"))
+            );
             putValue(Action.SHORT_DESCRIPTION, LangResource.getString("message#253"));
             putValue(ACTION_TYPE, PERSISTENT_ACTION);
         }
 
         public void actionPerformed(ActionEvent evt) {
-            manager.copyLog();
+            controller.copyLog();
         }
     }
 
@@ -225,7 +229,8 @@ class RuntimeManagerActions {
             super(START_ACTION_NAME);
             putValue(Action.SMALL_ICON,
                 new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                    .getResourceAsImage("images/go.png")));
+                    .getResourceAsImage("images/go.png"))
+            );
             putValue(Action.SHORT_DESCRIPTION, LangResource.getString(START_ACTION_NAME));
             putValue(ACTION_TYPE, PERSISTENT_ACTION);
         }
@@ -247,7 +252,7 @@ class RuntimeManagerActions {
                     log.severe(e.getMessage());
                 }
             }
-            manager.update();
+            controller.update();
         }
     }
 }

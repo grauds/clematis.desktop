@@ -5,4 +5,3 @@
 5. Improved layout of the monitors' section
 6. Improved layout of the tabbed pane
 7. New type of UI extension shells which is loaded as USER plugins but common for all users. Their lifecycle is slightly different from the one of SYSTEM plugins, since these shells are being destroyed at the end of each user session.
-8.

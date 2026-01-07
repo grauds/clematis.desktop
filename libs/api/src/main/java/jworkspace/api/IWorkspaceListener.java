@@ -26,7 +26,7 @@ package jworkspace.api;
   ----------------------------------------------------------------------------
 */
 /**
- * Workspace listener dispatches events send to subscribers through workspace event mechanism.
+ * Workspace listener dispatches events send to subscribers through a workspace event mechanism.
  */
 public interface IWorkspaceListener {
 
@@ -35,7 +35,7 @@ public interface IWorkspaceListener {
      */
     int getCode();
     /**
-     * Processes event. Such event is send to every subscribed event listener in synchronous manner.
+     * Processes event. Such an event is sent to every subscribed event listener synchronously.
      */
     void processEvent(Integer event, Object lparam, Object rparam);
 }

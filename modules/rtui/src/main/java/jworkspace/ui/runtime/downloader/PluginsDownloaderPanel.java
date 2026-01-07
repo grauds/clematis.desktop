@@ -77,6 +77,7 @@ public class PluginsDownloaderPanel extends KPanel {
         );
         splitPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
         splitPane.setDividerLocation(300);
+        splitPane.setContinuousLayout(true);
         c.add(splitPane, BorderLayout.CENTER);
 
         add(c, BorderLayout.CENTER);
