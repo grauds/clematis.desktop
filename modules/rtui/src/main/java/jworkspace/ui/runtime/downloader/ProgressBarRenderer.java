@@ -84,7 +84,7 @@ public class ProgressBarRenderer extends JProgressBar implements TableCellRender
         g2.setColor(getBackground());
         g2.fillRect(0, 0, getWidth(), getHeight());
 
-        // Draw progress bar
+        // Draw the progress bar
         int barWidth = (int) (width * (getValue() / (double) getMaximum()));
         g2.setColor(getForeground());
         g2.fillRect(b.left, b.top, barWidth, height);

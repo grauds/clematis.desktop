@@ -158,7 +158,7 @@ class TexturePanel extends KPanel implements ActionListener, IDialogPanel {
         } else if (o == chShowWTextures) {
             DesktopServiceLocator
                 .getInstance()
-                .getWorkspaceGUI()
+                .getUiConfig()
                 .setKiwiTextureVisible(chShowWTextures.isSelected());
         }
     }
@@ -201,9 +201,15 @@ class TexturePanel extends KPanel implements ActionListener, IDialogPanel {
     }
 
     public void setData() {
-        lImage.setImage(DesktopServiceLocator.getInstance().getWorkspaceGUI().getTexture());
-        chShowTexture.setSelected(DesktopServiceLocator.getInstance().getWorkspaceGUI().isTextureVisible());
-        chShowWTextures.setSelected(DesktopServiceLocator.getInstance().getWorkspaceGUI().isKiwiTextureVisible());
+        lImage.setImage(
+            DesktopServiceLocator.getInstance().getUiConfig().getTexture()
+        );
+        chShowTexture.setSelected(
+            DesktopServiceLocator.getInstance().getUiConfig().isTextureVisible()
+        );
+        chShowWTextures.setSelected(
+            DesktopServiceLocator.getInstance().getUiConfig().isKiwiTextureVisible()
+        );
     }
 
     public boolean syncData() {
@@ -224,7 +230,7 @@ class TexturePanel extends KPanel implements ActionListener, IDialogPanel {
             textureIcon.paintIcon(null, g, 0, 0);
             g.dispose();
 
-            DesktopServiceLocator.getInstance().getWorkspaceGUI().setTexture(bi);
+            DesktopServiceLocator.getInstance().getUiConfig().setTexture(bi);
         }
 
         if (DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {

@@ -32,11 +32,12 @@ import javax.swing.Icon;
 import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
-import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 import com.hyperrealm.kiwi.runtime.Task;
 import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 
+import static jworkspace.config.ServiceLocator.PLUGINS_DIRECTORY;
+import static jworkspace.runtime.plugin.WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
@@ -70,6 +71,7 @@ public class ShellsLoader extends Task {
 
     /** Directory name under which shell plugins are located */
     public static final String SHELLS_DIRECTORY = "shells";
+    public static final String PLUGIN_TYPE_UI = "UI";
 
     /** Constant representing 100% progress */
     static final int PROGRESS_COMPLETED = 100;
@@ -85,6 +87,17 @@ public class ShellsLoader extends Task {
     public ShellsLoader(ProgressDialog progressDialog) {
         super();
         this.progressDialog = progressDialog;
+    }
+
+    public static Path path(boolean allUsers, Plugin plugin) {
+        Path path = allUsers ? ServiceLocator.getInstance().getProfilesManager().getBasePath()
+            : ServiceLocator.getInstance().getProfilesManager().getCurrentProfilePath();
+        if (PLUGIN_TYPE_UI.equals(plugin.getType())) {
+            path = path.resolve(SHELLS_DIRECTORY);
+        } else if (PLUGIN_TYPE_PLUGIN.equals(plugin.getType())) {
+            path = path.resolve(PLUGINS_DIRECTORY);
+        }
+        return path;
     }
 
     /**
@@ -122,12 +135,12 @@ public class ShellsLoader extends Task {
 
         // Load system plugins from the base path
         Path pluginPath = profilesManager.getBasePath();
-        List<Plugin> plugins = loadPlugins(pluginLocator, pluginPath, PluginDTO.PLUGIN_TYPE_SYSTEM);
+        List<Plugin> plugins = loadPlugins(pluginLocator, pluginPath, WorkspacePluginLocator.PLUGIN_LEVEL_SYSTEM);
 
         // If a user profile exists, load user-specific plugins as well
         if (currentProfile != null) {
             pluginPath = currentProfile.getProfilePath(profilesManager.getBasePath());
-            plugins.addAll(loadPlugins(pluginLocator, pluginPath, PluginDTO.PLUGIN_TYPE_USER));
+            plugins.addAll(loadPlugins(pluginLocator, pluginPath, WorkspacePluginLocator.PLUGIN_LEVEL_USER));
         }
 
         // If no plugins were found, show a message and complete the task
@@ -136,7 +149,7 @@ public class ShellsLoader extends Task {
             notifyObservers(PROGRESS_COMPLETED);
         } else {
 
-            // Initialize progress dialog and notify observers
+            // Initialize the progress dialog and notify observers
             setPercentInProgressDialog(0);
             notifyObservers(0);
 

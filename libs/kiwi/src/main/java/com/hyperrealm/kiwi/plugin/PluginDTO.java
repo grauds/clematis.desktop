@@ -43,13 +43,11 @@ import lombok.NonNull;
 @Data
 public class PluginDTO {
 
-    public static final String PLUGIN_TYPE_ANY = "ANY";
-
-    public static final String PLUGIN_TYPE_USER = "USER";
-
-    public static final String PLUGIN_TYPE_SYSTEM = "SYSTEM";
+    public static final String PLUGIN_LEVEL_ANY = "ANY";
 
     public static final String PLUGIN_NAME = "PluginName";
+
+    public static final String PLUGIN_LEVEL = "PluginLevel";
 
     public static final String PLUGIN_TYPE = "PluginType";
 
@@ -65,6 +63,8 @@ public class PluginDTO {
 
     protected String name;
 
+    protected String level;
+
     protected String type;
 
     protected String description;
@@ -79,18 +79,30 @@ public class PluginDTO {
 
     protected URL helpURL = null;
 
-    PluginDTO(String type, String jarFile) {
-        this.type = type;
+    PluginDTO(String level, String jarFile) {
+        this.level = level;
         this.jarFile = jarFile;
     }
 
-    public PluginDTO(String className, String name, String type,
-                     String description, String iconFile, String version,
+    PluginDTO(String level, String type, String jarFile) {
+        this(level, jarFile);
+        this.type = type;
+    }
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public PluginDTO(String className,
+                     String name,
+                     String type,
+                     String level,
+                     String description,
+                     String iconFile,
+                     String version,
                      String helpUrl) {
 
         this.className = className;
         this.name = name;
         this.type = type;
+        this.level = level;
         this.description = description;
         this.iconFile = iconFile;
         this.version = version;
@@ -119,6 +131,7 @@ public class PluginDTO {
         attributes.put(new Attributes.Name(PLUGIN_VERSION), plugin.getVersion());
         attributes.put(new Attributes.Name(PLUGIN_HELP_URL), plugin.getHelpURL().toString());
         attributes.put(new Attributes.Name(PLUGIN_ICON), plugin.getIcon());
+        attributes.put(new Attributes.Name(PLUGIN_LEVEL), plugin.getLevel());
         attributes.put(new Attributes.Name(PLUGIN_TYPE), plugin.getType());
 
         manifest.getEntries().put(plugin.getClassName(), attributes);

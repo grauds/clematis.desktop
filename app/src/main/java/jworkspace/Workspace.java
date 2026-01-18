@@ -9,11 +9,11 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.RuntimeManager;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.users.Profile;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.ProfilesManager;
@@ -31,8 +31,6 @@ public class Workspace {
     public static final String VERSION = "Java Workspace 2.0.0";
 
     public static final String HOME_DIR = ".jworkspace";
-
-    public static final String PLUGINS_DIRECTORY = "plugins";
 
     @Option(name = "--name", usage = "user profile name", required = true)
     private String name;
@@ -94,11 +92,7 @@ public class Workspace {
         /*
          * Create system plugins
          */
-        ServiceLocator.getInstance().getSystemPlugins().addAll(
-            ServiceLocator.getInstance().getPluginLocator().loadPlugins(
-                root.resolve(PLUGINS_DIRECTORY), PluginDTO.PLUGIN_TYPE_SYSTEM
-            )
-        );
+        ServiceLocator.getInstance().loadSystemPlugins(root);
         /*
          * Start a user session
          */
@@ -127,7 +121,7 @@ public class Workspace {
          * Load plugins from the user directory
          */
         ServiceLocator.getInstance().getUserPlugins().addAll(
-            ServiceLocator.getInstance().loadPlugins(profilePath, PluginDTO.PLUGIN_TYPE_USER)
+            ServiceLocator.getInstance().loadPlugins(profilePath, WorkspacePluginLocator.PLUGIN_LEVEL_USER)
         );
     }
 

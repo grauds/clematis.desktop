@@ -62,7 +62,7 @@ public class ShellsTests {
             .loadPlugin(
                 WorkspacePluginLocator.getPluginFile(
                     testFolder.getRoot(), ShellHelper.SHELL_JAR
-                ), PluginDTO.PLUGIN_TYPE_ANY
+                ), PluginDTO.PLUGIN_LEVEL_ANY
             );
 
         Object obj = testPlugin.newInstance();
@@ -86,7 +86,7 @@ public class ShellsTests {
                 WorkspacePluginLocator.getPluginFile(
                     testFolder.getRoot(), ShellHelper.CHILD_SHELL_JAR
                 ),
-                PluginDTO.PLUGIN_TYPE_ANY
+                PluginDTO.PLUGIN_LEVEL_ANY
             );
 
         Object obj = testPlugin.newInstance();

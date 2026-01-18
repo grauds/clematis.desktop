@@ -95,15 +95,15 @@ public abstract class ComponentDialog extends KDialog {
 
     protected KButton bCancel = null;
 
+    protected KLabel commentLabel;
+
+    protected JTextField inputComponent = null;
+
+    protected ButtonPanel buttons;
+
+    protected int fixedButtons = 1;
+
     private ActionListener actionListener;
-
-    private KLabel commentLabel;
-
-    private JTextField inputComponent = null;
-
-    private ButtonPanel buttons;
-
-    private int fixedButtons = 1;
 
     /**
      * Construct a new <code>ComponentDialog</code>.

@@ -41,8 +41,10 @@ import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
 import jworkspace.runtime.downloader.DownloadTask;
 import jworkspace.runtime.downloader.IDownloadListener;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.plugins.ShellsLoader;
+import jworkspace.ui.runtime.plugin.PluginDialog;
 
 public class DownloadController implements IDownloadListener {
 
@@ -104,24 +106,57 @@ public class DownloadController implements IDownloadListener {
 
     @Override
     public void finished(int row) {
+
+        // Download is complete
         DownloadItem item = model.getItem(row);
         Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
+        KMessageDialog messageDialog = new KMessageDialog(parent);
 
+        // Construct the plugin from the downloaded file
+        Plugin plugin = null;
+        try {
+            plugin = ServiceLocator.getInstance().getPluginLocator().createPlugin(
+                item.getCompletedFile().toFile(), PluginDTO.PLUGIN_LEVEL_ANY
+            );
+        } catch (PluginException e) {
+            messageDialog.setMessage(
+                String.format("Error loading the plugin: %s.", e.getMessage())
+            );
+        }
+
+        Plugin finalPlugin = plugin;
         KQuestionDialog questionDialog = new KQuestionDialog(parent) {
             @Override
             protected boolean accept() {
-                KMessageDialog messageDialog = new KMessageDialog(parent);
+                installPlugin(item, finalPlugin);
+                return true;
+            }
+        };
+        questionDialog.setMessage(String.format("Are you sure to install a plugin from %s?", item.getCompletedFile()));
+        questionDialog.setVisible(true);
+    }
+
+    public static void installPlugin(DownloadItem item, Plugin plugin) {
+        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
+        KMessageDialog messageDialog = new KMessageDialog(parent);
+
+        PluginDialog dialog = new PluginDialog(parent) {
+            protected boolean accept() {
+                boolean allUsers = this.isAllUsers();
+                Path path = ShellsLoader.path(allUsers, plugin);
                 try {
-                    Plugin plugin = ServiceLocator.getInstance().getPluginLocator().loadPlugin(
-                         item.getCompletedFile().toFile(), PluginDTO.PLUGIN_TYPE_ANY
+                    WorkspacePluginLocator.installPlugin(
+                        item.getCompletedFile(), path.resolve(
+                            plugin.getName() + "_" + plugin.getVersion() + ".jar"
+                        )
                     );
-                    Files.move(item.getCompletedFile(), Path.of(
-                        ShellsLoader.SHELLS_DIRECTORY, item.getFileName()
-                    ));
                     messageDialog.setMessage(
-                        String.format("Plugin %s installed successfully.", plugin)
+                        String.format(
+                            "Plugin %s installed successfully. Please restart the application to activate plugin.",
+                            plugin
+                        )
                     );
-                } catch (IOException | PluginException e) {
+                } catch (IOException e) {
                     messageDialog.setMessage(
                         String.format("Error installing the plugin: %s.", e.getMessage())
                     );
@@ -130,7 +165,8 @@ public class DownloadController implements IDownloadListener {
                 return true;
             }
         };
-        questionDialog.setMessage(String.format("Are you sure to install a plugin from %s?", item.getCompletedFile()));
-        questionDialog.setVisible(true);
+        dialog.setData(plugin);
+        dialog.setVisible(true);
     }
+
 }

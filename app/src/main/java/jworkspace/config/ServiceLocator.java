@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
-import static jworkspace.Workspace.PLUGINS_DIRECTORY;
 import jworkspace.api.EventsDispatcher;
 import jworkspace.api.IWorkspaceComponent;
 import jworkspace.runtime.RuntimeManager;
@@ -63,6 +62,7 @@ import lombok.extern.java.Log;
 @Getter
 public class ServiceLocator {
 
+    public static final String PLUGINS_DIRECTORY = "plugins";
     /**
      * Manages user profiles.
      */
@@ -106,18 +106,26 @@ public class ServiceLocator {
      */
     private ServiceLocator() {}
 
+    public void loadSystemPlugins(Path root) {
+        getSystemPlugins().addAll(
+            getPluginLocator().loadPlugins(
+                root.resolve(PLUGINS_DIRECTORY), WorkspacePluginLocator.PLUGIN_LEVEL_SYSTEM
+            )
+        );
+    }
+
     /**
      * Loads plugins from a given root directory and type.
      *
      * @param root the root directory of plugins
-     * @param type the plugin type
+     * @param level the plugin level
      * @return list of loaded plugins
      */
-    public List<Plugin> loadPlugins(Path root, String type) {
+    public List<Plugin> loadPlugins(Path root, String level) {
 
         // Use the plugin locator to load plugin descriptors from the directory
         List<Plugin> plugins = pluginLocator.loadPlugins(
-            root.resolve(PLUGINS_DIRECTORY), type
+            root.resolve(PLUGINS_DIRECTORY), level
         );
 
         // Initialize loaded plugin objects
@@ -195,7 +203,7 @@ public class ServiceLocator {
      * @return single shared instance
      */
     public static ServiceLocator getInstance() {
-        // Access InstanceHolder, triggers lazy initialization of SERVICE_LOCATOR
+        // The access to this field triggers lazy initialization of SERVICE_LOCATOR
         return InstanceHolder.SERVICE_LOCATOR;
     }
 

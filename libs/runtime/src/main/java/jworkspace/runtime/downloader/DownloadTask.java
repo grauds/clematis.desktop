@@ -141,7 +141,7 @@ public final class DownloadTask extends AbstractTask {
                     item.setDownloadedBytes(downloaded);
                     item.setTotalBytes(total);
 
-                    // Calculate average speed in bytes per second
+                    // Calculate the average speed in bytes per second
                     long elapsed = System.currentTimeMillis() - start;
                     if (elapsed > 0) {
                         item.setSpeedBytesPerSec(downloaded * 1000 / elapsed);

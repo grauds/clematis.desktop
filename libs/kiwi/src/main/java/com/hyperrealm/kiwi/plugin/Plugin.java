@@ -74,16 +74,35 @@ public final class Plugin extends PluginDTO {
 
     /**
      * Construct a new plugin. A plugin is uniquely identified by a jar file
-     * and a class name. It's initially created by the PluginLocator which scans
+     * and a class name. It's initially created by the PluginLocator, which scans
+     * a jar file for plugin entries. When it's reloaded, it reopens the jar file
+     * and rescans everything. The plugin is loaded immediately.
+     *
+     * @param <T> type of the plugin context.
+     * @param jarFile file to load the plugin from.
+     * @param level plugin level (it is up to other systems to define the meaning of the level).
+     */
+    <T extends PluginContext> Plugin(PluginLocator<T> locator, String jarFile, String level)
+        throws PluginException {
+        this(locator, jarFile, level, true);
+    }
+
+    /**
+     * Construct a new plugin. A plugin is uniquely identified by a jar file
+     * and a class name. It's initially created by the PluginLocator, which scans
      * a jar file for plugin entries. When it's reloaded, it reopens the jar file
      * and rescans everything.
+     * @param <T> type of the plugin context.
+     * @param jarFile file to load the plugin from.
+     * @param level plugin level (it is up to other systems to define the meaning of the level).
+     * @param instantiate if true, the plugin is loaded immediately.
      */
-    <T extends PluginContext> Plugin(PluginLocator<T> locator, String jarFile, String type)
+    <T extends PluginContext> Plugin(PluginLocator<T> locator, String jarFile, String level, boolean instantiate)
         throws PluginException {
-        super(type, jarFile);
+        super(level, jarFile);
 
         this.locator = locator;
-        load();
+        load(instantiate);
     }
 
     /**
@@ -105,7 +124,7 @@ public final class Plugin extends PluginDTO {
      *                                                         could not be loaded.
      */
     @SuppressWarnings({"CyclomaticComplexity", "NestedIfDepth"})
-    private void load() throws PluginException {
+    private void load(boolean instantiate) throws PluginException {
 
         Manifest mf;
 
@@ -117,107 +136,126 @@ public final class Plugin extends PluginDTO {
                 throw new PluginException("No manifest found");
             }
 
-            String classFile = null;
-            Attributes attrs = null;
-            boolean found = false;
-
-            Map<String, Attributes> map = mf.getEntries();
-
-            for (String s : map.keySet()) {
-
-                classFile = s;
-                attrs = mf.getAttributes(classFile);
-
-                if (attrs.getValue(PLUGIN_NAME) != null) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                throw new PluginException("No plugin entry found in manifest");
-            }
-
-            className = PluginClassLoader.pathToClassName(classFile);
+            PluginManifest pluginManifest = getPluginManifest(mf);
+            className = PluginClassLoader.pathToClassName(pluginManifest.classFile());
 
             // read in the attributes
-            for (Object o : attrs.keySet()) {
 
-                Attributes.Name nm = (Attributes.Name) o;
-                String a = nm.toString();
-                String v = attrs.getValue(nm);
-
-                switch (a) {
-                    case PLUGIN_NAME:
-                        setName(v);
-                        break;
-                    case PLUGIN_TYPE:
-                        // ANY plugin type can be used as SYSTEM or USER or else, the others' have to match
-                        if (!(PluginDTO.PLUGIN_TYPE_ANY.equalsIgnoreCase(v)
-                            || (getType() != null && !getType().isEmpty() && getType().equalsIgnoreCase(v)))
-                        ) {
-                            throw new PluginException(
-                                String.format("Plugin type mismatch: %s loaded as %s", v, getType())
-                            );
-                        }
-                        break;
-                    case PLUGIN_DESCRIPTION:
-                        setDescription(v);
-                        break;
-                    case PLUGIN_ICON:
-                        setIconFile(v);
-                        break;
-                    case PLUGIN_VERSION:
-                        setVersion(v);
-                        break;
-                    case PLUGIN_HELP_URL:
-                        setHelpUrl(v);
-                        break;
-                    default:
-                        properties.put(a, v);
-                        break;
-                }
-            }
-
-            if ((type == null) || (name == null)) {
-                throw new PluginException("Invalid plugin manifest entry");
-            }
-
-            // create the classloader
-
-            loader = locator.createClassLoader();
-            loader.addJarFile(jarFile);
+            parseAttributes(pluginManifest.attrs());
 
             // load the ICON
 
-            if (iconFile != null && !GraphicsEnvironment.isHeadless()) {
-                JarEntry entry = (JarEntry) jar.getEntry(iconFile);
-                if (entry != null) {
-                    try {
-                        InputStream in = jar.getInputStream(entry);
-                        Image im = locator.getDecoder().decodeImage(in);
-                        if (im != null) {
-                            icon = new ImageIcon(im);
-                        }
-                        in.close();
-                    } catch (IOException ex) {
-                        icon = null;
-                    }
+            loadIcon(jar);
+
+            // create the classloader
+
+            if (instantiate) {
+                loader = locator.createClassLoader();
+                loader.addJarFile(jarFile);
+
+                // load the plugin class
+
+                try {
+                    pluginClass = loader.loadClass(className);
+                } catch (Exception ex) {
+                    throw new PluginException("Failed to load plugin class " + className, ex);
                 }
+
+                loaded = true;
             }
-
-            // load the plugin class
-
-            try {
-                pluginClass = loader.loadClass(className);
-            } catch (Exception ex) {
-                throw new PluginException("Failed to load plugin class " + className, ex);
-            }
-
-            loaded = true;
-
         } catch (IOException ex) {
             throw new PluginException("Unable to read archive", ex);
+        }
+    }
+
+    @SuppressWarnings("checkstyle:NestedIfDepth")
+    private void loadIcon(JarFile jar) {
+        if (getIconFile() != null && !GraphicsEnvironment.isHeadless()) {
+            JarEntry entry = (JarEntry) jar.getEntry(getIconFile());
+            if (entry != null) {
+                try {
+                    InputStream in = jar.getInputStream(entry);
+                    Image im = locator.getDecoder().decodeImage(in);
+                    if (im != null) {
+                        icon = new ImageIcon(im);
+                    }
+                    in.close();
+                } catch (IOException ex) {
+                    icon = null;
+                }
+            }
+        }
+    }
+
+    private static PluginManifest getPluginManifest(Manifest mf) throws PluginException {
+
+        String classFile = null;
+        Attributes attrs = null;
+        boolean found = false;
+
+        Map<String, Attributes> map = mf.getEntries();
+        for (String s : map.keySet()) {
+
+            classFile = s;
+            attrs = mf.getAttributes(classFile);
+
+            if (attrs.getValue(PLUGIN_NAME) != null) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new PluginException("No plugin entry found in manifest");
+        }
+        return new PluginManifest(classFile, attrs);
+    }
+
+    private void parseAttributes(Attributes attrs) throws PluginException {
+
+        for (Object o : attrs.keySet()) {
+
+            Attributes.Name nm = (Attributes.Name) o;
+            String a = nm.toString();
+            String v = attrs.getValue(nm);
+
+            switch (a) {
+                case PLUGIN_NAME:
+                    setName(v);
+                    break;
+                case PLUGIN_LEVEL:
+                    // ANY plugin level can be used anywhere, the others' have to match
+                    if (!(PluginDTO.PLUGIN_LEVEL_ANY.equalsIgnoreCase(v)
+                        || (getLevel() != null && !getLevel().isEmpty() && getLevel().equalsIgnoreCase(v)))
+                    ) {
+                        throw new PluginException(
+                            String.format("Plugin level mismatch: %s loaded as %s", v, getLevel())
+                        );
+                    }
+                    break;
+                case PLUGIN_TYPE:
+                    setType(v);
+                    break;
+                case PLUGIN_DESCRIPTION:
+                    setDescription(v);
+                    break;
+                case PLUGIN_ICON:
+                    setIconFile(v);
+                    break;
+                case PLUGIN_VERSION:
+                    setVersion(v);
+                    break;
+                case PLUGIN_HELP_URL:
+                    setHelpUrl(v);
+                    break;
+                default:
+                    properties.put(a, v);
+                    break;
+            }
+        }
+
+        if ((level == null) || (type == null) || (name == null)) {
+            throw new PluginException("Invalid plugin manifest entry");
         }
     }
 
@@ -239,7 +277,7 @@ public final class Plugin extends PluginDTO {
      */
     public void reload() throws PluginException {
         reset();
-        load();
+        load(true);
         firePluginReloaded();
     }
 
@@ -248,7 +286,7 @@ public final class Plugin extends PluginDTO {
      * instantiate the plugin object by calling a constructor that takes an
      * object that implements <code>PluginContext</code> (or a subinterface
      * thereof) as its only argument. If no such constructor exists, the method
-     * tries instantiate the object using the default constructor.
+     * tries to instantiate the object using the default constructor.
      *
      * @throws PluginException If a problem
      *                                                         occurs during class instantiation.
@@ -266,7 +304,7 @@ public final class Plugin extends PluginDTO {
         }
 
         try {
-            // try to find a c'tor that takes a PluginContext first
+            // try to find a constructor that takes a PluginContext first
             Constructor<?> ctor = null;
             Constructor<?>[] ctors = pluginClass.getConstructors();
 
@@ -391,4 +429,6 @@ public final class Plugin extends PluginDTO {
     public String getProperty(String name, String defaultValue) {
         return properties.getProperty(name, defaultValue);
     }
+
+    private record PluginManifest(String classFile, Attributes attrs) {}
 }

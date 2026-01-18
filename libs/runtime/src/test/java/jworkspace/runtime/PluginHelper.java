@@ -56,7 +56,8 @@ public class PluginHelper {
 
         PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS,
             TEST_PLUGIN_NAME,
-            PluginDTO.PLUGIN_TYPE_ANY,
+            WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
+            PluginDTO.PLUGIN_LEVEL_ANY,
             TEST_PLUGIN_DESCRIPTION,
             TEST_PLUGIN_ICON,
             TEST_PLUGIN_VERSION,
@@ -69,7 +70,8 @@ public class PluginHelper {
 
         PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS_2,
             TEST_PLUGIN_NAME_2,
-            PluginDTO.PLUGIN_TYPE_ANY,
+            WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
+            PluginDTO.PLUGIN_LEVEL_ANY,
             TEST_PLUGIN_DESCRIPTION_2,
             TEST_PLUGIN_ICON_2,
             TEST_PLUGIN_VERSION_2,
@@ -85,7 +87,7 @@ public class PluginHelper {
         assert testPlugin.getClassName().equals(TEST_PLUGIN);
         assert testPlugin.getVersion().equals(TEST_PLUGIN_VERSION);
         assert testPlugin.getHelpURL().toString().equals(TEST_PLUGIN_HELP_URL);
-        assert testPlugin.getType().equals(PluginDTO.PLUGIN_TYPE_ANY);
+        assert testPlugin.getLevel().equals(PluginDTO.PLUGIN_LEVEL_ANY);
     }
 
     static void preparePlugins(File folder) throws IOException, URISyntaxException {

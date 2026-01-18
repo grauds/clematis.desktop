@@ -37,11 +37,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
-import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.runtime.process.JavaProcess;
 import jworkspace.ui.runtime.plugin.IPluginSelectionListener;
 
@@ -173,9 +173,9 @@ public class PropertiesPanel extends KPanel implements IPluginSelectionListener 
 //        }
 
         Icon icon = plugin.getIcon();
-        if (icon == null && plugin.getType().equals(PluginDTO.PLUGIN_TYPE_USER)) {
+        if (icon == null && plugin.getType().equals(WorkspacePluginLocator.PLUGIN_LEVEL_USER)) {
             icon = new ImageIcon(getResourceManager().getImage("shell_big.png"));
-        } else if (icon == null && plugin.getType().equals(PluginDTO.PLUGIN_TYPE_SYSTEM)) {
+        } else if (icon == null && plugin.getType().equals(WorkspacePluginLocator.PLUGIN_LEVEL_SYSTEM)) {
             icon = new ImageIcon(getResourceManager().getImage("plugin_big.png"));
         } else if (icon == null) {
             icon = new ImageIcon(getResourceManager().getImage("unknown_big.png"));

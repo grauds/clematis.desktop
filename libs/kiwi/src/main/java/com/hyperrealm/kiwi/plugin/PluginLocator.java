@@ -134,28 +134,27 @@ public class PluginLocator<T extends PluginContext> {
     }
 
     /**
-     * Create a Plugin object for the given plugin archive.
+     * Create and load a Plugin object for the given plugin archive.
      *
      * @param jarFile The plugin archive.
+     * @param level of the plugin.
      * @return The <code>Plugin</code>, if successfully created, or
      * <code>null</code> otherwise.
      */
-
-    private Plugin loadPlugin(String jarFile, String type)
-        throws PluginException {
-        return new Plugin(this, jarFile, type);
+    public Plugin loadPlugin(File jarFile, String level) throws PluginException {
+        return new Plugin(this, jarFile.getAbsolutePath(), level);
     }
 
     /**
-     * Create a Plugin object for the given plugin archive.
+     * Create a Plugin object for the given plugin archive, do not instantiate the plugin file
      *
      * @param jarFile The plugin archive.
+     * @param level of the plugin.
      * @return The <code>Plugin</code>, if successfully created, or
      * <code>null</code> otherwise.
      */
-
-    public Plugin loadPlugin(File jarFile, String type) throws PluginException {
-        return loadPlugin(jarFile.getAbsolutePath(), type);
+    public Plugin createPlugin(File jarFile, String level) throws PluginException {
+        return new Plugin(this, jarFile.getAbsolutePath(), level, false);
     }
 
     PluginClassLoader createClassLoader() {

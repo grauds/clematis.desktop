@@ -61,37 +61,16 @@ import lombok.extern.java.Log;
 @Log
 public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext> {
 
+    public static final String PLUGIN_LEVEL_USER = "USER";
+    public static final String PLUGIN_LEVEL_SYSTEM = "SYSTEM";
+    public static final String PLUGIN_TYPE_PLUGIN = "PLUGIN";
+
     /**
      * Construct a new <code>PluginLocator</code> with Workspace plugin context.
      */
     public WorkspacePluginLocator() {
         super(new WorkspacePluginContext());
         addRestrictedPackage("jworkspace.runtime.*");
-    }
-
-    public static void writePluginJarFile(File classesLocation,
-                                          String[] classes,
-                                          Manifest manifest,
-                                          File jarPath,
-                                          String jarFileName)
-            throws IOException {
-
-        Files.createDirectories(jarPath.toPath());
-
-        try (OutputStream os = Files.newOutputStream(getPluginFile(jarPath, jarFileName).toPath());
-             JarOutputStream target = new JarOutputStream(os, manifest)) {
-
-            for (String cl : classes) {
-
-                try (InputStream is = Files.newInputStream(Paths.get(classesLocation.getAbsolutePath(), cl))) {
-
-                    JarEntry entry = new JarEntry(cl);
-                    target.putNextEntry(entry);
-                    target.write(StreamUtils.readStreamToByteArray(is));
-                    target.closeEntry();
-                }
-            }
-        }
     }
 
     public static File getPluginFile(File folder, String file) {
@@ -120,17 +99,19 @@ public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext
     }
 
     /**
-     * Load plugins from specified directory. This method traverses directory, with all subdirectories,
-     * searches for jar file and tries to load all plugins.
+     * Load plugins from a specified directory. This method traverses the directory, with all subdirectories,
+     * searches for a jar file and tries to load all plugins.
      *
-     * @param directory path to directory to load plugins. Note, that this is not the directory
+     * @param level of plugins to load. If ANY, it can be loaded at any level. USER and SYSTEM are
+     *              for users or for all users. The difference is in the life cycle.
+     * @param directory path to the directory to load plugins. Note that this is not the directory
      *                  there the plugins will load their data from.
      */
-    public List<Plugin> loadPlugins(Path directory, String type) {
+    public List<Plugin> loadPlugins(Path directory, String level) {
         if (directory != null) {
 
             log.log(Level.INFO, "Loading plugins from " + directory);
-            return scanPluginsDir(directory.toFile(), type);
+            return scanPluginsDir(directory.toFile(), level);
         } else {
 
             return Collections.emptyList();
@@ -138,10 +119,43 @@ public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext
     }
 
     public List<Plugin> loadPlugins(Path directory) {
-        return loadPlugins(directory, PluginDTO.PLUGIN_TYPE_ANY);
+        return loadPlugins(directory, PluginDTO.PLUGIN_LEVEL_ANY);
     }
 
-    private List<Plugin> scanPluginsDir(@NonNull File dir, String type) {
+    public static void installPlugin(Path from, Path to) throws IOException {
+        Files.move(from, to);
+    }
+
+    public static boolean uninstallPlugin(Path plugin) throws IOException {
+        return Files.deleteIfExists(plugin);
+    }
+
+    public static void writePluginJarFile(File classesLocation,
+                                          String[] classes,
+                                          Manifest manifest,
+                                          File jarPath,
+                                          String jarFileName)
+        throws IOException {
+
+        Files.createDirectories(jarPath.toPath());
+
+        try (OutputStream os = Files.newOutputStream(getPluginFile(jarPath, jarFileName).toPath());
+             JarOutputStream target = new JarOutputStream(os, manifest)) {
+
+            for (String cl : classes) {
+
+                try (InputStream is = Files.newInputStream(Paths.get(classesLocation.getAbsolutePath(), cl))) {
+
+                    JarEntry entry = new JarEntry(cl);
+                    target.putNextEntry(entry);
+                    target.write(StreamUtils.readStreamToByteArray(is));
+                    target.closeEntry();
+                }
+            }
+        }
+    }
+
+    private List<Plugin> scanPluginsDir(@NonNull File dir, String level) {
 
         List<Plugin> plugins = new ArrayList<>();
         try {
@@ -151,11 +165,11 @@ public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext
                 if (files != null) {
                     Arrays.sort(files, Comparator.comparing(File::getName));
                     for (File file : files) {
-                        plugins.addAll(scanPluginsDir(file, type));
+                        plugins.addAll(scanPluginsDir(file, level));
                     }
                 }
             } else if (dir.getName().endsWith("jar")) {
-                Plugin plugin = loadPlugin(dir, type);
+                Plugin plugin = loadPlugin(dir, level);
                 plugins.add(plugin);
             }
         } catch (PluginException ex) {

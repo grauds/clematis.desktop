@@ -299,7 +299,10 @@ public class ResourceExplorerPanel extends KPanel implements Scrollable, Compone
              * First, get all KIWI textures if a specified flag is set
              */
             WorkspaceGUI wgui = DesktopServiceLocator.getInstance().getWorkspaceGUI();
-            if (wgui != null && wgui.isKiwiTextureVisible() && isTextureChooser()) {
+            if (wgui != null
+                && DesktopServiceLocator.getInstance().getUiConfig().isKiwiTextureVisible()
+                && isTextureChooser()
+            ) {
                 try {
                     enumLibTextures();
                 } catch (IOException ex) {

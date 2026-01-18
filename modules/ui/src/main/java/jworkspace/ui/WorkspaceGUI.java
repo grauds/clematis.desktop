@@ -35,7 +35,6 @@ import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
@@ -84,12 +83,13 @@ import lombok.extern.java.Log;
  */
 @Log
 public class WorkspaceGUI implements IWorkspaceUI {
+
     /**
      * User interface splash screen
      */
     private static SplashScreen logo = null;
     /**
-     * Plugin context to be injected by plugin loader
+     * Plugin context to be injected by the plugin loader
      */
     private final WorkspacePluginContext pluginContext;
     /**
@@ -177,21 +177,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
     }
 
     /**
-     * Returns texture image for settings dialog
-     */
-    public Image getTexture() {
-        return DesktopServiceLocator.getInstance().getUiConfig().getTexture();
-    }
-
-    /**
-     * Set texture for java workspace gui
-     */
-    public void setTexture(BufferedImage texture) {
-        DesktopServiceLocator.getInstance().getUiConfig().setTexture(texture);
-    }
-
-    /**
-     * Get default path to workspace textures
+     * Get the default path to workspace textures
      *
      * @return path to textures jar library
      */
@@ -205,7 +191,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
     }
 
     /**
-     * Get default path to desktop icons
+     * Get the default path to desktop icons
      *
      * @return path to desktop icons jar library
      */
@@ -215,13 +201,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
             .resolve(Constants.LIB_PATH)
             .resolve(Constants.RES_PATH)
             .resolve(Constants.DESKTOP_JAR);
-    }
-
-    /**
-     * Is texture visible
-     */
-    public boolean isTextureVisible() {
-        return DesktopServiceLocator.getInstance().getUiConfig().isTextureVisible();
     }
 
     /**
@@ -249,14 +228,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
     public boolean isModified() {
         return getFrame() != null && getFrame().isModified();
     }
-
-    /**
-     * Is Kiwi texture visible?
-     */
-    public boolean isKiwiTextureVisible() {
-        return DesktopServiceLocator.getInstance().getUiConfig().isKiwiTextureVisible();
-    }
-
 
     /**
      * Loads workspace gui profile data.
@@ -401,12 +372,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Update GUI
      */
     public void update() {
-        getFrame().setTitle(
-            Workspace.VERSION
-            + Constants.LOG_SPACE
-            + " - Logged in as: "
-            + getLoggedUserString()
-        );
+        getFrame().setTitle(Workspace.VERSION + Constants.LOG_SPACE + " - Logged in as: " + getLoggedUserString());
         getFrame().update();
     }
 
@@ -429,10 +395,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
     @Override
     public void showMessage(String usermsg) {
         WorkspaceError.msg(usermsg);
-    }
-
-    public void setKiwiTextureVisible(boolean visible) {
-        DesktopServiceLocator.getInstance().getUiConfig().setKiwiTextureVisible(visible);
     }
 
     /**

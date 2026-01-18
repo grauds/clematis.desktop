@@ -34,7 +34,7 @@ public class TestShell implements ITestShell {
             Plugin testPlugin = new TestPluginLocator()
                 .loadPlugin(TestPluginLocator.getPluginFile(new File(getPath()),
                     ShellHelper.CHILD_SHELL_JAR),
-                    PluginDTO.PLUGIN_TYPE_ANY);
+                    PluginDTO.PLUGIN_LEVEL_ANY);
             Object obj = testPlugin.newInstance();
 
             assertNotEquals(ClassLoader.getSystemClassLoader(), obj.getClass().getClassLoader());

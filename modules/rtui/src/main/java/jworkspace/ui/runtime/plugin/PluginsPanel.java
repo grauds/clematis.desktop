@@ -37,6 +37,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -66,10 +67,16 @@ public class PluginsPanel extends KPanel {
 
         setLayout(new BorderLayout());
         add(createPluginsLabel(), BorderLayout.NORTH);
-        add(new JScrollPane(getPluginsTable()), BorderLayout.CENTER);
+
+        JSplitPane splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitter.setOneTouchExpandable(true);
+        splitter.setContinuousLayout(true);
+        splitter.setTopComponent(new JScrollPane(getPluginsTable()));
 
         PluginPanel pluginPanel = new PluginPanel();
-        add(pluginPanel, BorderLayout.SOUTH);
+        splitter.setBottomComponent(pluginPanel);
+        add(splitter, BorderLayout.CENTER);
+
         this.addPluginSelectionListener(pluginPanel);
     }
 
@@ -142,8 +149,10 @@ public class PluginsPanel extends KPanel {
                     }
                 });
 
-            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(90);
-            this.pluginsTable.getColumnModel().getColumn(1).setMaxWidth(90);
+            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(1).setMaxWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(90);
+            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(90);
 
             ButtonColumn uninstallColumn = new ButtonColumn("Uninstall", (row, col) -> {
                 PluginsTableModel model = (PluginsTableModel) pluginsTable.getModel();
@@ -151,11 +160,11 @@ public class PluginsPanel extends KPanel {
                 fireUninstallationEvent(plugin);
             });
 
-            pluginsTable.getColumnModel().getColumn(2).setCellRenderer(uninstallColumn);
-            pluginsTable.getColumnModel().getColumn(2).setCellEditor(uninstallColumn);
+            pluginsTable.getColumnModel().getColumn(3).setCellRenderer(uninstallColumn);
+            pluginsTable.getColumnModel().getColumn(3).setCellEditor(uninstallColumn);
 
-            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(90);
-            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(120);
+            this.pluginsTable.getColumnModel().getColumn(3).setMinWidth(90);
+            this.pluginsTable.getColumnModel().getColumn(3).setMaxWidth(120);
 
             this.pluginsTable.getSelectionModel().addListSelectionListener(e -> {
                 int row = this.pluginsTable.getSelectedRow();

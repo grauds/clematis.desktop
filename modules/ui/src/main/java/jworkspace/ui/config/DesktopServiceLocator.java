@@ -55,7 +55,7 @@ public class DesktopServiceLocator {
     /**
      * Private constructor to prevent external instantiation.
      * <p>
-     * Enforces singleton pattern: only this class itself can create
+     * Enforces the singleton pattern: only this class itself can create
      * an instance.
      * </p>
      */

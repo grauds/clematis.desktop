@@ -29,13 +29,14 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
-import com.hyperrealm.kiwi.plugin.PluginDTO;
+
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 
 public class PluginsTableModel extends AbstractTableModel {
 
     private final List<Plugin> plugins;
     private final String[] columns = {
-        "Plugin", "Type", ""
+        "Plugin", "Type", "Level", ""
     };
 
     public PluginsTableModel(List<Plugin> plugins) {
@@ -56,11 +57,12 @@ public class PluginsTableModel extends AbstractTableModel {
         return columns[c];
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public Class<?> getColumnClass(int col) {
         return switch (col) {
             case 0 -> Plugin.class;
-            case 1, 2 -> String.class;
+            case 1, 2, 3 -> String.class;
             default -> Object.class;
         };
     }
@@ -76,18 +78,23 @@ public class PluginsTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public boolean isCellEditable(int row, int column) {
-        return column == 2 && PluginDTO.PLUGIN_TYPE_USER.equalsIgnoreCase(this.plugins.get(row).getType());
+        return column == 3 && WorkspacePluginLocator.PLUGIN_LEVEL_USER.equalsIgnoreCase(
+            this.plugins.get(row).getLevel()
+        );
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public Object getValueAt(int row, int col) {
         Plugin i = plugins.get(row);
         return switch (col) {
             case 0 -> i;
             case 1 -> i.getType();
-            case 2 -> "";
+            case 2 -> i.getLevel();
+            case 3 -> "";
             default -> null;
         };
     }

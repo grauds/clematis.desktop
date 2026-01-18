@@ -34,7 +34,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Workspace specific set of data to be shared with plugins.
+ * Workspace-specific set of data to be shared with plugins.
  *
  * @author Anton Troshin
  */
@@ -43,4 +43,5 @@ import lombok.Setter;
 public class WorkspacePluginContext implements PluginContext {
 
     private Path userDir;
+
 }

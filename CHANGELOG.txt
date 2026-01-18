@@ -1,7 +1,9 @@
-1. Removed Kiwi Plugin expected type.
-2. Kiwi Plugin type control: ANY type can be loaded as SYSTEM or USER types of plugins, otherwise the types have to match
-3. Replaced plugin list with plugin table in Runtime Manager UI
-4. Fixed Kiwi Plugin classloader resource bundle issue
-5. Improved layout of the monitors' section
-6. Improved layout of the tabbed pane
-7. New type of UI extension shells which is loaded as USER plugins but common for all users. Their lifecycle is slightly different from the one of SYSTEM plugins, since these shells are being destroyed at the end of each user session.
+1. Removed Kiwi Plugin expected type, it is now just a plugin type.
+2. Added a new plugin property 'level' to specify the lifecycle of the plugin: SYSTEM or USER.
+3. Kiwi Plugin level control: level ANY can be loaded as SYSTEM or USER plugins, otherwise the levels have to match
+4. Replaced a plugin list with a table in Runtime Manager UI
+5. Fixed Kiwi Plugin classloader resource bundle issue
+6. A new type of UI extension shells which is loaded as USER plugins but common for all users. Their lifecycle is slightly different from the one of SYSTEM plugins, since these shells are being destroyed at the end of each user session.
+7. Improved layout of the monitors' section
+8. Improved layout of the tabbed pane
+9. Improved layout of the plugin properties panel

@@ -30,7 +30,6 @@ import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Insets;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +46,7 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.plugin.WorkspacePluginContext;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.api.views.DefaultCompoundView;
 import jworkspace.ui.config.DesktopServiceLocator;
@@ -156,7 +156,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
             protected boolean accept() {
                 KMessageDialog messageDialog = new KMessageDialog(parent);
                 try {
-                    if (Files.deleteIfExists(Path.of(p.getJarFile()))) {
+                    if (WorkspacePluginLocator.uninstallPlugin(Path.of(p.getJarFile()))) {
                         messageDialog.setMessage("Deleted successfully.");
                     } else {
                         messageDialog.setMessage(String.format("File %s doesn't exist.", p.getJarFile()));

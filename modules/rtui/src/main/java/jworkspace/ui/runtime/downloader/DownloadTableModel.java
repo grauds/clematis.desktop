@@ -68,7 +68,7 @@ public class DownloadTableModel extends AbstractTableModel {
             case 2 -> i.getProgressPercent();
             case 3 -> String.format("%.1f", i.getSpeedKb());
             case 4 -> i.getEtaSeconds() < 0 ? "--" : (i.getEtaSeconds() / 60 + "m " + i.getEtaSeconds() % 60 + "s");
-            case 5 -> "Cancel";
+            case 5 -> "";
             default -> null;
         };
     }

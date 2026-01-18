@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.jar.Manifest;
-import jworkspace.runtime.plugin.WorkspacePluginContext;
-import jworkspace.runtime.plugin.WorkspacePluginLocator;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -43,6 +41,9 @@ import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 import com.hyperrealm.kiwi.plugin.PluginLocator;
+
+import jworkspace.runtime.plugin.WorkspacePluginContext;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 /**
  * @author Anton Troshin
  */
@@ -63,7 +64,7 @@ public class  PluginTests {
             .loadPlugin(
                 WorkspacePluginLocator.getPluginFile(
                     testFolder.getRoot(), PluginHelper.PLUGIN_JAR
-                ), PluginDTO.PLUGIN_TYPE_ANY
+                ), PluginDTO.PLUGIN_LEVEL_ANY
             );
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
@@ -108,7 +109,7 @@ public class  PluginTests {
         Plugin testPlugin = pluginLocator
             .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
                 PluginHelper.PLUGIN_JAR),
-                PluginDTO.PLUGIN_TYPE_ANY);
+                PluginDTO.PLUGIN_LEVEL_ANY);
 
         Object obj1 = testPlugin.newInstance();
         assert obj1 instanceof ITestPlugin;
@@ -124,7 +125,7 @@ public class  PluginTests {
         testPlugin = pluginLocator
             .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(),
                 PluginHelper.PLUGIN_JAR),
-                PluginDTO.PLUGIN_TYPE_ANY);
+                PluginDTO.PLUGIN_LEVEL_ANY);
 
         Object obj2 = testPlugin.newInstance();
         assert obj2 instanceof ITestPlugin;
@@ -141,7 +142,7 @@ public class  PluginTests {
 // create version one
         Plugin testPlugin = pluginLocator
             .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR),
-                PluginDTO.PLUGIN_TYPE_ANY);
+                PluginDTO.PLUGIN_LEVEL_ANY);
 
         Object obj1 = testPlugin.newInstance();
         assert obj1 instanceof ITestPlugin;
@@ -149,7 +150,7 @@ public class  PluginTests {
 // create version one
         Plugin testPlugin2 = pluginLocator
             .loadPlugin(WorkspacePluginLocator.getPluginFile(testFolder.getRoot(), PluginHelper.PLUGIN_JAR_2),
-                PluginDTO.PLUGIN_TYPE_ANY);
+                PluginDTO.PLUGIN_LEVEL_ANY);
 
         Object obj2 = testPlugin2.newInstance();
         assert obj2 instanceof ITestPlugin;

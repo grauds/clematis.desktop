@@ -55,7 +55,8 @@ public class ShellHelper {
 
         PluginDTO plugin = new PluginDTO(TEST_SHELL_CLASS,
             TEST_SHELL_NAME,
-            PluginDTO.PLUGIN_TYPE_ANY,
+            WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
+            PluginDTO.PLUGIN_LEVEL_ANY,
             TEST_SHELL_DESCRIPTION,
             TEST_SHELL_ICON,
             TEST_SHELL_VERSION,
@@ -68,7 +69,8 @@ public class ShellHelper {
 
         PluginDTO plugin = new PluginDTO(CHILD_TEST_SHELL_CLASS,
             CHILD_TEST_SHELL_NAME,
-            PluginDTO.PLUGIN_TYPE_ANY,
+            WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
+            PluginDTO.PLUGIN_LEVEL_ANY,
             TEST_SHELL_DESCRIPTION,
             TEST_SHELL_ICON,
             TEST_SHELL_VERSION,
@@ -84,7 +86,7 @@ public class ShellHelper {
         assert testPlugin.getClassName().equals(TEST_SHELL);
         assert testPlugin.getVersion().equals(TEST_SHELL_VERSION);
         assert testPlugin.getHelpURL().toString().equals(TEST_SHELL_HELP_URL);
-        assert testPlugin.getType().equals(PluginDTO.PLUGIN_TYPE_ANY);
+        assert testPlugin.getLevel().equals(PluginDTO.PLUGIN_LEVEL_ANY);
     }
 
     static void assertPluginEqualsChildManifest(Plugin testPlugin) {
@@ -94,7 +96,7 @@ public class ShellHelper {
         assert testPlugin.getClassName().equals(CHILD_TEST_SHELL);
         assert testPlugin.getVersion().equals(TEST_SHELL_VERSION);
         assert testPlugin.getHelpURL().toString().equals(TEST_SHELL_HELP_URL);
-        assert testPlugin.getType().equals(PluginDTO.PLUGIN_TYPE_ANY);
+        assert testPlugin.getLevel().equals(PluginDTO.PLUGIN_LEVEL_ANY);
     }
 
     static void preparePlugins(File folder) throws IOException, URISyntaxException {

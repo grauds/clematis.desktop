@@ -32,7 +32,9 @@ import java.awt.Insets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -43,11 +45,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 
+import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
+import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.runtime.downloader.DownloadItem;
 import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
@@ -99,6 +104,28 @@ public class PluginsDownloaderPanel extends KPanel {
 
             this.table = new JTable(this.model);
             this.table.setRowHeight(30);
+
+            this.table.getColumnModel().getColumn(0)
+                .setCellRenderer(new DefaultTableCellRenderer() {
+                    @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:MagicNumber"})
+                    @Override
+                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                                   boolean hasFocus, int row, int column) {
+                        super.getTableCellRendererComponent(
+                            table, value, isSelected, hasFocus, row, column
+                        );
+                        if (value instanceof Plugin plugin) {
+                            setText(plugin.toString());
+                            Icon icon = plugin.getIcon();
+                            setIcon(Objects.requireNonNullElseGet(icon,
+                                () -> new ImageIcon(getResourceManager().getImage("plugin.png"))
+                            ));
+                        } else {
+                            setText(value.toString());
+                        }
+                        return this;
+                    }
+                });
 
             ProgressBarRenderer progressRenderer = new ProgressBarRenderer();
             this.table.getColumnModel().getColumn(2)
