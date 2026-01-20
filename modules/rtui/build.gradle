@@ -26,6 +26,7 @@ dependencies {
 
     implementation project(':widgets')
     implementation project(':runtime')
+    implementation("com.google.code.gson:gson:2.9.1")
 
     implementation "joda-time:joda-time:2.10.3"
 

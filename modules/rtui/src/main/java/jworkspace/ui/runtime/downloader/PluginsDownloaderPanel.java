@@ -30,9 +30,13 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -47,15 +51,21 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
+import static jworkspace.runtime.downloader.DownloadTask.DEFAULT_PATH;
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.runtime.downloader.DownloadItem;
+import jworkspace.runtime.downloader.DownloadItemDTO;
 import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
+import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.logging.LogViewerPanel;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
@@ -63,6 +73,11 @@ import jworkspace.ui.widgets.ButtonColumn;
 
 public class PluginsDownloaderPanel extends KPanel {
 
+    private static final String DOWNLOADS_CONFIG_FILE = "downloads.json";
+    private final Gson gson = new GsonBuilder()
+        .setPrettyPrinting()
+        .excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT)
+        .create();
     private DownloadTableModel model;
     private JTable table;
     private LogViewerPanel logViewer;
@@ -141,9 +156,7 @@ public class PluginsDownloaderPanel extends KPanel {
             this.table.getColumnModel().getColumn(4).setMaxWidth(90);
             this.table.getColumnModel().getColumn(5).setMaxWidth(90);
 
-            this.table.getSelectionModel().addListSelectionListener(e -> {
-                switchItemLogs();
-            });
+            this.table.getSelectionModel().addListSelectionListener(e -> switchItemLogs());
         }
         return table;
     }
@@ -266,5 +279,45 @@ public class PluginsDownloaderPanel extends KPanel {
             List<String> logs = item.getLogs();
             logs.forEach(getLogViewer()::append);
         }
+    }
+
+    public void load(WorkspacePluginContext pluginContext) {
+        Path configPath = pluginContext.getUserDir()
+            .resolve(DEFAULT_PATH)
+            .resolve(DOWNLOADS_CONFIG_FILE);
+        if (!Files.exists(configPath)) {
+            return;
+        }
+
+        try {
+            String json = Files.readString(configPath, StandardCharsets.UTF_8);
+            List<DownloadItemDTO> dtos = gson.fromJson(json,
+                new TypeToken<List<DownloadItemDTO>>() {}.getType()
+            );
+
+            if (dtos != null) {
+                for (DownloadItemDTO dto : dtos) {
+                    DownloadItem item = DownloadItem.fromDTO(dto);
+                    model.addItem(item);
+                    item.addListener(s -> logViewer.append(s));
+                }
+                model.fireTableDataChanged();
+            }
+        } catch (IOException e) {
+            /* ignore */
+        }
+    }
+
+    public void save(WorkspacePluginContext pluginContext) throws IOException {
+        Path configPath = pluginContext.getUserDir()
+            .resolve(DEFAULT_PATH)
+            .resolve(DOWNLOADS_CONFIG_FILE);
+
+        List<DownloadItemDTO> dtos = model.getItems().stream()
+            .map(DownloadItem::toDTO)
+            .collect(Collectors.toList());
+
+        String json = gson.toJson(dtos);
+        Files.writeString(configPath, json, StandardCharsets.UTF_8);
     }
 }

@@ -69,7 +69,6 @@ public class RuntimeManagerTest {
         TemporaryFolder testFolder = new TemporaryFolder();
         testFolder.create();
 
-        // get created root file
         File dataRoot = testFolder.getRoot().toPath().toFile();
         WorkspaceInstaller workspaceInstaller = new WorkspaceInstaller(dataRoot);
 

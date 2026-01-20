@@ -68,6 +68,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     private static final String RUNTIME_MANAGER = LangResource.getString("message#240");
 
     private final PluginsPanel pluginsPanel = new PluginsPanel();
+    private final PluginsDownloaderPanel pluginsDownloaderPanel = new PluginsDownloaderPanel();
 
     private final WorkspacePluginContext pluginContext;
 
@@ -75,11 +76,10 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         super();
 
         this.pluginContext = pluginContext;
-
         JSplitPane splitPane = new JSplitPane(
             JSplitPane.HORIZONTAL_SPLIT,
             pluginsPanel,
-            new PluginsDownloaderPanel()
+            pluginsDownloaderPanel
         );
         splitPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
         splitPane.setOpaque(false);
@@ -102,7 +102,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     }
 
     /**
-     * Return buttons for control panel
+     * Return buttons for the control panel
      */
     public CButton[] getButtons() {
         Image normal = new ResourceLoader(RuntimeManagerWindow.class)
@@ -125,7 +125,8 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
     @Override
     public void load() {
-
+        pluginsPanel.load(this.pluginContext);
+        pluginsDownloaderPanel.load(this.pluginContext);
     }
 
     @Override
@@ -134,8 +135,9 @@ public class RuntimeManagerWindow extends DefaultCompoundView
     }
 
     @Override
-    public void save() {
-
+    public void save() throws IOException {
+        pluginsPanel.save(this.pluginContext);
+        pluginsDownloaderPanel.save(this.pluginContext);
     }
 
     public void update() {

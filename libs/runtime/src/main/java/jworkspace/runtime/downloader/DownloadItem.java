@@ -107,7 +107,7 @@ public class DownloadItem {
     private final List<String> logs = new CopyOnWriteArrayList<>();
 
     /** Listeners for live log updates */
-    private final List<IDownloadLogListener> listeners = new CopyOnWriteArrayList<>();
+    private final transient List<IDownloadLogListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * Creates a new download item and initializes its log.
@@ -288,6 +288,43 @@ public class DownloadItem {
             tempFile = null;
         }
     }
+    /**
+     * Converts this runtime item to a DTO for serialization.
+     */
+    public DownloadItemDTO toDTO() {
+        DownloadItemDTO dto = new DownloadItemDTO();
+        dto.setUrl(this.url);
+        dto.setFileName(this.fileName);
+        dto.setTotalBytes(this.totalBytes);
+        dto.setDownloadedBytes(this.downloadedBytes);
+        dto.setStatus(this.status.name());
+        dto.setProgress(this.progress);
+        dto.setEtaSeconds(this.etaSeconds);
+        dto.setExpectedChecksum(this.expectedChecksum);
+        dto.setActualChecksum(this.actualChecksum);
+        dto.setLogs(this.getLogs());
+        return dto;
+    }
 
+    /**
+     * Restores a runtime item from a DTO.
+     */
+    public static DownloadItem fromDTO(DownloadItemDTO dto) {
+        DownloadItem item = new DownloadItem(dto.getUrl(), dto.getFileName());
+        item.setTotalBytes(dto.getTotalBytes());
+        item.setDownloadedBytes(dto.getDownloadedBytes());
+        item.setStatus(DownloadStatus.valueOf(dto.getStatus()));
+        item.setProgress(dto.getProgress());
+        item.setEtaSeconds(dto.getEtaSeconds());
+        item.setExpectedChecksum(dto.getExpectedChecksum());
+        item.setActualChecksum(dto.getActualChecksum());
+
+        // Restore logs if they exist
+        if (dto.getLogs() != null) {
+            item.logs.clear(); // Clear default "Task created" log
+            dto.getLogs().forEach(item::addLog);
+        }
+        return item;
+    }
 }
 

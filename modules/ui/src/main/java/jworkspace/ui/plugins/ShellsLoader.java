@@ -42,6 +42,7 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.MainFrame;
+import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.action.UISwitchListener;
@@ -174,8 +175,8 @@ public class ShellsLoader extends Task {
                 } catch (Exception | Error ex) {
                     // Handle plugin load failures gracefully
                     String failedMessage = "Plugin " + plugins.get(i).getName() + " failed to load: " + ex;
-                    showMessageInProgressDialog(failedMessage);
-                    log.warning(failedMessage);
+                    WorkspaceError.exception(failedMessage, ex);
+                    log.severe(failedMessage);
                 }
 
                 // Update progress percentage

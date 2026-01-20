@@ -30,9 +30,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import jworkspace.runtime.downloader.DownloadItem;
+import lombok.Getter;
 
 public class DownloadTableModel extends AbstractTableModel {
 
+    @Getter
     private final List<DownloadItem> items;
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
     private final String[] columns = {

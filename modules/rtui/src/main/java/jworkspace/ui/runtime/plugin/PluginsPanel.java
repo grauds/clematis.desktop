@@ -48,6 +48,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
+import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.ui.runtime.LangResource;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
 import jworkspace.ui.widgets.ButtonColumn;
@@ -180,5 +181,13 @@ public class PluginsPanel extends KPanel {
 
     public void setPlugins(List<Plugin> plugins) {
         ((PluginsTableModel) getPluginsTable().getModel()).setPlugins(plugins);
+    }
+
+    public void load(WorkspacePluginContext pluginContext) {
+
+    }
+
+    public void save(WorkspacePluginContext pluginContext) {
+
     }
 }
