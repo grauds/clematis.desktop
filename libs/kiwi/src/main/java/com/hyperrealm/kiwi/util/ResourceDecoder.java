@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import com.hyperrealm.kiwi.io.StreamUtils;
-import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
 /**
  * A class that decodes various types of resources from input streams. This
@@ -77,9 +76,9 @@ public class ResourceDecoder implements ImageObserver {
      *                             stream.
      */
 
-    public KiwiAudioClip decodeAudioClip(InputStream stream) throws IOException {
+    /*public KiwiAudioClip decodeAudioClip(InputStream stream) throws IOException {
         return new KiwiAudioClip(stream);
-    }
+    }*/
 
     /**
      * Decode an image from an input stream. Constructs an <code>Image</code>

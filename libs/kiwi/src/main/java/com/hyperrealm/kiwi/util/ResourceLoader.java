@@ -26,8 +26,6 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import com.hyperrealm.kiwi.ui.KiwiAudioClip;
-
 import lombok.extern.java.Log;
 
 /**
@@ -121,7 +119,7 @@ public class ResourceLoader {
      * @param path The location of the resource.
      */
 
-    public final KiwiAudioClip getResourceAsAudioClip(String path) {
+    /*public final KiwiAudioClip getResourceAsAudioClip(String path) {
         KiwiAudioClip clip = null;
 
         try {
@@ -131,7 +129,7 @@ public class ResourceLoader {
         }
 
         return (clip);
-    }
+    }*/
 
     /**
      * Retrieve a resource as an <code>Image</code>. Retrieves the specified

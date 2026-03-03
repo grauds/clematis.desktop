@@ -68,7 +68,7 @@ public class MemoryCompactor extends Thread {
         statusarea = widget;
         button = new KButton(LangResource.getString("MC"));
         button.setDefaultCapable(false);
-        button.addActionListener(ex -> collectGarbage());
+        button.addActionListener(_ -> collectGarbage());
         button.setToolTipText(LangResource.getString("message#246"));
         statusarea.add(button);
         setStatus(LangResource.getString("message#243"));
@@ -126,7 +126,6 @@ public class MemoryCompactor extends Thread {
     private void collectGarbage() {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
-        rt.runFinalization();
     }
 
     /**

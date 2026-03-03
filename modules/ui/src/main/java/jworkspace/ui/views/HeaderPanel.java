@@ -82,8 +82,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     private final ClockLabel clockLabel = new ClockLabel();
 
     /**
-     * HeaderPanel constructor. Takes title string
-     * as argument.
+     * HeaderPanel constructor. Takes title string as an argument.
      */
     public HeaderPanel(String title) {
         super();
@@ -141,7 +140,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     }
 
     /**
-     * Returns orientation of header panel
+     * Returns orientation of the header panel
      */
     String getOrientation() {
         return orientation;
@@ -157,8 +156,10 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     @SuppressWarnings("MagicNumber")
     public void layoutContainer(Container parent) {
         headerLabel.setBounds(15, 0, getWidth() * 2 / 3, preferredLayoutSize(parent).height);
-        clockLabel.setBounds(getWidth() - clockLabel.getPreferredSize().width - 15, 0, getWidth(),
-            preferredLayoutSize(parent).height);
+        clockLabel.setBounds(
+            getWidth() - clockLabel.getPreferredSize().width - 15, 0, getWidth(),
+            preferredLayoutSize(parent).height
+        );
     }
 
     /**
@@ -187,10 +188,10 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
 
     /**
      * Note: this method sends property change event
-     * with new point, there mouse pointer was dragged
-     * relative to Control panel. Property event handler
-     * should always account for it with top left coordinates
-     * of control panel.
+     * with new point, there the mouse pointer was dragged
+     * relative to the Control panel. Property event handler
+     * should always account for it with the top left coordinates
+     * of the control panel.
      */
     public void mouseDragged(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e)) {
@@ -217,7 +218,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     }
 
     /**
-     * Returns preferred layout size of this component.
+     * Returns the preferred layout size of this component.
      */
     public Dimension preferredLayoutSize(Container parent) {
         return minimumLayoutSize(parent);
@@ -242,6 +243,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
         private ClockLabel() {
             super();
             setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().getImage("clock.png")));
+            setOpaque(true);
         }
     }
 }

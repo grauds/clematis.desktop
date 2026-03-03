@@ -32,7 +32,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import com.hyperrealm.kiwi.ui.ColorTheme;
-import com.hyperrealm.kiwi.ui.KiwiAudioClip;
 
 import lombok.extern.java.Log;
 
@@ -144,7 +143,7 @@ public class ResourceManager {
 
     private final HashMap<String, Icon> icons;
 
-    private final HashMap<String, KiwiAudioClip> sounds;
+    //private final HashMap<String, KiwiAudioClip> sounds;
 
     private final HashMap<String, Image> textures;
 
@@ -164,7 +163,7 @@ public class ResourceManager {
         images = new HashMap<>();
         icons = new HashMap<>();
         textures = new HashMap<>();
-        sounds = new HashMap<>();
+        //sounds = new HashMap<>();
         bundles = new HashMap<>();
 
         setImagePath(IMAGE_PATH);
@@ -309,7 +308,7 @@ public class ResourceManager {
      */
 
     public void clearAudioClipCache() {
-        sounds.clear();
+        /*sounds.clear();*/
     }
 
     /**
@@ -423,7 +422,7 @@ public class ResourceManager {
      *                                                            resource was not found.
      */
 
-    public KiwiAudioClip getSound(String name) {
+   /* public KiwiAudioClip getSound(String name) {
         checkResourceName(name);
 
         KiwiAudioClip clip = sounds.get(name);
@@ -439,7 +438,7 @@ public class ResourceManager {
         sounds.put(name, clip);
 
         return (clip);
-    }
+    }*/
 
     /**
      * Get a reference to a <code>Properties</code> resource.
