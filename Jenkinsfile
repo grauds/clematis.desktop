@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK-21' // Use the name configured in Global Tool Configuration
+        jdk 'JDK-25' // Use the name configured in Global Tool Configuration
     }
 
     stages {
