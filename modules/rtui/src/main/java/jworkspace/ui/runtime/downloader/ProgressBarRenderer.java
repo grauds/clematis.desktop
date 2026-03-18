@@ -62,12 +62,10 @@ public class ProgressBarRenderer extends JProgressBar implements TableCellRender
 
         if (selected) {
             setBackground(table.getSelectionBackground());
-            // keep bar color same
-            setForeground(new Color(76, 175, 80));
         } else {
             setBackground(table.getBackground());
-            setForeground(new Color(76, 175, 80));
         }
+        setForeground(new Color(76, 175, 80));
 
         return this;
     }

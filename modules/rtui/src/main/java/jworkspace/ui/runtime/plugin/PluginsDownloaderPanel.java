@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime.downloader;
+package jworkspace.ui.runtime.plugin;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -69,6 +69,8 @@ import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.logging.LogViewerPanel;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
+import jworkspace.ui.runtime.downloader.DownloadTableModel;
+import jworkspace.ui.runtime.downloader.ProgressBarRenderer;
 import jworkspace.ui.widgets.ButtonColumn;
 
 public class PluginsDownloaderPanel extends KPanel {
@@ -113,7 +115,7 @@ public class PluginsDownloaderPanel extends KPanel {
     @SuppressWarnings("checkstyle:MagicNumber")
     private JTable getTable() {
         if (this.table == null) {
-            DownloadController downloadController = new DownloadController(
+            PluginDownloadController downloadController = new PluginDownloadController(
                 getModel(), new DownloadService()
             );
 
@@ -156,14 +158,14 @@ public class PluginsDownloaderPanel extends KPanel {
             this.table.getColumnModel().getColumn(4).setMaxWidth(90);
             this.table.getColumnModel().getColumn(5).setMaxWidth(90);
 
-            this.table.getSelectionModel().addListSelectionListener(e -> switchItemLogs());
+            this.table.getSelectionModel().addListSelectionListener(_ -> switchItemLogs());
         }
         return table;
     }
 
-    private ButtonColumn getDownloadButtonColumn(DownloadController downloadController) {
+    private ButtonColumn getDownloadButtonColumn(PluginDownloadController downloadController) {
 
-        return new ButtonColumn("Action", (row, col) -> {
+        return new ButtonColumn("", (row, _) -> {
             DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
 
             switch (item.getStatus()) {
@@ -183,7 +185,7 @@ public class PluginsDownloaderPanel extends KPanel {
                 }
             }
 
-            // Refresh table so the button text updates dynamically
+            // Refresh the table so the button text updates dynamically
             table.repaint();
         }) {
             @Override
@@ -220,8 +222,8 @@ public class PluginsDownloaderPanel extends KPanel {
         JTextField urlField = new JTextField();
 
         JButton addButton = new JButton("Add URL");
-        urlField.addActionListener(e -> addButton.doClick());
-        addButton.addActionListener(e -> {
+        urlField.addActionListener(_ -> addButton.doClick());
+        addButton.addActionListener(_ -> {
             String url = urlField.getText().trim();
             if (url.isEmpty()) {
                 return;

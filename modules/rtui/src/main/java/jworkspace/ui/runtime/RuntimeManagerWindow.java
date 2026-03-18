@@ -50,9 +50,9 @@ import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.api.views.DefaultCompoundView;
 import jworkspace.ui.config.DesktopServiceLocator;
-import jworkspace.ui.runtime.downloader.PluginsDownloaderPanel;
 import jworkspace.ui.runtime.monitor.MonitorPanel;
 import jworkspace.ui.runtime.plugin.IPluginUninstallActionListener;
+import jworkspace.ui.runtime.plugin.PluginsDownloaderPanel;
 import jworkspace.ui.runtime.plugin.PluginsPanel;
 import jworkspace.ui.runtime.process.ProcessesPanel;
 

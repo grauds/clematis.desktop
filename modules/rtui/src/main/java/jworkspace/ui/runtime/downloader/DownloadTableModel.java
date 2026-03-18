@@ -38,7 +38,7 @@ public class DownloadTableModel extends AbstractTableModel {
     private final List<DownloadItem> items;
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
     private final String[] columns = {
-        "File", "Status", "Progress", "Speed (KB/s)", "ETA", "Cancel"
+        "File", "Status", "Progress", "Speed (KB/s)", "ETA", ""
     };
 
     public DownloadTableModel(List<DownloadItem> items) {
