@@ -295,6 +295,7 @@ public class DownloadItem {
         DownloadItemDTO dto = new DownloadItemDTO();
         dto.setUrl(this.url);
         dto.setFileName(this.fileName);
+        dto.setCompletedFile(this.getCompletedFile().toString());
         dto.setTotalBytes(this.totalBytes);
         dto.setDownloadedBytes(this.downloadedBytes);
         dto.setStatus(this.status.name());
@@ -311,6 +312,7 @@ public class DownloadItem {
      */
     public static DownloadItem fromDTO(DownloadItemDTO dto) {
         DownloadItem item = new DownloadItem(dto.getUrl(), dto.getFileName());
+        item.setCompletedFile(Path.of(dto.getCompletedFile()));
         item.setTotalBytes(dto.getTotalBytes());
         item.setDownloadedBytes(dto.getDownloadedBytes());
         item.setStatus(DownloadStatus.valueOf(dto.getStatus()));

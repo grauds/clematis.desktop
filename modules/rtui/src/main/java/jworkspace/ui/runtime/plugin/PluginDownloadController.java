@@ -53,11 +53,6 @@ public class PluginDownloadController extends DownloadController {
 
     @Override
     public void finished(int row) {
-        // Download is complete
-        installPlugin(row);
-    }
-
-    private void installPlugin(int row) {
         DownloadItem item = getModel().getItem(row);
         Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
         KMessageDialog messageDialog = new KMessageDialog(parent);
@@ -68,29 +63,33 @@ public class PluginDownloadController extends DownloadController {
             plugin = ServiceLocator.getInstance().getPluginLocator().createPlugin(
                 item.getCompletedFile().toFile(), PluginDTO.PLUGIN_LEVEL_ANY
             );
+
         } catch (PluginException e) {
             messageDialog.setMessage(
                 String.format("Error loading the plugin: %s.", e.getMessage())
             );
         }
 
-        Plugin finalPlugin = plugin;
-        KQuestionDialog questionDialog = new KQuestionDialog(parent) {
-            @Override
-            protected boolean accept() {
-                installPlugin(item, finalPlugin);
-                return true;
-            }
-        };
-        questionDialog.setMessage(
-            String.format("Are you sure to install a plugin from %s?",
-                item.getCompletedFile()
-            )
-        );
-        questionDialog.setVisible(true);
+        if (plugin != null) {
+            Plugin finalPlugin = plugin;
+            KQuestionDialog questionDialog = new KQuestionDialog(parent) {
+                @Override
+                protected boolean accept() {
+                    installPlugin(item.getCompletedFile(), finalPlugin);
+                    return true;
+                }
+            };
+            questionDialog.setMessage(
+                String.format("Are you sure to install %s plugin from %s?",
+                    plugin.getName(),
+                    item.getCompletedFile()
+                )
+            );
+            questionDialog.setVisible(true);
+        }
     }
 
-    public static void installPlugin(DownloadItem item, Plugin plugin) {
+    public static void installPlugin(Path completedFile, Plugin plugin) {
         Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
         KMessageDialog messageDialog = new KMessageDialog(parent);
 
@@ -100,7 +99,7 @@ public class PluginDownloadController extends DownloadController {
                 Path path = ShellsLoader.path(allUsers, plugin);
                 try {
                     WorkspacePluginLocator.installPlugin(
-                        item.getCompletedFile(), path.resolve(
+                        completedFile, path.resolve(
                             plugin.getName() + "_" + plugin.getVersion() + ".jar"
                         )
                     );

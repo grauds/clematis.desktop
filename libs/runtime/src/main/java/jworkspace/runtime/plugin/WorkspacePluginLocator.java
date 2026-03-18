@@ -123,7 +123,7 @@ public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext
     }
 
     public static void installPlugin(Path from, Path to) throws IOException {
-        Files.move(from, to);
+        Files.copy(from, to);
     }
 
     public static boolean uninstallPlugin(Path plugin) throws IOException {

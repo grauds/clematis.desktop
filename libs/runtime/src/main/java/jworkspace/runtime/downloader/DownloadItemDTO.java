@@ -20,4 +20,5 @@ public class DownloadItemDTO {
     private String expectedChecksum;
     private String actualChecksum;
     private List<String> logs;
+    private String completedFile;
 }

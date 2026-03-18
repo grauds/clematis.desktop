@@ -2,7 +2,7 @@ package jworkspace.ui;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2002 Anton Troshin
+   Copyright (C) 1999-2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -56,12 +56,11 @@ import lombok.extern.java.Log;
  *
  * @author Anton Troshin
  */
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 @Log
 public class WorkspaceError {
 
     private static final double DEFAULT_SCALE = 0.9;
-
-    private static final ShowMessageLaterRunnable LATER = new ShowMessageLaterRunnable();
 
     private static final EmptyBorder EMPTY_BORDER = new EmptyBorder(5, 5, 15, 5);
 
@@ -71,17 +70,10 @@ public class WorkspaceError {
 
     private static final BorderLayout BORDER_LAYOUT = new BorderLayout(5, 5);
 
-    private final Thread laterThread;
-
-    private boolean showingLater = false;
-
     /**
-     * init some neccessary error stuff
+     * init some necessary error stuff
      */
-    WorkspaceError() {
-        laterThread = new Thread(LATER);
-        laterThread.start();
-    }
+    WorkspaceError() {}
 
     public static void exception(String usermsg, Throwable ex) {
 
@@ -109,7 +101,7 @@ public class WorkspaceError {
             msg.append("\n").append(s);
         }
 
-        // create panel with advanced error message
+        // create the panel with an advanced error message
         JPanel l = SwingUtils.createMultiLineLabel(msg.toString(), COLS);
         l.setBorder(EMPTY_BORDER);
 
@@ -169,33 +161,7 @@ public class WorkspaceError {
     }
 
     /**
-     * Special version of msg that displays messages in a different thread from the
-     * calling thread (due to some nasty drag and drop event handling bugs that cause
-     * deadlocks if certain gui operations are done at dnd drop event time)
-     */
-    public void showMessageLater(String title, String usermsg) {
-
-        if (showingLater) {
-            return;
-        }
-        showingLater = true;
-        synchronized (LATER) {
-            showingLater = true;
-
-            LATER.msg = usermsg;
-            LATER.title = title;
-            LATER.notifyAll();
-        }
-        showingLater = false;
-    }
-
-    public void quit() {
-        LATER.die = true;
-        laterThread.interrupt();
-    }
-
-    /**
-     * shows the stack trace of an error message
+     * Shows the stack trace of an error message
      */
     protected static class ShowErrorDetailsAction extends AbstractAction {
 
@@ -242,59 +208,6 @@ public class WorkspaceError {
             p.add(sp, BorderLayout.CENTER);
 
             JOptionPane.showMessageDialog(c, p);
-        }
-    }
-
-    /**
-     * @author Anton Troshin
-     */
-    public static class ShowMessageLaterRunnable implements Runnable {
-
-        static final int SLEEP = 500;
-
-        String msg = null;
-
-        String title = null;
-
-        boolean die = false;
-
-        public void run() {
-            while (!die) {
-                try {
-                    synchronized (LATER) {
-                        if (!LATER.die) {
-                            LATER.wait();
-                        }
-
-                        if (msg != null && title != null) {
-                            msg(title, msg);
-                            msg = null;
-                            title = null;
-                        }
-                    }
-                } catch (InterruptedException ex) {
-                    log.warning(ex.getMessage());
-                }
-            }
-        }
-    }
-
-    /**
-     * @author Anton Troshin
-     */
-    public static class MessageRunnable implements Runnable {
-
-        String msg;
-
-        String title;
-
-        MessageRunnable(String msg, String title) {
-            this.msg = msg;
-            this.title = title;
-        }
-
-        public void run() {
-            msg(title, msg);
         }
     }
 }
