@@ -32,14 +32,14 @@ public class Workspace {
 
     public static final String HOME_DIR = ".jworkspace";
 
-    @Option(name = "--name", usage = "user profile name", required = true)
+    @Option(name = "--name", usage = "user profile name")
     private String name;
 
     @Option(name = "--password", usage = "user profile password")
     private String password;
 
     @Option(name = "--path", usage = "workspace path to store data")
-    private String path = System.getProperty("user.dir");
+    private String path = System.getProperty("home.dir");
 
     private Workspace() {}
 
@@ -65,29 +65,23 @@ public class Workspace {
             return;
         }
 
-        if (name != null) {
-            System.out.println("--name is set");
-        }
-
-        if (password != null) {
-            System.out.println("--password is set");
+        if (path == null || path.isEmpty()) {
+            path = System.getProperty("user.home");
         }
 
         try {
-            if (name != null) {
-                Workspace.start(name, password, Paths.get(path).resolve(HOME_DIR));
-            }
+            Workspace.start(name, password, Paths.get(path).resolve(HOME_DIR));
         } catch (ProfileOperationException | IOException | PluginException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void start(@NonNull String name, String password)
+    public void start(String name, String password)
         throws ProfileOperationException, PluginException, IOException {
         Workspace.start(name, password, Paths.get(path).resolve(HOME_DIR));
     }
 
-    public static void start(@NonNull String name, String password, @NonNull Path root)
+    public static void start(String name, String password, @NonNull Path root)
         throws ProfileOperationException, IOException, PluginException {
         /*
          * Create system plugins
@@ -99,7 +93,7 @@ public class Workspace {
         startSession(name, password, root);
     }
 
-    public static void startSession(@NonNull String name, String password, Path root) throws ProfileOperationException {
+    public static void startSession(String name, String password, Path root) throws ProfileOperationException {
         /*
          * Validate the profile name and password to get the configuration stored there
          */

@@ -128,6 +128,7 @@ public class Profile {
      * @param secondName java.lang.String
      * @param email      java.lang.String
      */
+    @SuppressWarnings("checkstyle:ParameterAssignment")
     public static Profile create(String userName,
                                  String password,
                                  String firstName,
@@ -135,12 +136,8 @@ public class Profile {
                                  String email)
         throws ProfileOperationException {
 
-        if (userName == null) {
-            throw new ProfileOperationException("Username is blank");
-        }
-
-        if (password == null) {
-            throw new ProfileOperationException("Password is blank");
+        if (userName == null || userName.isEmpty()) {
+            userName = "root";
         }
 
         return new Profile(userName, password, firstName, secondName, email);
@@ -264,7 +261,7 @@ public class Profile {
                 password = null;
             }
         } catch (FileNotFoundException ex) {
-            log.log(Level.WARNING, String.format("No password is found for user '%s' ", userName));
+            log.log(Level.WARNING, String.format("No password is set for user '%s' ", userName));
         }
     }
 

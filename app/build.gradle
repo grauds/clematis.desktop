@@ -1,3 +1,7 @@
+plugins {
+    id 'org.panteleyev.jpackageplugin' version '2.0.1'
+}
+
 group = 'org.clematis'
 version = '2.0.0-SNAPSHOT'
 
@@ -22,4 +26,36 @@ tasks.named('jar') {
         println "Using Kiwi jar as input: ${kiwiJar}"
         // You could do additional operations with the kiwiJar file here if needed
     }
+}
+
+def osName = System.getProperty('os.name').toLowerCase()
+jpackage {
+    appName = "Clematis Java Workspace"
+    appVersion = "2.0.0"
+    vendor = "Anton Troshin"
+
+    input = new File("build/libs")
+    mainJar = "jworkspace-2.0.0-SNAPSHOT.jar"
+    mainClass = "jworkspace.Workspace"
+
+    // macOS
+    if (osName.contains('mac')) {
+        type = "pkg"
+        macPackageIdentifier = "org.clematis.jworkspace"
+        icon = file("installer/mac/AppIcon.icns")
+    }
+    // Windows
+    else if (osName.contains('windows')) {
+        type = "msi"
+        icon = file("installer/win/AppIcon.ico")
+        winDirChooser = true
+        winShortcut = true
+    }
+    // Linux
+    else {
+        type = "deb"
+        linuxShortcut = true
+    }
+
+    destination = new File("build/dist")
 }
