@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop;
+package jworkspace.ui.desktop.plaf;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003, 2019 Anton Troshin
@@ -31,6 +31,7 @@ import java.awt.Point;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
@@ -43,9 +44,9 @@ import javax.swing.JViewport;
 @SuppressWarnings("MagicNumber")
 public class ScrollingDesktopManager extends DefaultDesktopManager {
 
-    private final Desktop desktop;
+    private final JDesktopPane desktop;
 
-    ScrollingDesktopManager(Desktop desktop) {
+    public ScrollingDesktopManager(JDesktopPane desktop) {
         this.desktop = desktop;
     }
 
@@ -59,7 +60,7 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
         resizeDesktop();
     }
 
-    void setNormalSize() {
+    public void setNormalSize() {
 
         JScrollPane scrollPane = getScrollPane();
 
@@ -74,7 +75,7 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
                     d.getHeight() - scrollInsets.top - scrollInsets.bottom);
             }
             d.setSize(d.getWidth() - 20, d.getHeight() - 20);
-            desktop.setAllSize(x, y);
+            setAllSize(x, y);
             scrollPane.invalidate();
             scrollPane.validate();
         }
@@ -89,6 +90,23 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
         }
     }
 
+    /**
+     * Sets all component size properties (the maximum, minimum, preferred) to the given dimension.
+     */
+    private void setAllSize(Dimension d) {
+        desktop.setMinimumSize(d);
+        desktop.setMaximumSize(d);
+        desktop.setPreferredSize(d);
+    }
+
+    /**
+     * Sets all component size properties (the maximum, minimum, preferred)
+     * to the given width and height.
+     */
+    public void setAllSize(int width, int height) {
+        setAllSize(new Dimension(width, height));
+    }
+
     private JScrollPane getScrollPane() {
         if (desktop.getParent() instanceof JViewport viewPort) {
             if (viewPort.getParent() instanceof JScrollPane) {
@@ -98,7 +116,7 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
         return null;
     }
 
-    void resizeDesktop() {
+    public void resizeDesktop() {
 
         Point point = new Point(0, 0);
 
@@ -121,7 +139,7 @@ public class ScrollingDesktopManager extends DefaultDesktopManager {
             if (point.y <= d.getHeight()) {
                 point.y = ((int) d.getHeight()) - 20;
             }
-            desktop.setAllSize(point.x, point.y);
+            setAllSize(point.x, point.y);
             scrollPane.invalidate();
             scrollPane.validate();
         }

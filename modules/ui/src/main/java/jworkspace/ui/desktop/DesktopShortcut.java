@@ -26,13 +26,9 @@ package jworkspace.ui.desktop;
 */
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -46,11 +42,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
-import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
+import jworkspace.ui.desktop.plaf.DesktopShortcutMenu;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -67,12 +62,6 @@ public class DesktopShortcut extends JComponent {
 
     @Getter
     private boolean selected;
-
-    private Point lastMouse;
-
-    private Runnable toggleSelectionHandler;
-
-    private Runnable exclusiveSelectionHandler;
 
     private final JLabel iconLabel;
 
@@ -116,79 +105,14 @@ public class DesktopShortcut extends JComponent {
         add(iconLabel, BorderLayout.CENTER);
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        installDragSupport();
-
         setFocusable(true);
-    }
 
-    @SuppressWarnings("checkstyle:AnonInnerLength")
-    private void installDragSupport() {
-        MouseAdapter adapter = new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (!SwingUtilities.isLeftMouseButton(e)) {
-                    return;
-                }
-
-                if (e.isControlDown()) {
-                    if (toggleSelectionHandler != null) {
-                        toggleSelectionHandler.run();
-                    }
-                } else {
-                    if (selectionProvider == null || !selectionProvider.get()) {
-                        if (exclusiveSelectionHandler != null) {
-                            exclusiveSelectionHandler.run();
-                        }
-                    }
-                }
-
-                lastMouse = SwingUtilities.convertPoint(DesktopShortcut.this, e.getPoint(), getParent());
-            }
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (lastMouse == null) {
-                    return;
-                }
-
-                Point currentMouse = SwingUtilities.convertPoint(DesktopShortcut.this, e.getPoint(), getParent());
-                int dx = currentMouse.x - lastMouse.x;
-                int dy = currentMouse.y - lastMouse.y;
-
-                if (dx != 0 || dy != 0) {
-                    Container parent = getParent();
-                    if (parent instanceof DesktopShortcutsLayer layer) {
-                        for (DesktopShortcut s : layer.getSelectedShortcuts()) {
-                            s.setLocation(s.getX() + dx, s.getY() + dy);
-                        }
-                    }
-                }
-
-                // 🔑 always update lastMouse here
-                lastMouse = currentMouse;
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                lastMouse = null;
-            }
-        };
-
-        addMouseListener(adapter);
-        addMouseMotionListener(adapter);
+        setComponentPopupMenu(new DesktopShortcutMenu());
     }
 
     // Selection API
     public void setSelected(boolean selected) {
         this.selected = selected; repaint();
-    }
-
-    public void addSelectionHandler(Runnable r) {
-        this.toggleSelectionHandler = r;
-    }
-
-    public void addExclusiveSelectionHandler(Runnable r) {
-        this.exclusiveSelectionHandler = r;
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
@@ -232,7 +156,7 @@ public class DesktopShortcut extends JComponent {
 
         setText(dataStream.readUTF());
         setCommandLine(dataStream.readUTF());
-        setToolTipText(getCommandLine());
+        setToolTipText((getCommandLine() == null || getCommandLine().isEmpty()) ? getText() : getCommandLine());
         setWorkingDirectory(dataStream.readUTF());
         setMode(dataStream.readInt());
         setLocation(dataStream.readInt(), dataStream.readInt());

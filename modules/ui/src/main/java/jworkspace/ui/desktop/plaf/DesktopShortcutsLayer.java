@@ -1,24 +1,59 @@
 package jworkspace.ui.desktop.plaf;
+/* ----------------------------------------------------------------------------
+   Java Workspace
+   Copyright (C) 2026 Anton Troshin
 
+   This file is part of Java Workspace.
+
+   This application is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This application is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this application; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   The author may be contacted at:
+
+   anton.troshin@gmail.com
+  ----------------------------------------------------------------------------
+*/
 import java.awt.Point;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
 
+import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 
 /**
  * The DesktopShortcutsLayer class represents a specialized {@code JComponent} for managing
  * and displaying a collection of desktop-like shortcuts. It provides functionalities for
- * managing shortcut placement, selection, and interactions in a layered context.
+ * managing shortcut placement, selection, copying and pasting.
  * <p>
  * This class supports multiple selection modes, including toggling individual shortcut
  * selections and enabling exclusive selection for a single shortcut. Shortcuts are
  * interactable and designed to mimic the behavior of desktop icons.
  */
 public class DesktopShortcutsLayer extends JComponent {
+
+    private static final DataFlavor SHORTCUT_FLAVOR =
+        new DataFlavor(List.class, "Desktop Shortcuts List");
+
     private final List<DesktopShortcut> shortcuts = new ArrayList<>();
+    private final Clipboard clipboard = new Clipboard("Desktop clipboard");
+
     private final List<DesktopShortcut> selected = new ArrayList<>();
 
     public DesktopShortcutsLayer() {
@@ -41,8 +76,6 @@ public class DesktopShortcutsLayer extends JComponent {
             s.setBounds(s.getLocation().x, s.getLocation().y, s.getPreferredSize().width, s.getPreferredSize().height);
         }
 
-        s.addSelectionHandler(() -> toggleSelection(s));
-        s.addExclusiveSelectionHandler(() -> selectOnly(s));
         s.setSelectionProvider(() -> selected.contains(s));
 
         revalidate();
@@ -101,5 +134,113 @@ public class DesktopShortcutsLayer extends JComponent {
         shortcuts.remove(s); // remove from the shortcut list
         revalidate();
         repaint();
+    }
+
+    public void deleteSelection() {
+        for (DesktopShortcut s : new ArrayList<>(getSelectedShortcuts())) {
+            removeShortcut(s);
+        }
+        clearSelection();
+        repaint();
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public void arrangeShortcuts() {
+        int x = 20;
+        int y = 20;
+        int spacing = 90;
+
+        for (DesktopShortcut s : getShortcuts()) {
+            s.setLocation(x, y);
+            y += spacing;
+            if (y + spacing > getHeight()) {
+                y = 20;
+                x += spacing;
+            }
+        }
+        repaint();
+    }
+
+    public void selectAllShortcuts() {
+        clearSelection();
+        for (DesktopShortcut s : getShortcuts()) {
+            addToSelection(s);
+        }
+        repaint();
+    }
+
+    public void cutSelection() {
+        copySelection();
+        deleteSelection();
+    }
+
+    public void copySelection() {
+        // Create a snapshot of current selection
+        final List<DesktopShortcut> selectionCopy = new ArrayList<>(selected);
+
+        Transferable transferable = new Transferable() {
+            @Override
+            public DataFlavor[] getTransferDataFlavors() {
+                return new DataFlavor[]{SHORTCUT_FLAVOR};
+            }
+
+            @Override
+            public boolean isDataFlavorSupported(DataFlavor flavor) {
+                return SHORTCUT_FLAVOR.equals(flavor);
+            }
+
+            @Override
+            public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+                if (!isDataFlavorSupported(flavor)) {
+                    throw new UnsupportedFlavorException(flavor);
+                }
+                return selectionCopy;
+            }
+        };
+
+        // Set to system clipboard (null means no owner needed)
+        clipboard.setContents(transferable, null);
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public void pasteClipboard() {
+        try {
+            if (!clipboard.isDataFlavorAvailable(SHORTCUT_FLAVOR)) {
+                return;
+            }
+
+            // 1. Get the list of shortcuts from the clipboard
+            List<?> data = (List<?>) clipboard.getData(SHORTCUT_FLAVOR);
+            List<DesktopShortcut> newShortcuts = new ArrayList<>();
+            int offset = 30;
+
+            for (Object obj : data) {
+                if (obj instanceof DesktopShortcut original) {
+                    // 2. Clone the shortcut data
+                    DesktopShortcut copy = new DesktopShortcut(original.getIcon(), original.getText());
+
+                    // 3. Position with offset
+                    Point pos = original.getLocation();
+                    addShortcut(copy, new Point(pos.x + offset, pos.y + offset));
+                    newShortcuts.add(copy);
+                }
+            }
+
+            // 4. Update selection to the new items
+            clearSelection();
+            newShortcuts.forEach(this::addToSelection);
+
+        } catch (Exception ex) {
+            DesktopServiceLocator.getInstance().getWorkspaceGUI().showError(ex.getMessage(), ex);
+        }
+        repaint();
+    }
+
+    public boolean hasClipboardContent() {
+        try {
+            return clipboard.isDataFlavorAvailable(SHORTCUT_FLAVOR);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -39,7 +39,7 @@ public class Workspace {
     private String password;
 
     @Option(name = "--path", usage = "workspace path to store data")
-    private String path = System.getProperty("home.dir");
+    private String path = System.getProperty("user.dir");
 
     private Workspace() {}
 

@@ -60,19 +60,21 @@ import lombok.Setter;
 @Setter
 @SuppressWarnings("checkstyle:MagicNumber")
 public class DesktopIconLabel extends JLabel {
-    static final int CENTER_ALIGNMENT = 0;
+
+    private static final int CENTER_ALIGNMENT = 0;
     private static final int LEFT_ALIGNMENT = 1;
     private static final int RIGHT_ALIGNMENT = 2;
+    private int alignment = DesktopIconLabel.LEFT_ALIGNMENT;
 
     private final int cols;
     private int pw = -1;
     private int h;
     private int h0;
+
     private FontMetrics fm = null;
     private String text;
     private List<String> lines = new ArrayList<>();
     private Dimension dim = new Dimension(5, 5);
-    private int alignment = DesktopIconLabel.LEFT_ALIGNMENT;
     private boolean selected = false;
 
     /**

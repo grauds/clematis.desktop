@@ -1,0 +1,23 @@
+package jworkspace.ui.desktop;
+
+public interface IDesktopActions {
+
+    String CREATE_SHORTCUT = "CREATE_SHORTCUT";
+
+    String PASTE = "Paste";
+    String SELECT_ALL = "Select All";
+    String ARRANGE = "Arrange Icons";
+
+    String CLOSE_ALL_WINDOWS = "CLOSE_ALL_WINDOWS";
+
+    String BACKGROUND = "BACKGROUND";
+    String SWITCH_COVER = "SWITCH_COVER";
+    String CHOOSE_BACKGROUND_IMAGE = "CHOOSE_BACKGROUND_IMAGE";
+
+    String GRADIENT_FILL = "GRADIENT_FILL";
+    String TOGGLE_GRADIENT = "TOGGLE_GRADIENT";
+    String CHOOSE_GRADIENT_COLOR_1 = "CHOOSE_GRADIENT_COLOR_1";
+    String CHOOSE_GRADIENT_COLOR_2 = "CHOOSE_GRADIENT_COLOR_2";
+
+    String NEW_SHORTCUT = "New Shortcut";
+}

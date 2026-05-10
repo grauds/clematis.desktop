@@ -62,21 +62,21 @@ public class WorkspaceManager {
 
     private static final String UNTITLED = "(Untitled)";
 
-    private ArrayList<WorkspaceEditor> editors;
+    private final ArrayList<WorkspaceEditor> editors;
 
     private final ArrayList<WorkspaceListener> listeners;
 
-    private JDesktopPane desktop;
+    private final JDesktopPane desktop;
 
     private WorkspaceEditor activeEditor = null;
 
-    private FrameListener frameListener;
+    private final FrameListener frameListener;
 
-    private DialogSet dialogs;
+    private final DialogSet dialogs;
 
     private final HashMap<String, JMenu> menus;
 
-    private LocaleData loc;
+    private final LocaleData loc;
 
     /**
      * Construct a new <code>WorkspaceManager</code>.
@@ -276,10 +276,8 @@ public class WorkspaceManager {
         WorkspaceEvent evt = null;
 
         synchronized (listeners) {
-            Iterator<WorkspaceListener> iter = listeners.iterator();
 
-            while (iter.hasNext()) {
-                WorkspaceListener l = iter.next();
+            for (WorkspaceListener l : listeners) {
                 if (evt == null) {
                     evt = new WorkspaceEvent(this, editor);
                 }
@@ -298,10 +296,8 @@ public class WorkspaceManager {
         WorkspaceEvent evt = null;
 
         synchronized (listeners) {
-            Iterator<WorkspaceListener> iter = listeners.iterator();
 
-            while (iter.hasNext()) {
-                WorkspaceListener l = iter.next();
+            for (WorkspaceListener l : listeners) {
                 if (evt == null) {
                     evt = new WorkspaceEvent(this, editor);
                 }
@@ -320,10 +316,8 @@ public class WorkspaceManager {
         WorkspaceEvent evt = null;
 
         synchronized (listeners) {
-            Iterator<WorkspaceListener> iter = listeners.iterator();
 
-            while (iter.hasNext()) {
-                WorkspaceListener l = iter.next();
+            for (WorkspaceListener l : listeners) {
                 if (evt == null) {
                     evt = new WorkspaceEvent(this, editor);
                 }
@@ -343,10 +337,8 @@ public class WorkspaceManager {
         WorkspaceEvent evt = null;
 
         synchronized (listeners) {
-            Iterator<WorkspaceListener> iter = listeners.iterator();
 
-            while (iter.hasNext()) {
-                WorkspaceListener l = iter.next();
+            for (WorkspaceListener l : listeners) {
                 if (evt == null) {
                     evt = new WorkspaceEvent(this, editor);
                 }
@@ -365,10 +357,8 @@ public class WorkspaceManager {
         WorkspaceEvent evt = null;
 
         synchronized (listeners) {
-            Iterator<WorkspaceListener> iter = listeners.iterator();
 
-            while (iter.hasNext()) {
-                WorkspaceListener l = iter.next();
+            for (WorkspaceListener l : listeners) {
                 if (evt == null) {
                     evt = new WorkspaceEvent(this, editor);
                 }
@@ -387,10 +377,8 @@ public class WorkspaceManager {
         WorkspaceEvent evt = null;
 
         synchronized (listeners) {
-            Iterator<WorkspaceListener> iter = listeners.iterator();
 
-            while (iter.hasNext()) {
-                WorkspaceListener l = iter.next();
+            for (WorkspaceListener l : listeners) {
                 if (evt == null) {
                     evt = new WorkspaceEvent(this, editor);
                 }
@@ -634,9 +622,6 @@ public class WorkspaceManager {
             WorkspaceEditor e = (WorkspaceEditor) evt.getSource();
 
             fireEditorRestored(e);
-        }
-
-        public void internalFrameClosed(InternalFrameEvent evt) {
         }
 
         @SuppressWarnings("NestedIfDepth")

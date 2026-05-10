@@ -29,7 +29,6 @@ import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
-import jworkspace.ui.api.Constants;
 import lombok.Data;
 
 /**
@@ -39,6 +38,34 @@ import lombok.Data;
 @Data
 public class DesktopTheme {
 
+    /**
+     * Tile image
+     */
+    public static final int TILE_IMAGE = 1;
+    /**
+     * Center image
+     */
+    public static final int CENTER_IMAGE = 2;
+    /**
+     * Stretch image
+     */
+    public static final int STRETCH_IMAGE = 3;
+    /**
+     * Top left corner image
+     */
+    public static final int TOP_LEFT_CORNER_IMAGE = 4;
+    /**
+     * Bottom left corner image
+     */
+    public static final int BOTTOM_LEFT_CORNER_IMAGE = 5;
+    /**
+     * Top right corner image
+     */
+    public static final int TOP_RIGHT_CORNER_IMAGE = 6;
+    /**
+     * Bottom right corner image
+     */
+    public static final int BOTTOM_RIGHT_CORNER_IMAGE = 7;
     private transient int hpos = 0;
 
     @SuppressWarnings("checkstyle:MagicNumber")
@@ -114,13 +141,13 @@ public class DesktopTheme {
      * Set render mode
      */
     public void setRenderMode(int mode) {
-        if (mode != Constants.CENTER_IMAGE
-            && mode != Constants.TILE_IMAGE
-            && mode != Constants.STRETCH_IMAGE
-            && mode != Constants.TOP_LEFT_CORNER_IMAGE
-            && mode != Constants.TOP_RIGHT_CORNER_IMAGE
-            && mode != Constants.BOTTOM_LEFT_CORNER_IMAGE
-            && mode != Constants.BOTTOM_RIGHT_CORNER_IMAGE) {
+        if (mode != CENTER_IMAGE
+            && mode != TILE_IMAGE
+            && mode != STRETCH_IMAGE
+            && mode != TOP_LEFT_CORNER_IMAGE
+            && mode != TOP_RIGHT_CORNER_IMAGE
+            && mode != BOTTOM_LEFT_CORNER_IMAGE
+            && mode != BOTTOM_RIGHT_CORNER_IMAGE) {
             throw new IllegalArgumentException("Illegal render mode");
         }
 

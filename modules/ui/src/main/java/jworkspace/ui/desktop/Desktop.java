@@ -28,7 +28,6 @@ package jworkspace.ui.desktop;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,10 +36,6 @@ import java.awt.Rectangle;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,9 +68,14 @@ import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.dialog.DesktopBackgroundPanel;
 import jworkspace.ui.desktop.dialog.DesktopOptionsPanel;
-import jworkspace.ui.desktop.plaf.DesktopInteractionLayer;
+import jworkspace.ui.desktop.plaf.DesktopAction;
+import jworkspace.ui.desktop.plaf.DesktopMenu;
+import jworkspace.ui.desktop.plaf.DesktopOverlayLayout;
+import jworkspace.ui.desktop.plaf.DesktopShortcutAction;
+import jworkspace.ui.desktop.plaf.DesktopShortcutSelector;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import jworkspace.ui.desktop.plaf.DesktopTheme;
+import jworkspace.ui.desktop.plaf.ScrollingDesktopManager;
 import jworkspace.ui.widgets.ClassCache;
 import lombok.Getter;
 import lombok.Setter;
@@ -93,13 +93,10 @@ import lombok.extern.java.Log;
  */
 @SuppressWarnings({"MagicNumber"})
 @Log
-public class Desktop extends KDesktopPane implements IView, ActionListener, ClipboardOwner {
+public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
 
     @Getter
     private final DesktopShortcutsLayer shortcutsLayer;
-
-    @Getter
-    private final DesktopInteractionLayer interactionLayer;
 
     private final ScrollingDesktopManager manager;
     /**
@@ -117,27 +114,20 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
     public Desktop() {
         super();
 
+        setLayout(new DesktopOverlayLayout());
+
         manager = new ScrollingDesktopManager(this);
         setDesktopManager(manager);
 
         shortcutsLayer = new DesktopShortcutsLayer();
         add(shortcutsLayer, JLayeredPane.DEFAULT_LAYER);
-        shortcutsLayer.setBounds(0, 0, getWidth(), getHeight());
+        add(new DesktopShortcutSelector(shortcutsLayer), JLayeredPane.DRAG_LAYER);
 
-        interactionLayer = new DesktopInteractionLayer(shortcutsLayer, this);
-        interactionLayer.setBounds(0, 0, getWidth(), getHeight());
-        add(interactionLayer, JLayeredPane.DRAG_LAYER);
+        DesktopAction.initActions(this, shortcutsLayer);
+        DesktopShortcutAction.initActions(shortcutsLayer);
 
-        // Keep it sized with the desktop
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                shortcutsLayer.setBounds(0, 0, getWidth(), getHeight());
-                interactionLayer.setBounds(0, 0, getWidth(), getHeight());
-            }
-        });
+        shortcutsLayer.setComponentPopupMenu(new DesktopMenu());
 
-        interactionLayer.setFocusable(true);
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
@@ -151,36 +141,14 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
      */
     public void activated(boolean flag) {}
 
-    public void actionPerformed(ActionEvent e) {
+    public void switchCoverVisible() {
+        this.theme.switchCoverVisible();
+        repaint();
+    }
 
-        String command = e.getActionCommand();
-        switch (command) {
-
-            case Constants.GRADIENT_FILL:
-                this.theme.switchGradientFill();
-                repaint();
-                break;
-
-            case Constants.BACKGROUND:
-                changeBackground();
-                break;
-
-            case Constants.CLOSE_ALL_WINDOWS:
-                this.closeAllFrames();
-                break;
-
-            case Constants.SWITCH_COVER:
-                this.theme.switchCoverVisible();
-                repaint();
-                break;
-
-            case Constants.CHOOSE_BACKGROUND_IMAGE:
-                changeBackgroundImage();
-                break;
-
-            default:
-                break;
-        }
+    public void switchGradientFill() {
+        this.theme.switchGradientFill();
+        repaint();
     }
 
     public void changeBackgroundImage() {
@@ -458,14 +426,14 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
             /*
              * Drawing of a desktop image can occur in several rendering modes.
              */
-            if (this.theme.getRenderMode() == Constants.CENTER_IMAGE) {
+            if (this.theme.getRenderMode() == DesktopTheme.CENTER_IMAGE) {
                 g.drawImage(
                     this.theme.getCover().getImage(),
                     (getWidth() - this.theme.getCover().getIconWidth()) / 2,
                     (getHeight() - this.theme.getCover().getIconHeight()) / 2,
                     this
                 );
-            } else if (this.theme.getRenderMode() == Constants.STRETCH_IMAGE) {
+            } else if (this.theme.getRenderMode() == DesktopTheme.STRETCH_IMAGE) {
                 g.drawImage(
                     this.theme.getCover().getImage(),
                     0,
@@ -474,7 +442,7 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
                     getHeight(),
                     this
                 );
-            } else if (this.theme.getRenderMode() == Constants.TILE_IMAGE) {
+            } else if (this.theme.getRenderMode() == DesktopTheme.TILE_IMAGE) {
                 int x = 0, y = 0;
                 while (x < getWidth()) {
                     while (y < getHeight()) {
@@ -489,28 +457,28 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
                     x += this.theme.getCover().getIconWidth();
                     y = 0;
                 }
-            } else if (this.theme.getRenderMode() == Constants.TOP_LEFT_CORNER_IMAGE) {
+            } else if (this.theme.getRenderMode() == DesktopTheme.TOP_LEFT_CORNER_IMAGE) {
                 g.drawImage(
                     this.theme.getCover().getImage(),
                     0,
                     0,
                     this
                 );
-            } else if (this.theme.getRenderMode() == Constants.BOTTOM_LEFT_CORNER_IMAGE) {
+            } else if (this.theme.getRenderMode() == DesktopTheme.BOTTOM_LEFT_CORNER_IMAGE) {
                 g.drawImage(
                     this.theme.getCover().getImage(),
                     0,
                     this.getHeight() - this.theme.getCover().getIconHeight(),
                     this
                 );
-            } else if (this.theme.getRenderMode() == Constants.TOP_RIGHT_CORNER_IMAGE) {
+            } else if (this.theme.getRenderMode() == DesktopTheme.TOP_RIGHT_CORNER_IMAGE) {
                 g.drawImage(
                     this.theme.getCover().getImage(),
                     this.getWidth() - this.theme.getCover().getIconWidth(),
                     0,
                     this
                 );
-            } else if (this.theme.getRenderMode() == Constants.BOTTOM_RIGHT_CORNER_IMAGE) {
+            } else if (this.theme.getRenderMode() == DesktopTheme.BOTTOM_RIGHT_CORNER_IMAGE) {
                 g.drawImage(
                     this.theme.getCover().getImage(),
                     this.getWidth() - this.theme.getCover().getIconWidth(),
@@ -677,23 +645,6 @@ public class Desktop extends KDesktopPane implements IView, ActionListener, Clip
             allFrame.setLocation(0, y);
             y = y + frameHeight;
         }
-    }
-
-    /**
-     * Sets all component size properties (the maximum, minimum, preferred) to the given dimension.
-     */
-    private void setAllSize(Dimension d) {
-        setMinimumSize(d);
-        setMaximumSize(d);
-        setPreferredSize(d);
-    }
-
-    /**
-     * Sets all component size properties (the maximum, minimum, preferred)
-     * to the given width and height.
-     */
-    void setAllSize(int width, int height) {
-        setAllSize(new Dimension(width, height));
     }
 
     private void checkDesktopSize() {

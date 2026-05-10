@@ -1,13 +1,31 @@
 package jworkspace.ui.desktop.plaf;
+/* ----------------------------------------------------------------------------
+   Java Workspace
+   Copyright (C) 2026 Anton Troshin
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
+   This file is part of Java Workspace.
 
+   This application is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This application is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this application; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   The author may be contacted at:
+
+   anton.troshin@gmail.com
+  ----------------------------------------------------------------------------
+*/
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 import static jworkspace.ui.util.SwingUtils.createMenuItem;
@@ -15,75 +33,22 @@ import jworkspace.ui.api.action.UISwitchListener;
 
 public class DesktopShortcutMenu extends JPopupMenu {
 
-    private final JMenuItem properties;
-    private final JMenuItem delete;
-    private final JMenuItem cut;
-    private final JMenuItem copy;
-    private final JMenuItem paste;
-    private final JMenuItem open;
-    private final JMenuItem rename;
-    private final JMenuItem selectAll;
-
-    private final ActionListener[] listeners;
-
-    public DesktopShortcutMenu(ActionListener... listeners) {
+    public DesktopShortcutMenu() {
         super();
-        this.listeners = listeners;
 
-        open = createMenuItem(DesktopInteractionLayer.OPEN,
-            this::fireActionEvent,
-            DesktopInteractionLayer.OPEN,
-            null
-        );
+        JMenuItem open = createMenuItem(DesktopShortcutAction.openAction);
+        JMenuItem rename = createMenuItem(DesktopShortcutAction.renameAction);
 
-        rename = createMenuItem(DesktopInteractionLayer.RENAME,
-            this::fireActionEvent,
-            DesktopInteractionLayer.RENAME,
-            KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0)
-        );
+        JMenuItem cut = createMenuItem(DesktopShortcutAction.cutAction);
+        JMenuItem copy = createMenuItem(DesktopShortcutAction.copyAction);
+        JMenuItem delete = createMenuItem(DesktopShortcutAction.deleteAction);
 
-        cut = createMenuItem(DesktopInteractionLayer.CUT,
-            this::fireActionEvent,
-            DesktopInteractionLayer.CUT,
-            KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK)
-        );
-
-        copy = createMenuItem(DesktopInteractionLayer.COPY,
-            this::fireActionEvent,
-            DesktopInteractionLayer.COPY,
-            KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK)
-        );
-
-        paste = createMenuItem(DesktopInteractionLayer.PASTE,
-            this::fireActionEvent,
-            DesktopInteractionLayer.PASTE,
-            KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK)
-        );
-
-        delete = createMenuItem(DesktopInteractionLayer.DELETE,
-            this::fireActionEvent,
-            DesktopInteractionLayer.DELETE,
-            KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)
-        );
-
-        selectAll = createMenuItem(DesktopInteractionLayer.SELECT_ALL,
-            this::fireActionEvent,
-            DesktopInteractionLayer.SELECT_ALL,
-            KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK)
-        );
-
-        properties = createMenuItem("Properties...",
-            this::fireActionEvent,
-            DesktopInteractionLayer.PROPERTIES,
-            KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK)
-        );
+        JMenuItem properties = createMenuItem(DesktopShortcutAction.propertiesAction);
 
         add(open);
         addSeparator();
         add(cut);
         add(copy);
-        add(paste);
-        add(selectAll);
         addSeparator();
         add(delete);
         addSeparator();
@@ -93,9 +58,5 @@ public class DesktopShortcutMenu extends JPopupMenu {
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
-    private void fireActionEvent(ActionEvent e) {
-        for (ActionListener listener : listeners) {
-            listener.actionPerformed(e);
-        }
-    }
+
 }

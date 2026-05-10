@@ -1,5 +1,29 @@
 package jworkspace.ui.config;
+/* ----------------------------------------------------------------------------
+   Java Workspace
+   Copyright (C) 1999-2025 Anton Troshin
 
+   This file is part of Java Workspace.
+
+   This application is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This application is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this application; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   The author may be contacted at:
+
+   anton.troshin@gmail.com
+  ----------------------------------------------------------------------------
+*/
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -28,29 +52,12 @@ import lombok.extern.java.Log;
 @Setter
 @Getter
 public class UIConfig {
-    /**
-     *
-     */
+
     public static final String CK_TEXTURE_FILE_NAME = "texture.jpg";
-    /**
-     *
-     */
     public static final String CK_TEXTURE = "gui.texture";
-    /**
-     *
-     */
     public static final String CK_TEXTURE_VISIBLE = "gui.texture.visible";
-    /**
-     *
-     */
     public static final String CK_LAF = "gui.laf";
-    /**
-     *
-     */
     public static final String CK_KIWI = "gui.kiwi.texture.visible";
-    /**
-     *
-     */
     public static final String CK_UNDECORATED = "gui.frame.undecorated";
     /**
      * Workspace background texture
@@ -61,9 +68,7 @@ public class UIConfig {
      */
     private ConfigFile config;
 
-    public UIConfig() {
-
-    }
+    public UIConfig() {}
 
     public UIConfig(@NonNull File configFile) {
         this.setConfigFile(configFile);

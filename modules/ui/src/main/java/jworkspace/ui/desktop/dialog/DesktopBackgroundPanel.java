@@ -56,19 +56,20 @@ import javax.swing.plaf.metal.MetalButtonUI;
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import static jworkspace.ui.api.Constants.BOTTOM_LEFT_CORNER_IMAGE;
-import static jworkspace.ui.api.Constants.BOTTOM_RIGHT_CORNER_IMAGE;
-import static jworkspace.ui.api.Constants.CENTER_IMAGE;
-import static jworkspace.ui.api.Constants.STRETCH_IMAGE;
-import static jworkspace.ui.api.Constants.TILE_IMAGE;
-import static jworkspace.ui.api.Constants.TOP_LEFT_CORNER_IMAGE;
-import static jworkspace.ui.api.Constants.TOP_RIGHT_CORNER_IMAGE;
+import static jworkspace.ui.desktop.plaf.DesktopTheme.BOTTOM_LEFT_CORNER_IMAGE;
+import static jworkspace.ui.desktop.plaf.DesktopTheme.BOTTOM_RIGHT_CORNER_IMAGE;
+import static jworkspace.ui.desktop.plaf.DesktopTheme.CENTER_IMAGE;
+import static jworkspace.ui.desktop.plaf.DesktopTheme.STRETCH_IMAGE;
+import static jworkspace.ui.desktop.plaf.DesktopTheme.TILE_IMAGE;
+import static jworkspace.ui.desktop.plaf.DesktopTheme.TOP_LEFT_CORNER_IMAGE;
+import static jworkspace.ui.desktop.plaf.DesktopTheme.TOP_RIGHT_CORNER_IMAGE;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
+import jworkspace.ui.desktop.IDesktopActions;
 import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
 import lombok.extern.java.Log;
@@ -194,7 +195,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
     public void actionPerformed(ActionEvent evt) {
         String command = evt.getActionCommand();
         switch (command) {
-            case Constants.CHOOSE_BACKGROUND_IMAGE:
+            case IDesktopActions.CHOOSE_BACKGROUND_IMAGE:
                 JFileChooser fch = ClassCache.
                     getIconChooser(pathToImage == null ? " " : pathToImage);
                 if (fch.showOpenDialog(
@@ -243,7 +244,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
                 }
                 repaint();
                 break;
-            case Constants.TOGGLE_GRADIENT:
+            case IDesktopActions.TOGGLE_GRADIENT:
                 gradientFill = !gradientFill;
                 repaint();
                 break;
@@ -251,7 +252,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
                 coverVisible = !coverVisible;
                 repaint();
                 break;
-            case Constants.CHOOSE_GRADIENT_COLOR_1: {
+            case IDesktopActions.CHOOSE_GRADIENT_COLOR_1: {
                 Color color = JColorChooser.showDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                     WorkspaceResourceAnchor.getString("DesktopBgPanel.chooseBg1"),
                     desktop.getBackground());
@@ -262,7 +263,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
                 repaint();
                 break;
             }
-            case Constants.CHOOSE_GRADIENT_COLOR_2: {
+            case IDesktopActions.CHOOSE_GRADIENT_COLOR_2: {
                 Color color = JColorChooser.showDialog(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
                     WorkspaceResourceAnchor.getString("DesktopBgPanel.chooseBg2"),
                     desktop.getTheme().getSecondaryBackground());
@@ -317,7 +318,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
 
         JButton bBrowse = new JButton("...");
         bBrowse.setDefaultCapable(false);
-        bBrowse.setActionCommand(Constants.CHOOSE_BACKGROUND_IMAGE);
+        bBrowse.setActionCommand(IDesktopActions.CHOOSE_BACKGROUND_IMAGE);
         bBrowse.addActionListener(this);
 
         if (pathToImage != null) {
@@ -411,7 +412,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
 
         gradient.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.gradient"));
         gradient.addActionListener(this);
-        gradient.setActionCommand(Constants.TOGGLE_GRADIENT);
+        gradient.setActionCommand(IDesktopActions.TOGGLE_GRADIENT);
       //  gradient.setPreferredSize(new Dimension(60, 20));
         gradient.setOpaque(false);
         if (desktop.getTheme().isGradientFill()) {
@@ -441,7 +442,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
 
         bBrowseTop = new JButton();
         bBrowseTop.setDefaultCapable(false);
-        bBrowseTop.setActionCommand(Constants.CHOOSE_GRADIENT_COLOR_1);
+        bBrowseTop.setActionCommand(IDesktopActions.CHOOSE_GRADIENT_COLOR_1);
         bBrowseTop.addActionListener(this);
         bBrowseTop.setBackground(bgColor);
         bBrowseTop.setUI(new MetalButtonUI());
@@ -458,7 +459,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
 
         bBrowseBottom = new JButton();
         bBrowseBottom.setDefaultCapable(false);
-        bBrowseBottom.setActionCommand(Constants.CHOOSE_GRADIENT_COLOR_2);
+        bBrowseBottom.setActionCommand(IDesktopActions.CHOOSE_GRADIENT_COLOR_2);
         bBrowseBottom.addActionListener(this);
         bBrowseBottom.setBackground(bgColor2);
         bBrowseBottom.setUI(new MetalButtonUI());

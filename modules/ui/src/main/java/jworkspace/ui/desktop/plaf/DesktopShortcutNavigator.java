@@ -1,5 +1,29 @@
 package jworkspace.ui.desktop.plaf;
+/* ----------------------------------------------------------------------------
+   Java Workspace
+   Copyright (C) 2026 Anton Troshin
 
+   This file is part of Java Workspace.
+
+   This application is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This application is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this application; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   The author may be contacted at:
+
+   anton.troshin@gmail.com
+  ----------------------------------------------------------------------------
+*/
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -123,7 +147,7 @@ public class DesktopShortcutNavigator {
                 List<DesktopShortcut> sel = shortcutsLayer.getSelectedShortcuts();
                 if (!sel.isEmpty()) {
                     JOptionPane.showMessageDialog(targetComponent,
-                        "Open shortcut: " + ((JLabel) sel.get(0).getComponent(0)).getText(),
+                        "Open shortcut: " + ((JLabel) sel.getFirst().getComponent(0)).getText(),
                         "Open", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -175,7 +199,7 @@ public class DesktopShortcutNavigator {
                             cmp = Integer.compare(pa.x, pb.x); // then by column (x)
                         }
                         return cmp;
-                    }).orElse(shortcutsLayer.getShortcuts().get(0));
+                    }).orElse(shortcutsLayer.getShortcuts().getFirst());
                 if (!extend) {
                     shortcutsLayer.clearSelection();
                 }
@@ -186,7 +210,7 @@ public class DesktopShortcutNavigator {
             }
 
             // if we already have a selection, use the last selected
-            current = selected.get(selected.size() - 1);
+            current = selected.getLast();
 
             DesktopShortcut target = findNearest(current, dx, dy);
             if (target != null) {

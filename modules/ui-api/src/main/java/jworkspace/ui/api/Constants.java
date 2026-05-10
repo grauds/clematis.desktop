@@ -32,117 +32,13 @@ package jworkspace.ui.api;
  */
 public interface Constants {
     /**
-     * Tile image
-     */
-    int TILE_IMAGE = 1;
-    /**
-     * Center image
-     */
-    int CENTER_IMAGE = 2;
-    /**
-     * Stretch image
-     */
-    int STRETCH_IMAGE = 3;
-    /**
-     * Top left corner image
-     */
-    int TOP_LEFT_CORNER_IMAGE = 4;
-    /**
-     * Bottom left corner image
-     */
-    int BOTTOM_LEFT_CORNER_IMAGE = 5;
-    /**
-     * Top right corner image
-     */
-    int TOP_RIGHT_CORNER_IMAGE = 6;
-    /**
-     * Bottom right corner image
-     */
-    int BOTTOM_RIGHT_CORNER_IMAGE = 7;
-    /**
-     * Create new shortcut
-     */
-    String CREATE_SHORTCUT = "CREATE_SHORTCUT";
-    /**
-     * Grafient fill of background
-     */
-    String GRADIENT_FILL = "GRADIENT_FILL";
-    /**
-     * Paste icons
-     */
-    String PASTE = "PASTE";
-    /**
-     * Select all icons
-     */
-    String SELECT_ALL = "SELECT_ALL";
-    /**
-     * Select all icons
-     */
-    String BACKGROUND = "BACKGROUND";
-    /**
-     * Close all windows
-     */
-    String CLOSE_ALL_WINDOWS = "CLOSE_ALL_WINDOWS";
-    /**
-     * Show or hide cover
-     */
-    String SWITCH_COVER = "SWITCH_COVER";
-    /**
-     * Choose background image
-     */
-    String CHOOSE_BACKGROUND_IMAGE = "CHOOSE_BACKGROUND_IMAGE";
-    /**
      *
      */
     String TOGGLE_WALLPAPER = "TOGGLE_WALLPAPER";
     /**
      *
      */
-    String TOGGLE_GRADIENT = "TOGGLE_GRADIENT";
-    /**
-     *
-     */
-    String CHOOSE_GRADIENT_COLOR_1 = "CHOOSE_GRADIENT_COLOR_1";
-    /**
-     *
-     */
-    String CHOOSE_GRADIENT_COLOR_2 = "CHOOSE_GRADIENT_COLOR_2";
-    /**
-     *
-     */
     String DESKTOP_DAT = "desktop.dat";
-    /**
-     * Icon on NORTH
-     */
-    int ICON_ON_NORTH = 0;
-    /**
-     * Icon on SOUTH
-     */
-    int ICON_ON_SOUTH = 1;
-    /**
-     * Icon on WEST
-     */
-    int ICON_ON_WEST = 2;
-    /**
-     * Icon on EAST
-     */
-    int ICON_ON_EAST = 3;
-    /**
-     * Top Left Icon
-     */
-    int TOP_LEFT_ICON = 0;
-    /**
-     * Top Right Icon
-     */
-    int TOP_RIGHT_ICON = 1;
-    /**
-     * Bottom Left Icon
-     */
-    int BOTTOM_LEFT_ICON = 2;
-    /**
-     * Bottom Right Icon
-     */
-    int BOTTOM_RIGHT_ICON = 3;
     /**
      * Frame offset
      */
