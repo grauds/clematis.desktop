@@ -45,7 +45,6 @@ import javax.swing.SwingConstants;
 
 import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.Constants;
-import jworkspace.ui.desktop.plaf.DesktopShortcutMenu;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -106,8 +105,6 @@ public class DesktopShortcut extends JComponent {
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setFocusable(true);
-
-        setComponentPopupMenu(new DesktopShortcutMenu());
     }
 
     // Selection API

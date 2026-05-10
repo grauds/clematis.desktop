@@ -51,8 +51,9 @@ public class DesktopShortcutsLayer extends JComponent {
     private static final DataFlavor SHORTCUT_FLAVOR =
         new DataFlavor(List.class, "Desktop Shortcuts List");
 
+    private static final Clipboard CLIPBOARD = new Clipboard("Desktop clipboard");
+
     private final List<DesktopShortcut> shortcuts = new ArrayList<>();
-    private final Clipboard clipboard = new Clipboard("Desktop clipboard");
 
     private final List<DesktopShortcut> selected = new ArrayList<>();
 
@@ -199,18 +200,18 @@ public class DesktopShortcutsLayer extends JComponent {
         };
 
         // Set to system clipboard (null means no owner needed)
-        clipboard.setContents(transferable, null);
+        CLIPBOARD.setContents(transferable, null);
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
     public void pasteClipboard() {
         try {
-            if (!clipboard.isDataFlavorAvailable(SHORTCUT_FLAVOR)) {
+            if (!CLIPBOARD.isDataFlavorAvailable(SHORTCUT_FLAVOR)) {
                 return;
             }
 
             // 1. Get the list of shortcuts from the clipboard
-            List<?> data = (List<?>) clipboard.getData(SHORTCUT_FLAVOR);
+            List<?> data = (List<?>) CLIPBOARD.getData(SHORTCUT_FLAVOR);
             List<DesktopShortcut> newShortcuts = new ArrayList<>();
             int offset = 30;
 
@@ -218,7 +219,7 @@ public class DesktopShortcutsLayer extends JComponent {
                 if (obj instanceof DesktopShortcut original) {
                     // 2. Clone the shortcut data
                     DesktopShortcut copy = new DesktopShortcut(original.getIcon(), original.getText());
-
+                    copy.setComponentPopupMenu(new DesktopShortcutMenu());
                     // 3. Position with offset
                     Point pos = original.getLocation();
                     addShortcut(copy, new Point(pos.x + offset, pos.y + offset));
@@ -238,7 +239,7 @@ public class DesktopShortcutsLayer extends JComponent {
 
     public boolean hasClipboardContent() {
         try {
-            return clipboard.isDataFlavorAvailable(SHORTCUT_FLAVOR);
+            return CLIPBOARD.isDataFlavorAvailable(SHORTCUT_FLAVOR);
         } catch (Exception e) {
             return false;
         }

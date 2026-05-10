@@ -72,6 +72,7 @@ import jworkspace.ui.desktop.plaf.DesktopAction;
 import jworkspace.ui.desktop.plaf.DesktopMenu;
 import jworkspace.ui.desktop.plaf.DesktopOverlayLayout;
 import jworkspace.ui.desktop.plaf.DesktopShortcutAction;
+import jworkspace.ui.desktop.plaf.DesktopShortcutMenu;
 import jworkspace.ui.desktop.plaf.DesktopShortcutSelector;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import jworkspace.ui.desktop.plaf.DesktopTheme;
@@ -123,11 +124,6 @@ public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
         add(shortcutsLayer, JLayeredPane.DEFAULT_LAYER);
         add(new DesktopShortcutSelector(shortcutsLayer), JLayeredPane.DRAG_LAYER);
 
-        DesktopAction.initActions(this, shortcutsLayer);
-        DesktopShortcutAction.initActions(shortcutsLayer);
-
-        shortcutsLayer.setComponentPopupMenu(new DesktopMenu());
-
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
@@ -137,9 +133,18 @@ public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
     }
 
     /**
-     * Desktop activated or deactivated
+     * Re-init actions for the desktop just being activated
      */
-    public void activated(boolean flag) {}
+    public void activated(boolean flag) {
+        if (flag) {
+            DesktopAction.initActions(this, shortcutsLayer);
+            DesktopShortcutAction.initActions(shortcutsLayer);
+            shortcutsLayer.setComponentPopupMenu(new DesktopMenu());
+            for (DesktopShortcut shortcut : shortcutsLayer.getShortcuts()) {
+                shortcut.setComponentPopupMenu(new DesktopShortcutMenu());
+            }
+        }
+    }
 
     public void switchCoverVisible() {
         this.theme.switchCoverVisible();
