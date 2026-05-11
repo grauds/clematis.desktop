@@ -38,6 +38,12 @@ jpackage {
     mainJar = "jworkspace-2.0.0-SNAPSHOT.jar"
     mainClass = "jworkspace.Workspace"
 
+    javaOptions = [
+            '-Dsun.java2d.opengl=true',
+            '-Dsun.java2d.metal=false',
+            '-Dapple.awt.live-resize=false'
+    ]
+
     // macOS
     if (osName.contains('mac')) {
         type = "pkg"

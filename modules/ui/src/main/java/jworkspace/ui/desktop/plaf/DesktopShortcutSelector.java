@@ -88,6 +88,12 @@ public class DesktopShortcutSelector extends JComponent {
         @SuppressWarnings({"checkstyle:NestedIfDepth", "checkstyle:ReturnCount"})
         @Override
         public void mousePressed(MouseEvent e) {
+
+            if (SwingUtilities.isRightMouseButton(e) || e.isPopupTrigger()) {
+                redispatch(e);
+                return;
+            }
+
             Component c = shortcutsLayer.getComponentAt(e.getPoint());
             if (c instanceof DesktopShortcut shortcut) {
                 if (e.isControlDown()) {
@@ -122,10 +128,6 @@ public class DesktopShortcutSelector extends JComponent {
                 draggingIcons = false;
             }
             repaint();
-
-            if (e.isPopupTrigger()) {
-                redispatch(e);
-            }
         }
 
         @SuppressWarnings("checkstyle:NestedIfDepth")

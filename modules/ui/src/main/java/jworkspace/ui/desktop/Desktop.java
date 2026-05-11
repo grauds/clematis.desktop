@@ -75,6 +75,7 @@ import jworkspace.ui.desktop.plaf.DesktopShortcutSelector;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import jworkspace.ui.desktop.plaf.DesktopTheme;
 import jworkspace.ui.desktop.plaf.ScrollingDesktopManager;
+import jworkspace.ui.util.MacSafePopupManager;
 import jworkspace.ui.widgets.ClassCache;
 import lombok.Getter;
 import lombok.Setter;
@@ -123,9 +124,13 @@ public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
         add(new DesktopShortcutSelector(shortcutsLayer), JLayeredPane.DRAG_LAYER);
 
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
-        this.shortcutsLayer.setComponentPopupMenu(
+        /*this.shortcutsLayer.setComponentPopupMenu(
             new DesktopMenu(new DesktopActions(this.shortcutsLayer, this))
-        );
+        );*/
+        new MacSafePopupManager(
+            new DesktopMenu(new DesktopActions(this.shortcutsLayer, this)),
+            true
+        ).install(this.shortcutsLayer);
     }
 
     public Desktop(String desktopTitle) {
