@@ -36,6 +36,8 @@ import javax.swing.JComponent;
 
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
+import jworkspace.ui.desktop.actions.DesktopShortcutActions;
+import lombok.Getter;
 
 /**
  * The DesktopShortcutsLayer class represents a specialized {@code JComponent} for managing
@@ -57,9 +59,13 @@ public class DesktopShortcutsLayer extends JComponent {
 
     private final List<DesktopShortcut> selected = new ArrayList<>();
 
+    @Getter
+    private final DesktopShortcutActions desktopShortcutActions;
+
     public DesktopShortcutsLayer() {
         setLayout(null);
         setOpaque(false);
+        this.desktopShortcutActions = new DesktopShortcutActions(this);
     }
 
     public void addShortcut(DesktopShortcut shortcut) {
@@ -78,6 +84,7 @@ public class DesktopShortcutsLayer extends JComponent {
         }
 
         s.setSelectionProvider(() -> selected.contains(s));
+        s.setComponentPopupMenu(new DesktopShortcutMenu(this.desktopShortcutActions));
 
         revalidate();
         repaint();
@@ -219,7 +226,6 @@ public class DesktopShortcutsLayer extends JComponent {
                 if (obj instanceof DesktopShortcut original) {
                     // 2. Clone the shortcut data
                     DesktopShortcut copy = new DesktopShortcut(original.getIcon(), original.getText());
-                    copy.setComponentPopupMenu(new DesktopShortcutMenu());
                     // 3. Position with offset
                     Point pos = original.getLocation();
                     addShortcut(copy, new Point(pos.x + offset, pos.y + offset));

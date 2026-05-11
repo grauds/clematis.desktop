@@ -66,13 +66,11 @@ import jworkspace.ui.api.IView;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.desktop.actions.DesktopActions;
+import jworkspace.ui.desktop.actions.DesktopMenu;
 import jworkspace.ui.desktop.dialog.DesktopBackgroundPanel;
 import jworkspace.ui.desktop.dialog.DesktopOptionsPanel;
-import jworkspace.ui.desktop.plaf.DesktopAction;
-import jworkspace.ui.desktop.plaf.DesktopMenu;
 import jworkspace.ui.desktop.plaf.DesktopOverlayLayout;
-import jworkspace.ui.desktop.plaf.DesktopShortcutAction;
-import jworkspace.ui.desktop.plaf.DesktopShortcutMenu;
 import jworkspace.ui.desktop.plaf.DesktopShortcutSelector;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import jworkspace.ui.desktop.plaf.DesktopTheme;
@@ -125,6 +123,9 @@ public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
         add(new DesktopShortcutSelector(shortcutsLayer), JLayeredPane.DRAG_LAYER);
 
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
+        this.shortcutsLayer.setComponentPopupMenu(
+            new DesktopMenu(new DesktopActions(this.shortcutsLayer, this))
+        );
     }
 
     public Desktop(String desktopTitle) {
@@ -132,19 +133,7 @@ public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
         setName(desktopTitle);
     }
 
-    /**
-     * Re-init actions for the desktop just being activated
-     */
-    public void activated(boolean flag) {
-        if (flag) {
-            DesktopAction.initActions(this, shortcutsLayer);
-            DesktopShortcutAction.initActions(shortcutsLayer);
-            shortcutsLayer.setComponentPopupMenu(new DesktopMenu());
-            for (DesktopShortcut shortcut : shortcutsLayer.getShortcuts()) {
-                shortcut.setComponentPopupMenu(new DesktopShortcutMenu());
-            }
-        }
-    }
+    public void activated(boolean flag) {}
 
     public void switchCoverVisible() {
         this.theme.switchCoverVisible();

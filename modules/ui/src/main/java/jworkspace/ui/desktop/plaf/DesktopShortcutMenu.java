@@ -30,20 +30,25 @@ import javax.swing.UIManager;
 
 import static jworkspace.ui.util.SwingUtils.createMenuItem;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.desktop.IDesktopShortcutActions;
+import jworkspace.ui.desktop.actions.DesktopShortcutActions;
 
 public class DesktopShortcutMenu extends JPopupMenu {
 
-    public DesktopShortcutMenu() {
+    private DesktopShortcutActions desktopShortcutActions;
+
+    public DesktopShortcutMenu(DesktopShortcutActions desktopShortcutActions) {
         super();
+        this.desktopShortcutActions = desktopShortcutActions;
 
-        JMenuItem open = createMenuItem(DesktopShortcutAction.openAction);
-        JMenuItem rename = createMenuItem(DesktopShortcutAction.renameAction);
+        JMenuItem open = createMenuItem(desktopShortcutActions.get(IDesktopShortcutActions.OPEN));
+        JMenuItem rename = createMenuItem(desktopShortcutActions.get(IDesktopShortcutActions.RENAME));
 
-        JMenuItem cut = createMenuItem(DesktopShortcutAction.cutAction);
-        JMenuItem copy = createMenuItem(DesktopShortcutAction.copyAction);
-        JMenuItem delete = createMenuItem(DesktopShortcutAction.deleteAction);
+        JMenuItem cut = createMenuItem(desktopShortcutActions.get(IDesktopShortcutActions.CUT));
+        JMenuItem copy = createMenuItem(desktopShortcutActions.get(IDesktopShortcutActions.COPY));
+        JMenuItem delete = createMenuItem(desktopShortcutActions.get(IDesktopShortcutActions.DELETE));
 
-        JMenuItem properties = createMenuItem(DesktopShortcutAction.propertiesAction);
+        JMenuItem properties = createMenuItem(desktopShortcutActions.get(IDesktopShortcutActions.PROPERTIES));
 
         add(open);
         addSeparator();
@@ -58,5 +63,8 @@ public class DesktopShortcutMenu extends JPopupMenu {
         UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
-
+    public void setVisible(boolean flag) {
+        this.desktopShortcutActions.updateEnabledState();
+        super.setVisible(flag);
+    }
 }

@@ -1,4 +1,4 @@
-package jworkspace.ui.desktop.plaf;
+package jworkspace.ui.desktop.actions;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 1999-2003, 2019 Anton Troshin
@@ -30,6 +30,7 @@ import javax.swing.UIManager;
 
 import static jworkspace.ui.util.SwingUtils.createMenuItem;
 import jworkspace.ui.api.action.UISwitchListener;
+import jworkspace.ui.desktop.IDesktopActions;
 import lombok.Getter;
 
 /**
@@ -49,18 +50,21 @@ public class DesktopMenu extends JPopupMenu {
     private final JMenuItem switchCover;
     private final JMenuItem chooseBgImage;
 
-    public DesktopMenu() {
+    private final DesktopActions desktopActions;
+
+    public DesktopMenu(DesktopActions desktopActions) {
         super();
 
-        createShortcut = createMenuItem(DesktopAction.createAction);
-        paste = createMenuItem(DesktopAction.pasteAction);
-        arrangeAll = createMenuItem(DesktopAction.arrangeAllAction);
-        selectAll = createMenuItem(DesktopAction.selectAllAction);
-        changeBackgroundColour = createMenuItem(DesktopAction.chooseBackgroundColorAction);
-        chooseBgImage = createMenuItem(DesktopAction.chooseBgImageAction);
-        gradientFill = createMenuItem(DesktopAction.gradientFillAction);
-        switchCover = createMenuItem(DesktopAction.switchCoverAction);
-        closeAllWindows = createMenuItem(DesktopAction.closeAllWindowsAction);
+        createShortcut = createMenuItem(desktopActions.get(IDesktopActions.CREATE_SHORTCUT));
+        paste = createMenuItem(desktopActions.get(IDesktopActions.PASTE));
+        arrangeAll = createMenuItem(desktopActions.get(IDesktopActions.ARRANGE));
+        selectAll = createMenuItem(desktopActions.get(IDesktopActions.SELECT_ALL));
+        changeBackgroundColour = createMenuItem(desktopActions.get(IDesktopActions.BACKGROUND));
+        chooseBgImage = createMenuItem(desktopActions.get(IDesktopActions.CHOOSE_BACKGROUND_IMAGE));
+        gradientFill = createMenuItem(desktopActions.get(IDesktopActions.GRADIENT_FILL));
+        switchCover = createMenuItem(desktopActions.get(IDesktopActions.SWITCH_COVER));
+        closeAllWindows = createMenuItem(desktopActions.get(IDesktopActions.CLOSE_ALL_WINDOWS));
+        this.desktopActions = desktopActions;
 
         add(createShortcut);
         add(paste);
@@ -79,7 +83,7 @@ public class DesktopMenu extends JPopupMenu {
     }
 
     public void setVisible(boolean flag) {
-        DesktopAction.updateEnabledState();
+        this.desktopActions.updateEnabledState();
         super.setVisible(flag);
     }
 
