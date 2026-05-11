@@ -32,6 +32,8 @@ public class Workspace {
 
     public static final String HOME_DIR = ".jworkspace";
 
+    public static final String DEFAULT_HOME = System.getProperty("user.home");
+
     @Option(name = "--name", usage = "user profile name")
     private String name;
 
@@ -39,7 +41,7 @@ public class Workspace {
     private String password;
 
     @Option(name = "--path", usage = "workspace path to store data")
-    private String path = System.getProperty("user.dir");
+    private String path = DEFAULT_HOME;
 
     private Workspace() {}
 
@@ -66,7 +68,7 @@ public class Workspace {
         }
 
         if (path == null || path.isEmpty()) {
-            path = System.getProperty("user.home");
+            path = DEFAULT_HOME;
         }
 
         try {
