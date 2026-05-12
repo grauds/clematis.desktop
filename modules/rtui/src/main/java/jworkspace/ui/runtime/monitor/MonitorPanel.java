@@ -28,8 +28,6 @@ import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JScrollPane;
-
 import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.ui.runtime.LangResource;
@@ -53,12 +51,8 @@ public class MonitorPanel extends KPanel {
         monitors.add(new Monitor(LangResource.getString("message#256"), new GcTimeMonitor()));
         monitors.add(new Monitor(LangResource.getString("message#257"), new ThreadMonitor()));
 
-        JScrollPane nestScroller = new JScrollPane(new Dashboard(monitors));
-        nestScroller.getViewport().setOpaque(false);
-        nestScroller.setOpaque(false);
-
         setLayout(new BorderLayout());
         add(new HeaderPanel(), BorderLayout.NORTH);
-        add(nestScroller, BorderLayout.CENTER);
+        add(new Dashboard(monitors), BorderLayout.CENTER);
     }
 }

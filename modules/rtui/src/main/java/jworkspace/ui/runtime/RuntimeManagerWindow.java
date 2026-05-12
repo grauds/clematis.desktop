@@ -84,6 +84,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         splitPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
         splitPane.setOpaque(false);
         splitPane.setContinuousLayout(true);
+        splitPane.setOneTouchExpandable(true);
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.add("Plugins", splitPane);

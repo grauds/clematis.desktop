@@ -2,7 +2,7 @@ package jworkspace.runtime.process;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2018 Anton Troshin
+   Copyright (C) 1999-2018 Anton Troshin, Mark Lindner
 
    This file is part of Java Workspace.
 
@@ -96,14 +96,13 @@ public final class JavaProcess extends AbstractTask {
             // Record the process start time for elapsed-time calculations
             setStartTime(new Date());
 
-            // Start background readers for standard output and error streams
-            new LogReaderThread(this, process.getInputStream(), this.getLogs()).start();
+            // Start background readers for standard error stream
             new LogReaderThread(this, process.getErrorStream(), this.getLogs()).start();
 
             try {
                 // Block until the process exits
                 int ret = process.waitFor();
-                /* TODO: notify workspace listeners about process completion */
+
             } catch (InterruptedException ignored) {
                 // Interruption is ignored; process lifecycle remains unchanged
             }
@@ -115,6 +114,7 @@ public final class JavaProcess extends AbstractTask {
      *
      * @return {@code true} if the process exists and is alive
      */
+    @Override
     public boolean isAlive() {
         return process != null && process.isAlive();
     }
@@ -125,7 +125,8 @@ public final class JavaProcess extends AbstractTask {
      * <p>This sends a termination signal to the process. It does not
      * guarantee immediate shutdown.</p>
      */
-    public void kill() {
+    @Override
+    public void stop() {
         if (process != null) {
             process.destroy();
         }

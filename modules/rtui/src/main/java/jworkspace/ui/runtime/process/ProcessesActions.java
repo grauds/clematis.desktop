@@ -33,10 +33,12 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JList;
 
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.AbstractTask;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 import jworkspace.ui.runtime.LangResource;
@@ -44,11 +46,9 @@ import jworkspace.ui.runtime.RuntimeManagerWindow;
 import lombok.extern.java.Log;
 
 /**
- * All plugin actions
- * @author Anton Troshin
  */
 @Log
-class ProcessesActions {
+public class ProcessesActions {
     /**
      * Action property - this action work for editor
      */
@@ -97,9 +97,9 @@ class ProcessesActions {
     /**
      * Default public constructor
      */
-    ProcessesActions() {
+    ProcessesActions(JList<AbstractTask> tasksList) {
         super();
-        this.controller = new ProcessesController();
+        this.controller = new ProcessesController(tasksList, this);
         createActions();
         enableActions(false);
     }
@@ -108,9 +108,6 @@ class ProcessesActions {
         return actions.get(name);
     }
 
-    /**
-     * Enable actions of specified type
-     */
     void enableActions(boolean flag, String type) {
         for (Action action : actions.values()) {
             String stype = (String) action.getValue(ACTION_TYPE);
@@ -122,8 +119,7 @@ class ProcessesActions {
 
     void enableActions(boolean flag) {
         for (Action action : actions.values()) {
-            if (!action.getValue(Action.NAME).
-                equals(START_ACTION_NAME)) {
+            if (!action.getValue(Action.NAME).equals(START_ACTION_NAME)) {
                 action.setEnabled(flag);
             } else {
                 action.setEnabled(true);
@@ -131,9 +127,6 @@ class ProcessesActions {
         }
     }
 
-    /**
-     * Create actions
-     */
     private void createActions() {
 
         Action killAction = new KillAction();

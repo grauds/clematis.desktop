@@ -1,6 +1,32 @@
 package jworkspace.runtime;
+/* ----------------------------------------------------------------------------
+   Java Workspace
+   Copyright (C) 2026 Anton Troshin
 
+   This file is part of Java Workspace.
+
+   This application is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This application is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this application; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   The author may be contacted at:
+
+   anton.troshin@gmail.com
+  ----------------------------------------------------------------------------
+*/
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -10,87 +36,151 @@ import java.util.concurrent.TimeUnit;
 import jworkspace.api.EventsDispatcher;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.runtime.process.JavaProcess;
+import lombok.Getter;
 
-/**
- * Runtime manager component
- */
+@Getter
 public class RuntimeManager {
-    /**
-     * After execution event number
-     */
+
     public static final int AFTER_EXECUTE_EVENT = 1000;
-    /**
-     * Before execution event number
-     */
     public static final int BEFORE_EXECUTE_EVENT = 1001;
+
     /**
-     * Thread pool executor for plugins and Java programs
+     * Thread pool executor for plugins and Java programs.
      */
     private final ThreadPoolExecutor poolExecutor;
+
     /**
-     * Dispatcher for lifecycle events of the threads in the pool
+     * Dispatcher for lifecycle events.
      */
     private final EventsDispatcher eventsDispatcher = new EventsDispatcher();
 
-    public RuntimeManager(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit) {
+    /**
+     * Runtime task registry.
+     */
+    private final List<AbstractTask> tasks = Collections.synchronizedList(new ArrayList<>());
+
+    public RuntimeManager(
+        int corePoolSize,
+        int maximumPoolSize,
+        long keepAliveTime,
+        TimeUnit unit
+    ) {
+
         BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(maximumPoolSize);
         this.poolExecutor = new ThreadPoolExecutor(
-            corePoolSize, maximumPoolSize, keepAliveTime, unit, queue
-        ) {
-            /**
-             * Method invoked prior to executing the given Runnable in the given thread.
-             * This method is invoked by thread t that will execute task r
-             *
-             * @param t the thread that will run task {@code r}
-             * @param r the task that will be executed
-             */
-            @Override
-            protected void beforeExecute(Thread t, Runnable r) {
-                eventsDispatcher.fireEvent(BEFORE_EXECUTE_EVENT, t, r);
-            }
+                corePoolSize,
+                maximumPoolSize,
+                keepAliveTime,
+                unit,
+                queue
+            ) {
 
-            /**
-             * Useful callback to notify listeners about the thread execution results.
-             * @param r the runnable that has completed
-             * @param t the exception that caused termination, or null if
-             * execution completed normally
-             */
-            @Override
-            protected void afterExecute(Runnable r, Throwable t) {
-                eventsDispatcher.fireEvent(AFTER_EXECUTE_EVENT, r, t);
-            }
-        };
+                @Override
+                protected void beforeExecute(Thread t, Runnable r) {
+                    eventsDispatcher.fireEvent(BEFORE_EXECUTE_EVENT, t, r);
+                }
+
+                @Override
+                protected void afterExecute(Runnable r, Throwable t) {
+                    eventsDispatcher.fireEvent(AFTER_EXECUTE_EVENT, r, t);
+                }
+            };
     }
 
+    /**
+     * Execute runnable.
+     */
     public void take(Runnable runnable) {
-        this.poolExecutor.execute(runnable);
+        if (runnable instanceof AbstractTask task) {
+            register(task);
+        }
+        poolExecutor.execute(runnable);
     }
 
-    public Runnable run(String command) throws IOException {
-        JavaProcess process = new JavaProcess(
-                Runtime.getRuntime().exec(command), String.valueOf(System.currentTimeMillis())
-        );
+    /**
+     * Register task without executing it.
+     * Useful for externally-managed threads.
+     */
+    public void register(AbstractTask task) {
+        tasks.add(task);
+    }
+
+    /**
+     * Execute task.
+     */
+    public void take(AbstractTask task) {
+        register(task);
+        poolExecutor.execute(task);
+    }
+
+    /**
+     * Launch external process.
+     */
+    public JavaProcess run(String command) throws IOException {
+
+        JavaProcess process =
+            new JavaProcess(
+                Runtime.getRuntime().exec(command),
+                String.valueOf(
+                    System.currentTimeMillis()
+                )
+            );
+
         take(process);
         return process;
     }
 
+    /**
+     * All runtime tasks.
+     */
+    public List<AbstractTask> getAllTasks() {
+        synchronized (tasks) {
+            return new ArrayList<>(tasks);
+        }
+    }
+
+    /**
+     * Remove task from registry.
+     */
+    public void remove(AbstractTask task) {
+        tasks.remove(task);
+    }
+
+    /**
+     * Remove completed tasks.
+     */
+    public void removeTerminated() {
+        tasks.removeIf(task -> !task.isAlive());
+    }
+
+    /**
+     * Stop all tasks.
+     */
+    public void stopAll() {
+        getAllTasks().forEach(AbstractTask::stop);
+    }
+
     public boolean addListener(IWorkspaceListener l) {
-        return this.eventsDispatcher.addListener(l);
+        return eventsDispatcher.addListener(l);
     }
 
     public boolean removeListener(IWorkspaceListener l) {
-        return this.eventsDispatcher.removeListener(l);
+        return eventsDispatcher.removeListener(l);
     }
 
     public List<Runnable> getQueueTasks() {
-        return this.poolExecutor.getQueue().stream().toList();
+        return poolExecutor
+            .getQueue()
+            .stream()
+            .toList();
     }
 
     public int getActiveCount() {
-        return this.poolExecutor.getActiveCount();
+        return poolExecutor.getActiveCount();
     }
 
     public void yield() {
-        this.poolExecutor.shutdown();
+        stopAll();
+        poolExecutor.shutdown();
     }
 }

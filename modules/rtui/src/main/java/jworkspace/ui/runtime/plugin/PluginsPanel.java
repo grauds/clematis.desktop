@@ -74,11 +74,11 @@ public class PluginsPanel extends KPanel {
         splitter.setContinuousLayout(true);
         splitter.setTopComponent(new JScrollPane(getPluginsTable()));
 
-        PluginPanel pluginPanel = new PluginPanel();
-        splitter.setBottomComponent(pluginPanel);
+        ReportPanel reportPanel = new ReportPanel();
+        splitter.setBottomComponent(reportPanel);
         add(splitter, BorderLayout.CENTER);
 
-        this.addPluginSelectionListener(pluginPanel);
+        this.addPluginSelectionListener(reportPanel);
     }
 
     public void addPluginSelectionListener(IPluginSelectionListener l) {
@@ -152,8 +152,8 @@ public class PluginsPanel extends KPanel {
 
             this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(60);
             this.pluginsTable.getColumnModel().getColumn(1).setMaxWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(90);
-            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(90);
+            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(70);
+            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(70);
 
             ButtonColumn uninstallColumn = new ButtonColumn("Uninstall", (row, col) -> {
                 PluginsTableModel model = (PluginsTableModel) pluginsTable.getModel();

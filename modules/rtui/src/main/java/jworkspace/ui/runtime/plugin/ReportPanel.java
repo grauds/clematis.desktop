@@ -24,74 +24,26 @@ package jworkspace.ui.runtime.plugin;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultCaret;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
-import com.hyperrealm.kiwi.ui.KPanel;
 
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.plugins.ShellsLoader;
+import jworkspace.ui.runtime.AbstractReportPanel;
 import jworkspace.ui.runtime.LangResource;
 
-public class PluginPanel extends KPanel implements IPluginSelectionListener {
-
-    private JTextPane label = null;
-
-    @SuppressWarnings("checkstyle:MagicNumber")
-    public PluginPanel() {
-        super();
-        setLayout(new BorderLayout(5, 5));
-        add(new JScrollPane(getLabel()), BorderLayout.CENTER);
-    }
-
-    @SuppressWarnings("checkstyle:MagicNumber")
-    private JTextPane getLabel() {
-
-        if (label == null) {
-            label = new JTextPane();
-
-            label.setContentType("text/html");
-            label.setBackground(Color.white);
-            label.setOpaque(true);
-            label.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-            label.setEditable(false);
-            label.setCaret(new DefaultCaret() {
-                @Override
-                public void paint(java.awt.Graphics g) {
-                    // Do nothing - prevents the cursor from being drawn
-                }
-            });
-            label.setBorder(new EmptyBorder(15, 10, 3, 10));
-
-            Font font = label.getFont();
-            label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
-            String sb = "<html><b>Select a plugin from the list</b><br><br></html>";
-            label.setText(sb);
-        }
-        return label;
-    }
+public class ReportPanel extends AbstractReportPanel implements IPluginSelectionListener {
 
     /**
      * Create a plugin report
      */
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
-    void createPluginReport(Plugin plugin) {
+    void createReport(Plugin plugin) {
         String props = "<font color=\"black\">"
             + "<b>"
             + LangResource.getString("Name") + ": "
@@ -153,36 +105,8 @@ public class PluginPanel extends KPanel implements IPluginSelectionListener {
         layoutReport(sb.toString(), icon);
     }
 
-    @SuppressWarnings("checkstyle:MultipleStringLiterals")
-    private void layoutReport(String html, Icon icon) {
-        HTMLDocument doc = (HTMLDocument) label.getDocument();
-        HTMLEditorKit kit = (HTMLEditorKit) label.getEditorKit();
-        try {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><body style='")
-                .append("text-align:center;")
-                .append("font-family:sans-serif;'>");
-            sb.append("<div>")
-                .append(html)
-                .append("</div>");
-
-            sb.append("</body></html>");
-            doc.remove(0, doc.getLength());
-            if (icon != null) {
-                label.insertIcon(icon);
-            }
-            kit.insertHTML(doc, doc.getLength(), sb.toString(), 0, 0, null);
-            label.setCaretPosition(0);
-        } catch (BadLocationException | IOException ex) {
-            /* ignore */
-        }
-
-        revalidate();
-        repaint();
-    }
-
     @Override
     public void pluginSelected(Plugin p) {
-        createPluginReport(p);
+        createReport(p);
     }
 }

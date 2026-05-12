@@ -114,8 +114,9 @@ public class PluginsDownloaderPanel extends KPanel {
             new JScrollPane(getLogViewer())
         );
         splitPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
-        splitPane.setDividerLocation(300);
+        splitPane.setDividerLocation(200);
         splitPane.setContinuousLayout(true);
+        splitPane.setOneTouchExpandable(true);
         c.add(splitPane, BorderLayout.CENTER);
 
         add(c, BorderLayout.CENTER);
@@ -169,7 +170,7 @@ public class PluginsDownloaderPanel extends KPanel {
             this.table.getColumnModel().getColumn(5).setMaxWidth(90);
 
             this.table.getSelectionModel().addListSelectionListener(_ -> {
-                switchItemLogs();
+                switchLogs();
                 switchInstallerLabel();
             });
         }
@@ -329,7 +330,7 @@ public class PluginsDownloaderPanel extends KPanel {
         return installerLabel;
     }
 
-    private void switchItemLogs() {
+    private void switchLogs() {
         int row = table.getSelectedRow();
         getLogViewer().clear();
         if (row >= 0) {

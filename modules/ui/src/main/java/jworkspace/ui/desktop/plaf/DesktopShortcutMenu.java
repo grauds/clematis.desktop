@@ -35,7 +35,7 @@ import jworkspace.ui.desktop.actions.DesktopShortcutActions;
 
 public class DesktopShortcutMenu extends JPopupMenu {
 
-    private DesktopShortcutActions desktopShortcutActions;
+    private final DesktopShortcutActions desktopShortcutActions;
 
     public DesktopShortcutMenu(DesktopShortcutActions desktopShortcutActions) {
         super();

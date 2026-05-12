@@ -1,4 +1,5 @@
-package jworkspace.ui.desktop.actions;
+package jworkspace.ui.runtime.process;
+
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -24,19 +25,9 @@ package jworkspace.ui.desktop.actions;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.awt.event.ActionEvent;
+import jworkspace.runtime.AbstractTask;
 
-import jworkspace.ui.desktop.IDesktopShortcutActions;
-import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
+public interface IProcessSelectionListener {
 
-public class ShortcutOpenAction extends AbstractDesktopShortcutAction {
-
-    public ShortcutOpenAction(DesktopShortcutsLayer shortcutsLayer) {
-        super("Open", IDesktopShortcutActions.OPEN, null, shortcutsLayer);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        this.shortcutsLayer.runShortcutAction();
-    }
+    void processSelected(AbstractTask process);
 }

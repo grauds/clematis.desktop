@@ -18,7 +18,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 public class PluginPropertiesPanel extends KPanel implements ActionListener {
 
-    private final PluginPanel pluginPanel = new PluginPanel();
+    private final ReportPanel reportPanel = new ReportPanel();
     private final JCheckBox bInstallForAllUsers;
 
     @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:WhitespaceAfter"})
@@ -39,7 +39,7 @@ public class PluginPropertiesPanel extends KPanel implements ActionListener {
 
         KPanel props = new KPanel();
         props.setLayout(new BorderLayout(5, 5));
-        props.add("Center", pluginPanel);
+        props.add("Center", reportPanel);
 
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.fill = GridBagConstraints.BOTH;
@@ -67,7 +67,7 @@ public class PluginPropertiesPanel extends KPanel implements ActionListener {
     }
 
     public void setData(Plugin data) {
-        pluginPanel.createPluginReport(data);
+        reportPanel.createReport(data);
     }
 
     public boolean isAllUsers() {

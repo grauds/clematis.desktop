@@ -168,5 +168,17 @@ public final class DownloadTask extends AbstractTask {
         }
     }
 
+    @Override
+    public boolean isAlive() {
+        return item != null && item.isFinished();
+    }
+
+    @Override
+    public void stop() {
+        if (item != null) {
+            item.getCancelled().set(true);
+            item.cleanupTempFile();
+        }
+    }
 }
 

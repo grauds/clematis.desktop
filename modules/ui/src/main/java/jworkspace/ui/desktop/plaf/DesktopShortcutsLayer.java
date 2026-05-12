@@ -29,11 +29,14 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
 
+import jworkspace.config.ServiceLocator;
+import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.desktop.actions.DesktopShortcutActions;
@@ -248,6 +251,23 @@ public class DesktopShortcutsLayer extends JComponent {
             return CLIPBOARD.isDataFlavorAvailable(SHORTCUT_FLAVOR);
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public void runShortcutAction() {
+        if (this.selected.size() != 1) {
+            return;
+        }
+        DesktopShortcut shortcut = this.selected.getFirst();
+        try {
+            ServiceLocator
+                .getInstance()
+                .getRuntimeManager()
+                .run(
+                    shortcut.getCommandLine()
+                );
+        } catch (IOException e) {
+            WorkspaceError.exception("Open shortcut " + shortcut.getCommandLine(), e);
         }
     }
 }

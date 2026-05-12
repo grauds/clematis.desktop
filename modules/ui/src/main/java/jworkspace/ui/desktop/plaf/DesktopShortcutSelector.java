@@ -29,15 +29,18 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import jworkspace.ui.desktop.DesktopShortcut;
+import jworkspace.ui.desktop.IDesktopShortcutActions;
 import lombok.extern.java.Log;
 
 @Log
@@ -96,6 +99,32 @@ public class DesktopShortcutSelector extends JComponent {
 
             Component c = shortcutsLayer.getComponentAt(e.getPoint());
             if (c instanceof DesktopShortcut shortcut) {
+
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+
+                    if (!shortcutsLayer.getSelectedShortcuts().contains(shortcut)) {
+                        shortcutsLayer.clearSelection();
+                        shortcutsLayer.addToSelection(shortcut);
+                    }
+
+                    Action openAction =
+                        DesktopShortcutSelector
+                        .this.shortcutsLayer
+                        .getDesktopShortcutActions().get(IDesktopShortcutActions.OPEN);
+                    if (openAction != null && openAction.isEnabled()) {
+
+                        openAction.actionPerformed(
+                            new ActionEvent(
+                                shortcut,
+                                ActionEvent.ACTION_PERFORMED,
+                                IDesktopShortcutActions.OPEN
+                            )
+                        );
+                    }
+
+                    return;
+                }
+
                 if (e.isControlDown()) {
                     // Toggle selection
                     if (shortcutsLayer.getSelectedShortcuts().contains(shortcut)) {
@@ -133,6 +162,12 @@ public class DesktopShortcutSelector extends JComponent {
         @SuppressWarnings("checkstyle:NestedIfDepth")
         @Override
         public void mouseDragged(MouseEvent e) {
+
+            if (SwingUtilities.isRightMouseButton(e) || (e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) != 0) {
+                e.consume();
+                return;
+            }
+
             if (SwingUtilities.isLeftMouseButton(e)) {
                 if (draggingIcons && dragStart != null) {
                     int dx = e.getX() - dragStart.x;
