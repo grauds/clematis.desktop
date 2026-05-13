@@ -61,6 +61,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import com.hyperrealm.kiwi.ui.KScrollPane;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import jworkspace.WorkspaceResourceAnchor;
@@ -129,15 +130,15 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Scroller
      */
-    private JScrollPane scroller = null;
+    private KScrollPane scroller = null;
 
     /**
      * Empty constructor.
      */
     public ViewsManager() {
         super();
-        setOpaque(false);
         setLayout(new BorderLayout());
+        setOpaque(false);
         /*
          * Create actions
          */
@@ -594,7 +595,7 @@ public class ViewsManager extends AbstractViewsManager {
      */
     private JScrollPane getScroller() {
         if (scroller == null) {
-            scroller = new JScrollPane();
+            scroller = new KScrollPane();
             scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             scroller.setBorder(new EmptyBorder(0, 0, 0, 0));

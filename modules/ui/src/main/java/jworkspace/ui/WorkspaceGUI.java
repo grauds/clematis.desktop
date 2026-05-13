@@ -186,7 +186,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
         return pluginContext
             .getUserDir()
             .resolve(Constants.LIB_PATH)
-            .resolve(Constants.RES_PATH)
             .resolve(Constants.TEXTURES_JAR);
     }
 
@@ -199,7 +198,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
         return pluginContext
             .getUserDir()
             .resolve(Constants.LIB_PATH)
-            .resolve(Constants.RES_PATH)
             .resolve(Constants.DESKTOP_JAR);
     }
 

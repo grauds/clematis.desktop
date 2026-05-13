@@ -98,15 +98,11 @@ public interface Constants {
     /**
      *
      */
-    String RES_PATH = "res";
-    /**
-     *
-     */
     String TEXTURES_JAR = "textures.jar";
     /**
      *
      */
-    String DESKTOP_JAR = "desktop.jar";
+    String DESKTOP_JAR = "icons.jar";
     /**
      *
      */

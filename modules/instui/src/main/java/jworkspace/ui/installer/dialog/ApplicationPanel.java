@@ -448,13 +448,13 @@ private KPanel createLibraryPanel()
   p_buttons.setLayout(new GridLayout(0, 1, 5, 5));
   ResourceManager kresmgr = KiwiUtils.getResourceManager();
 
-  b_add = new KButton(kresmgr.getIcon("plus.gif"));
+  b_add = new KButton(kresmgr.getIcon("plus.png"));
   b_add.setToolTipText(LangResource.getString("message#1011"));
   b_add.addActionListener(this);
   b_add.setDefaultCapable(false);
   p_buttons.add(b_add);
 
-  b_remove = new KButton(kresmgr.getIcon("minus.gif"));
+  b_remove = new KButton(kresmgr.getIcon("minus.png"));
   b_remove.setToolTipText(LangResource.getString("message#1012"));
   b_remove.addActionListener(this);
   b_remove.setDefaultCapable(false);

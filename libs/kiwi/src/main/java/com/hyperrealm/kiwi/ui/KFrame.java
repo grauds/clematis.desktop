@@ -79,12 +79,12 @@ public class KFrame extends JFrame {
         getContentPane().setLayout(new GridLayout(1, 0));
         main = new KPanel(UIChangeManager.getInstance()
             .getDefaultTexture());
-        main.setOpaque(false);
+        //main.setOpaque(false);
         main.setLayout(new BorderLayout(0, 0));
         getContentPane().add(main);
         Image frameIcon = UIChangeManager.getInstance().getDefaultFrameIcon();
         setIconImage((frameIcon != null) ? frameIcon
-            : rm.getImage("kiwi.png"));
+            : rm.getImage("kiwi-icon.gif"));
 
         content = new KPanel();
         main.add(CENTER_POSITION, content);

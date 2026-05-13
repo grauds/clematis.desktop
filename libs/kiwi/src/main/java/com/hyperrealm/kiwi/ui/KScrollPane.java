@@ -78,6 +78,7 @@ public class KScrollPane extends JScrollPane {
         getViewport().setBackground(Color.white);
 
         setOpaque(false);
+        getViewport().setOpaque(false);
 
         JScrollBar sb = getHorizontalScrollBar();
         if (sb != null) {

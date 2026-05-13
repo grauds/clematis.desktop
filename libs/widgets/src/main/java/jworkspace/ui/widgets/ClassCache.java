@@ -33,8 +33,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -69,9 +67,6 @@ public final class ClassCache {
     private static final String CACHE_HYPERTEXT_TITLE = "Cache.hypertext";
     private static final String CACHE_CHOOSE_HTMLOR_DIRECTORY_TITLE = "Cache.chooseHTMLOrDirectory";
     private static final String USER_HOME_PROPERTY = "user.home";
-
-    // common cache
-    private static final Map<String, Object> OBJECT_MAP = new HashMap<>();
 
     // file dialogs
     private static JFileChooser fileChooser = null;
@@ -274,12 +269,6 @@ public final class ClassCache {
         iconChooser = null;
     }
 
-    /**
-     * Get methos of class cache
-     */
-    public static Object get(Object key) {
-        return OBJECT_MAP.get(key);
-    }
 
     /**
      * Returns archive chooser
@@ -294,7 +283,9 @@ public final class ClassCache {
      * Returns file chooser
      */
     public static JFileChooser getFileChooser(String title,
-                                              String[] ext, String description) {
+                                              String[] ext,
+                                              String description
+    ) {
         if (fileChooser == null) {
             fileChooser = new JFileChooser(title);
             fileChooser.setFileView(new WorkspaceFileView());
@@ -302,9 +293,8 @@ public final class ClassCache {
             fileChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY)));
         }
         fileChooser.setDialogTitle(title);
-        fileChooser.resetChoosableFileFilters();
         if (ext != null && description != null) {
-            fileChooser.addChoosableFileFilter(new WorkspaceFileFilter(ext, description));
+            fileChooser.setFileFilter(new WorkspaceFileFilter(ext, description));
         }
         return fileChooser;
     }
@@ -320,15 +310,6 @@ public final class ClassCache {
             fileChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY)));
         }
         return fileChooser;
-    }
-
-    /**
-     * Get html files chooser
-     */
-    public static JFileChooser getHtmlChooser() {
-        return ClassCache.getFileChooser(ResourceAnchor.getString("Cache.selectHTML"),
-                new String[]{HTML_EXTENTION, SHTML_EXTENTION, HTM_EXTENTION},
-                ResourceAnchor.getString(CACHE_HYPERTEXT_TITLE));
     }
 
     /**
@@ -366,13 +347,6 @@ public final class ClassCache {
             }
         }
         return iconChooser;
-    }
-
-    /**
-     * Put method of class cache
-     */
-    public static void put(String key, Object value) {
-        OBJECT_MAP.put(key, value);
     }
 
     /**

@@ -145,7 +145,7 @@ public class ProgressDialog extends KDialog implements ProgressObserver {
 
         main.add(CENTER_POSITION, p);
 
-        if (getTitle().length() == 0) {
+        if (getTitle().isEmpty()) {
             setTitle(loc.getMessage("kiwi.dialog.title.progress"));
         }
 

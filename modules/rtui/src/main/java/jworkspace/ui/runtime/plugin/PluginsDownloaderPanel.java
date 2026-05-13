@@ -232,7 +232,7 @@ public class PluginsDownloaderPanel extends KPanel {
     @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ReturnCount"})
     private KPanel getAddressPanel() {
         KPanel inputPanel = new KPanel(new BorderLayout(5, 5));
-        JTextField urlField = new JTextField();
+        JTextField urlField = new JTextField(30);
 
         JButton addButton = new JButton("Add URL");
         urlField.addActionListener(_ -> addButton.doClick());

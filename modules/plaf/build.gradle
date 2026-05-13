@@ -31,7 +31,8 @@ jar {
 
 tasks.register('deployToPlugins', Copy) {
     from jar
-    into "${project.rootDir}/.jworkspace/users/root/shells/"
+    into "${System.getProperty("user.home")}/.jworkspace/users/root/shells/"
+   // into "${project.rootDir}/.jworkspace/users/root/shells/"
 }
 
 deployToPlugins.dependsOn(assemble)

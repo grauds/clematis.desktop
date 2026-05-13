@@ -38,6 +38,7 @@ import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.dialog.IDialogPanel;
+import jworkspace.ui.resources.TexturePanel;
 import lombok.NonNull;
 
 /**

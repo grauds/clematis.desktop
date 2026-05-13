@@ -32,13 +32,14 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -46,6 +47,8 @@ import javax.swing.SwingUtilities;
 import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.ui.WorkspaceGUI;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Header panel serves as information bridge for desktop navigation, displaying the name of
@@ -53,7 +56,7 @@ import jworkspace.ui.WorkspaceGUI;
  *
  * @author Anton Troshin
  */
-public class HeaderPanel extends KPanel implements MouseListener, LayoutManager, MouseMotionListener {
+public class HeaderPanel extends KPanel implements LayoutManager {
     /**
      * Possible orientations of header panel.
      * HEADER - on the top of the frame.
@@ -67,7 +70,7 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     /**
      * Header label is the only component to display info.
      */
-    private final JLabel headerLabel = new JLabel();
+    private JLabel headerLabel = null;
     /**
      * Margins.
      */
@@ -75,87 +78,84 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
     /**
      * Current orientation - by default HEADER.
      */
+    @Getter
+    @Setter
     private String orientation = FOOTER;
     /**
      * Header label is the only component to display info.
      */
-    private final ClockLabel clockLabel = new ClockLabel();
+    private ClockLabel clockLabel;
 
     /**
      * HeaderPanel constructor. Takes title string as an argument.
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
     public HeaderPanel(String title) {
         super();
-        headerLabel.setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().
-            getImage("desktop/desktop.png")));
         setLayout(this);
 
-        add(headerLabel);
-        add(clockLabel);
+        add(getHeaderLabel());
         setHeaderLabelText(title);
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        setTimer();
-    }
 
-    /**
-     * HeaderPanel constructor. Takes title string
-     * and orientation as arguments.
-     */
-    public HeaderPanel(String title, String orientation) {
-        super();
+        add(getClockLabel());
 
-        if (!orientation.equals(HeaderPanel.HEADER)
-            && !orientation.equals(HeaderPanel.FOOTER)) {
+        addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    return;
+                }
 
-            throw new IllegalArgumentException("Orientation MUST be HEADER or FOOTER");
-        }
+                firePropertyChange("MOUSE_DRAGGED", e.getPoint(), e.getPoint());
+            }
+        });
 
-        this.orientation = orientation;
-        setLayout(this);
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    Container parentContainer = getParent();
 
-        add(headerLabel);
-        add(clockLabel);
+                    if (orientation.equals(FOOTER)) {
+                        orientation = HEADER;
+                    } else if (orientation.equals(HEADER)) {
+                        orientation = FOOTER;
+                    }
 
-        setHeaderLabelText(title);
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        setTimer();
+                    parentContainer.remove(HeaderPanel.this);
+                    parentContainer.add(HeaderPanel.this, orientation);
+                    parentContainer.validate();
+                    parentContainer.repaint();
+                }
+            }
+        });
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
-    private void setTimer() {
-        DateTimeFormatter fmt =
-            DateTimeFormatter.ofPattern("EEE dd MMM HH:mm:ss", Locale.ENGLISH);
-
-        javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
-            LocalDateTime now = LocalDateTime.now();
-            clockLabel.setText(now.format(fmt));
-            clockLabel.repaint();
-        });
-        timer.start();
+    public JLabel getHeaderLabel() {
+        if (headerLabel == null) {
+            headerLabel = new JLabel();
+            headerLabel.setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().
+                getImage("desktop/desktop.png")));
+            headerLabel.setOpaque(true);
+            headerLabel.setBorder(BorderFactory.createEmptyBorder(2, 20, 2, 20));
+        }
+        return headerLabel;
     }
 
-    public void addLayoutComponent(String name, Component comp) {
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public ClockLabel getClockLabel() {
+        if (clockLabel == null) {
+            clockLabel = new ClockLabel();
+            clockLabel.setBorder(BorderFactory.createEmptyBorder(2, 20, 2, 20));
+            clockLabel.setTimer();
+        }
+        return clockLabel;
     }
 
-    /**
-     * Returns orientation of the header panel
-     */
-    String getOrientation() {
-        return orientation;
-    }
-
-    /**
-     * Sets header orientation
-     */
-    void setOrientation(String orientation) {
-        this.orientation = orientation;
-    }
+    public void addLayoutComponent(String name, Component comp) {}
 
     @SuppressWarnings("MagicNumber")
     public void layoutContainer(Container parent) {
-        headerLabel.setBounds(15, 0, getWidth() * 2 / 3, preferredLayoutSize(parent).height);
+        headerLabel.setBounds(15, 0, headerLabel.getPreferredSize().width, preferredLayoutSize(parent).height);
         clockLabel.setBounds(
             getWidth() - clockLabel.getPreferredSize().width - 15, 0, getWidth(),
             preferredLayoutSize(parent).height
@@ -166,55 +166,10 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
      * Returns the minimum layout size of this component.
      */
     public Dimension minimumLayoutSize(Container parent) {
-        return new Dimension(margin.left + margin.right, clockLabel.getPreferredSize().height + 2);
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2) {
-            Container parentContainer = getParent();
-
-            if (orientation.equals(FOOTER)) {
-                orientation = HEADER;
-            } else if (orientation.equals(HEADER)) {
-                orientation = FOOTER;
-            }
-
-            parentContainer.remove(this);
-            parentContainer.add(this, orientation);
-            parentContainer.validate();
-            parentContainer.repaint();
-        }
-    }
-
-    /**
-     * Note: this method sends property change event
-     * with new point, there the mouse pointer was dragged
-     * relative to the Control panel. Property event handler
-     * should always account for it with the top left coordinates
-     * of the control panel.
-     */
-    public void mouseDragged(MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e)) {
-            return;
-        }
-
-        firePropertyChange("MOUSE_DRAGGED",
-            e.getPoint(), e.getPoint());
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseMoved(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
+        return new Dimension(
+            margin.left + margin.right,
+            clockLabel.getPreferredSize().height + 2
+        );
     }
 
     /**
@@ -239,11 +194,24 @@ public class HeaderPanel extends KPanel implements MouseListener, LayoutManager,
      * Clock
      */
     @SuppressWarnings("MagicNumber")
-    static class ClockLabel extends JLabel {
+    public static class ClockLabel extends JLabel {
         private ClockLabel() {
             super();
             setIcon(new ImageIcon(WorkspaceGUI.getResourceManager().getImage("clock.png")));
             setOpaque(true);
+        }
+
+        @SuppressWarnings("checkstyle:MagicNumber")
+        private void setTimer() {
+            DateTimeFormatter fmt =
+                DateTimeFormatter.ofPattern("EEE dd MMM HH:mm:ss", Locale.ENGLISH);
+
+            javax.swing.Timer timer = new javax.swing.Timer(1000, _ -> {
+                LocalDateTime now = LocalDateTime.now();
+                setText(now.format(fmt));
+                repaint();
+            });
+            timer.start();
         }
     }
 }

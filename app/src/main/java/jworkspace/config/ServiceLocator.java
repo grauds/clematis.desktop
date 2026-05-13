@@ -207,6 +207,16 @@ public class ServiceLocator {
         return InstanceHolder.SERVICE_LOCATOR;
     }
 
+    public static String getString(String key) {
+        return ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getParameters()
+            .getString(key);
+    }
+
+    public static void putString(String key, String value) {
+        ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getParameters()
+            .putString(key, value);
+    }
+
     /**
      * Private static nested class holding the singleton instance.
      * <p>

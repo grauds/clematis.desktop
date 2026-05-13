@@ -48,6 +48,6 @@ jar {
 
 tasks.register('deployToPlugins', Copy) {
     from jar
-    //into "${System.getProperty("user.home")}/.jworkspace/plugins/"
-    into "${project.rootDir}/.jworkspace/plugins/"
+    into "${System.getProperty("user.home")}/.jworkspace/plugins/"
+    //into "${project.rootDir}/.jworkspace/plugins/"
 }

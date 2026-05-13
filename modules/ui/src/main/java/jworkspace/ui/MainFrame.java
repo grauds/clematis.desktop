@@ -27,7 +27,6 @@ package jworkspace.ui;
 */
 
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -582,10 +581,10 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
      * @param image The image to use as the background
      *              texture for the frame.
      */
-    public void setTexture(Image image) {
+    /*public void setTexture(Image image) {
         super.setTexture(image);
         getContentPane().repaint();
-    }
+    }*/
 
     /**
      * Switches the control panel on and off.

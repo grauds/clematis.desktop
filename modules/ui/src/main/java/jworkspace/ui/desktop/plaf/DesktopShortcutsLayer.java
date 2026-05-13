@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComponent;
+import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceError;
@@ -41,6 +41,7 @@ import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.desktop.actions.DesktopShortcutActions;
 import lombok.Getter;
+
 
 /**
  * The DesktopShortcutsLayer class represents a specialized {@code JComponent} for managing
@@ -51,7 +52,7 @@ import lombok.Getter;
  * selections and enabling exclusive selection for a single shortcut. Shortcuts are
  * interactable and designed to mimic the behavior of desktop icons.
  */
-public class DesktopShortcutsLayer extends JComponent {
+public class DesktopShortcutsLayer extends KPanel {
 
     private static final DataFlavor SHORTCUT_FLAVOR =
         new DataFlavor(List.class, "Desktop Shortcuts List");

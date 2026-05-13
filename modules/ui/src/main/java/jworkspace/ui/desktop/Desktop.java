@@ -57,8 +57,6 @@ import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.UIManager;
 
-import com.hyperrealm.kiwi.ui.KDesktopPane;
-
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.ui.api.Constants;
@@ -75,7 +73,8 @@ import jworkspace.ui.desktop.plaf.DesktopShortcutSelector;
 import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import jworkspace.ui.desktop.plaf.DesktopTheme;
 import jworkspace.ui.desktop.plaf.ScrollingDesktopManager;
-import jworkspace.ui.util.MacSafePopupManager;
+import jworkspace.ui.util.MacPopupManager;
+import jworkspace.ui.util.SwingHierarchyPrinter;
 import jworkspace.ui.widgets.ClassCache;
 import lombok.Getter;
 import lombok.Setter;
@@ -93,7 +92,7 @@ import lombok.extern.java.Log;
  */
 @SuppressWarnings({"MagicNumber"})
 @Log
-public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
+public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
 
     @Getter
     private final DesktopShortcutsLayer shortcutsLayer;
@@ -127,7 +126,7 @@ public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
         /*this.shortcutsLayer.setComponentPopupMenu(
             new DesktopMenu(new DesktopActions(this.shortcutsLayer, this))
         );*/
-        new MacSafePopupManager(
+        new MacPopupManager(
             new DesktopMenu(new DesktopActions(this.shortcutsLayer, this)),
             true
         ).install(this.shortcutsLayer);
@@ -412,7 +411,7 @@ public class Desktop extends KDesktopPane implements IView, ClipboardOwner {
     public void lostOwnership(Clipboard clipboard, Transferable contents) {}
 
     public void paintComponent(Graphics g) {
-
+        SwingHierarchyPrinter.printHierarchy(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(), 0);
         super.paintComponent(g);
         if (this.theme.isGradientFill() && isOpaque()) {
             Graphics2D g2 = (Graphics2D) g;

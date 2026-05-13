@@ -35,6 +35,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -61,7 +63,7 @@ import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
-import jworkspace.ui.dialog.ResourceExplorerDialog;
+import jworkspace.ui.resources.ResourcesExplorerDialog;
 import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ImageRenderer;
 
@@ -161,9 +163,10 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
                 tNativeCommand.setText(chooser.getSelectedFile().getAbsolutePath());
             }
         } else if (o == bLibBrowser) {
-            ResourceExplorerDialog resBrowser = new ResourceExplorerDialog(
+            ResourcesExplorerDialog resBrowser = new ResourcesExplorerDialog(
                 DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(),
-                WorkspaceResourceAnchor.getString("ResourceExplorerDlg.title")
+                WorkspaceResourceAnchor.getString("ResourceExplorerDlg.title"),
+                "jworkspace/ui/icons"
             );
             callResourceBrowser(resBrowser);
         } else if (o == rb1) {
@@ -190,16 +193,9 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         }
     }
 
-    private void callResourceBrowser(ResourceExplorerDialog resBrowser) {
+    private void callResourceBrowser(ResourcesExplorerDialog resBrowser) {
 
-        resBrowser.setHint(false);
-        String path = ServiceLocator
-            .getInstance()
-            .getProfilesManager()
-            .getCurrentProfile()
-            .getParameters()
-            .getString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
-
+        String path = ServiceLocator.getString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
         if (path == null && DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {
 
             path = DesktopServiceLocator
@@ -209,14 +205,12 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
                 .toFile()
                 .getAbsolutePath();
 
-            ServiceLocator
-                .getInstance()
-                .getProfilesManager()
-                .getCurrentProfile()
-                .getParameters().
-                putString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
         }
-        resBrowser.setData(path);
+
+        if (path != null && Files.exists(Path.of(path))) {
+            ServiceLocator.putString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
+            resBrowser.setData(path);
+        }
         resBrowser.setVisible(true);
 
         if (!resBrowser.isCancelled()) {
