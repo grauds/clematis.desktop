@@ -47,6 +47,8 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.runtime.AbstractTask;
+import jworkspace.runtime.LogStreamProvider;
+import jworkspace.runtime.TaskLogAdapter;
 import jworkspace.ui.logging.LogViewerPanel;
 import jworkspace.ui.runtime.LangResource;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
@@ -145,14 +147,23 @@ public class ProcessesPanel extends KPanel {
 
     private void fireSelectionChanged() {
         for (IProcessSelectionListener listener : selectionListeners) {
-            listener.processSelected(this.tasksList.getSelectedValue());
+            if (this.tasksList.getSelectedValue() != null) {
+                listener.processSelected(this.tasksList.getSelectedValue());
+            }
         }
     }
 
     private void switchLogs() {
-        AbstractTask task = tasksList.getSelectedValue();
-        getLogViewer().clear();
-        getLogViewer().append(task.getLogsText());
+        AbstractTask selectedTask = tasksList.getSelectedValue();
+
+        if (selectedTask != null) {
+            // Wrap the domain task inside our agnostic provider interface
+            LogStreamProvider provider = new TaskLogAdapter(selectedTask);
+            getLogViewer().switchLogs(provider);
+        } else {
+            // Clear the panel if nothing is selected
+            getLogViewer().switchLogs(null);
+        }
     }
 
     private KPanel createTasksPanel() {

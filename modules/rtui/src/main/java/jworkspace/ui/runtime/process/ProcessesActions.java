@@ -39,6 +39,7 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.AbstractTask;
+import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
 import jworkspace.ui.runtime.LangResource;
@@ -243,6 +244,8 @@ public class ProcessesActions {
                         );
                 } catch (IOException e) {
                     log.severe(e.getMessage());
+                    WorkspaceError.exception("Open shortcut "
+                        + dlg.getSelectedApplication().getLinkString(), e);
                 }
             }
             controller.update();

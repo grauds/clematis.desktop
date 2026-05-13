@@ -38,12 +38,10 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
-import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.ui.KFileChooser;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
 
-import jworkspace.ui.api.action.UISwitchListener;
 import lombok.extern.java.Log;
 
 /**
@@ -147,7 +145,6 @@ public final class ClassCache {
             ResourceAnchor.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
             KFileChooser.OPEN_DIALOG);
 
-        UIManager.addPropertyChangeListener(new UISwitchListener(dirChooser));
         dirChooser.setFileSelectionMode(KFileChooser.DIRECTORIES_ONLY);
         dirChooser.setVisible(true);
 
@@ -289,7 +286,6 @@ public final class ClassCache {
         if (fileChooser == null) {
             fileChooser = new JFileChooser(title);
             fileChooser.setFileView(new WorkspaceFileView());
-            UIManager.addPropertyChangeListener(new UISwitchListener(fileChooser));
             fileChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY)));
         }
         fileChooser.setDialogTitle(title);
@@ -306,7 +302,6 @@ public final class ClassCache {
         if (fileChooser == null) {
             fileChooser = new JFileChooser();
             fileChooser.setFileView(new WorkspaceFileView());
-            UIManager.addPropertyChangeListener(new UISwitchListener(fileChooser));
             fileChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY)));
         }
         return fileChooser;
@@ -334,7 +329,6 @@ public final class ClassCache {
             ff.setExtensionListInDescription(false);
             iconChooser.addChoosableFileFilter(ff);
             iconChooser.setFileView(new WorkspaceFileView());
-            UIManager.addPropertyChangeListener(new UISwitchListener(iconChooser));
         }
         if (path != null) {
             File file = new File(path);

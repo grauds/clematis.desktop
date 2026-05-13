@@ -1,7 +1,7 @@
-package jworkspace.ui.logging;
+package jworkspace.runtime;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2018 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,36 +24,20 @@ package jworkspace.ui.logging;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Rectangle;
-
-import javax.swing.JTextArea;
+import java.util.function.Consumer;
 
 /**
- * Scrollback view automatically scrolls view as new entries are added
- *
- * @author Anton Troshin
+ * Agnostic data contract for components capable of supplying streaming log output.
  */
-public class ScrollbackView extends JTextArea {
+public interface LogStreamProvider {
+    /**
+     * Retrieves accumulated logs.
+     */
+    String getLogs();
 
-    private static final int DEFAULT_FONT_SIZE = 13;
-
-    public void setFont(Font font) {
-        super.setFont(new Font("Monospaced", Font.PLAIN, DEFAULT_FONT_SIZE));
-    }
-
-    public void append(String str) {
-        super.append(str + "\n");
-        Rectangle b = new Rectangle(0, getHeight() - DEFAULT_FONT_SIZE, getWidth(), getHeight());
-        scrollRectToVisible(b);
-    }
-
-    public void setBackground(Color bg) {
-        super.setBackground(Color.lightGray);
-    }
-
-    public void setForeground(Color fg) {
-        super.setForeground(Color.black);
-    }
+    /**
+     * Attaches a listener to capture real-time streaming updates.
+     * Pass null to detach the listener.
+     */
+    void setStreamListener(Consumer<String> listener);
 }

@@ -29,17 +29,23 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
+import jworkspace.api.EventsDispatcher;
 import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.LogStreamProvider;
+import jworkspace.runtime.TaskLogAdapter;
+import jworkspace.runtime.process.JavaProcess;
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.desktop.actions.DesktopShortcutActions;
+import jworkspace.ui.logging.LogViewerPanel;
 import lombok.Getter;
 
 
@@ -65,6 +71,8 @@ public class DesktopShortcutsLayer extends KPanel {
 
     @Getter
     private final DesktopShortcutActions desktopShortcutActions;
+
+    private final EventsDispatcher eventsDispatcher = ServiceLocator.getInstance().getEventsDispatcher();
 
     public DesktopShortcutsLayer() {
         setLayout(null);
@@ -255,19 +263,32 @@ public class DesktopShortcutsLayer extends KPanel {
         }
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     public void runShortcutAction() {
         if (this.selected.size() != 1) {
             return;
         }
         DesktopShortcut shortcut = this.selected.getFirst();
         try {
-            ServiceLocator
+            JavaProcess process = ServiceLocator
                 .getInstance()
                 .getRuntimeManager()
                 .run(
                     shortcut.getCommandLine()
                 );
-        } catch (IOException e) {
+            LogViewerPanel logViewerPanel = new LogViewerPanel(400);
+            logViewerPanel.setName(shortcut.getText() + " " + process.getName());
+
+            // Wrap the process in the adapter to connect historical and live logs
+            LogStreamProvider provider = new TaskLogAdapter(process);
+            logViewerPanel.switchLogs(provider);
+
+            Map<String, Object> lparam = new HashMap<>();
+            lparam.put("view", logViewerPanel);
+            lparam.put("display", Boolean.TRUE);
+            lparam.put("register", Boolean.FALSE);
+            eventsDispatcher.fireEvent(1001, lparam, null);
+        } catch (Exception e) {
             WorkspaceError.exception("Open shortcut " + shortcut.getCommandLine(), e);
         }
     }

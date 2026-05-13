@@ -74,7 +74,6 @@ import jworkspace.ui.desktop.plaf.DesktopShortcutsLayer;
 import jworkspace.ui.desktop.plaf.DesktopTheme;
 import jworkspace.ui.desktop.plaf.ScrollingDesktopManager;
 import jworkspace.ui.util.MacPopupManager;
-import jworkspace.ui.util.SwingHierarchyPrinter;
 import jworkspace.ui.widgets.ClassCache;
 import lombok.Getter;
 import lombok.Setter;
@@ -128,7 +127,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
         );*/
         new MacPopupManager(
             new DesktopMenu(new DesktopActions(this.shortcutsLayer, this)),
-            true
+            false
         ).install(this.shortcutsLayer);
     }
 
@@ -253,6 +252,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
         } else {
             nest.setLocation(this.theme.getHpos(), this.theme.getVpos());
         }
+        nest.setLayer(500);
         add(nest);
         nest.setVisible(true);
 
@@ -411,7 +411,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
     public void lostOwnership(Clipboard clipboard, Transferable contents) {}
 
     public void paintComponent(Graphics g) {
-        SwingHierarchyPrinter.printHierarchy(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(), 0);
+       // SwingHierarchyPrinter.printHierarchy(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(), 0);
         super.paintComponent(g);
         if (this.theme.isGradientFill() && isOpaque()) {
             Graphics2D g2 = (Graphics2D) g;
@@ -575,6 +575,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
         int w;
         int h;
 
+        frame.setLayer(500);
         Component retval = super.add(frame);
         checkDesktopSize();
         if (array.length > 0) {

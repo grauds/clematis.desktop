@@ -43,8 +43,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import jworkspace.ui.api.action.UISwitchListener;
-
 /**
  * Check list control is combining JCheckBox boxes with JList via column and row headers
  * in scroll viewport.
@@ -118,8 +116,6 @@ public class CheckList extends JPanel {
         listCheckBox.setFixedCellHeight(listDescription.getFixedCellHeight());
         listCheckBox.setFixedCellWidth(20);
         add(scrollPane, BorderLayout.CENTER);
-
-        UIManager.addPropertyChangeListener(new UISwitchListener(this));
     }
 
     private CheckBoxItem[] buildCheckBoxItems(int totalItems) {

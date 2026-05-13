@@ -24,6 +24,7 @@ package jworkspace.ui.logging;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -60,6 +61,8 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
+import jworkspace.runtime.LogStreamProvider;
+
 /**
  * Reusable Swing component for displaying streaming logs.
  *
@@ -74,9 +77,11 @@ import javax.swing.text.ViewFactory;
  */
 public final class LogViewerPanel extends JPanel {
 
+    private LogStreamProvider currentProvider = null;
+
     private final int preferredWidth;
-    private JTextPane textPane;
-    private final StyledDocument document = getTextPane().getStyledDocument();
+    private final JTextPane textPane;
+    private final StyledDocument document;
 
     private boolean autoScroll = true;
 
@@ -89,11 +94,16 @@ public final class LogViewerPanel extends JPanel {
         super(new BorderLayout());
         this.preferredWidth = preferredWidth;
 
+        // 1. Core visual styles configuration
         infoStyle = createStyle(Color.BLACK, false);
         warnStyle = createStyle(new Color(255, 140, 0), false);
         errorStyle = createStyle(Color.RED, true);
 
-        JScrollPane scrollPane = new JScrollPane(getTextPane());
+        // 2. Controlled initialization order prevents field reference leaks
+        this.textPane = createTextPaneInstance();
+        this.document = this.textPane.getStyledDocument();
+
+        JScrollPane scrollPane = new JScrollPane(this.textPane);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
         installAutoScrollDetection(scrollPane);
@@ -104,61 +114,101 @@ public final class LogViewerPanel extends JPanel {
         setPreferredSize(new Dimension(preferredWidth, 200));
     }
 
-    private JTextPane getTextPane() {
-        if (this.textPane == null) {
-            this.textPane = new JTextPane() {
-                @Override
-                public boolean getScrollableTracksViewportWidth() {
-                    // Always wrap to viewport width, never expand horizontally
-                    return getParent() != null && getParent().getWidth() >= preferredWidth;
-                }
-            };
-            this.textPane.setEditable(false);
-            this.textPane.setEditorKit(new WrapEditorKit());
-        }
-        return this.textPane;
+    private JTextPane createTextPaneInstance() {
+        JTextPane pane = new JTextPane() {
+            @Override
+            public boolean getScrollableTracksViewportWidth() {
+                return getParent() != null && getParent().getWidth() >= preferredWidth;
+            }
+        };
+        pane.setEditable(false);
+        pane.setEditorKit(new WrapEditorKit());
+        return pane;
     }
 
     /**
-     * Appends a log entry.
-     * Safe to call from any thread.
+     * Switches the viewer to target a new log stream provider source.
+     * Safe to invoke from any thread context.
      */
-    public void append(String message) {
+    public void switchLogs(LogStreamProvider newProvider) {
+        // Clean up old listener attachment using our reference
+        if (this.currentProvider != null) {
+            this.currentProvider.setStreamListener(null);
+        }
 
+        // Retain a strong field reference immediately
+        // on the invoking thread before SwingUtilities can run.
+        this.currentProvider = newProvider;
+
+        // Clear and set up the new stream asynchronously on the EDT safely
         SwingUtilities.invokeLater(() -> {
             try {
-                StyledDocument doc = getTextPane().getStyledDocument();
-                LogSeverity severity = LogSeverityDetector.detect(message);
-                AttributeSet style = switch (severity) {
-                    case INFO -> infoStyle;
-                    case WARNING -> warnStyle;
-                    case ERROR -> errorStyle;
-                };
+                // Wipe previous records safely
+                document.remove(0, document.getLength());
+            } catch (BadLocationException ignored) {}
 
-                doc.insertString(doc.getLength(), message + "\n", style);
-                if (autoScroll) {
-                    getTextPane().setCaretPosition(document.getLength());
+            // Use the instance field reference to prevent Garbage Collection drops
+            if (this.currentProvider != null) {
+                String history = this.currentProvider.getLogs();
+                if (history != null && !history.isEmpty()) {
+                    appendRawChunk(history);
                 }
-            } catch (BadLocationException ignored) {
-                /* should not happen */
+                // Bind the live stream to our raw layout consumer wrapper
+                this.currentProvider.setStreamListener(this::appendRawChunkFromStream);
             }
         });
     }
 
     /**
-     * Clears all displayed logs.
+     * Internal entry point handling real-time asynchronous background stream deliveries safely.
+     */
+    private void appendRawChunkFromStream(String textChunk) {
+        SwingUtilities.invokeLater(() -> appendRawChunk(textChunk));
+    }
+
+    /**
+     * Inserts text chunks into the text pane and evaluates text styling rules.
+     * Must be called exclusively from inside the Swing Event Dispatch Thread (EDT).
+     */
+    private void appendRawChunk(String text) {
+        try {
+            LogSeverity severity = LogSeverityDetector.detect(text);
+            AttributeSet style = switch (severity) {
+                case INFO -> infoStyle;
+                case WARNING -> warnStyle;
+                case ERROR -> errorStyle;
+            };
+
+            document.insertString(document.getLength(), text, style);
+            if (autoScroll) {
+                textPane.setCaretPosition(document.getLength());
+            }
+        } catch (BadLocationException ignored) {
+            /* Should not occur during append-only actions */
+        }
+    }
+
+    /**
+     * Public method to append completed individual log messages manually.
+     * Safe to invoke from any background execution thread.
+     */
+    public void append(String message) {
+        SwingUtilities.invokeLater(() -> appendRawChunk(message + "\n"));
+    }
+
+    /**
+     * Clears all displayed logs from the screen instantly.
      */
     public void clear() {
         SwingUtilities.invokeLater(() -> {
             try {
                 document.remove(0, document.getLength());
-            } catch (BadLocationException ignored) {
-            }
+            } catch (BadLocationException ignored) {}
         });
     }
 
     /**
-     * Appends a batch of log lines.
+     * Appends a collection of completed lines sequentially.
      */
     public void appendAll(Iterable<String> lines) {
         for (String line : lines) {
@@ -170,25 +220,25 @@ public final class LogViewerPanel extends JPanel {
         JToolBar tb = new JToolBar();
         tb.setFloatable(false);
 
-        JButton clear = new JButton("Clear");
-        JButton copy = new JButton("Copy All");
-        JButton save = new JButton("Save");
+        JButton clearBtn = new JButton("Clear");
+        JButton copyBtn = new JButton("Copy All");
+        JButton saveBtn = new JButton("Save");
 
-        clear.addActionListener(e -> clear());
-        copy.addActionListener(e -> copyAll());
-        save.addActionListener(e -> save());
+        clearBtn.addActionListener(_ -> clear());
+        copyBtn.addActionListener(_ -> copyAll());
+        saveBtn.addActionListener(_ -> save());
 
-        tb.add(clear);
-        tb.add(copy);
-        tb.add(save);
+        tb.add(clearBtn);
+        tb.add(copyBtn);
+        tb.add(saveBtn);
 
         return tb;
     }
 
     private void copyAll() {
-        getTextPane().selectAll();
-        getTextPane().copy();
-        getTextPane().select(0, 0);
+        textPane.selectAll();
+        textPane.copy();
+        textPane.select(0, 0);
     }
 
     private void save() {
@@ -197,7 +247,7 @@ public final class LogViewerPanel extends JPanel {
             try {
                 Files.writeString(
                     fc.getSelectedFile().toPath(),
-                    getTextPane().getText(),
+                    textPane.getText(),
                     StandardCharsets.UTF_8
                 );
             } catch (IOException ex) {
@@ -228,6 +278,7 @@ public final class LogViewerPanel extends JPanel {
         return s;
     }
 
+    // WrapEditorKit inner classes remain here unchanged...
     private static class WrapEditorKit extends StyledEditorKit {
         @Override
         public ViewFactory getViewFactory() {
@@ -247,7 +298,6 @@ public final class LogViewerPanel extends JPanel {
                             return new ParagraphView(elem) {
                                 @Override
                                 public float getMinimumSpan(int axis) {
-                                    // Forces wrapping horizontally
                                     if (axis == View.X_AXIS) {
                                         return 0;
                                     }

@@ -30,7 +30,12 @@ import java.awt.Container;
 import lombok.extern.java.Log;
 
 @Log
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@SuppressWarnings({
+    "checkstyle:regexp",
+    "checkstyle:MagicNumber",
+    "checkstyle:MultipleStringLiterals",
+    "checkstyle:HideUtilityClassConstructor"
+})
 public class SwingHierarchyPrinter {
 
     /**
@@ -47,7 +52,7 @@ public class SwingHierarchyPrinter {
         boolean opaque = comp.isOpaque();
 
         // Print current component details
-        log.info(String.format("%s[%s] - Opaque: %b%n", indent, className, opaque));
+        System.out.printf("%s[%s] - Opaque: %b%n", indent, className, opaque);
         // If the component is a container, recursively print its children
         if (comp instanceof Container container) {
             for (Component child : container.getComponents()) {
