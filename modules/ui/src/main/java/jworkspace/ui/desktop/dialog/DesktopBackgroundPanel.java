@@ -65,7 +65,6 @@ import static jworkspace.ui.desktop.plaf.DesktopTheme.TOP_LEFT_CORNER_IMAGE;
 import static jworkspace.ui.desktop.plaf.DesktopTheme.TOP_RIGHT_CORNER_IMAGE;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
@@ -248,7 +247,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
                 gradientFill = !gradientFill;
                 repaint();
                 break;
-            case Constants.TOGGLE_WALLPAPER:
+            case IDesktopActions.TOGGLE_WALLPAPER:
                 coverVisible = !coverVisible;
                 repaint();
                 break;
@@ -393,7 +392,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
         coverVisibleCheckbox.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.coverVisible"));
         coverVisibleCheckbox.addActionListener(this);
         coverVisibleCheckbox.setOpaque(false);
-        coverVisibleCheckbox.setActionCommand(Constants.TOGGLE_WALLPAPER);
+        coverVisibleCheckbox.setActionCommand(IDesktopActions.TOGGLE_WALLPAPER);
       //  coverVisibleCheckbox.setPreferredSize(new Dimension(60, 20));
         if (desktop.getTheme().isCoverVisible()) {
             coverVisibleCheckbox.setSelected(true);

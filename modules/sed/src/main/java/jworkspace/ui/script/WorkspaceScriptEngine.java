@@ -89,7 +89,7 @@ public class WorkspaceScriptEngine extends DefaultCompoundView implements Action
             lparam.put("view", editor);
             lparam.put("display", new Boolean(true));
             lparam.put("register", new Boolean(false));
-            Workspace.fireEvent(new Integer(1001), lparam, null);
+            Workspace.fireEvent(new Integer(DISPLAY_VIEW_EVENT), lparam, null);
         } else if (command.equals(WorkspaceScriptEngine.EDIT_SCRIPT)) {
             JFileChooser chooser = WorkspaceClassCache.getFileChooser(LangResource.getString("message#113"),
                     new String[]{"bsh"}, LangResource.getString("message#154"));
@@ -116,7 +116,7 @@ public class WorkspaceScriptEngine extends DefaultCompoundView implements Action
                 lparam.put("view", editor);
                 lparam.put("display", new Boolean(true));
                 lparam.put("register", new Boolean(false));
-                Workspace.fireEvent(new Integer(1001), lparam, null);
+                Workspace.fireEvent(DISPLAY_VIEW_EVENT, lparam, null);
             } catch (java.io.IOException ex) {
                 Workspace.logException(LangResource.getString("message#269") + ex.toString());
                 JOptionPane.showMessageDialog(Workspace.getUI().getFrame(),
@@ -168,7 +168,7 @@ public class WorkspaceScriptEngine extends DefaultCompoundView implements Action
         lparam.put("view", nest);
         lparam.put("display", new Boolean(true));
         lparam.put("register", new Boolean(isUnique()));
-        Workspace.fireEvent(new Integer(1001), lparam, null);
+        Workspace.fireEvent(DISPLAY_VIEW_EVENT, lparam, null);
     }
 
     /**

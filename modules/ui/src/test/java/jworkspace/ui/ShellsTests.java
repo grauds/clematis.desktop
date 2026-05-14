@@ -39,7 +39,6 @@ import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
-import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.UIConfig;
 
 /**
@@ -101,7 +100,7 @@ public class ShellsTests {
     @Test
     public void testConfig() {
 
-        UIConfig uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(Constants.CONFIG_FILE).toFile());
+        UIConfig uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(WorkspaceGUI.CONFIG_FILE).toFile());
 
         uiConfig.saveLaf();
         uiConfig.setKiwiTextureVisible(true);
@@ -110,7 +109,7 @@ public class ShellsTests {
 
         uiConfig.save();
 
-        uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(Constants.CONFIG_FILE).toFile());
+        uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(WorkspaceGUI.CONFIG_FILE).toFile());
         uiConfig.load();
 
         assert uiConfig.getTexture() != null;

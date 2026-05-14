@@ -36,7 +36,11 @@ import java.util.Map;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 
+import static jworkspace.api.IRuntime.JAVA_APP_MODE;
+import static jworkspace.api.IRuntime.NATIVE_COMMAND_MODE;
+import static jworkspace.ui.api.IView.DISPLAY_IN_DESKTOP_EVENT;
 import jworkspace.api.EventsDispatcher;
+import jworkspace.api.IRuntime;
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.process.JavaProcess;
 import jworkspace.ui.WorkspaceError;
@@ -44,7 +48,6 @@ import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.desktop.actions.DesktopShortcutActions;
 import lombok.Getter;
-
 
 /**
  * The DesktopShortcutsLayer class represents a specialized {@code JComponent} for managing
@@ -273,15 +276,27 @@ public class DesktopShortcutsLayer extends KPanel {
                 .run(
                     shortcut.getCommandLine()
                 );
-            ProcessLogInternalFrame frame = new ProcessLogInternalFrame(process, 400);
-            frame.setTitle(shortcut.getText() + " " + process.getName());
-            frame.setVisible(true);
+            int mode = shortcut.getMode();
+            switch (mode) {
+                case JAVA_APP_MODE:
+                case NATIVE_COMMAND_MODE:
+                    ProcessLogInternalFrame frame = new ProcessLogInternalFrame(process, 400);
+                    frame.setTitle(shortcut.getText() + " " + process.getName());
+                    frame.setVisible(true);
 
-            Map<String, Object> lparam = new HashMap<>();
-            lparam.put("view", frame);
-            lparam.put("display", Boolean.TRUE);
-            lparam.put("register", Boolean.FALSE);
-            eventsDispatcher.fireEvent(1001, lparam, null);
+                    Map<String, Object> lparam = new HashMap<>();
+                    lparam.put("view", frame);
+                    lparam.put("display", Boolean.TRUE);
+                    lparam.put("register", Boolean.FALSE);
+                    eventsDispatcher.fireEvent(DISPLAY_IN_DESKTOP_EVENT, lparam, null);
+                    break;
+                case IRuntime.SCRIPTED_FILE_MODE:
+                case IRuntime.SCRIPTED_METHOD_MODE:
+                    break;
+                default:
+                    break;
+            }
+
         } catch (Exception e) {
             WorkspaceError.exception("Open shortcut " + shortcut.getCommandLine(), e);
         }

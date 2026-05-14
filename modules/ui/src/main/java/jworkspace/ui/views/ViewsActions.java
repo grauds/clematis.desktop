@@ -41,7 +41,7 @@ import javax.swing.JOptionPane;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.config.DesktopServiceLocator;
 
@@ -49,7 +49,7 @@ import jworkspace.ui.config.DesktopServiceLocator;
  * Actions of desktop manager
  * @author Anton Troshin
  */
-public class ViewsActions implements Constants {
+public class ViewsActions implements ITextConstants {
 
     /**
      * Browse back action name

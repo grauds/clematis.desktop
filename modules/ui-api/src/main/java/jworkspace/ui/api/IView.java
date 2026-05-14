@@ -31,12 +31,53 @@ import jworkspace.api.IWorkspaceComponent;
 
 /**
  * User gui view. Such shell have to load itself, restore state
- * or save itself on disk. It also have to provide option panels,
+ * or save itself on disk. It also has to provide option panels,
  * menus and buttons to manage state of view.
  *
  * @author Anton Troshin
  */
 public interface IView extends IWorkspaceComponent {
+
+    /**
+     * Event to show a component as a view
+     */
+    int ADD_VIEW_EVENT = 1000;
+    /**
+     * Event to show a component in internal frame on the desktop.
+     */
+    int DISPLAY_IN_DESKTOP_EVENT = 1001;
+    /**
+     * Switch menu in the menu bar
+     */
+    int SWITCH_MENU_EVENT = 1002;
+    /**
+     * Event to show a view as a controlled frame
+     */
+    int DISPLAY_AS_FRAME = 1003;
+    /**
+     *
+     */
+    String FRAME_PARAMETER = "frame";
+    /**
+     *
+     */
+    String MENUS_PARAMETER = "menus";
+    /**
+     *
+     */
+    String FLAG_PARAMETER = "flag";
+    /**
+     *
+     */
+    String VIEW_PARAMETER = "view";
+    /**
+     *
+     */
+    String DISPLAY_PARAMETER = "display";
+    /**
+     *
+     */
+    String REGISTER_PARAMETER = "register";
 
     /**
      * View activated or deactivated

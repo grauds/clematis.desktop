@@ -44,7 +44,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.IDesktop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -97,7 +97,7 @@ public class DesktopShortcut extends JComponent {
         add(textLabel, BorderLayout.SOUTH);
 
         if (icon == null) {
-            icon = new ImageIcon(WorkspaceGUI.getResourceManager().getImage(Constants.DEFAULT_ICON));
+            icon = new ImageIcon(WorkspaceGUI.getResourceManager().getImage(IDesktop.DEFAULT_ICON));
         }
 
         iconLabel = new JLabel(icon, SwingConstants.CENTER);

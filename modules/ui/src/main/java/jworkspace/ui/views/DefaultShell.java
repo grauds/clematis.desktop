@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.WorkspaceGUI;
 import jworkspace.ui.api.IShell;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.cpanel.CButton;
@@ -67,7 +66,7 @@ public abstract class DefaultShell implements IShell, ActionListener {
             ServiceLocator
                 .getInstance()
                 .getEventsDispatcher()
-                .fireEvent(WorkspaceGUI.WorkspaceViewListener.CODE, lparam, null);
+                .fireEvent(IView.ADD_VIEW_EVENT, lparam, null);
         }
     }
 

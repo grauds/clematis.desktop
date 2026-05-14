@@ -46,7 +46,7 @@ import com.hyperrealm.kiwi.util.ResourceNotFoundException;
 
 import jworkspace.Workspace;
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.dialog.SettingsDialog;
@@ -57,18 +57,18 @@ import jworkspace.ui.widgets.ImageRenderer;
  * This class contains all actions of workspace frame that are for system use.
  * @author Anton Troshin
  */
-public class MenuActions implements Constants {
+public class MenuActions implements ITextConstants {
 
     /**
      * Logoff action name
      */
     static final String LOGOFF_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.logoff") + Constants.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.logoff") + ITextConstants.LOG_FINISH;
     /**
      * Exit action name
      */
     static final String EXIT_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.exit") + Constants.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.exit") + ITextConstants.LOG_FINISH;
     /**
      * About action name
      */
@@ -78,17 +78,17 @@ public class MenuActions implements Constants {
      * Help action name
      */
     static final String HELP_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.help") + Constants.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.help") + ITextConstants.LOG_FINISH;
     /**
      * Settings action name
      */
     static final String SETTINGS_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.settings") + Constants.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.settings") + ITextConstants.LOG_FINISH;
     /**
      * My details action name
      */
     static final String MY_DETAILS_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.mydetails") + Constants.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.mydetails") + ITextConstants.LOG_FINISH;
     /**
      * Show control panel action name
      */
@@ -99,7 +99,7 @@ public class MenuActions implements Constants {
      * New user action name
      */
     private static final String NEW_USER_ACTION_NAME =
-        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.newuser") + Constants.LOG_FINISH;
+        WorkspaceResourceAnchor.getString("WorkspaceFrame.menu.newuser") + ITextConstants.LOG_FINISH;
 
     private static final int MARGIN = 10;
 
@@ -211,7 +211,7 @@ public class MenuActions implements Constants {
             DocumentDataSource helpSource = new DocumentDataSource(WorkspaceGUI.getResourceManager());
             DocumentBrowserFrame dbf = new DocumentBrowserFrame(
                 Workspace.VERSION
-                    + Constants.LOG_SPACE
+                    + ITextConstants.LOG_SPACE
                     + WorkspaceResourceAnchor.getString("message#184"),
                 "", helpSource
             );

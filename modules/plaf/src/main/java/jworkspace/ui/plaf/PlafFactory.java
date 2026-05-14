@@ -50,8 +50,8 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import jworkspace.runtime.plugin.WorkspacePluginContext;
-import jworkspace.ui.api.Constants;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.config.UIConfig;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
@@ -120,7 +120,7 @@ public class PlafFactory {
                 if (DesktopServiceLocator.getInstance().getUiConfig().getLaf() != null
                     && !DesktopServiceLocator.getInstance().getUiConfig().getLaf().isEmpty()) {
 
-                    if (DesktopServiceLocator.getInstance().getUiConfig().getLaf().equals(Constants.DEFAULT_LAF)
+                    if (DesktopServiceLocator.getInstance().getUiConfig().getLaf().equals(UIConfig.DEFAULT_LAF)
                         || !setLookAndFeel(
                                 DesktopServiceLocator.getInstance().getUiConfig().getLaf()
                             )

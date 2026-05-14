@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
+import jworkspace.ui.api.IView;
 import jworkspace.ui.api.cpanel.CButton;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,7 +66,7 @@ public abstract class DefaultCompoundView extends DefaultView
             lparam.put("view", this);
             lparam.put("display", Boolean.TRUE);
             lparam.put("register", isUnique());
-            fireEvent(Constants.WORKSPACE_VIEW_LISTENER_CODE, lparam);
+            fireEvent(IView.ADD_VIEW_EVENT, lparam);
         }
     }
 

@@ -43,8 +43,8 @@ import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.MainFrame;
 import jworkspace.ui.WorkspaceError;
-import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IShell;
+import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.api.views.DefaultCompoundView;
@@ -159,17 +159,17 @@ public class ShellsLoader extends Task {
                 // Update message in progress dialog
                 showMessageInProgressDialog(
                     WorkspaceResourceAnchor.getString("WorkspaceGUI.shell.loading")
-                        + Constants.LOG_SPACE + plugins.get(i).getName()
+                        + ITextConstants.LOG_SPACE + plugins.get(i).getName()
                 );
 
-                log.info("Loading " + plugins.get(i).getName() + Constants.LOG_FINISH);
+                log.info("Loading " + plugins.get(i).getName() + ITextConstants.LOG_FINISH);
                 showIconInProgressDialog(plugins.get(i).getIcon());
 
                 try {
                     // Install the plugin into the workspace
                     installPlugin(plugins.get(i));
 
-                    String installedMessage = "Installed " + plugins.get(i).getName() + Constants.LOG_FINISH;
+                    String installedMessage = "Installed " + plugins.get(i).getName() + ITextConstants.LOG_FINISH;
                     showMessageInProgressDialog(installedMessage);
                     log.info(installedMessage);
                 } catch (Exception | Error ex) {

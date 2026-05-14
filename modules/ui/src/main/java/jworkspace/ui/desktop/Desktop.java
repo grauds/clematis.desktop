@@ -59,7 +59,6 @@ import javax.swing.UIManager;
 
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
-import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.PropertiesPanel;
 import jworkspace.ui.api.action.UISwitchListener;
@@ -93,19 +92,29 @@ import lombok.extern.java.Log;
 @Log
 public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
 
+    /**
+     * Default frame offset
+     */
+    public static final int FRAME_OFFSET = 20;
+    /**
+     *
+     */
+    public static final String DESKTOP_DAT = "desktop.dat";
+    /**
+     *
+     */
+    public static final String DESKTOP_NAME_DEFAULT = "Clematis Desktop";
+
+    @Setter
+    @Getter
+    private String path = "";
+
     @Getter
     private final DesktopShortcutsLayer shortcutsLayer;
 
     private final ScrollingDesktopManager manager;
-    /**
-     * Save path. Relative to user home
-     */
-    @Setter
-    @Getter
-    private String path = "";
-    /**
-     * Desktop visual properties.
-     */
+
+
     @Getter
     private final DesktopTheme theme = new DesktopTheme();
 
@@ -136,7 +145,9 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
         setName(desktopTitle);
     }
 
-    public void activated(boolean flag) {}
+    public void activated(boolean flag) {
+
+    }
 
     public void switchCoverVisible() {
         this.theme.switchCoverVisible();
@@ -212,12 +223,12 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
      * Desktop places each new view into JInternalFrame.
      * There can be only one frame with a given title by now.
      */
-    public void addView(JComponent panel, boolean displayImmediately, boolean unique) {
-        if (panel.getName() == null) {
-            panel.setName(Constants.DESKTOP_NAME_DEFAULT);
+    public void addView(JComponent component, boolean displayImmediately, boolean unique) {
+        if (component.getName() == null) {
+            component.setName(DESKTOP_NAME_DEFAULT);
         }
 
-        JInternalFrame existing = findFrame(panel.getName());
+        JInternalFrame existing = findFrame(component.getName());
         if (unique && existing != null && displayImmediately) {
             getDesktopManager().activateFrame(existing);
             return;
@@ -239,12 +250,12 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
 
         JInternalFrame nest;
 
-        if (!(panel instanceof JInternalFrame)) {
-            nest = new JInternalFrame(panel.getName(), true, true, true, true);
-            nest.getContentPane().add(panel);
+        if (!(component instanceof JInternalFrame)) {
+            nest = new JInternalFrame(component.getName(), true, true, true, true);
+            nest.getContentPane().add(component);
 
         } else {
-            nest = (JInternalFrame) panel;
+            nest = (JInternalFrame) component;
         }
 
         if (nest.getWidth() == 0 || nest.getHeight() == 0) {
@@ -354,7 +365,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
             .getProfilesManager()
             .ensureUserHomePath()
             .resolve(getPath())
-            .resolve(Constants.DESKTOP_DAT)
+            .resolve(DESKTOP_DAT)
             .toFile();
 
         try (FileInputStream inputFile = new FileInputStream(file);
@@ -499,7 +510,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
     public void save() throws IOException {
 
         if (getName() == null) {
-            setName(Constants.DESKTOP_NAME_DEFAULT);
+            setName(DESKTOP_NAME_DEFAULT);
         }
 
         File file = ServiceLocator
@@ -521,7 +532,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
             .getProfilesManager()
             .ensureUserHomePath()
             .resolve(getPath())
-            .resolve(Constants.DESKTOP_DAT)
+            .resolve(DESKTOP_DAT)
             .toFile();
 
         try (FileOutputStream outputFile = new FileOutputStream(file);
@@ -580,8 +591,8 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
         checkDesktopSize();
         if (array.length > 0) {
             p = array[0].getLocation();
-            p.x = p.x + Constants.FRAME_OFFSET;
-            p.y = p.y + Constants.FRAME_OFFSET;
+            p.x = p.x + FRAME_OFFSET;
+            p.y = p.y + FRAME_OFFSET;
         } else {
             p = new Point(0, 0);
         }
@@ -621,13 +632,13 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
         JInternalFrame[] allFrames = getAllFrames();
 
         manager.setNormalSize();
-        int frameHeight = (getBounds().height - 5) - allFrames.length * Constants.FRAME_OFFSET;
-        int frameWidth = (getBounds().width - 5) - allFrames.length * Constants.FRAME_OFFSET;
+        int frameHeight = (getBounds().height - 5) - allFrames.length * FRAME_OFFSET;
+        int frameWidth = (getBounds().width - 5) - allFrames.length * FRAME_OFFSET;
         for (int i = allFrames.length - 1; i >= 0; i--) {
             allFrames[i].setSize(frameWidth, frameHeight);
             allFrames[i].setLocation(x, y);
-            x = x + Constants.FRAME_OFFSET;
-            y = y + Constants.FRAME_OFFSET;
+            x = x + FRAME_OFFSET;
+            y = y + FRAME_OFFSET;
         }
     }
 

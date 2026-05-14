@@ -68,11 +68,10 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.api.AbstractViewsManager;
-import jworkspace.ui.api.Constants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
+import jworkspace.ui.api.views.AbstractViewsManager;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.util.SwingUtils;
@@ -482,12 +481,12 @@ public class ViewsManager extends AbstractViewsManager {
             if (menus != null) {
                 Map<String, Object> lparam = new HashMap<>();
                 List<JMenu> vmenus = new Vector<>(Arrays.asList(menus));
-                lparam.put(Constants.MENUS_PARAMETER, vmenus);
-                lparam.put(Constants.FLAG_PARAMETER, Boolean.FALSE);
+                lparam.put(IView.MENUS_PARAMETER, vmenus);
+                lparam.put(IView.FLAG_PARAMETER, Boolean.FALSE);
                 ServiceLocator
                     .getInstance()
                     .getEventsDispatcher()
-                    .fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
+                    .fireEvent(IView.SWITCH_MENU_EVENT, lparam, null);
             }
         }
         currentView = localIndex;
@@ -515,12 +514,12 @@ public class ViewsManager extends AbstractViewsManager {
                 List<JMenu> vmenus = new Vector<>();
                 Collections.addAll(vmenus, menus);
 
-                lparam.put(Constants.MENUS_PARAMETER, vmenus);
-                lparam.put(Constants.FLAG_PARAMETER, Boolean.TRUE);
+                lparam.put(IView.MENUS_PARAMETER, vmenus);
+                lparam.put(IView.FLAG_PARAMETER, Boolean.TRUE);
                 ServiceLocator
                     .getInstance()
                     .getEventsDispatcher()
-                    .fireEvent(WorkspaceGUI.SwitchMenuListener.CODE, lparam, null);
+                    .fireEvent(IView.SWITCH_MENU_EVENT, lparam, null);
             }
         }
         update();

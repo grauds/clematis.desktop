@@ -34,15 +34,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import jworkspace.api.EventsDispatcher;
+import jworkspace.api.IRuntime;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.runtime.process.JavaProcess;
 import lombok.Getter;
 
 @Getter
 public class RuntimeManager {
-
-    public static final int AFTER_EXECUTE_EVENT = 1000;
-    public static final int BEFORE_EXECUTE_EVENT = 1001;
 
     /**
      * Thread pool executor for plugins and Java programs.
@@ -77,12 +75,12 @@ public class RuntimeManager {
 
                 @Override
                 protected void beforeExecute(Thread t, Runnable r) {
-                    eventsDispatcher.fireEvent(BEFORE_EXECUTE_EVENT, t, r);
+                    eventsDispatcher.fireEvent(IRuntime.BEFORE_EXECUTE_EVENT, t, r);
                 }
 
                 @Override
                 protected void afterExecute(Runnable r, Throwable t) {
-                    eventsDispatcher.fireEvent(AFTER_EXECUTE_EVENT, r, t);
+                    eventsDispatcher.fireEvent(IRuntime.AFTER_EXECUTE_EVENT, r, t);
                 }
             };
     }

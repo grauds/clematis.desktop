@@ -56,10 +56,12 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
 
 import static jworkspace.ui.util.SwingUtils.toImageIcon;
 import jworkspace.WorkspaceResourceAnchor;
+import jworkspace.api.IRuntime;
 import jworkspace.config.ServiceLocator;
 import jworkspace.installer.ApplicationDataSource;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.IDesktop;
+import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.dialog.ApplicationChooserDialog;
@@ -84,7 +86,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
 
     private ImageRenderer lImage;
 
-    private int mode = Constants.JAVA_APP_MODE;
+    private int mode = IRuntime.JAVA_APP_MODE;
 
     private JRadioButton rb1, rb2, rb3, rb4;
 
@@ -152,7 +154,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
             }
         } else if (o == bNativeBrowse) {
             JFileChooser chooser = ClassCache.getFileChooser(
-                WorkspaceResourceAnchor.getString(Constants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE),
+                WorkspaceResourceAnchor.getString(IDesktop.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE),
                     null, WorkspaceResourceAnchor.getString("DesktopIconPanel.native.command")
                 );
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -171,21 +173,21 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
             callResourceBrowser(resBrowser);
         } else if (o == rb1) {
             disableAllOnModesPanel();
-            mode = Constants.SCRIPTED_METHOD_MODE;
+            mode = IRuntime.SCRIPTED_METHOD_MODE;
             tScriptedMethod.setEnabled(true);
         } else if (o == rb2) {
             disableAllOnModesPanel();
-            mode = Constants.SCRIPTED_FILE_MODE;
+            mode = IRuntime.SCRIPTED_FILE_MODE;
             tSourceScript.setEnabled(true);
             bScriptBrowse.setEnabled(true);
         } else if (o == rb3) {
             disableAllOnModesPanel();
-            mode = Constants.JAVA_APP_MODE;
+            mode = IRuntime.JAVA_APP_MODE;
             tJavaApp.setEnabled(true);
             bAppBrowse.setEnabled(true);
         } else if (o == rb4) {
             disableAllOnModesPanel();
-            mode = Constants.NATIVE_COMMAND_MODE;
+            mode = IRuntime.NATIVE_COMMAND_MODE;
             tNativeCommand.setEnabled(true);
             field.setEnabled(true);
             bNativeBrowse.setEnabled(true);
@@ -195,7 +197,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
 
     private void callResourceBrowser(ResourcesExplorerDialog resBrowser) {
 
-        String path = ServiceLocator.getString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER);
+        String path = ServiceLocator.getString(IDesktop.DESKTOP_ICONS_REPOSITORY_PARAMETER);
         if (path == null && DesktopServiceLocator.getInstance().getWorkspaceGUI() != null) {
 
             path = DesktopServiceLocator
@@ -208,7 +210,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         }
 
         if (path != null && Files.exists(Path.of(path))) {
-            ServiceLocator.putString(Constants.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
+            ServiceLocator.putString(IDesktop.DESKTOP_ICONS_REPOSITORY_PARAMETER, path);
             resBrowser.setData(path);
         }
         resBrowser.setVisible(true);
@@ -254,7 +256,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         lImage = new jworkspace.ui.widgets.ImageRenderer();
         JScrollPane sp = new JScrollPane(lImage);
         sp.setPreferredSize(new Dimension(200, 200));
-        p1.add(Constants.CENTER, sp);
+        p1.add(BorderLayout.CENTER, sp);
         /*
          * Buttons panel
          */
@@ -281,9 +283,9 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
 
         KPanel p5 = new KPanel();
         p5.setLayout(new BorderLayout(5, 5));
-        p5.add(Constants.NORTH, bp);
+        p5.add(BorderLayout.NORTH, bp);
 
-        p1.add(Constants.EAST, p5);
+        p1.add(BorderLayout.EAST, p5);
 
         gbc.insets = KiwiUtils.LAST_BOTTOM_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -324,13 +326,13 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         tJavaApp.setOpaque(false);
         tJavaApp.setEditable(false);
 
-        p1.add(Constants.CENTER, tJavaApp);
+        p1.add(BorderLayout.CENTER, tJavaApp);
 
-        bAppBrowse = new KButton(Constants.DOTS);
+        bAppBrowse = new KButton(ITextConstants.DOTS);
         bAppBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browse.javaApp"));
         bAppBrowse.addActionListener(this);
         bAppBrowse.setDefaultCapable(false);
-        p1.add(Constants.EAST, bAppBrowse);
+        p1.add(BorderLayout.EAST, bAppBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -371,13 +373,13 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         tSourceScript.setOpaque(false);
         tSourceScript.setEditable(false);
 
-        p0.add(Constants.CENTER, tSourceScript);
+        p0.add(BorderLayout.CENTER, tSourceScript);
 
-        bScriptBrowse = new KButton(Constants.DOTS);
+        bScriptBrowse = new KButton(ITextConstants.DOTS);
         bScriptBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.browse.bshFile"));
         bScriptBrowse.addActionListener(this);
         bScriptBrowse.setDefaultCapable(false);
-        p0.add(Constants.EAST, bScriptBrowse);
+        p0.add(BorderLayout.EAST, bScriptBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -402,14 +404,14 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         tNativeCommand.setOpaque(false);
         tNativeCommand.setEditable(true);
 
-        p1.add(Constants.CENTER, tNativeCommand);
+        p1.add(BorderLayout.CENTER, tNativeCommand);
 
-        bNativeBrowse = new KButton(Constants.DOTS);
+        bNativeBrowse = new KButton(ITextConstants.DOTS);
         bNativeBrowse.setToolTipText(WorkspaceResourceAnchor.getString(
-            Constants.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
+            IDesktop.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
         bNativeBrowse.addActionListener(this);
         bNativeBrowse.setDefaultCapable(false);
-        p1.add(Constants.EAST, bNativeBrowse);
+        p1.add(BorderLayout.EAST, bNativeBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -432,13 +434,13 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         field.setOpaque(false);
         field.setEditable(true);
 
-        p1.add(Constants.CENTER, field);
+        p1.add(BorderLayout.CENTER, field);
 
-        bWdBrowse = new KButton(Constants.DOTS);
+        bWdBrowse = new KButton(ITextConstants.DOTS);
         bWdBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.native.wd.browse"));
         bWdBrowse.addActionListener(this);
         bWdBrowse.setDefaultCapable(false);
-        p1.add(Constants.EAST, bWdBrowse);
+        p1.add(BorderLayout.EAST, bWdBrowse);
 
         gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
@@ -458,27 +460,27 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         tDesc.setText(data.getComments());
         mode = desktopShortcut.getMode();
 
-        if (mode == Constants.SCRIPTED_METHOD_MODE) {
+        if (mode == IRuntime.SCRIPTED_METHOD_MODE) {
 
             tScriptedMethod.setEnabled(true);
             tScriptedMethod.setText(desktopShortcut.getCommandLine());
             rb1.setSelected(true);
 
-        } else if (mode == Constants.SCRIPTED_FILE_MODE) {
+        } else if (mode == IRuntime.SCRIPTED_FILE_MODE) {
 
             tSourceScript.setEnabled(true);
             tSourceScript.setText(desktopShortcut.getCommandLine());
             bScriptBrowse.setEnabled(true);
             rb2.setSelected(true);
 
-        } else if (mode == Constants.JAVA_APP_MODE) {
+        } else if (mode == IRuntime.JAVA_APP_MODE) {
 
             tJavaApp.setEnabled(true);
             tJavaApp.setText(desktopShortcut.getCommandLine());
             bAppBrowse.setEnabled(true);
             rb3.setSelected(true);
 
-        } else if (mode == Constants.NATIVE_COMMAND_MODE) {
+        } else if (mode == IRuntime.NATIVE_COMMAND_MODE) {
 
             tNativeCommand.setEnabled(true);
             tNativeCommand.setText(desktopShortcut.getCommandLine());
@@ -511,13 +513,13 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         desktopShortcut.setComments(tDesc.getText());
         desktopShortcut.setMode(this.mode);
 
-        if (mode == Constants.SCRIPTED_METHOD_MODE) {
+        if (mode == IRuntime.SCRIPTED_METHOD_MODE) {
             desktopShortcut.setCommandLine(tScriptedMethod.getText());
-        } else if (mode == Constants.SCRIPTED_FILE_MODE) {
+        } else if (mode == IRuntime.SCRIPTED_FILE_MODE) {
             desktopShortcut.setCommandLine(tSourceScript.getText());
-        } else if (mode == Constants.JAVA_APP_MODE) {
+        } else if (mode == IRuntime.JAVA_APP_MODE) {
             desktopShortcut.setCommandLine(tJavaApp.getText());
-        } else if (mode == Constants.NATIVE_COMMAND_MODE) {
+        } else if (mode == IRuntime.NATIVE_COMMAND_MODE) {
             desktopShortcut.setCommandLine(tNativeCommand.getText());
             desktopShortcut.setWorkingDirectory(field.getText());
         }

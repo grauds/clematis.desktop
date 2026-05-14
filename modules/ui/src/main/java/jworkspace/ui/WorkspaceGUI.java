@@ -56,15 +56,14 @@ import com.hyperrealm.kiwi.ui.SplashScreen;
 import com.hyperrealm.kiwi.ui.UIChangeManager;
 import com.hyperrealm.kiwi.util.ResourceManager;
 
-import static jworkspace.ui.api.Constants.DISPLAY_PARAMETER;
-import static jworkspace.ui.api.Constants.REGISTER_PARAMETER;
-import static jworkspace.ui.api.Constants.VIEW_PARAMETER;
+import static jworkspace.ui.api.IView.ADD_VIEW_EVENT;
 import jworkspace.Workspace;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.api.IWorkspaceUI;
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.plugin.WorkspacePluginContext;
-import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.IDesktop;
+import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
@@ -84,6 +83,22 @@ import lombok.extern.java.Log;
 @Log
 public class WorkspaceGUI implements IWorkspaceUI {
 
+    /**
+     *
+     */
+    public static final String LIB_PATH = "lib";
+    /**
+     *
+     */
+    public static final String TEXTURES_JAR = "textures.jar";
+    /**
+     *
+     */
+    public static final String CONFIG_FILE = "jwxwin.cfg";
+    /**
+     *
+     */
+    public static final String DATA_FILE = "jwxwin.dat";
     /**
      * User interface splash screen
      */
@@ -185,8 +200,8 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
         return pluginContext
             .getUserDir()
-            .resolve(Constants.LIB_PATH)
-            .resolve(Constants.TEXTURES_JAR);
+            .resolve(LIB_PATH)
+            .resolve(TEXTURES_JAR);
     }
 
     /**
@@ -197,8 +212,8 @@ public class WorkspaceGUI implements IWorkspaceUI {
     public Path getDesktopIconsPath() {
         return pluginContext
             .getUserDir()
-            .resolve(Constants.LIB_PATH)
-            .resolve(Constants.DESKTOP_JAR);
+            .resolve(LIB_PATH)
+            .resolve(IDesktop.DESKTOP_JAR);
     }
 
     /**
@@ -269,7 +284,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
         try (
             FileInputStream inputFile = new FileInputStream(
                 this.pluginContext.getUserDir()
-                    .resolve(Constants.DATA_FILE).toFile()
+                    .resolve(DATA_FILE).toFile()
             ); DataInputStream inputStream = new DataInputStream(inputFile)
         ) {
             getFrame().load(inputStream);
@@ -331,7 +346,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
         displayedFrames.clear();
 
         try (FileOutputStream outputFile = new FileOutputStream(
-                this.pluginContext.getUserDir().resolve(Constants.DATA_FILE).toFile()
+                this.pluginContext.getUserDir().resolve(DATA_FILE).toFile()
             ); DataOutputStream outputStream = new DataOutputStream(outputFile)) {
 
             getFrame().save(outputStream);
@@ -357,7 +372,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
             result += userFirstName;
         }
         if (userLastName != null && !userLastName.isEmpty()) {
-            result += Constants.LOG_SPACE + userLastName;
+            result += ITextConstants.LOG_SPACE + userLastName;
         }
         if (userName != null && !userName.isEmpty()) {
             result += " (" + userName + ")";
@@ -370,7 +385,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
      * Update GUI
      */
     public void update() {
-        getFrame().setTitle(Workspace.VERSION + Constants.LOG_SPACE + " - Logged in as: " + getLoggedUserString());
+        getFrame().setTitle(Workspace.VERSION + ITextConstants.LOG_SPACE + " - Logged in as: " + getLoggedUserString());
         getFrame().update();
     }
 
@@ -421,19 +436,17 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     public class WorkspaceViewListener implements IWorkspaceListener {
 
-        public static final int CODE = Constants.WORKSPACE_VIEW_LISTENER_CODE;
-
         @Override
         public int getCode() {
-            return CODE;
+            return ADD_VIEW_EVENT;
         }
 
         public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if (lparam instanceof Map<?, ?> map
-                && map.get(VIEW_PARAMETER) instanceof IView view
-                && map.get(DISPLAY_PARAMETER) instanceof Boolean display
-                && map.get(REGISTER_PARAMETER) instanceof Boolean register) {
+                && map.get(IView.VIEW_PARAMETER) instanceof IView view
+                && map.get(IView.DISPLAY_PARAMETER) instanceof Boolean display
+                && map.get(IView.REGISTER_PARAMETER) instanceof Boolean register) {
 
                 getFrame().getContentManager().addView(view, display, register);
             }
@@ -445,19 +458,18 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     class WorkspaceWindowListener implements IWorkspaceListener {
 
-        static final int CODE = 1001;
-
         @Override
         public int getCode() {
-            return CODE;
+            return IView.DISPLAY_IN_DESKTOP_EVENT;
         }
 
         public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if ((lparam instanceof Map<?, ?> map)
-                && map.get(VIEW_PARAMETER) instanceof JComponent view
-                && map.get(DISPLAY_PARAMETER) instanceof Boolean display
-                && map.get(REGISTER_PARAMETER) instanceof Boolean register) {
+                && map.get(IView.VIEW_PARAMETER) instanceof JComponent view
+                && map.get(IView.DISPLAY_PARAMETER) instanceof Boolean display
+                && map.get(IView.REGISTER_PARAMETER) instanceof Boolean register
+            ) {
 
                 IView currentView = getFrame().getContentManager().getCurrentView();
 
@@ -480,18 +492,16 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     public class SwitchMenuListener implements IWorkspaceListener {
 
-        public static final int CODE = 1002;
-
         @Override
         public int getCode() {
-            return CODE;
+            return IView.SWITCH_MENU_EVENT;
         }
 
         public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if (lparam instanceof Map<?, ?> map
-                && map.get(Constants.MENUS_PARAMETER) instanceof List<?> menus
-                && map.get(Constants.FLAG_PARAMETER) instanceof Boolean flag
+                && map.get(IView.MENUS_PARAMETER) instanceof List<?> menus
+                && map.get(IView.FLAG_PARAMETER) instanceof Boolean flag
             ) {
 
                 JMenuBar menuBar = getFrame().getJMenuBar();
@@ -518,17 +528,15 @@ public class WorkspaceGUI implements IWorkspaceUI {
      */
     public class ExternalFrameListener implements IWorkspaceListener {
 
-        public static final int CODE = 1003;
-
         @Override
         public int getCode() {
-            return CODE;
+            return IView.DISPLAY_AS_FRAME;
         }
 
         public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if (lparam instanceof Map<?, ?> map
-                && map.get(Constants.FRAME_PARAMETER) instanceof Frame frameParameter
+                && map.get(IView.FRAME_PARAMETER) instanceof Frame frameParameter
             ) {
 
                 displayedFrames.add(frameParameter);

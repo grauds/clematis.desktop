@@ -13,8 +13,8 @@ import org.junit.rules.TemporaryFolder;
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
-import static jworkspace.runtime.RuntimeManager.AFTER_EXECUTE_EVENT;
-import static jworkspace.runtime.RuntimeManager.BEFORE_EXECUTE_EVENT;
+import static jworkspace.api.IRuntime.AFTER_EXECUTE_EVENT;
+import static jworkspace.api.IRuntime.BEFORE_EXECUTE_EVENT;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.installer.Application;
 import jworkspace.installer.JVM;

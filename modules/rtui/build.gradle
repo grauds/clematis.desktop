@@ -19,6 +19,7 @@ processResources {
 
 dependencies {
 
+    compileOnly project(':api')
     compileOnly project(':jworkspace')
     compileOnly project(':ui-api')
     compileOnly project(':ui')

@@ -54,10 +54,10 @@ import com.hyperrealm.kiwi.ui.KFrame;
 
 import static jworkspace.ui.widgets.GlassOutlinePane.DRAGGED_PROPERTY;
 import static jworkspace.ui.widgets.GlassOutlinePane.DRAGGING_PROPERTY;
-import jworkspace.ui.api.AbstractViewsManager;
-import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
+import jworkspace.ui.api.views.AbstractViewsManager;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.profiles.LoginPanel;
 import jworkspace.ui.util.SwingUtils;
@@ -157,7 +157,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
 
     private void assemble(int x, int y, int width, int height) {
 
-        log.info("Building gui" + Constants.LOG_FINISH);
+        log.info("Building gui" + ITextConstants.LOG_FINISH);
         /*
          * Remove login panel
          */

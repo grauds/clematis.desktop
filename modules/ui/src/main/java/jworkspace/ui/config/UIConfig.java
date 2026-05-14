@@ -39,7 +39,6 @@ import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.io.ConfigFile;
 
-import jworkspace.ui.api.Constants;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -59,6 +58,10 @@ public class UIConfig {
     public static final String CK_LAF = "gui.laf";
     public static final String CK_KIWI = "gui.kiwi.texture.visible";
     public static final String CK_UNDECORATED = "gui.frame.undecorated";
+    /**
+     *
+     */
+    public static final String DEFAULT_LAF = "system";
     /**
      * Workspace background texture
      */
@@ -95,7 +98,7 @@ public class UIConfig {
     }
 
     public String getLaf() {
-        return config.getString(CK_LAF, Constants.DEFAULT_LAF);
+        return config.getString(CK_LAF, DEFAULT_LAF);
     }
 
     public void saveLaf() {

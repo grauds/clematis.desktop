@@ -52,7 +52,7 @@ import javax.swing.KeyStroke;
 
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
-import jworkspace.ui.api.Constants;
+import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.action.ActionChangedListener;
 import jworkspace.ui.api.cpanel.CButton;
 
@@ -61,7 +61,12 @@ import jworkspace.ui.api.cpanel.CButton;
  *
  * @author Anton Troshin
  */
-public final class SwingUtils implements Constants {
+public final class SwingUtils implements ITextConstants {
+
+    /**
+     * Small menu ICON
+     */
+    public static final String MENU_ICON = "MENU_ICON";
 
     private SwingUtils() {}
 

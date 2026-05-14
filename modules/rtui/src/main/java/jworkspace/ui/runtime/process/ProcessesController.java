@@ -32,6 +32,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import jworkspace.api.IRuntime;
 import jworkspace.api.IWorkspaceListener;
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.AbstractTask;
@@ -66,7 +67,7 @@ public class ProcessesController {
         runtimeManager.addListener(new IWorkspaceListener() {
                 @Override
                 public int getCode() {
-                    return RuntimeManager.BEFORE_EXECUTE_EVENT;
+                    return IRuntime.BEFORE_EXECUTE_EVENT;
                 }
 
                 @Override
@@ -82,7 +83,7 @@ public class ProcessesController {
 
                 @Override
                 public int getCode() {
-                    return RuntimeManager.AFTER_EXECUTE_EVENT;
+                    return IRuntime.AFTER_EXECUTE_EVENT;
                 }
 
                 @Override
