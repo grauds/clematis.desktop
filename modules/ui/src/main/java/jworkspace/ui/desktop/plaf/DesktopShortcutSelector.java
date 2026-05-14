@@ -67,14 +67,14 @@ public class DesktopShortcutSelector extends JComponent {
     class SelectorMouseAdapter extends MouseAdapter {
 
         private void redispatch(MouseEvent e) {
-            // 1. Find who is actually under the mouse in the shortcutsLayer
+            // Find who is actually under the mouse in the shortcutsLayer
             Component c = SwingUtilities.getDeepestComponentAt(shortcutsLayer, e.getX(), e.getY());
 
             if (c != null && c != DesktopShortcutSelector.this) {
-                // 2. Convert coordinates from the Selector's space to the target component's space
+                // Convert coordinates from the Selector's space to the target component's space
                 Point p = SwingUtilities.convertPoint(DesktopShortcutSelector.this, e.getPoint(), c);
 
-                // 3. Dispatch a copy of the event to the correct component
+                // Dispatch a copy of the event to the correct component
                 c.dispatchEvent(new MouseEvent(
                     c,
                     e.getID(),

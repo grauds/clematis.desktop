@@ -94,12 +94,12 @@ public final class LogViewerPanel extends JPanel {
         super(new BorderLayout());
         this.preferredWidth = preferredWidth;
 
-        // 1. Core visual styles configuration
+        // Core visual styles configuration
         infoStyle = createStyle(Color.BLACK, false);
         warnStyle = createStyle(new Color(255, 140, 0), false);
         errorStyle = createStyle(Color.RED, true);
 
-        // 2. Controlled initialization order prevents field reference leaks
+        // Controlled initialization order prevents field reference leaks
         this.textPane = createTextPaneInstance();
         this.document = this.textPane.getStyledDocument();
 

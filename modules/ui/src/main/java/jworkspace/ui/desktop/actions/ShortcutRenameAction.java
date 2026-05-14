@@ -52,11 +52,20 @@ public class ShortcutRenameAction extends AbstractDesktopShortcutAction {
         if (shortcutsLayer.getSelectedShortcuts().isEmpty()) {
             return;
         }
-        String newName = JOptionPane.showInputDialog(
+        String currentName = "";
+        var selectedShortcuts = shortcutsLayer.getSelectedShortcuts();
+        if (!selectedShortcuts.isEmpty()) {
+            DesktopShortcut firstSelected = selectedShortcuts.getFirst();
+            currentName = ((JLabel) firstSelected.getComponent(0)).getText();
+        }
+        String newName = (String) JOptionPane.showInputDialog(
             shortcutsLayer,
             "Enter new name:",
             "Rename Shortcut",
-            JOptionPane.PLAIN_MESSAGE
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            null,
+            currentName
         );
         if (newName != null && !newName.isBlank()) {
             for (DesktopShortcut s : shortcutsLayer.getSelectedShortcuts()) {

@@ -24,10 +24,11 @@ package jworkspace.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+
+import lombok.extern.java.Log;
 
 /**
  * Background thread that continuously reads log output from a running
@@ -39,16 +40,14 @@ import java.nio.charset.StandardCharsets;
  *
  * <p>The thread is marked as daemon so it does not prevent JVM shutdown.</p>
  */
+@Log
 public class LogReaderThread extends Thread {
 
     /** Size of the read buffer (in bytes) */
     static final int BUFFER_SIZE = 360;
 
-    /** Associated Java process providing elapsed time information */
-    private final AbstractTask task;
-
     /** Input stream to read process output from */
-    private final InputStream stream;
+    private final InputStream inputStream;
 
     /** Reusable buffer for reading stream data */
     private final byte[] buf = new byte[BUFFER_SIZE];
@@ -59,13 +58,11 @@ public class LogReaderThread extends Thread {
     /**
      * Creates a new log reader thread.
      *
-     * @param task         task wrapper used for elapsed time prefixing
-     * @param stream       input stream to read (stdout or stderr)
+     * @param inputStream       input stream to read (stdout or stderr)
      * @param outputStream destination stream for log output
      */
-    public LogReaderThread(AbstractTask task, InputStream stream, OutputStream outputStream) {
-        this.task = task;
-        this.stream = stream;
+    public LogReaderThread(InputStream inputStream, OutputStream outputStream) {
+        this.inputStream = inputStream;
         this.outputStream = outputStream;
         // Daemon thread so it does not block JVM shutdown
         setDaemon(true);
@@ -78,33 +75,19 @@ public class LogReaderThread extends Thread {
      * <p>Each read chunk is converted to UTF-8 text, prefixed with the
      * process elapsed time, and written to the output stream.</p>
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public void run() {
-        // Loop indefinitely until EOF or I/O error
-        for (;;) {
-            try {
-                // Read available bytes into the buffer
-                int b = stream.read(buf);
+        try (inputStream; outputStream) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
 
-                if (b > 0) {
-                    // Convert raw bytes to UTF-8 text
-                    String str = new String(buf, 0, b, StandardCharsets.UTF_8);
-
-                    // Prefix log output with elapsed process time
-                    this.outputStream.write(
-                        String.format("%s: %s", task.getElapsedTime(), str)
-                            .getBytes(StandardCharsets.UTF_8)
-                    );
-                } else {
-                    // End of stream reached
-                    if (b < 0) {
-                        break;
-                    }
-                }
-            } catch (IOException ex) {
-                // Stop the thread on any I/O error
-                break;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+                outputStream.flush();
             }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error reading log", e);
         }
     }
 }

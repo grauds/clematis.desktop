@@ -31,7 +31,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 import com.hyperrealm.kiwi.runtime.Task;
@@ -52,8 +51,13 @@ public abstract class AbstractTask extends Task {
     private final Object logLock = new Object();
 
     // The stream target directly delegates to the class lock via constructor pass-through
-    private final LiveLogOutputStream liveStream = new LiveLogOutputStream(logBuffer, () -> logLock);
-    private final OutputStream logs = new BufferedOutputStream(liveStream);
+    private LiveLogOutputStream liveStream = new LiveLogOutputStream(
+        logBuffer,
+        () -> logLock,
+        this::getElapsedTime
+    );
+
+    private OutputStream logs = new BufferedOutputStream(liveStream);
 
     public AbstractTask(String name) {
         this.name = name;
@@ -85,9 +89,16 @@ public abstract class AbstractTask extends Task {
         }
     }
 
-    public void clearLogs() {
+    public synchronized void clearLogs() {
         synchronized (logLock) {
             logBuffer.reset();
+            // Re-initialize the pipeline layers if the stream was previously closed
+            this.liveStream = new LiveLogOutputStream(
+                logBuffer,
+                () -> logLock,
+                this::getElapsedTime
+            );
+            this.logs = new BufferedOutputStream(liveStream);
         }
     }
 
@@ -100,12 +111,21 @@ public abstract class AbstractTask extends Task {
      */
     private static final class LiveLogOutputStream extends OutputStream {
         private final OutputStream target;
-        private final Supplier<Object> lockProvider;
+        private final java.util.function.Supplier<Object> lockProvider;
+        private final java.util.function.Supplier<Long> elapsedTimeProvider;
         private Consumer<String> listener;
 
-        LiveLogOutputStream(OutputStream target, Supplier<Object> lockProvider) {
+        // Accumulates incoming bytes until a complete line delimiter (\n) is found
+        private final ByteArrayOutputStream lineAccumulator = new ByteArrayOutputStream();
+
+        LiveLogOutputStream(
+            OutputStream target,
+            java.util.function.Supplier<Object> lockProvider,
+            java.util.function.Supplier<Long> elapsedTimeProvider
+        ) {
             this.target = target;
             this.lockProvider = lockProvider;
+            this.elapsedTimeProvider = elapsedTimeProvider;
         }
 
         public void setListener(Consumer<String> listener) {
@@ -117,24 +137,53 @@ public abstract class AbstractTask extends Task {
         @Override
         public void write(int b) throws IOException {
             synchronized (lockProvider.get()) {
-                target.write(b);
-                triggerListener(new byte[]{(byte) b}, 0, 1);
+                processByte((byte) b);
             }
         }
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
             synchronized (lockProvider.get()) {
-                target.write(b, off, len);
-                triggerListener(b, off, len);
+                for (int i = 0; i < len; i++) {
+                    processByte(b[off + i]);
+                }
             }
         }
 
-        private void triggerListener(byte[] b, int off, int len) {
-            if (listener != null) {
-                String text = new String(b, off, len, StandardCharsets.UTF_8);
-                listener.accept(text);
+        /**
+         * Scans incoming bytes for line breaks. When a line breaks, it formats the line,
+         * writes it to the historical target stream, and broadcasts it to the UI.
+         */
+        private void processByte(byte sign) throws IOException {
+            lineAccumulator.write(sign);
+
+            // Look for a newline marker character to finalize a complete line
+            if (sign == '\n') {
+                flushCurrentLine();
             }
+        }
+
+        private void flushCurrentLine() throws IOException {
+            if (lineAccumulator.size() == 0) {
+                return;
+            }
+
+            // Extract the raw line text (omitting the trailing newline for formatting)
+            String rawLine = lineAccumulator.toString(StandardCharsets.UTF_8);
+
+            long elapsed = elapsedTimeProvider.get();
+            String formattedLine = String.format("%s: %s", elapsed, rawLine);
+            byte[] formattedBytes = formattedLine.getBytes(StandardCharsets.UTF_8);
+
+            // Commit the formatted line bytes to the persistent log history buffer
+            target.write(formattedBytes);
+
+            // Broadcast the formatted text line out to your live UI log viewers
+            if (listener != null) {
+                listener.accept(formattedLine);
+            }
+
+            lineAccumulator.reset();
         }
 
         @Override
@@ -147,7 +196,13 @@ public abstract class AbstractTask extends Task {
         @Override
         public void close() throws IOException {
             synchronized (lockProvider.get()) {
+                // If the stream closes but the last line didn't end with a newline, flush it anyway
+                if (lineAccumulator.size() > 0) {
+                    lineAccumulator.write('\n');
+                    flushCurrentLine();
+                }
                 target.close();
+                lineAccumulator.close();
             }
         }
     }

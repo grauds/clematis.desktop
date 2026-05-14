@@ -97,7 +97,7 @@ public final class JavaProcess extends AbstractTask {
             setStartTime(new Date());
 
             // Start background readers for standard error stream
-            new LogReaderThread(this, process.getErrorStream(), this.getLogs()).start();
+            new LogReaderThread(process.getErrorStream(), this.getLogs()).start();
 
             try {
                 // Block until the process exits

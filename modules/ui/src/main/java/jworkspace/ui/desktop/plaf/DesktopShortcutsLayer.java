@@ -38,14 +38,11 @@ import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.api.EventsDispatcher;
 import jworkspace.config.ServiceLocator;
-import jworkspace.runtime.LogStreamProvider;
-import jworkspace.runtime.TaskLogAdapter;
 import jworkspace.runtime.process.JavaProcess;
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
 import jworkspace.ui.desktop.actions.DesktopShortcutActions;
-import jworkspace.ui.logging.LogViewerPanel;
 import lombok.Getter;
 
 
@@ -229,23 +226,23 @@ public class DesktopShortcutsLayer extends KPanel {
                 return;
             }
 
-            // 1. Get the list of shortcuts from the clipboard
+            // Get the list of shortcuts from the clipboard
             List<?> data = (List<?>) CLIPBOARD.getData(SHORTCUT_FLAVOR);
             List<DesktopShortcut> newShortcuts = new ArrayList<>();
             int offset = 30;
 
             for (Object obj : data) {
                 if (obj instanceof DesktopShortcut original) {
-                    // 2. Clone the shortcut data
+                    // Clone the shortcut data
                     DesktopShortcut copy = new DesktopShortcut(original.getIcon(), original.getText());
-                    // 3. Position with offset
+                    // Position with offset
                     Point pos = original.getLocation();
                     addShortcut(copy, new Point(pos.x + offset, pos.y + offset));
                     newShortcuts.add(copy);
                 }
             }
 
-            // 4. Update selection to the new items
+            // Update selection to the new items
             clearSelection();
             newShortcuts.forEach(this::addToSelection);
 
@@ -276,15 +273,12 @@ public class DesktopShortcutsLayer extends KPanel {
                 .run(
                     shortcut.getCommandLine()
                 );
-            LogViewerPanel logViewerPanel = new LogViewerPanel(400);
-            logViewerPanel.setName(shortcut.getText() + " " + process.getName());
-
-            // Wrap the process in the adapter to connect historical and live logs
-            LogStreamProvider provider = new TaskLogAdapter(process);
-            logViewerPanel.switchLogs(provider);
+            ProcessLogInternalFrame frame = new ProcessLogInternalFrame(process, 400);
+            frame.setTitle(shortcut.getText() + " " + process.getName());
+            frame.setVisible(true);
 
             Map<String, Object> lparam = new HashMap<>();
-            lparam.put("view", logViewerPanel);
+            lparam.put("view", frame);
             lparam.put("display", Boolean.TRUE);
             lparam.put("register", Boolean.FALSE);
             eventsDispatcher.fireEvent(1001, lparam, null);
