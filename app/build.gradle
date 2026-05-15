@@ -37,6 +37,7 @@ jpackage {
     input = new File("build/libs")
     mainJar = "jworkspace-2.0.0-SNAPSHOT.jar"
     mainClass = "jworkspace.Workspace"
+    runtimeImage.set(layout.projectDirectory.dir(System.getProperty("java.home")))
 
     javaOptions = [
             '-Dsun.java2d.opengl=true',

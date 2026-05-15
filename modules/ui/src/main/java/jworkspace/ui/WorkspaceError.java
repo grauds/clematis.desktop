@@ -95,10 +95,10 @@ public class WorkspaceError {
             title = excp;
         }
 
-        StringBuilder msg = new StringBuilder(usermsg);
+        StringBuilder msg = new StringBuilder(truncateText(usermsg));
         String s = throwable.getMessage();
         if (s != null) {
-            msg.append("\n").append(s);
+            msg.append("\n").append(truncateText(s));
         }
 
         // create the panel with an advanced error message
@@ -158,6 +158,23 @@ public class WorkspaceError {
             title,
             JOptionPane.ERROR_MESSAGE
         );
+    }
+
+    /**
+     * Truncates a string to 128 characters and appends "..." if it exceeds the limit.
+     *
+     * @param input the target string to process
+     * @return the truncated string with ellipsis, or the original string if under the limit
+     */
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ReturnCount"})
+    private static String truncateText(String input) {
+        if (input == null) {
+            return null;
+        }
+        if (input.length() > 128) {
+            return input.substring(0, 128) + "...";
+        }
+        return input;
     }
 
     /**
