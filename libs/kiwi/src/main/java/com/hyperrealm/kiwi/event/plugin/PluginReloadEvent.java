@@ -26,10 +26,9 @@ import com.hyperrealm.kiwi.plugin.Plugin;
  *
  * @author Mark Lindner
  * @since Kiwi 2.0
+ * @param source
  */
-public class PluginReloadEvent {
-
-    private Plugin source;
+public record PluginReloadEvent(Plugin source) {
 
     /**
      * Construct a new <code>PluginReloadEvent</code> for the specified source.
@@ -37,19 +36,6 @@ public class PluginReloadEvent {
      * @param source The <code>Plugin</code> that is the source of this
      *               event.
      */
-
-    public PluginReloadEvent(Plugin source) {
-        this.source = source;
-    }
-
-    /**
-     * Get the source of the event.
-     *
-     * @return The <code>Plugin</code> that is the source of this event.
-     */
-
-    public Plugin getSource() {
-        return (source);
-    }
+    public PluginReloadEvent {}
 
 }

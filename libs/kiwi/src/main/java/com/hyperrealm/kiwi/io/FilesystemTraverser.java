@@ -33,11 +33,11 @@ import java.io.FilenameFilter;
 @SuppressWarnings("unused")
 public class FilesystemTraverser {
 
-    private File root;
+    private final File root;
 
-    private FilenameFilter filter;
+    private final FilenameFilter filter;
 
-    private FileConsumer consumer;
+    private final FileConsumer consumer;
 
     /**
      * Construct a new <code>FilesystemTraverser</code>.

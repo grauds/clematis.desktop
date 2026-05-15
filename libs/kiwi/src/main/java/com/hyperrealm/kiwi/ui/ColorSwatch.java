@@ -25,6 +25,8 @@ import java.awt.Graphics;
 
 import javax.swing.Icon;
 
+import lombok.Getter;
+import lombok.Setter;
 /**
  * A simple component that renders a color swatch--a filled rectangle with
  * a thin black border.
@@ -45,8 +47,15 @@ public class ColorSwatch implements Icon {
      * The default swatch color.
      */
     private static final Color DEFAULT_COLOR = Color.gray;
+    /**
+     * The color of the swatch
+     */
+    @Setter
+    @Getter
     private Color color;
-    private int w, h;
+
+    private final int w;
+    private final int h;
 
     /**
      * Construct a new <code>ColorSwatch</code> with a default color, width,
@@ -70,26 +79,6 @@ public class ColorSwatch implements Icon {
         this.color = color;
         this.w = width;
         this.h = height;
-    }
-
-    /**
-     * Get the color of this swatch.
-     *
-     * @return The current color of the swatch.
-     */
-
-    public Color getColor() {
-        return (color);
-    }
-
-    /**
-     * Set the color of this swatch.
-     *
-     * @param color The new color for the swatch.
-     */
-
-    public void setColor(Color color) {
-        this.color = color;
     }
 
     /**

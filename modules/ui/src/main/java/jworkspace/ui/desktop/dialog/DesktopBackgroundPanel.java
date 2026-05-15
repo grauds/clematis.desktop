@@ -247,7 +247,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
                 gradientFill = !gradientFill;
                 repaint();
                 break;
-            case IDesktopActions.TOGGLE_WALLPAPER:
+            case IDesktopActions.TOGGLE_WALLPAPER_IN_DIALOG:
                 coverVisible = !coverVisible;
                 repaint();
                 break;
@@ -392,7 +392,7 @@ public class DesktopBackgroundPanel extends KPanel implements ActionListener, Pr
         coverVisibleCheckbox.setText(WorkspaceResourceAnchor.getString("DesktopBgPanel.coverVisible"));
         coverVisibleCheckbox.addActionListener(this);
         coverVisibleCheckbox.setOpaque(false);
-        coverVisibleCheckbox.setActionCommand(IDesktopActions.TOGGLE_WALLPAPER);
+        coverVisibleCheckbox.setActionCommand(IDesktopActions.TOGGLE_WALLPAPER_IN_DIALOG);
       //  coverVisibleCheckbox.setPreferredSize(new Dimension(60, 20));
         if (desktop.getTheme().isCoverVisible()) {
             coverVisibleCheckbox.setSelected(true);

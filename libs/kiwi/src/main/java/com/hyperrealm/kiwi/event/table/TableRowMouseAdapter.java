@@ -66,11 +66,9 @@ public class TableRowMouseAdapter extends MouseAdapter {
 
     public final void mouseClicked(MouseEvent evt) {
         Object source = evt.getSource();
-        if (!(source instanceof JTable)) {
+        if (!(source instanceof JTable table)) {
             return;
         }
-
-        JTable table = (JTable) source;
 
         int selRow = table.rowAtPoint(new Point(evt.getX(), evt.getY()));
         if (selRow != -1) {

@@ -207,11 +207,21 @@ public class ServiceLocator {
         return InstanceHolder.SERVICE_LOCATOR;
     }
 
+    /**
+     * Get a string property from the application active user profile
+     * @param key property
+     * @return a string property
+     */
     public static String getString(String key) {
         return ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getParameters()
             .getString(key);
     }
 
+    /**
+     * Put a string property to the application active user profile
+     * @param key property
+     * @param value of the property
+     */
     public static void putString(String key, String value) {
         ServiceLocator.getInstance().getProfilesManager().getCurrentProfile().getParameters()
             .putString(key, value);

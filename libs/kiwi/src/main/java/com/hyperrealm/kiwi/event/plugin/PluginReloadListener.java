@@ -31,7 +31,6 @@ import com.hyperrealm.kiwi.plugin.Plugin;
  * @see Plugin
  * @since Kiwi 2.0
  */
-
 public interface PluginReloadListener extends EventListener {
 
     /**

@@ -38,11 +38,12 @@ import com.hyperrealm.kiwi.ui.KPanel;
 
 import static jworkspace.api.IRuntime.JAVA_APP_MODE;
 import static jworkspace.api.IRuntime.NATIVE_COMMAND_MODE;
+import static jworkspace.api.IRuntime.SCRIPTED_FILE_MODE;
+import static jworkspace.api.IRuntime.SCRIPTED_METHOD_MODE;
 import static jworkspace.ui.api.IView.DISPLAY_IN_DESKTOP_EVENT;
 import jworkspace.api.EventsDispatcher;
-import jworkspace.api.IRuntime;
 import jworkspace.config.ServiceLocator;
-import jworkspace.runtime.process.JavaProcess;
+import jworkspace.runtime.AbstractTask;
 import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.DesktopShortcut;
@@ -270,16 +271,19 @@ public class DesktopShortcutsLayer extends KPanel {
         }
         DesktopShortcut shortcut = this.selected.getFirst();
         try {
-            JavaProcess process = ServiceLocator
+            int mode = shortcut.getMode();
+            AbstractTask process = ServiceLocator
                 .getInstance()
                 .getRuntimeManager()
                 .run(
-                    shortcut.getCommandLine()
+                    shortcut.getCommandLine(),
+                    mode
                 );
-            int mode = shortcut.getMode();
             switch (mode) {
                 case JAVA_APP_MODE:
                 case NATIVE_COMMAND_MODE:
+                case SCRIPTED_FILE_MODE:
+                case SCRIPTED_METHOD_MODE:
                     ProcessLogInternalFrame frame = new ProcessLogInternalFrame(process, 400);
                     frame.setTitle(shortcut.getText() + " " + process.getName());
                     frame.setVisible(true);
@@ -289,9 +293,6 @@ public class DesktopShortcutsLayer extends KPanel {
                     lparam.put("display", Boolean.TRUE);
                     lparam.put("register", Boolean.FALSE);
                     eventsDispatcher.fireEvent(DISPLAY_IN_DESKTOP_EVENT, lparam, null);
-                    break;
-                case IRuntime.SCRIPTED_FILE_MODE:
-                case IRuntime.SCRIPTED_METHOD_MODE:
                     break;
                 default:
                     break;

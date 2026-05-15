@@ -53,7 +53,7 @@ public class OutputLoop {
         pipein = new PipedInputStream(pipeout);
 
         oldout = System.out;
-        newout = new PrintStream(pipeout, false, StandardCharsets.UTF_8.name()); // un-deprecated in JDK 1.2
+        newout = new PrintStream(pipeout, false, StandardCharsets.UTF_8);
     }
 
     /**

@@ -46,7 +46,7 @@ public class ReportPanel extends AbstractReportPanel implements IProcessSelectio
             + "<br><b>"
             + LangResource.getString("Started_at") + ": "
             + "</b>"
-            + task.getStartTime().toString()
+            + (task.getStartTime() != null ? task.getStartTime().toString() : "")
             + "<br>";
         layoutReport(
             props,

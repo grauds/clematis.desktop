@@ -1,0 +1,10 @@
+1. Use Kiwi Workspace Manager and Editors on Clematis Workspace desktop
+2. For any jworkspace.api.IWorkspaceComponent which is placed on Clematis Workspace desktop the load/
+reset/save methods have to be called
+3. Clematis Workspace desktop shortcuts have to have API to customize the 'open' or double-click action and properties panels. The API is for plugins to use, to install custom shortcuts with generic actions.
+4. Clematis Workspace runtime should use plugins versions and plugins update mechanism using Kiwi plugins reload.
+5. Run JShell commands and scripts, redirecting their logs to logs viewer panel as for native processes.
+6. Clematis Java Workspace Online Plugins Repository
+7. Installer should download libraries from Maven repositories, not search for them on local disk
+8. Built-in collections of textures and wallpaper (as for desktop icons)
+9. Notification center for plugins' announcements

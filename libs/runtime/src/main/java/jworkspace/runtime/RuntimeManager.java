@@ -25,6 +25,7 @@ package jworkspace.runtime;
   ----------------------------------------------------------------------------
 */
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import jworkspace.api.EventsDispatcher;
 import jworkspace.api.IRuntime;
 import jworkspace.api.IWorkspaceListener;
+import jworkspace.runtime.jshell.JShellProcess;
 import jworkspace.runtime.process.JavaProcess;
 import lombok.Getter;
 
@@ -111,19 +113,49 @@ public class RuntimeManager {
         poolExecutor.execute(task);
     }
 
+    @SuppressWarnings("checkstyle:InnerAssignment")
+    public AbstractTask run(String command, int mode) throws IOException {
+        AbstractTask task;
+        switch (mode) {
+            case IRuntime.JAVA_APP_MODE, IRuntime.NATIVE_COMMAND_MODE -> task = run(command);
+            case IRuntime.SCRIPTED_METHOD_MODE -> task = eval(command);
+            case IRuntime.SCRIPTED_FILE_MODE -> task = evalSnippet(command);
+            default -> throw new IllegalStateException("Unexpected value: " + mode);
+        }
+        return task;
+    }
+
+    public AbstractTask eval(String command) throws IOException {
+
+        JShellProcess process = JShellProcess.createAndInitialize(
+            String.valueOf(System.currentTimeMillis())
+        );
+        take(process);
+        process.execute(command);
+
+        return process;
+    }
+
+    public AbstractTask evalSnippet(String command) throws IOException {
+
+        JShellProcess process = JShellProcess.createAndInitialize(
+            String.valueOf(System.currentTimeMillis())
+        );
+        take(process);
+        process.execute(Path.of(command));
+
+        return process;
+    }
+
     /**
      * Launch external process.
      */
     public JavaProcess run(String command) throws IOException {
 
-        JavaProcess process =
-            new JavaProcess(
-                Runtime.getRuntime().exec(command),
-                String.valueOf(
-                    System.currentTimeMillis()
-                )
-            );
+        ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", command);
+        pb.redirectErrorStream(true);
 
+        JavaProcess process = new JavaProcess(pb.start(), String.valueOf(System.currentTimeMillis()));
         take(process);
         return process;
     }

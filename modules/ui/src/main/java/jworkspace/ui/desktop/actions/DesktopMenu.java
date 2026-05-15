@@ -62,7 +62,7 @@ public class DesktopMenu extends JPopupMenu {
         changeBackgroundColour = createMenuItem(desktopActions.get(IDesktopActions.BACKGROUND));
         chooseBgImage = createMenuItem(desktopActions.get(IDesktopActions.CHOOSE_BACKGROUND_IMAGE));
         gradientFill = createMenuItem(desktopActions.get(IDesktopActions.GRADIENT_FILL));
-        switchCover = createMenuItem(desktopActions.get(IDesktopActions.SWITCH_COVER));
+        switchCover = createMenuItem(desktopActions.get(IDesktopActions.TOGGLE_WALLPAPER));
         closeAllWindows = createMenuItem(desktopActions.get(IDesktopActions.CLOSE_ALL_WINDOWS));
         this.desktopActions = desktopActions;
 

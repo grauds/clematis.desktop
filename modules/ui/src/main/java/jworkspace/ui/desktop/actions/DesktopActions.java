@@ -65,14 +65,14 @@ public class DesktopActions extends AbstractActionsCollection {
         }
 
         if (desktop.getTheme().getCover() == null) {
-            get(IDesktopActions.SWITCH_COVER).setEnabled(false);
-            get(IDesktopActions.SWITCH_COVER).putValue(Action.NAME, "No Background Image");
+            get(IDesktopActions.TOGGLE_WALLPAPER).setEnabled(false);
+            get(IDesktopActions.TOGGLE_WALLPAPER).putValue(Action.NAME, "No Background Image");
         } else {
-            get(IDesktopActions.SWITCH_COVER).setEnabled(true);
+            get(IDesktopActions.TOGGLE_WALLPAPER).setEnabled(true);
             if (desktop.getTheme().isCoverVisible()) {
-                get(IDesktopActions.SWITCH_COVER).putValue(Action.NAME, "Hide Background Image");
+                get(IDesktopActions.TOGGLE_WALLPAPER).putValue(Action.NAME, "Hide Background Image");
             } else {
-                get(IDesktopActions.SWITCH_COVER).putValue(Action.NAME, "Show Background Image");
+                get(IDesktopActions.TOGGLE_WALLPAPER).putValue(Action.NAME, "Show Background Image");
             }
         }
     }

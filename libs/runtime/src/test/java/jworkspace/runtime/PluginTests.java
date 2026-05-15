@@ -68,7 +68,7 @@ public class  PluginTests {
             );
 
         PluginHelper.assertPluginEqualsManifest(testPlugin);
-        testPlugin.addPluginReloadListener(event -> Assertions.assertEquals(testPlugin, event.getSource()));
+        testPlugin.addPluginReloadListener(event -> Assertions.assertEquals(testPlugin, event.source()));
         testPlugin.reload();
 
         Object obj = testPlugin.newInstance();

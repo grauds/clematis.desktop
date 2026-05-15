@@ -36,7 +36,7 @@ public class SwitchWallpaperAction extends AbstractDesktopAction {
     ) {
         super(
             "Switch Background Image",
-            IDesktopActions.SWITCH_COVER,
+            IDesktopActions.TOGGLE_WALLPAPER,
             null,
             shortcutsLayer,
             desktop

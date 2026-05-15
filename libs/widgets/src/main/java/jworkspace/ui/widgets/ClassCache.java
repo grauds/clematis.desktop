@@ -33,11 +33,14 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.hyperrealm.kiwi.ui.KFileChooser;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
@@ -48,307 +51,242 @@ import lombok.extern.java.Log;
  * Workspace cache for heavy UI components
  * @author Anton Troshin
  */
+
 @Log
 public final class ClassCache {
 
-    private static final String JAR_EXTENTION = "jar";
-    private static final String ZIP_EXTENTION = "zip";
+    private static final String JAR_EXTENSION = "jar";
+    private static final String ZIP_EXTENSION = "zip";
+    private static final String HTML_EXTENSION = "html";
+    private static final String HTM_EXTENSION = "htm";
+    private static final String SHTML_EXTENSION = "shtml";
+    private static final String USER_HOME_PROPERTY = "user.home";
+
     private static final String CACHE_CHOOSE_ARCHIVE_TITLE = "Cache.chooseArchive";
     private static final String CACHE_CHOOSE_ARCHIVE_OR_DIR_TITLE = "Cache.chooseArchiveOrDir";
     private static final String CACHE_ARCHIVES_TITLE = "Cache.Archives";
     private static final String CACHE_CHOOSE_DIRECTORY_TITLE = "Cache.chooseDirectory";
     private static final String CACHE_CHOOSE_FILE_TITLE = "Cache.chooseFile";
     private static final String CACHE_CHOOSE_HTML_TITLE = "Cache.chooseHTML";
-    private static final String HTML_EXTENTION = "html";
-    private static final String HTM_EXTENTION = "htm";
-    private static final String SHTML_EXTENTION = "shtml";
     private static final String CACHE_HYPERTEXT_TITLE = "Cache.hypertext";
     private static final String CACHE_CHOOSE_HTMLOR_DIRECTORY_TITLE = "Cache.chooseHTMLOrDirectory";
-    private static final String USER_HOME_PROPERTY = "user.home";
+    private static final String CACHE_SAVE_AS_TITLE = "Cache.saveAs";
 
-    // file dialogs
-    private static JFileChooser fileChooser = null;
-    private static FilePreviewer previewer = null;
-    private static JFileChooser iconChooser = null;
+    private static FilePreviewer previewer;
 
-    /**
-     * Default public constructor
-     */
     private ClassCache() {
-        super();
+        throw new AssertionError("No ClassCache instances!");
     }
 
-    /**
-     * This method allows to choose archive of jar or zip type.
-     */
     public static File chooseArchive(Component parent) {
-        getFileChooser(ResourceAnchor.getString(CACHE_CHOOSE_ARCHIVE_TITLE),
-                new String[]{JAR_EXTENTION, ZIP_EXTENTION},
-                ResourceAnchor.getString(CACHE_ARCHIVES_TITLE)
-            ).setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        if (getFileChooser().showOpenDialog(parent)
-            != JFileChooser.APPROVE_OPTION) {
-            return (null);
-        }
-
-        return (getFileChooser().getSelectedFile());
+        var chooser = prepareFileChooser(
+            ResourceAnchor.getString(CACHE_CHOOSE_ARCHIVE_TITLE),
+            ResourceAnchor.getString(CACHE_ARCHIVES_TITLE),
+            JAR_EXTENSION, ZIP_EXTENSION
+        );
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        return showOpenDialogAndGetFile(chooser, parent);
     }
 
-    /**
-     * This method allows to choose archive of jar or zip type plus
-     * directory.
-     */
     public static File chooseArchiveOrDir(Component parent) {
-        getFileChooser(
+        var chooser = prepareFileChooser(
             ResourceAnchor.getString(CACHE_CHOOSE_ARCHIVE_OR_DIR_TITLE),
-            new String[]{JAR_EXTENTION, ZIP_EXTENTION},
-            ResourceAnchor.getString(CACHE_ARCHIVES_TITLE)
-        ).setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-        if (getFileChooser().showOpenDialog(parent)
-            != JFileChooser.APPROVE_OPTION) {
-            return (null);
-        }
-
-        return (getFileChooser().getSelectedFile());
+            ResourceAnchor.getString(CACHE_ARCHIVES_TITLE),
+            JAR_EXTENSION, ZIP_EXTENSION
+        );
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        return showOpenDialogAndGetFile(chooser, parent);
     }
 
-    /**
-     * Use this method to choose color.
-     */
     public static Color chooseColor(Frame parent, String title, Color initialColor) {
         return JColorChooser.showDialog(parent, title, initialColor);
     }
 
-    /**
-     * This method allows to choose directory.
-     */
     public static File chooseDirectory(Frame parent) {
-        getFileChooser(ResourceAnchor.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
-                null, null
-            ).setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-        if (getFileChooser().showOpenDialog(parent)
-            != JFileChooser.APPROVE_OPTION) {
-            return (null);
-        }
-
-        return (getFileChooser().getSelectedFile());
-    }
-
-    /**
-     * This method allows to choose directory inside of specified root.
-     */
-    public static File chooseDirectory(Frame parent, File root) {
-        KFileChooserDialog dirChooser = new KFileChooserDialog(parent,
+        var chooser = prepareFileChooser(
             ResourceAnchor.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
-            KFileChooser.OPEN_DIALOG);
+            null
+        );
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        return showOpenDialogAndGetFile(chooser, parent);
+    }
 
+    public static File chooseDirectory(Frame parent, File root) {
+        var dirChooser = new KFileChooserDialog(
+            parent,
+            ResourceAnchor.getString(CACHE_CHOOSE_DIRECTORY_TITLE),
+            KFileChooser.OPEN_DIALOG
+        );
         dirChooser.setFileSelectionMode(KFileChooser.DIRECTORIES_ONLY);
+        if (root != null) {
+            dirChooser.setCurrentDirectory(root);
+        }
         dirChooser.setVisible(true);
-
-        return (dirChooser.getSelectedFile());
+        return dirChooser.getSelectedFile();
     }
 
-    /**
-     * This method allows to choose any file.
-     */
     public static File chooseFile(Component parent) {
-        getFileChooser(ResourceAnchor.getString(CACHE_CHOOSE_FILE_TITLE),
-                null, null
-            ).setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        if (getFileChooser().showOpenDialog(parent)
-            != JFileChooser.APPROVE_OPTION) {
-            return (null);
-        }
-
-        return (getFileChooser().getSelectedFile());
+        var chooser = prepareFileChooser(
+            ResourceAnchor.getString(CACHE_CHOOSE_FILE_TITLE),
+            null
+        );
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        return showOpenDialogAndGetFile(chooser, parent);
     }
 
-    /**
-     * This method allows to choose html file.
-     */
     public static File chooseHTMLFile(Component parent) {
-        getFileChooser(ResourceAnchor.getString(CACHE_CHOOSE_HTML_TITLE),
-                new String[]{HTML_EXTENTION, HTM_EXTENTION, SHTML_EXTENTION},
-                ResourceAnchor.getString(CACHE_HYPERTEXT_TITLE)
-            ).setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        if (getFileChooser().showOpenDialog(parent)
-            != JFileChooser.APPROVE_OPTION) {
-            return (null);
-        }
-        return getFileChooser().getSelectedFile();
+        var chooser = prepareFileChooser(
+            ResourceAnchor.getString(CACHE_CHOOSE_HTML_TITLE),
+            ResourceAnchor.getString(CACHE_HYPERTEXT_TITLE),
+            HTML_EXTENSION, HTM_EXTENSION, SHTML_EXTENSION
+        );
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        return showOpenDialogAndGetFile(chooser, parent);
     }
 
-    /**
-     * This method allows to choose html file or directory.
-     */
     public static File chooseHTMLFileOrDir(Component parent) {
-        getFileChooser(ResourceAnchor.getString(CACHE_CHOOSE_HTMLOR_DIRECTORY_TITLE),
-                new String[]{HTML_EXTENTION, HTM_EXTENTION, SHTML_EXTENTION},
-                ResourceAnchor.getString(CACHE_HYPERTEXT_TITLE)
-            ).setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-        if (getFileChooser().showOpenDialog(parent)
-            != JFileChooser.APPROVE_OPTION) {
-            return (null);
-        }
-
-        return getFileChooser().getSelectedFile();
+        var chooser = prepareFileChooser(
+            ResourceAnchor.getString(CACHE_CHOOSE_HTMLOR_DIRECTORY_TITLE),
+            ResourceAnchor.getString(CACHE_HYPERTEXT_TITLE),
+            HTML_EXTENSION, HTM_EXTENSION, SHTML_EXTENSION
+        );
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        return showOpenDialogAndGetFile(chooser, parent);
     }
 
-    /**
-     * This method allows to choose icon.
-     */
     public static Image chooseImage(Component parent) {
         return chooseImage(parent, null);
     }
 
-    /**
-     * This method allows to choose icon.
-     */
     @SuppressWarnings("checkstyle:NestedIfDepth")
     private static Image chooseImage(Component parent, String path) {
-        if (getIconChooser(path).showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            File imf = (getIconChooser().getSelectedFile());
+        var chooser = getIconChooserInstance();
+        if (path != null && !path.isBlank()) {
+            chooser.setCurrentDirectory(new File(path));
+        }
 
+        if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+            File imf = chooser.getSelectedFile();
             if (imf != null) {
-                ImageIcon testCover;
                 try {
                     BufferedImage icon = ImageIO.read(imf);
                     if (icon != null) {
-                        testCover = new ImageIcon(icon);
-                        return (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1)
-                            ? testCover.getImage() : null;
+                        var testCover = new ImageIcon(icon);
+                        if (testCover.getIconHeight() != -1 && testCover.getIconWidth() != -1) {
+                            return testCover.getImage();
+                        }
                     }
                 } catch (IOException e) {
-                    log.severe(e.getLocalizedMessage());
+                    log.log(Level.SEVERE, e, () -> "Failed to read image file: " + imf.getAbsolutePath());
                 }
             }
         }
         return null;
     }
 
-    /**
-     * This method allows to choose file to save.
-     */
     public static File chooseSaveFile(Component parent) {
-        getFileChooser(ResourceAnchor.getString("Cache.saveAs"),
-                null, null
-            ).setFileSelectionMode(JFileChooser.FILES_ONLY);
+        var chooser = prepareFileChooser(
+            ResourceAnchor.getString(CACHE_SAVE_AS_TITLE),
+            null
+        );
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY, ".")));
 
-        getFileChooser().setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY)));
+        return (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION)
+            ? chooser.getSelectedFile()
+            : null;
+    }
 
-        if (getFileChooser().showSaveDialog(parent)
-            != JFileChooser.APPROVE_OPTION) {
-            return (null);
-        }
+    public static JFileChooser getFileChooserInstance() {
+        return FileChooserHolder.INSTANCE;
+    }
 
-        return (getFileChooser().getSelectedFile());
+    public static JFileChooser getIconChooserInstance() {
+        return IconChooserHolder.INSTANCE;
     }
 
     /**
-     * This method is called once to create filechoosers.
+     * Returns the global file chooser initialized with a title, specific extensions, and description.
+     * Fully compatible with legacy callers while fixing the multi-filter accumulation bug.
      */
-    public static void createFileChoosers() {
-        getFileChooser();
-        getIconChooser();
+    public static JFileChooser getFileChooser(String title, String[] ext, String description) {
+        // Safely bridge the legacy String[] array to the modern Java 25 Varargs pipeline
+        return prepareFileChooser(title, description, ext);
     }
 
     /**
-     * This method is called once to reset filechoosers.
-     */
-    static void resetFileChoosers() {
-        fileChooser = null;
-        iconChooser = null;
-    }
-
-
-    /**
-     * Returns archive chooser
-     */
-    public static JFileChooser getArchiveChooser() {
-        return ClassCache.getFileChooser(ResourceAnchor.getString(CACHE_CHOOSE_ARCHIVE_TITLE),
-                new String[]{JAR_EXTENTION, ZIP_EXTENTION},
-                ResourceAnchor.getString(CACHE_ARCHIVES_TITLE));
-    }
-
-    /**
-     * Returns file chooser
-     */
-    public static JFileChooser getFileChooser(String title,
-                                              String[] ext,
-                                              String description
-    ) {
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser(title);
-            fileChooser.setFileView(new WorkspaceFileView());
-            fileChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY)));
-        }
-        fileChooser.setDialogTitle(title);
-        if (ext != null && description != null) {
-            fileChooser.setFileFilter(new WorkspaceFileFilter(ext, description));
-        }
-        return fileChooser;
-    }
-
-    /**
-     * Get file chooser with default parameters
-     */
-    private static JFileChooser getFileChooser() {
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-            fileChooser.setFileView(new WorkspaceFileView());
-            fileChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME_PROPERTY)));
-        }
-        return fileChooser;
-    }
-
-    /**
-     * Get ICON chooser
-     */
-    public static JFileChooser getIconChooser() {
-        return getIconChooser(null);
-    }
-
-    /**
-     * Get ICON chooser
+     * Returns the icon file chooser instance initialized to a specific directory path.
+     * Safe for use with Java 25 Virtual Threads.
      */
     public static JFileChooser getIconChooser(String path) {
-        if (iconChooser == null) {
-            iconChooser = new JFileChooser(ResourceAnchor.getString("Cache.chooseIcon"));
-            previewer = new FilePreviewer(iconChooser);
-            iconChooser.setAccessory(previewer);
-            WorkspaceFileFilter ff = new WorkspaceFileFilter(new String[]{"gif",
-                "jpg", "jpeg", "png", "ico", "bmp", "psd",
-                "tga", "cur", "tiff", "xpm"},
-                ResourceAnchor.getString("Cache.allFormats"));
-            ff.setExtensionListInDescription(false);
-            iconChooser.addChoosableFileFilter(ff);
-            iconChooser.setFileView(new WorkspaceFileView());
+        JFileChooser chooser = IconChooserHolder.INSTANCE;
+
+        // Clear out any old lingering file filters from prior transactions
+        chooser.resetChoosableFileFilters();
+        chooser.setFileFilter(chooser.getAcceptAllFileFilter());
+        if (previewer == null) {
+            previewer = new FilePreviewer(chooser);
         }
-        if (path != null) {
-            File file = new File(path);
-            if (file.exists()) {
-                iconChooser.setSelectedFile(file);
-                iconChooser.setCurrentDirectory(file);
-            } else {
-                iconChooser.setSelectedFile(null);
-                previewer.reset();
+        chooser.setAccessory(previewer);
+
+        if (path != null && !path.isBlank()) {
+            File dir = new File(path);
+            if (dir.exists() && dir.isDirectory()) {
+                chooser.setCurrentDirectory(dir);
             }
         }
-        return iconChooser;
+        return chooser;
+    }
+    /**
+     * Returns the icon file chooser instance.
+     * Backward compatible signature used by external caller setups.
+     */
+    public static JFileChooser getIconChooser() {
+        return IconChooserHolder.INSTANCE;
     }
 
-    /**
-     * Update UI of choosers.
-     * (BUG #211610) - should update all components in cache.
-     */
-    public static void updateUI() {
-        fileChooser.updateUI();
-        iconChooser.updateUI();
+    private static JFileChooser prepareFileChooser(String title, String description, String... extensions) {
+        var chooser = getFileChooserInstance();
+        chooser.setDialogTitle(title);
+
+        // Wipe out ALL existing user-defined filters to stop multi-filter accumulation
+        chooser.resetChoosableFileFilters();
+
+        if (extensions != null && extensions.length > 0) {
+            // Safe Fallback: Prevent the literal "null" string representation if description is absent
+            String safeDescription = (description == null || description.isBlank())
+                ? "Files (*." + String.join(", *.", extensions) + ")"
+                : description;
+
+            var filter = new FileNameExtensionFilter(safeDescription, extensions);
+
+            chooser.addChoosableFileFilter(filter);
+            chooser.setFileFilter(filter);
+        } else {
+            // Fall back cleanly to accept all if no constraints provided
+            chooser.setFileFilter(chooser.getAcceptAllFileFilter());
+        }
+        return chooser;
+    }
+
+    private static File showOpenDialogAndGetFile(JFileChooser chooser, Component parent) {
+        return (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION)
+            ? chooser.getSelectedFile()
+            : null;
+    }
+
+    public static void createFileChoosers() {
+        // Trigger lazy-loading explicitly if required early
+        Objects.requireNonNull(getFileChooserInstance());
+        Objects.requireNonNull(getIconChooserInstance());
+    }
+
+    // Thread-safe Lazy Initialization Holders (Virtual Thread Safe / No Synchronized Locks)
+    private static class FileChooserHolder {
+        private static final JFileChooser INSTANCE = new JFileChooser();
+    }
+
+    private static class IconChooserHolder {
+        private static final JFileChooser INSTANCE = new JFileChooser();
     }
 }

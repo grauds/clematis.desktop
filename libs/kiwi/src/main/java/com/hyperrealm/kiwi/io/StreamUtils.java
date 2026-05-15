@@ -82,7 +82,7 @@ public final class StreamUtils {
      */
 
     public static String readStreamToString(InputStream input) throws IOException {
-        return readStream(input).toString(StandardCharsets.UTF_8.name());
+        return readStream(input).toString(StandardCharsets.UTF_8);
     }
 
     /**

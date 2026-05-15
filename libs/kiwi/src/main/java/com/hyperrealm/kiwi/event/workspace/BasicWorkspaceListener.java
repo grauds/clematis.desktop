@@ -25,7 +25,6 @@ package com.hyperrealm.kiwi.event.workspace;
  *
  * @author Mark Lindner
  */
-
 public class BasicWorkspaceListener implements WorkspaceListener {
 
     /**
