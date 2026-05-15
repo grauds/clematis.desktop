@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
 
@@ -74,11 +75,27 @@ public final class JShellProcess extends AbstractTask {
      *
      * @param filePath path to the local script file
      */
-    public void execute(@NonNull Path filePath) {
+    public void execute(@NonNull Path filePath) throws IOException {
         if (jshell != null && isAlive()) {
             // The absolute path prevents directory resolution bugs inside the VM
-            String command = "/open " + filePath.toAbsolutePath();
-            jshell.eval(command);
+            String content = Files.readString(filePath);
+            // Feed chunks to JShell's native source code analyzer snippet-by-snippet
+            var analyzer = jshell.sourceCodeAnalysis();
+
+            while (!content.trim().isEmpty()) {
+                // Extract the next single syntactically complete snippet block
+                var completionInfo = analyzer.analyzeCompletion(content);
+                String currentSnippet = completionInfo.source();
+
+                if (currentSnippet != null && !currentSnippet.trim().isEmpty()) {
+                    // Evaluate this exact chunk (e.g., an import, a class declaration, or a print statement)
+                    jshell.eval(currentSnippet);
+                }
+
+                // Advance to the remaining code block segment
+                content = completionInfo.remaining();
+            }
+            outputRedirector.flush();
         }
     }
 
@@ -88,6 +105,9 @@ public final class JShellProcess extends AbstractTask {
     public void execute(@NonNull String snippet) {
         if (jshell != null && isRunning) {
             jshell.eval(snippet);
+            try {
+                outputRedirector.flush();
+            } catch (IOException ignored) {}
         }
     }
 
