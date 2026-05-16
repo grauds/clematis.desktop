@@ -26,9 +26,7 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
@@ -49,9 +47,9 @@ import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.action.AbstractStateAction;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.dialog.AboutDialog;
 import jworkspace.ui.dialog.SettingsDialog;
 import jworkspace.ui.profiles.UserDetailsDialog;
-import jworkspace.ui.widgets.ImageRenderer;
 
 /**
  * This class contains all actions of workspace frame that are for system use.
@@ -183,23 +181,12 @@ public class MenuActions implements ITextConstants {
      */
     private void about() {
 
-        JDialog aboutFrame = new JDialog(frame);
-        Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.png");
+        AboutDialog aboutFrame = new AboutDialog(frame);
 
-        aboutFrame.getContentPane().setLayout(new BorderLayout());
-        ImageRenderer imr = new ImageRenderer();
-        imr.setImage(im);
-        aboutFrame.getContentPane().add(imr, BorderLayout.CENTER);
         aboutFrame.pack();
-
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        aboutFrame.setLocation((screenSize.width - aboutFrame.getWidth()) / 2,
-            (screenSize.height - aboutFrame.getHeight()) / 2);
-
         aboutFrame.setResizable(false);
-        aboutFrame.setModal(true);
-        aboutFrame.setTitle(WorkspaceResourceAnchor.getString("Workspace.about.title"));
         aboutFrame.setVisible(true);
+
     }
 
     /**

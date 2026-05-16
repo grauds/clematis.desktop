@@ -48,7 +48,7 @@ public final class JShellProcess extends AbstractTask {
     private final PipedOutputStream outputRedirector = new PipedOutputStream();
     private final PipedInputStream inputStreamBridge = new PipedInputStream();
     private final Object exitLock = new Object();
-    private volatile boolean isRunning = false;
+    private volatile boolean isRunning;
 
     private JShellProcess(@NonNull String name) throws IOException {
         super(name);
