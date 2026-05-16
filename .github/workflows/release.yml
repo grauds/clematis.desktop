@@ -45,6 +45,9 @@ jobs:
         with:
           tag_name: ${{ github.event.release.tag_name || 'latest' }}
           files: |
-            app/build/dist/*
+            application/build/**/*.exe
+            application/build/**/*.msi
+            application/build/**/*.dmg
+            application/build/**/*.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
