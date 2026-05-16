@@ -26,10 +26,7 @@ package jworkspace.ui;
   ----------------------------------------------------------------------------
 */
 
-import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
@@ -67,6 +64,7 @@ import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.IView;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
+import jworkspace.ui.dialog.ClematisLogoPanel;
 import jworkspace.ui.plugins.PluginsLoaderComponent;
 import jworkspace.ui.widgets.ClassCache;
 import jworkspace.ui.widgets.ResourceAnchor;
@@ -169,24 +167,13 @@ public class WorkspaceGUI implements IWorkspaceUI {
         return frame;
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private Window getLogoScreen() {
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         if (logo == null) {
-            Image im = getResourceManager().getImage("logo/Logo.png");
-            logo = new SplashScreen(new Frame(), im, null);
-
-            ImageIcon imc = new ImageIcon(im);
-
-            Rectangle logoBounds = new Rectangle((screenSize.width
-                - imc.getIconWidth()) / 2,
-                (screenSize.height - imc.getIconHeight()) / 2,
-                imc.getIconWidth(),
-                imc.getIconHeight());
-
-            logo.setBounds(logoBounds);
-            logo.getParent().setBounds(logoBounds);
-            logo.setDelay(0);
+            logo = new SplashScreen(new ClematisLogoPanel());
+            logo.setDelay(5);
+            logo.setVisible(true);
         }
         return logo;
     }

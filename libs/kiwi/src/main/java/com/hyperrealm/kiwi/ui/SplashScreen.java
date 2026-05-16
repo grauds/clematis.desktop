@@ -19,15 +19,18 @@
 
 package com.hyperrealm.kiwi.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
+import java.awt.Component;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Window;
 
-import static com.hyperrealm.kiwi.ui.KPanel.DEFAULT_DELAY;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JWindow;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+
 import com.hyperrealm.kiwi.util.KiwiUtils;
 
 /**
@@ -50,21 +53,17 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  *
  * @author Mark Lindner
  */
+public class SplashScreen extends JWindow {
 
-public class SplashScreen extends Window {
+    private static final int DEFAULT_DELAY = 30;
 
     private int delay = DEFAULT_DELAY;
-
     private Image image;
-
     private String caption;
+    private Component customComponent;
 
     /**
-     * Construct a new <code>SplashScreen</code>.
-     *
-     * @param image   The image to display in the splash screen.
-     * @param caption A short text caption to display below the image (may be
-     *                <code>null</code>).
+     * Construct an image-based legacy Splash Screen.
      */
     public SplashScreen(Image image, String caption) {
         this(KiwiUtils.getPhantomFrame(), image, caption);
@@ -72,65 +71,61 @@ public class SplashScreen extends Window {
 
     public SplashScreen(Frame parent, Image image, String caption) {
         super(parent);
-
         this.image = image;
         this.caption = caption;
+        setupUI();
+    }
 
-        setForeground(Color.black);
+    public SplashScreen(Component component) {
+        this(KiwiUtils.getPhantomFrame(), component);
+    }
+
+    public SplashScreen(Frame parent, Component component) {
+        super(parent);
+        this.customComponent = component;
+        setupUI();
     }
 
     /**
-     * Set the display duration.
-     *
-     * @param seconds The number of seconds that the splash screen should remain
-     *                onscreen before it is automatically hidden. If 0, it will remain onscreen
-     *                until explicitly hidden via a call to <code>setVisible()</code> or
-     *                <code>dispose()</code>.
-     * @throws IllegalArgumentException If <code>seconds</code> is
-     *                                  less than 0.
+     * Uniform layout manager initializer using standard Swing content pane hooks.
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
+    private void setupUI() {
+        // Replaces the custom drawRect border routine with a clean look
+        getRootPane().setBorder(new LineBorder(Color.BLACK, 1));
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().setBackground(Color.WHITE);
+
+        if (customComponent != null) {
+            // Direct component injection strategy
+            getContentPane().add(customComponent, BorderLayout.CENTER);
+        } else {
+            // Backward compatibility strategy for old Image + Caption inputs
+            if (image != null) {
+                JLabel imageLabel = new JLabel(new ImageIcon(image));
+                getContentPane().add(imageLabel, BorderLayout.CENTER);
+            }
+            if (caption != null) {
+                JLabel captionLabel = new JLabel(caption, SwingConstants.CENTER);
+                captionLabel.setForeground(Color.BLACK);
+                // Simple empty border mimicking old pixel padding offsets
+                captionLabel.setBorder(new javax.swing.border.EmptyBorder(5, 5, 5, 5));
+                getContentPane().add(captionLabel, BorderLayout.SOUTH);
+            }
+        }
+    }
 
     public void setDelay(int seconds) throws IllegalArgumentException {
         if (seconds < 0) {
-            throw (new IllegalArgumentException("Delay must be >= 0 seconds."));
+            throw new IllegalArgumentException("Delay must be >= 0 seconds.");
         }
         delay = seconds;
     }
 
-    /**
-     * Paint the splash screen.
-     */
-
-    public void paint(Graphics gc) {
-
-        Dimension size = getSize();
-
-        FontMetrics fm = gc.getFontMetrics();
-
-        gc.setColor(Color.black);
-        gc.drawRect(0, 0, size.width - 1, size.height - 1);
-        gc.drawImage(image, 1, 1, null);
-
-        if (caption != null) {
-            int y = image.getHeight(null) + 2 + fm.getAscent();
-            int x = (size.width - fm.stringWidth(caption)) / 2;
-
-            gc.setColor(getForeground());
-            gc.drawString(caption, x, y);
-        }
-    }
-
-    /**
-     * Display or hide the splash screen. The splash screen is displayed on the
-     * desktop, centered on the screen. Although this method returns
-     * immediately, the splash screen remains on the desktop for the duration
-     * of the time delay, or indefinitely if the delay was set to 0.
-     */
-
+    @Override
     public void setVisible(boolean flag) {
-
         if (flag) {
-            pack();
+            pack(); // Let layouts automatically calculate modern boundaries
             KiwiUtils.centerWindow(this);
         }
         super.setVisible(flag);
@@ -138,33 +133,13 @@ public class SplashScreen extends Window {
         if (flag && (delay > 0)) {
             Thread thread = new Thread(() -> {
                 try {
-                    Thread.sleep(delay * KiwiUtils.MILLISEC_IN_SECOND);
+                    Thread.sleep((long) delay * KiwiUtils.MILLISEC_IN_SECOND);
                 } catch (InterruptedException ignored) {
                 }
                 dispose();
             });
-
             thread.start();
         }
     }
-
-    /**
-     * Get the splash screen's preferred size.
-     *
-     * @return The preferred size of the component.
-     */
-
-    public Dimension getPreferredSize() {
-
-        FontMetrics fm = getGraphics().getFontMetrics();
-
-        Dimension d = new Dimension(image.getWidth(null) + 2,
-            image.getHeight(null) + 2);
-        if (caption != null) {
-            d.height += fm.getHeight() + 2;
-        }
-
-        return (d);
-    }
-
 }
+
