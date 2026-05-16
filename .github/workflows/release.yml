@@ -43,8 +43,8 @@ jobs:
       - name: Upload Installer to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.release.tag_name || 'latest' }}
           files: |
-            application/build/jpackage/*
-            application/build/distributions/*
+            app/build/dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
