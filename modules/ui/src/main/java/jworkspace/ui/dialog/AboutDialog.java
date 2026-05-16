@@ -24,17 +24,13 @@ package jworkspace.ui.dialog;
    anton.troshin@gmail.com
    ----------------------------------------------------------------------------
 */
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
-import java.awt.Image;
 
 import com.hyperrealm.kiwi.ui.KTabbedPane;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import jworkspace.WorkspaceResourceAnchor;
-import jworkspace.ui.WorkspaceGUI;
-import jworkspace.ui.widgets.ImageRenderer;
 
 public class AboutDialog extends ComponentDialog {
 
@@ -43,16 +39,13 @@ public class AboutDialog extends ComponentDialog {
         setComment("");
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     protected Component buildDialogUI() {
         KTabbedPane tabs = new KTabbedPane();
 
-        Image im = WorkspaceGUI.getResourceManager().getImage("logo/Logo.png");
-        ImageRenderer imr = new ImageRenderer();
-        imr.setImage(im);
-        imr.setBackground(Color.WHITE);
-        tabs.add("About", imr);
-
+        tabs.add("About", new ClematisLogoPanel());
+        tabs.add("Licenses", new AcknowledgementsPanel());
         tabs.add("JVM Info", new JvmPropertiesPanel());
         tabs.add("OS Info", new EnvironmentVariablesPanel());
 
