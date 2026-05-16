@@ -31,8 +31,10 @@ import java.awt.Component;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
@@ -421,8 +423,9 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
 
     public void lostOwnership(Clipboard clipboard, Transferable contents) {}
 
+    @SuppressWarnings("checkstyle:NestedIfDepth")
+    @Override
     public void paintComponent(Graphics g) {
-       // SwingHierarchyPrinter.printHierarchy(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame(), 0);
         super.paintComponent(g);
         if (this.theme.isGradientFill() && isOpaque()) {
             Graphics2D g2 = (Graphics2D) g;
@@ -443,14 +446,35 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
                     this
                 );
             } else if (this.theme.getRenderMode() == DesktopTheme.STRETCH_IMAGE) {
-                g.drawImage(
-                    this.theme.getCover().getImage(),
-                    0,
-                    0,
-                    getWidth(),
-                    getHeight(),
-                    this
-                );
+                Graphics2D g2d = (Graphics2D) g.create();
+
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                Image img = this.theme.getCover().getImage();
+                int imgW = this.theme.getCover().getIconWidth();
+                int imgH = this.theme.getCover().getIconHeight();
+                int desktopW = getWidth();
+                int desktopH = getHeight();
+
+                if (imgW > 0 && imgH > 0) {
+                    // Calculate scale factors to fill the container entirely while locked to aspect ratio
+                    double scaleX = (double) desktopW / imgW;
+                    double scaleY = (double) desktopH / imgH;
+                    double scale = Math.max(scaleX, scaleY);
+
+                    int targetW = (int) (imgW * scale);
+                    int targetH = (int) (imgH * scale);
+
+                    // Center the proportionally scaled bounding box
+                    int x = (desktopW - targetW) / 2;
+                    int y = (desktopH - targetH) / 2;
+
+                    g2d.drawImage(img, x, y, targetW, targetH, this);
+                }
+                g2d.dispose();
+
             } else if (this.theme.getRenderMode() == DesktopTheme.TILE_IMAGE) {
                 int x = 0, y = 0;
                 while (x < getWidth()) {
