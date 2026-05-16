@@ -1,6 +1,6 @@
 # Clematis Java Workspace
 
-[![Gradle Package](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml)
+[![Package and Publish App (JDK 25)](https://github.com/grauds/clematis.desktop/actions/workflows/release.yml/badge.svg)](https://github.com/grauds/clematis.desktop/actions/workflows/release.yml)
 [![License](https://img.shields.io/badge/License-GPLv2%202.0-blue.svg)](libs/kiwi/src/main/resources/com/hyperrealm/kiwi/html/gpl.html)
 
 <img src="./docs/logo.png" alt="logo" width="600"/>
