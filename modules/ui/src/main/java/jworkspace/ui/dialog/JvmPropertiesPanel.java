@@ -29,17 +29,16 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class JvmPropertiesPanel extends JPanel {
@@ -82,7 +81,7 @@ public class JvmPropertiesPanel extends JPanel {
 
             // Format class paths or library paths to be more readable
             if (key.endsWith(".path") || key.equals("java.class.path")) {
-                value = value.replace(System.getProperty("path.separator"), " -> ");
+                value = value.replace(File.pathSeparator, " -> ");
             }
 
             tableModel.addRow(new Object[]{key, value});
@@ -93,7 +92,7 @@ public class JvmPropertiesPanel extends JPanel {
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem copyItem = new JMenuItem("Copy Value");
 
-        copyItem.addActionListener(e -> copySelectedValue());
+        copyItem.addActionListener(_ -> copySelectedValue());
         popupMenu.add(copyItem);
 
         table.addMouseListener(new MouseAdapter() {
@@ -133,17 +132,5 @@ public class JvmPropertiesPanel extends JPanel {
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
             }
         }
-    }
-
-    // Quick test runner
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("JVM Properties Viewer");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 500);
-            frame.add(new JvmPropertiesPanel());
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
     }
 }

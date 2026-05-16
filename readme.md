@@ -1,15 +1,17 @@
-# Clematis Desktop for Java
+# Clematis Java Workspace
 
 [![Gradle Package](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml)
 [![License](https://img.shields.io/badge/License-GPLv2%202.0-blue.svg)](libs/kiwi/src/main/resources/com/hyperrealm/kiwi/html/gpl.html)
 
+<img src="./docs/logo.png" alt="logo" width="600"/>
+
 ## Introduction
 
-Clematis Desktop is a pet project started back in '99 and being developed at spare time. 
-It is built with Kiwi Library and Springboard - great hobby projects written by Mark Lindner, both gave
-a significant contribution. 
+Clematis Java Workspace is a project for Master Degree at MIPT (Moscow Institute of Physics and Technology) started back in September'98. It has the long history, the first version of it was awarded as a Java Konkurs 2006 finalist.  
 
-<img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="998"/>
+<img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="700"/>
+
+Now it is a pet project and a useful tool for my daily job.
 
 ## Modules
 
