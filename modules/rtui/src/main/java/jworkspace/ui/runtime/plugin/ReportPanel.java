@@ -58,6 +58,14 @@ public class ReportPanel extends AbstractReportPanel implements IPluginSelection
             + "</b>"
             + plugin.getVersion()
             + "<br><b>"
+            + LangResource.getString("Build") + ": "
+            + "</b>"
+            + plugin.getBuildNumber()
+            + "<br><b>"
+            + LangResource.getString("Build Date") + ": "
+            + "</b>"
+            + plugin.getBuildDate()
+            + "<br><b>"
             + LangResource.getString("Class") + ": "
             + "</b>"
             + plugin.getClassName()

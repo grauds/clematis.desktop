@@ -126,7 +126,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
     @Override
     public void load() {
-        pluginsPanel.load(this.pluginContext);
+        //pluginsPanel.load(this.pluginContext);
         pluginsDownloaderPanel.load(this.pluginContext);
     }
 
@@ -137,7 +137,7 @@ public class RuntimeManagerWindow extends DefaultCompoundView
 
     @Override
     public void save() throws IOException {
-        pluginsPanel.save(this.pluginContext);
+       // pluginsPanel.save(this.pluginContext);
         pluginsDownloaderPanel.save(this.pluginContext);
     }
 

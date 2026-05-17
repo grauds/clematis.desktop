@@ -48,7 +48,6 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
-import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.ui.runtime.LangResource;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
 import jworkspace.ui.widgets.ButtonColumn;
@@ -152,22 +151,26 @@ public class PluginsPanel extends KPanel {
 
             this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(60);
             this.pluginsTable.getColumnModel().getColumn(1).setMaxWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(70);
-            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(70);
+            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(60);
 
-            ButtonColumn uninstallColumn = new ButtonColumn("Uninstall", (row, col) -> {
-                PluginsTableModel model = (PluginsTableModel) pluginsTable.getModel();
-                Plugin plugin = model.getItem(row);
-                fireUninstallationEvent(plugin);
-            });
+            ButtonColumn uninstallColumn = new ButtonColumn(
+                new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
+                    .getResourceAsImage("images/remove.png")
+                ),
+                (row, _) -> {
+                    PluginsTableModel model = (PluginsTableModel) pluginsTable.getModel();
+                    Plugin plugin = model.getItem(row);
+                    fireUninstallationEvent(plugin);
+                });
 
             pluginsTable.getColumnModel().getColumn(3).setCellRenderer(uninstallColumn);
             pluginsTable.getColumnModel().getColumn(3).setCellEditor(uninstallColumn);
 
-            this.pluginsTable.getColumnModel().getColumn(3).setMinWidth(90);
-            this.pluginsTable.getColumnModel().getColumn(3).setMaxWidth(120);
+            this.pluginsTable.getColumnModel().getColumn(3).setMinWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(3).setMaxWidth(60);
 
-            this.pluginsTable.getSelectionModel().addListSelectionListener(e -> {
+            this.pluginsTable.getSelectionModel().addListSelectionListener(_ -> {
                 int row = this.pluginsTable.getSelectedRow();
                 if (row < 0) {
                     return;
@@ -181,13 +184,5 @@ public class PluginsPanel extends KPanel {
 
     public void setPlugins(List<Plugin> plugins) {
         ((PluginsTableModel) getPluginsTable().getModel()).setPlugins(plugins);
-    }
-
-    public void load(WorkspacePluginContext pluginContext) {
-
-    }
-
-    public void save(WorkspacePluginContext pluginContext) {
-
     }
 }

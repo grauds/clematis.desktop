@@ -32,10 +32,10 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  * A separator much like a <code>JSeparator</code> that also displays
  * a title and/or ICON in its center.
  *
- * <p><center>
- * <img src="snapshot/TitledSeparator.gif"><br>
+ * <p>
+ * <img src="snapshot/TitledSeparator.gif" alt=""><br>
  * <i>An example TitledSeparator.</i>
- * </center>
+ * </p>
  *
  * @author Mark Lindner
  * @since Kiwi 2.4

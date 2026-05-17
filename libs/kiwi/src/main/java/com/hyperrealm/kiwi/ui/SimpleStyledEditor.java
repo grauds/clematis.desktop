@@ -40,10 +40,10 @@ import com.hyperrealm.kiwi.text.XMLParser;
  * A simple text editor that supports styles like bold, italic, and underline,
  * and that is able to render embedded markup using proxies.
  *
- * <p><center>
- * <img src="snapshot/SimpleStyledEditor.gif"><br>
+ * <p>
+ * <img src="snapshot/SimpleStyledEditor.gif" alt=""><br>
  * <i>An example SimpleStyledEditor.</i>
- * </center>
+ * </p>
  *
  * @author Mark Lindner
  * @see com.hyperrealm.kiwi.ui.SimpleEditor

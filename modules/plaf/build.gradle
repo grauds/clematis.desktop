@@ -1,5 +1,4 @@
-version = '1.0.0-SNAPSHOT'
-
+import java.text.SimpleDateFormat
 
 dependencies {
 
@@ -12,15 +11,19 @@ dependencies {
 }
 
 jar {
+    def buildNumber = System.getenv("GITHUB_RUN_NUMBER") ?: System.getenv("BUILD_NUMBER") ?: "LOCAL"
+    def buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date())
     manifest {
         attributes([
+                'Build-Number': buildNumber,
+                'Build-Date': buildDate,
                 "PluginName": jar.archiveBaseName.get(),
                 "PluginLevel": "ANY",
                 "PluginType": "UI",
                 "PluginDescription": jar.archiveClassifier.get(),
                 "PluginIcon": "jworkspace/ui/plaf/images/plaf.png",
                 "PluginVersion": jar.archiveVersion.get(),
-                "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/plaf"
+                "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/plaf",
         ], "jworkspace.ui.plaf.PlafFactory.class")
     }
     from {

@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -77,22 +78,50 @@ public class ButtonColumn extends AbstractCellEditor
     private final BiConsumer<Integer, Integer> action;
 
     /**
-     * Creates a ButtonColumn for a specific text and action.
+     * Constructor for Icon-only buttons.
      *
-     * @param text   the button text
+     * @param icon   the button icon
      * @param action action to fire when button is clicked (row, column)
      */
+    public ButtonColumn(Icon icon, BiConsumer<Integer, Integer> action) {
+        this("", icon, action);
+    }
+
     public ButtonColumn(String text, BiConsumer<Integer, Integer> action) {
+        this(text, null, action);
+    }
+
+    /**
+     * Constructor handling both text and icons.
+     *
+     * @param text   the button text (can be empty or null if icon-only)
+     * @param icon   the button icon (can be null if text-only)
+     * @param action action to fire when button is clicked (row, column)
+     */
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public ButtonColumn(String text, Icon icon, BiConsumer<Integer, Integer> action) {
         this.action = Objects.requireNonNull(action);
 
-        // Renderer button: just for painting
+        // Renderer button setup
         renderButton = new JButton(text);
         renderButton.setOpaque(true);
+        if (icon != null) {
+            renderButton.setIcon(icon);
+        }
 
-        // Editor button: interactive, triggers clicks
+        // Editor button setup
         editButton = new JButton(text);
         editButton.setOpaque(true);
+        if (icon != null) {
+            editButton.setIcon(icon);
+        }
         editButton.addActionListener(this::onClick);
+
+        // Optional UI Polish: Adjust spacing if text and icon coexist
+        if (text != null && !text.isEmpty() && icon != null) {
+            renderButton.setIconTextGap(8);
+            editButton.setIconTextGap(8);
+        }
     }
 
     /**

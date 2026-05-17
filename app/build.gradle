@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
     id 'org.panteleyev.jpackageplugin' version '2.0.1'
 }
@@ -16,15 +18,22 @@ dependencies {
     implementation "args4j:args4j:2.0.16"
 }
 
-// Make the jar task depend on the kiwi jar and potentially use its outputs
 tasks.named('jar') {
     dependsOn(':kiwi:jar')
 
-    // If you need to do something with the kiwi jar file itself:
     doFirst {
         def kiwiJar = project(':kiwi').tasks.named('jar').get().archiveFile.get().asFile
         println "Using Kiwi jar as input: ${kiwiJar}"
-        // You could do additional operations with the kiwiJar file here if needed
+    }
+    def buildNumber = System.getenv("GITHUB_RUN_NUMBER") ?: System.getenv("BUILD_NUMBER") ?: "LOCAL"
+    def buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date())
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Build-Number': buildNumber,
+                'Build-Date': buildDate
+        )
     }
 }
 

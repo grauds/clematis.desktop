@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -211,6 +213,7 @@ public final class Plugin extends PluginDTO {
         return new PluginManifest(classFile, attrs);
     }
 
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private void parseAttributes(Attributes attrs) throws PluginException {
 
         for (Object o : attrs.keySet()) {
@@ -247,6 +250,16 @@ public final class Plugin extends PluginDTO {
                     break;
                 case PLUGIN_HELP_URL:
                     setHelpUrl(v);
+                    break;
+                case BUILD_DATE:
+                    try {
+                        setBuildDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(v));
+                    } catch (ParseException e) {
+                        // silently ignore illegal format here
+                    }
+                    break;
+                case BUILD_NUMBER:
+                    setBuildNumber(v);
                     break;
                 default:
                     properties.put(a, v);

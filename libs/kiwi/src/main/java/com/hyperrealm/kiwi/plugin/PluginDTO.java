@@ -19,7 +19,9 @@
 package com.hyperrealm.kiwi.plugin;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -59,6 +61,10 @@ public class PluginDTO {
 
     public static final String PLUGIN_HELP_URL = "PluginHelpURL";
 
+    public static final String BUILD_DATE = "Build-Date";
+
+    public static final String BUILD_NUMBER = "Build-Number";
+
     protected String className;
 
     protected String name;
@@ -74,6 +80,10 @@ public class PluginDTO {
     protected String version;
 
     protected String jarFile;
+
+    protected Date buildDate;
+
+    protected String buildNumber;
 
     protected Icon icon = null;
 
@@ -112,7 +122,7 @@ public class PluginDTO {
     @SuppressFBWarnings("DE_MIGHT_IGNORE")
     public void setHelpUrl(String helpUrl) {
         try {
-            helpURL = new URL(helpUrl);
+            helpURL = URI.create(helpUrl).toURL();
         } catch (MalformedURLException ex) { /* ignore */ }
     }
 
@@ -133,6 +143,8 @@ public class PluginDTO {
         attributes.put(new Attributes.Name(PLUGIN_ICON), plugin.getIcon());
         attributes.put(new Attributes.Name(PLUGIN_LEVEL), plugin.getLevel());
         attributes.put(new Attributes.Name(PLUGIN_TYPE), plugin.getType());
+        attributes.put(new Attributes.Name(BUILD_DATE), plugin.getBuildDate());
+        attributes.put(new Attributes.Name(BUILD_NUMBER), plugin.getBuildNumber());
 
         manifest.getEntries().put(plugin.getClassName(), attributes);
         return manifest;

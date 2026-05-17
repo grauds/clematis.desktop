@@ -36,7 +36,7 @@ public class PluginsTableModel extends AbstractTableModel {
 
     private final List<Plugin> plugins;
     private final String[] columns = {
-        "Plugin", "Type", "Level", ""
+        "Plugin", "Type", "Level", "Remove"
     };
 
     public PluginsTableModel(List<Plugin> plugins) {

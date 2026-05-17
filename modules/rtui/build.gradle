@@ -1,4 +1,4 @@
-version = '2.0.0-SNAPSHOT'
+import java.text.SimpleDateFormat
 
 processResources {
 
@@ -35,8 +35,12 @@ dependencies {
 }
 
 jar {
+    def buildNumber = System.getenv("GITHUB_RUN_NUMBER") ?: System.getenv("BUILD_NUMBER") ?: "LOCAL"
+    def buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date())
     manifest {
-         attributes([
+        attributes([
+                 'Build-Number': buildNumber,
+                 'Build-Date': buildDate,
                  "PluginName": jar.archiveBaseName.get(),
                  "PluginLevel": "SYSTEM",
                  "PluginType": "UI",
@@ -44,8 +48,8 @@ jar {
                  "PluginIcon": "jworkspace/ui/runtime/images/runtime.png",
                  "PluginIconBig": "jworkspace/ui/runtime/images/runtime_big.png",
                  "PluginVersion": jar.archiveVersion.get(),
-                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/rtui"
-         ], "jworkspace.ui.runtime.RuntimeManagerWindow.class")
+                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/rtui",
+        ], "jworkspace.ui.runtime.RuntimeManagerWindow.class")
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
