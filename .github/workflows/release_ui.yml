@@ -4,15 +4,16 @@ on:
   release:
     types: [created]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: false
+        default: 'latest'
 
 jobs:
   build-and-release:
-    name: Build Installer on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+    name: Build and Publish Jar
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Source Code
@@ -28,26 +29,42 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Install Linux Dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fakeroot rpm
-
       - name: Grant Execute Permission for Gradle Wrapper
         run: chmod +x ./gradlew
 
-      - name: Run jpackage Task via Gradle
-        run: ./gradlew :jworkspace:jpackage
+      - name: Extract Version Name
+        id: get_version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${{ github.event.inputs.version }}"
+          fi
+          VERSION=$(echo "${TAG}" | sed 's/^v//')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
-      - name: Upload Installer to GitHub Release
+      - name: Compile Library Jar
+        run: ./gradlew :ui:jar -Pversion=${{ steps.get_version.outputs.version }}
+
+      - name: Rename and Stage Jar File
+        shell: bash
+        run: |
+          # Finds the main library jar, ignoring documentation or source jars if they exist
+          JAR_PATH=$(find ui/build/libs -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
+          if [ -f "$JAR_PATH" ]; then
+            mkdir -p staging
+            cp "$JAR_PATH" "staging/ui_${{ steps.get_version.outputs.version }}.jar"
+          else
+            echo "Error: Target JAR file not found"
+            exit 1
+          fi
+
+      - name: Upload Jar to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.release.tag_name || 'latest' }}
-          files: |
-            application/build/**/*.exe
-            application/build/**/*.msi
-            application/build/**/*.dmg
-            application/build/**/*.deb
+          tag_name: ${{ steps.get_version.outputs.tag }}
+          files: staging/ui_*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
