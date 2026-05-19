@@ -1,4 +1,4 @@
-name: Package and Publish App (JDK 25)
+name: Package and Publish UI (JDK 25)
 
 on:
   release:
