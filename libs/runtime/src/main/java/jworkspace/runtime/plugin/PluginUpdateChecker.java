@@ -147,7 +147,7 @@ public class PluginUpdateChecker {
             return null;
         }
 
-        String assetPrefix = pluginName.toLowerCase() + "-";
+        String assetPrefix = pluginName.toLowerCase() + "_";
 
         for (GitHubAssetDTO asset : release.assets()) {
             if (asset.name() == null) {
