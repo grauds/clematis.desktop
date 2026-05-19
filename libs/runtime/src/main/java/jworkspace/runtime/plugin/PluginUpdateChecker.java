@@ -189,7 +189,7 @@ public class PluginUpdateChecker {
 
             Attributes attr = manifest.getMainAttributes();
             // Matching the Custom Keys defined inside your PluginDTO manifest builder
-            String version = attr.getValue("PluginVersion");
+            String version = attr.getValue("Implementation-Version");
             String buildNumber = attr.getValue("Build-Number");
             String buildDate = attr.getValue("Build-Date");
 

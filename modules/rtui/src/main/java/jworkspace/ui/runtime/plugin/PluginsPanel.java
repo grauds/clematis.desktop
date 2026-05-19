@@ -176,9 +176,8 @@ public class PluginsPanel extends KPanel {
                             table, value, isSelected, hasFocus, row, column
                         );
                         if (value instanceof Plugin plugin) {
-                            boolean hasUpdate = Boolean.parseBoolean(
-                                plugin.getProperty(PluginUpdateChecker.PLUGIN_HAS_UPDATE)
-                            );
+                            Object o = plugin.getProperties().get(PluginUpdateChecker.PLUGIN_HAS_UPDATE);
+                            boolean hasUpdate = o != null ? (Boolean) o : false;
 
                             // Append visual text metadata descriptors cleanly
                             setText(plugin.getVersion() + (hasUpdate ? " (Update Available)" : ""));
