@@ -34,6 +34,7 @@ import java.awt.event.AdjustmentListener;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.function.Consumer;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -61,7 +62,7 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
-import jworkspace.runtime.LogStreamProvider;
+import jworkspace.runtime.logging.LogStreamProvider;
 
 /**
  * Reusable Swing component for displaying streaming logs.
@@ -78,6 +79,7 @@ import jworkspace.runtime.LogStreamProvider;
 public final class LogViewerPanel extends JPanel {
 
     private LogStreamProvider currentProvider = null;
+    private final Consumer<String> liveStreamListener = this::appendRawChunkFromStream;
 
     private final int preferredWidth;
     private final JTextPane textPane;
@@ -133,7 +135,7 @@ public final class LogViewerPanel extends JPanel {
     public void switchLogs(LogStreamProvider newProvider) {
         // Clean up old listener attachment using our reference
         if (this.currentProvider != null) {
-            this.currentProvider.setStreamListener(null);
+            this.currentProvider.removeStreamListener(this.liveStreamListener);
         }
 
         // Retain a strong field reference immediately
@@ -154,7 +156,7 @@ public final class LogViewerPanel extends JPanel {
                     appendRawChunk(history);
                 }
                 // Bind the live stream to our raw layout consumer wrapper
-                this.currentProvider.setStreamListener(this::appendRawChunkFromStream);
+                this.currentProvider.setStreamListener(this.liveStreamListener);
             }
         });
     }
@@ -173,13 +175,14 @@ public final class LogViewerPanel extends JPanel {
     private void appendRawChunk(String text) {
         try {
             LogSeverity severity = LogSeverityDetector.detect(text);
+            // todo: makes the whole text red
             AttributeSet style = switch (severity) {
                 case INFO -> infoStyle;
                 case WARNING -> warnStyle;
                 case ERROR -> errorStyle;
             };
 
-            document.insertString(document.getLength(), text, style);
+            document.insertString(document.getLength(), text, infoStyle);
             if (autoScroll) {
                 textPane.setCaretPosition(document.getLength());
             }

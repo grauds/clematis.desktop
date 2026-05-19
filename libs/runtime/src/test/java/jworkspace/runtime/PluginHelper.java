@@ -12,7 +12,6 @@ import com.hyperrealm.kiwi.plugin.PluginDTO;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 
 /**
- * @author Anton Troshin
  */
 public class PluginHelper {
 
@@ -25,12 +24,14 @@ public class PluginHelper {
 
     private static final String TEST_PLUGIN = "jworkspace.runtime.TestPlugin";
 
+    private static final String TEST_PLUGIN_TITLE = "Test plugin long title";
     private static final String TEST_PLUGIN_NAME = "Test plugin";
     private static final String TEST_PLUGIN_DESCRIPTION = "Test plugin description";
     private static final String TEST_PLUGIN_VERSION = "1.0.0";
     private static final String TEST_PLUGIN_HELP_URL = "http://test.com";
     private static final String TEST_PLUGIN_ICON = "/dummy/path.png";
 
+    private static final String TEST_PLUGIN_TITLE_2 = "Test plugin long title 2";
     private static final String TEST_PLUGIN_NAME_2 = "Test plugin 2";
     private static final String TEST_PLUGIN_DESCRIPTION_2 = "Test plugin 2 description";
     private static final String TEST_PLUGIN_VERSION_2 = "2.0.0";
@@ -42,7 +43,8 @@ public class PluginHelper {
     static void writePluginJarFile(File testPluginClassPath,
                                    String[] classes,
                                    Manifest manifest,
-                                   String pluginJar)
+                                   String pluginJar
+    )
         throws IOException {
 
         WorkspacePluginLocator.writePluginJarFile(testPluginClassPath,
@@ -55,6 +57,7 @@ public class PluginHelper {
     private static Manifest getManifest() {
 
         PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS,
+            TEST_PLUGIN_TITLE,
             TEST_PLUGIN_NAME,
             WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
             PluginDTO.PLUGIN_LEVEL_ANY,
@@ -69,6 +72,7 @@ public class PluginHelper {
     static Manifest getManifest2() {
 
         PluginDTO plugin = new PluginDTO(TEST_PLUGIN_CLASS_2,
+            TEST_PLUGIN_TITLE_2,
             TEST_PLUGIN_NAME_2,
             WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
             PluginDTO.PLUGIN_LEVEL_ANY,

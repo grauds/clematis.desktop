@@ -153,7 +153,7 @@ public class ProcessesController {
         } else {
             AbstractTask task = selected.getFirst();
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-                new StringSelection(task.getLogsText()), null
+                new StringSelection(task.getLogs()), null
             );
         }
     }

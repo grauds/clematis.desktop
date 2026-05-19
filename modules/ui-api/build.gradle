@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 dependencies {
-    compileOnly project(':jworkspace')
+    compileOnly project(':app')
 }
 
 jar {

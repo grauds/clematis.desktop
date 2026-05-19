@@ -1,7 +1,7 @@
 package jworkspace.runtime.downloader;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 2025 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -57,29 +57,20 @@ public final class DownloadTask extends AbstractTask {
     /**
      * Download model holding runtime state
      */
+    @EqualsAndHashCode.Exclude
     private DownloadItem item;
     /**
      * Callback listener for UI or observer updates
      */
+    @EqualsAndHashCode.Exclude
     private IDownloadListener listener;
-    /**
-     * UI row index associated with this download
-     */
-    private int row;
     /**
      * Path to store the downloaded file
      */
     private Path path = Path.of(DEFAULT_PATH);
 
-    public DownloadTask(DownloadItem item, IDownloadListener listener, int row) {
+    public DownloadTask(DownloadItem item) {
         this.item = item;
-        this.listener = listener;
-        this.row = row;
-    }
-
-    public DownloadTask(DownloadItem item, IDownloadListener listener, Path path, int row) {
-        this(item, listener, row);
-        this.path = path;
     }
 
     /**
@@ -94,7 +85,7 @@ public final class DownloadTask extends AbstractTask {
      *   <li>Updates final status on completion or failure</li>
      * </ol>
      */
-    @SuppressWarnings("checkstyle:MagicNumber")
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals"})
     @Override
     public void run() {
         setStartTime(new Date());
@@ -102,8 +93,8 @@ public final class DownloadTask extends AbstractTask {
         try {
             // Transition the item into the active downloading state
             item.setStatus(DownloadStatus.DOWNLOADING);
-            item.addLog("Starting download: " + item.getUrl());
-            listener.update(row);
+            log("Starting download: " + item.getUrl());
+            listener.update(this.getItem());
 
             // Create URL connection from the item URL
             URL url = URI.create(item.getUrl()).toURL();
@@ -111,7 +102,11 @@ public final class DownloadTask extends AbstractTask {
 
             // Retrieve the expected content length (it may be -1 if unknown)
             long total = conn.getContentLengthLong();
+            log(String.format("Content length resolved: %d bytes", total));
             item.createTempFile();
+
+            // Tracks the progress percentage intervals to avoid spamming the log files
+            int lastLoggedPercent = -1;
 
             try (InputStream in = conn.getInputStream();
                  OutputStream out = item.openTempOutputStream()) {
@@ -130,8 +125,9 @@ public final class DownloadTask extends AbstractTask {
                     if (item.getCancelled().get()) {
                         item.cleanupTempFile();
                         item.setStatus(DownloadStatus.CANCELED);
-                        item.addLog("Canceled.");
-                        listener.update(row);
+                        log("Download task was canceled by user request.");
+
+                        listener.update(this.getItem());
                         return;
                     }
 
@@ -147,24 +143,41 @@ public final class DownloadTask extends AbstractTask {
                         item.setSpeedBytesPerSec(downloaded * 1000 / elapsed);
                     }
 
+                    if (total > 0) {
+                        int currentPercent = (int) ((downloaded * 100) / total);
+                        if (currentPercent % 10 == 0 && currentPercent != lastLoggedPercent) {
+                            log(String.format(
+                                "Download progress: %d%% (%d/%d bytes)", currentPercent, downloaded, total)
+                            );
+                            lastLoggedPercent = currentPercent;
+                        }
+                    }
+
                     // Notify listener about progress changes
-                    listener.update(row);
+                    listener.update(this.getItem());
                 }
             }
 
             // Download completed successfully
             item.completeDownload(path);
             item.setStatus(DownloadStatus.COMPLETED);
-            item.addLog("Download completed.");
-            listener.update(row);
-            listener.finished(row);
+            log("Download pipeline closed successfully. File saved to destination: " + path.toAbsolutePath());
+
+            listener.update(this.getItem());
+            listener.finished(this.getItem());
 
         } catch (Exception e) {
             // Any exception is treated as a download failure
             item.cleanupTempFile();
             item.setStatus(DownloadStatus.FAILED);
-            item.addLog("Download failed: " + e.getMessage());
-            listener.update(row);
+            log("Download failed, error: " + e.getMessage());
+
+            listener.update(this.getItem());
+        } finally {
+            // Cleanly close out the stream buffers to flush any trailing lines out to listeners
+            try {
+                this.getLogsOutputStream().close();
+            } catch (Exception ignored) {}
         }
     }
 
@@ -178,6 +191,7 @@ public final class DownloadTask extends AbstractTask {
         if (item != null) {
             item.getCancelled().set(true);
             item.cleanupTempFile();
+            log("Stop command issued to active task processor.");
         }
     }
 }

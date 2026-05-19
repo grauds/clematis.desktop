@@ -36,15 +36,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.hyperrealm.kiwi.util.KiwiUtils;
-
 import static jworkspace.ui.util.VersionUtils.getBuildString;
 import jworkspace.Workspace;
-import jworkspace.api.IWorkspaceUI;
-import jworkspace.installer.WorkspaceInstaller;
-import jworkspace.runtime.RuntimeManager;
 import jworkspace.ui.WorkspaceGUI;
-import jworkspace.users.ProfilesManager;
 
 
 public class ClematisLogoPanel extends JPanel {
@@ -95,36 +89,6 @@ public class ClematisLogoPanel extends JPanel {
         ));
         systemLabel.setFont(versionFont);
 
-        JLabel apiLabel = new JLabel(String.format(
-            "<html><font color='#%s'><b>API:</b></font> &nbsp; <font color='#%s'>%s</font></html>",
-            tagColor, infoColor, getBuildString(IWorkspaceUI.class)
-        ));
-        apiLabel.setFont(versionFont);
-
-        JLabel profilesLabel = new JLabel(String.format(
-            "<html><font color='#%s'><b>Profiles:</b></font> &nbsp; <font color='#%s'>%s</font></html>",
-            tagColor, infoColor, getBuildString(ProfilesManager.class)
-        ));
-        profilesLabel.setFont(versionFont);
-
-        JLabel runtimeLabel = new JLabel(String.format(
-            "<html><font color='#%s'><b>Runtime:</b></font> &nbsp; <font color='#%s'>%s</font></html>",
-            tagColor, infoColor, getBuildString(RuntimeManager.class)
-        ));
-        runtimeLabel.setFont(versionFont);
-
-        JLabel installerLabel = new JLabel(String.format(
-            "<html><font color='#%s'><b>Installer:</b></font> &nbsp; <font color='#%s'>%s</font></html>",
-            tagColor, infoColor, getBuildString(WorkspaceInstaller.class)
-        ));
-        installerLabel.setFont(versionFont);
-
-        JLabel kiwiLabel = new JLabel(String.format(
-            "<html><font color='#%s'><b>Kiwi:</b></font> &nbsp; <font color='#%s'>%s</font></html>",
-            tagColor, infoColor, getBuildString(KiwiUtils.class)
-        ));
-        kiwiLabel.setFont(versionFont);
-
         JLabel uiLabel = new JLabel(String.format(
             "<html><font color='#%s'><b>UI:</b></font> &nbsp; <font color='#%s'>%s</font></html>",
             tagColor, infoColor, getBuildString(WorkspaceGUI.class)
@@ -144,16 +108,6 @@ public class ClematisLogoPanel extends JPanel {
         // Inject the hyper-compact text block
         textContainer.add(Box.createVerticalStrut(14));
         textContainer.add(systemLabel);
-        textContainer.add(Box.createVerticalStrut(4));
-        textContainer.add(apiLabel);
-        textContainer.add(Box.createVerticalStrut(4));
-        textContainer.add(profilesLabel);
-        textContainer.add(Box.createVerticalStrut(4));
-        textContainer.add(installerLabel);
-        textContainer.add(Box.createVerticalStrut(4));
-        textContainer.add(runtimeLabel);
-        textContainer.add(Box.createVerticalStrut(4));
-        textContainer.add(kiwiLabel);
         textContainer.add(Box.createVerticalStrut(4));
         textContainer.add(uiLabel);
 

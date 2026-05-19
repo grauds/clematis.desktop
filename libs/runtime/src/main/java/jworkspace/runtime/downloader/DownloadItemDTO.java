@@ -1,7 +1,5 @@
 package jworkspace.runtime.downloader;
 
-import java.util.List;
-
 import lombok.Data;
 
 /**
@@ -19,6 +17,6 @@ public class DownloadItemDTO {
     private long etaSeconds;
     private String expectedChecksum;
     private String actualChecksum;
-    private List<String> logs;
+    private String logs;
     private String completedFile;
 }

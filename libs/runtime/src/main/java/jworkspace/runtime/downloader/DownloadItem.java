@@ -29,11 +29,13 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * Represents a single download task and its runtime state.
@@ -44,7 +46,13 @@ import lombok.Data;
  * for immutable log snapshots.</p>
  */
 @Data
-public class DownloadItem {
+public class DownloadItem implements Comparable<DownloadItem> {
+
+    private final UUID id = UUID.randomUUID();
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private final DownloadTask task = new DownloadTask(this);
 
     /** Source URL of the download */
     private String url;
@@ -98,18 +106,6 @@ public class DownloadItem {
     private String actualChecksum;
 
     /**
-     * Thread-safe list of log messages associated with this download.
-     * <p>
-     * CopyOnWriteArrayList is used to allow safe iteration from the UI thread
-     * without explicit synchronization.
-     * </p>
-     */
-    private final List<String> logs = new CopyOnWriteArrayList<>();
-
-    /** Listeners for live log updates */
-    private final transient List<IDownloadLogListener> listeners = new CopyOnWriteArrayList<>();
-
-    /**
      * Creates a new download item and initializes its log.
      */
     public DownloadItem() {
@@ -145,45 +141,12 @@ public class DownloadItem {
     }
 
     /**
-     * Returns an immutable snapshot of the log entries.
-     *
-     * @return list of log messages
-     */
-    public List<String> getLogs() {
-        return List.copyOf(logs);
-    }
-
-    /** Add a listener for live log updates */
-    public void addListener(IDownloadLogListener listener) {
-        listeners.add(listener);
-    }
-
-    /** Remove a listener */
-    public void removeListener(IDownloadLogListener listener) {
-        listeners.remove(listener);
-    }
-
-    /**
      * Adds a timestamped log entry to this download.
      *
      * @param message log message
      */
     public void addLog(String message) {
-        String line = LocalTime.now().withNano(0) + " " + message;
-        logs.add(line);
-
-        // push to all listeners
-        for (IDownloadLogListener l : listeners) {
-            l.log(line);
-        }
-    }
-
-    /**
-     * Returns the current local time without nanoseconds,
-     * formatted as {@code HH:mm:ss}.
-     */
-    private String time() {
-        return LocalTime.now().withNano(0).toString();
+        getTask().log(LocalTime.now().withNano(0) + " " + message);
     }
 
     /**
@@ -295,7 +258,9 @@ public class DownloadItem {
         DownloadItemDTO dto = new DownloadItemDTO();
         dto.setUrl(this.url);
         dto.setFileName(this.fileName);
-        dto.setCompletedFile(this.getCompletedFile().toString());
+        if (this.getCompletedFile() != null) {
+            dto.setCompletedFile(this.getCompletedFile().toString());
+        }
         dto.setTotalBytes(this.totalBytes);
         dto.setDownloadedBytes(this.downloadedBytes);
         dto.setStatus(this.status.name());
@@ -303,7 +268,7 @@ public class DownloadItem {
         dto.setEtaSeconds(this.etaSeconds);
         dto.setExpectedChecksum(this.expectedChecksum);
         dto.setActualChecksum(this.actualChecksum);
-        dto.setLogs(this.getLogs());
+        dto.setLogs(this.getTask().getLogs());
         return dto;
     }
 
@@ -312,7 +277,9 @@ public class DownloadItem {
      */
     public static DownloadItem fromDTO(DownloadItemDTO dto) {
         DownloadItem item = new DownloadItem(dto.getUrl(), dto.getFileName());
-        item.setCompletedFile(Path.of(dto.getCompletedFile()));
+        if (dto.getCompletedFile() != null) {
+            item.setCompletedFile(Path.of(dto.getCompletedFile()));
+        }
         item.setTotalBytes(dto.getTotalBytes());
         item.setDownloadedBytes(dto.getDownloadedBytes());
         item.setStatus(DownloadStatus.valueOf(dto.getStatus()));
@@ -323,10 +290,15 @@ public class DownloadItem {
 
         // Restore logs if they exist
         if (dto.getLogs() != null) {
-            item.logs.clear(); // Clear default "Task created" log
-            dto.getLogs().forEach(item::addLog);
+            item.getTask().clearLogs(); // Clear default "Task created" log
+            item.getTask().setLogs(dto.getLogs());
         }
         return item;
+    }
+
+    @Override
+    public int compareTo(DownloadItem o) {
+        return o.getId().compareTo(id);
     }
 }
 

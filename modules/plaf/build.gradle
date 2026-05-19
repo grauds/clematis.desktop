@@ -17,13 +17,14 @@ jar {
         attributes([
                 'Build-Number': buildNumber,
                 'Build-Date': buildDate,
+                "PluginTitle": "Pluggable Look And Feel Chooser",
                 "PluginName": jar.archiveBaseName.get(),
                 "PluginLevel": "ANY",
                 "PluginType": "UI",
                 "PluginDescription": jar.archiveClassifier.get(),
                 "PluginIcon": "jworkspace/ui/plaf/images/plaf.png",
                 "PluginVersion": jar.archiveVersion.get(),
-                "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/plaf",
+                "PluginHelpURL": "https://github.com/grauds/clematis.desktop/",
         ], "jworkspace.ui.plaf.PlafFactory.class")
     }
     from {

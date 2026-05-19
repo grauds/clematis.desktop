@@ -64,10 +64,12 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.runtime.downloader.DownloadTask.DEFAULT_PATH;
 import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.TaskExecutorService;
 import jworkspace.runtime.downloader.DownloadItem;
 import jworkspace.runtime.downloader.DownloadItemDTO;
-import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
+import jworkspace.runtime.logging.LogStreamProvider;
+import jworkspace.runtime.logging.TaskLogAdapter;
 import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.ui.ResourceAnchor;
 import jworkspace.ui.WorkspaceError;
@@ -84,18 +86,21 @@ public class PluginsDownloaderPanel extends KPanel {
         .setPrettyPrinting()
         .excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT)
         .create();
+
     private DownloadTableModel model;
     private JTable table;
-    private LogViewerPanel logViewer;
     private JLabel installerLabel;
+    private LogViewerPanel logViewer;
+
     private final Map<Path, Plugin> pluginsCache = new HashMap<>();
     private Path selectedCompletedFile;
+
     private final PluginDownloadController downloadController = new PluginDownloadController(
-        getModel(), new DownloadService()
+        getModel(), new TaskExecutorService()
     ) {
         @Override
-        public void finished(int row) {
-            super.finished(row);
+        public void finished(DownloadItem item) {
+            super.finished(item);
             PluginsDownloaderPanel.this.switchInstallerLabel();
         }
     };
@@ -120,7 +125,6 @@ public class PluginsDownloaderPanel extends KPanel {
         c.add(splitPane, BorderLayout.CENTER);
 
         add(c, BorderLayout.CENTER);
-        add(getInstallerLabel(), BorderLayout.SOUTH);
     }
 
     private LogViewerPanel getLogViewer() {
@@ -250,10 +254,6 @@ public class PluginsDownloaderPanel extends KPanel {
             DownloadItem item = new DownloadItem(url, DownloadStatus.QUEUED, 0, -1);
             model.addItem(item);
             model.fireTableDataChanged();
-
-            // Attach log listener to update the viewer
-            item.addListener(s -> logViewer.append(s));
-
             urlField.setText("");
         });
 
@@ -332,51 +332,56 @@ public class PluginsDownloaderPanel extends KPanel {
 
     private void switchLogs() {
         int row = table.getSelectedRow();
-        getLogViewer().clear();
         if (row >= 0) {
             DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
-            List<String> logs = item.getLogs();
-            logs.forEach(getLogViewer()::append);
+            LogStreamProvider provider = new TaskLogAdapter(item.getTask());
+            getLogViewer().switchLogs(provider);
+        } else {
+            // Clear the panel if nothing is selected
+            getLogViewer().switchLogs(null);
         }
     }
 
+    @SuppressWarnings("checkstyle:NestedIfDepth")
     private void switchInstallerLabel() {
         int row = table.getSelectedRow();
         if (row >= 0) {
             DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
-            // Plugin to install
-            Plugin plugin;
-            try {
-                if (pluginsCache.containsKey(item.getCompletedFile())) {
-                    // Use the cached plugin
-                    plugin = pluginsCache.get(item.getCompletedFile());
-                } else {
-                    // Construct the plugin from the downloaded file
-                    plugin = ServiceLocator.getInstance().getPluginLocator().createPlugin(
-                        item.getCompletedFile().toFile(), PluginDTO.PLUGIN_LEVEL_ANY
-                    );
-                    pluginsCache.putIfAbsent(item.getCompletedFile(), plugin);
+            if (item.getCompletedFile() != null) {
+                // Plugin to install
+                Plugin plugin;
+                try {
+                    if (pluginsCache.containsKey(item.getCompletedFile())) {
+                        // Use the cached plugin
+                        plugin = pluginsCache.get(item.getCompletedFile());
+                    } else {
+                        // Construct the plugin from the downloaded file
+                        plugin = ServiceLocator.getInstance().getPluginLocator().createPlugin(
+                            item.getCompletedFile().toFile(), PluginDTO.PLUGIN_LEVEL_ANY
+                        );
+                        pluginsCache.putIfAbsent(item.getCompletedFile(), plugin);
+                    }
+                    String sb = "<html><font color=black>"
+                        + "Install " + plugin.toString()
+                        + "</font><br>"
+                        + "<font size=\"-2\" color=black><i>Restart is required</i></font></html>";
+
+                    getInstallerLabel().setText(sb);
+                    this.selectedCompletedFile = item.getCompletedFile();
+                } catch (PluginException e) {
+                    String sb = "<html><font color=black>"
+                        + "The selected download doesn't contain a valid plugin"
+                        + "</font><br><font size=\"-2\" color=black></font></html>";
+
+                    getInstallerLabel().setText(sb);
                 }
-                String sb = "<html><font color=black>"
-                    + "Install " + plugin.toString()
-                    + "</font><br>"
-                    + "<font size=\"-2\" color=black><i>The plugin installation will require restart</i></font></html>";
-
-                getInstallerLabel().setText(sb);
-                this.selectedCompletedFile = item.getCompletedFile();
-            } catch (PluginException e) {
-                String sb = "<html><font color=black>"
-                    + "The selected download doesn't contain a valid plugin"
-                    + "</font><br><font size=\"-2\" color=black></font></html>";
-
-                getInstallerLabel().setText(sb);
             }
         } else {
             String sb = "<html><font color=black>"
                 + "Install a downloaded plugin" + "</font><br><font size=\"-2\" color=black><i>"
                 + "Select a plugin from the list of downloaded plugins" + "</i></font></html>";
 
-            installerLabel.setText(sb);
+            getInstallerLabel().setText(sb);
             this.selectedCompletedFile = null;
         }
     }
@@ -399,7 +404,6 @@ public class PluginsDownloaderPanel extends KPanel {
                 for (DownloadItemDTO dto : dtos) {
                     DownloadItem item = DownloadItem.fromDTO(dto);
                     model.addItem(item);
-                    item.addListener(s -> logViewer.append(s));
                 }
                 model.fireTableDataChanged();
             }

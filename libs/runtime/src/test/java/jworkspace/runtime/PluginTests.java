@@ -45,7 +45,6 @@ import com.hyperrealm.kiwi.plugin.PluginLocator;
 import jworkspace.runtime.plugin.WorkspacePluginContext;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 /**
- * @author Anton Troshin
  */
 public class  PluginTests {
 

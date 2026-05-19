@@ -20,7 +20,7 @@ processResources {
 dependencies {
 
     compileOnly project(':api')
-    compileOnly project(':jworkspace')
+    compileOnly project(':app')
     compileOnly project(':ui-api')
     compileOnly project(':ui')
     compileOnly "org.jdom:jdom2:2.0.6.1"
@@ -41,6 +41,7 @@ jar {
         attributes([
                  'Build-Number': buildNumber,
                  'Build-Date': buildDate,
+                 "PluginTitle": "Plugin and Runtime Manager",
                  "PluginName": jar.archiveBaseName.get(),
                  "PluginLevel": "SYSTEM",
                  "PluginType": "UI",
@@ -48,7 +49,7 @@ jar {
                  "PluginIcon": "jworkspace/ui/runtime/images/runtime.png",
                  "PluginIconBig": "jworkspace/ui/runtime/images/runtime_big.png",
                  "PluginVersion": jar.archiveVersion.get(),
-                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/rtui",
+                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/",
         ], "jworkspace.ui.runtime.RuntimeManagerWindow.class")
     }
     from {

@@ -26,7 +26,7 @@ package jworkspace.runtime.downloader;
 */
 public interface IDownloadListener {
 
-    void update(int row);
+    void update(DownloadItem task);
 
-    void finished(int row);
+    void finished(DownloadItem task);
 }

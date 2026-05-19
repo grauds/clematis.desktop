@@ -1,7 +1,4 @@
-rootProject.name = 'clematis'
-
 include 'app'
-project(':app').name = 'jworkspace'
 
 include 'kiwi'
 project(':kiwi').projectDir = file('libs/kiwi')

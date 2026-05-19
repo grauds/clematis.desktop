@@ -1,4 +1,4 @@
-package jworkspace.runtime;
+package jworkspace.runtime.logging;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -24,20 +24,33 @@ package jworkspace.runtime;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 /**
- * Agnostic data contract for components capable of supplying streaming log output.
+ * Multiplexes log chunks to multiple registered listeners.
  */
-public interface LogStreamProvider {
-    /**
-     * Retrieves accumulated logs.
-     */
-    String getLogs();
+public class BroadcastLogListener implements Consumer<String> {
+    private final List<Consumer<String>> targets = new CopyOnWriteArrayList<>();
 
-    /**
-     * Attaches a listener to capture real-time streaming updates.
-     * Pass null to detach the listener.
-     */
-    void setStreamListener(Consumer<String> listener);
+    public void addTarget(Consumer<String> target) {
+        targets.add(target);
+    }
+
+    public void removeTarget(Consumer<String> target) {
+        targets.remove(target);
+    }
+
+    @Override
+    public void accept(String textChunk) {
+        for (Consumer<String> target : targets) {
+            target.accept(textChunk);
+        }
+    }
+
+    public boolean isEmpty() {
+        return targets.isEmpty();
+    }
 }
+

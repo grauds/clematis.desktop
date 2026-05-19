@@ -1,4 +1,4 @@
-package jworkspace.ui.logging;
+package jworkspace.runtime.logging;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -24,47 +24,27 @@ package jworkspace.ui.logging;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
-public final class LogViewerOutputStream extends OutputStream {
+/**
+ * Agnostic data contract for components capable of supplying streaming log output.
+ */
+public interface LogStreamProvider {
 
-    private final LogViewerPanel viewer;
+    /**
+     * Retrieves accumulated logs.
+     */
+    String getLogs();
 
-    private final StringBuilder buffer = new StringBuilder();
+    /**
+     * Attaches a listener to capture real-time streaming updates.
+     * Pass null to detach the listener.
+     */
+    void setStreamListener(Consumer<String> listener);
 
-    public LogViewerOutputStream(LogViewerPanel viewer) {
-        this.viewer = viewer;
-    }
-
-    @Override
-    public void write(int b) {
-        if (b == '\n') {
-            flushLine();
-        } else {
-            buffer.append((char) b);
-        }
-    }
-
-    @Override
-    public void write(byte[] b, int off, int len) {
-        String s = new String(b, off, len, StandardCharsets.UTF_8);
-        for (int i = 0; i < s.length(); i++) {
-            write(s.charAt(i));
-        }
-    }
-
-    private void flushLine() {
-        if (buffer.isEmpty()) {
-            return;
-        }
-        String line = buffer.toString();
-        buffer.setLength(0);
-        viewer.append(line);
-    }
-
-    @Override
-    public void flush() {
-        flushLine();
-    }
+    /**
+     * Explicit unbind method to fix the instance tracking bug and prevent memory leaks.
+     * Use this when a specific UI panel or view is destroyed.
+     */
+    void removeStreamListener(Consumer<String> listener);
 }

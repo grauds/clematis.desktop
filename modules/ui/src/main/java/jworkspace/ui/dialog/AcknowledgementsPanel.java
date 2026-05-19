@@ -60,7 +60,9 @@ public class AcknowledgementsPanel extends JPanel {
         // Format: addDependencyRow(container, "Library Name", "License Type", "Copyright String")
         addDependencyRow(listContainer, "Kiwi Library", "GPL 2.0", "Copyright © 1998-2008 Mark A Lindner");
         addDependencyRow(listContainer, "Springboard", "GPL 2.0", "Copyright © 1998-2000 Mark A Lindner");
-        addDependencyRow(listContainer, "Noia Icon Pack", "GNU LGPL v2.1", "Copyright © 2002 - 2019 Carlitus");
+        addDependencyRow(listContainer, "Noia Icon Pack", "GNU LGPL v2.1",
+            "Copyright © 2002 - 2019 Carles Carbonell BernadÛ (Carlitus)"
+        );
         addDependencyRow(listContainer, "Yoda Time", "Apache License Version 2.0", "Joda.org");
 
         // Wrap the list in a Scroll Pane for long text lists

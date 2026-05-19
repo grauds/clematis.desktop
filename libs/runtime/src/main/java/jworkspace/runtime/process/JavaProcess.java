@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import jworkspace.runtime.AbstractTask;
-import jworkspace.runtime.LogReaderThread;
+import jworkspace.runtime.logging.LogReaderThread;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -95,9 +95,7 @@ public final class JavaProcess extends AbstractTask {
 
             // Record the process start time for elapsed-time calculations
             setStartTime(new Date());
-
-            // Start background readers for standard error stream
-            new LogReaderThread(process.getInputStream(), this.getLogs()).start();
+            new LogReaderThread(process.getInputStream(), this.getLogsOutputStream()).start();
 
             try {
                 // Block until the process exits

@@ -47,6 +47,8 @@ public class PluginDTO {
 
     public static final String PLUGIN_LEVEL_ANY = "ANY";
 
+    public static final String PLUGIN_TITLE = "PluginTitle";
+
     public static final String PLUGIN_NAME = "PluginName";
 
     public static final String PLUGIN_LEVEL = "PluginLevel";
@@ -69,11 +71,13 @@ public class PluginDTO {
 
     protected String name;
 
+    protected String title;
+
+    protected String description;
+
     protected String level;
 
     protected String type;
-
-    protected String description;
 
     protected String iconFile;
 
@@ -101,6 +105,7 @@ public class PluginDTO {
 
     @SuppressWarnings("checkstyle:ParameterNumber")
     public PluginDTO(String className,
+                     String title,
                      String name,
                      String type,
                      String level,
@@ -110,6 +115,7 @@ public class PluginDTO {
                      String helpUrl) {
 
         this.className = className;
+        this.title = title;
         this.name = name;
         this.type = type;
         this.level = level;
@@ -136,6 +142,7 @@ public class PluginDTO {
         Manifest manifest = getManifestHeader();
 
         Attributes attributes = new Attributes();
+        attributes.put(new Attributes.Name(PLUGIN_TITLE), plugin.getTitle());
         attributes.put(new Attributes.Name(PLUGIN_NAME), plugin.getName());
         attributes.put(new Attributes.Name(PLUGIN_DESCRIPTION), plugin.getDescription());
         attributes.put(new Attributes.Name(PLUGIN_VERSION), plugin.getVersion());

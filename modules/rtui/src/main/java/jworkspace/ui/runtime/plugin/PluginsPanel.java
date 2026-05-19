@@ -48,6 +48,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.ui.WorkspaceGUI.getResourceManager;
+import jworkspace.runtime.plugin.PluginUpdateChecker;
 import jworkspace.ui.runtime.LangResource;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
 import jworkspace.ui.widgets.ButtonColumn;
@@ -131,15 +132,24 @@ public class PluginsPanel extends KPanel {
             this.pluginsTable.setRowHeight(35);
             this.pluginsTable.getColumnModel().getColumn(0)
                 .setCellRenderer(new DefaultTableCellRenderer() {
-                    @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:MagicNumber"})
+                    @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:MagicNumber",
+                        "checkstyle:NestedIfDepth"})
                     @Override
-                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                                   boolean hasFocus, int row, int column) {
+                    public Component getTableCellRendererComponent(JTable table,
+                                                                   Object value,
+                                                                   boolean isSelected,
+                                                                   boolean hasFocus,
+                                                                   int row,
+                                                                   int column
+                    ) {
                         super.getTableCellRendererComponent(
                             table, value, isSelected, hasFocus, row, column
                         );
                         if (value instanceof Plugin plugin) {
-                            setText(plugin.toString());
+                            // Append visual text metadata descriptors cleanly
+                            setText(plugin.getTitle());
+
+                            // Fallback icon assignment rules
                             Icon icon = plugin.getIcon();
                             setIcon(Objects.requireNonNullElseGet(icon,
                                 () -> new ImageIcon(getResourceManager().getImage("plugin.png"))
@@ -149,10 +159,51 @@ public class PluginsPanel extends KPanel {
                     }
                 });
 
-            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(1).setMaxWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(300);
+            this.pluginsTable.getColumnModel().getColumn(1)
+                .setCellRenderer(new DefaultTableCellRenderer() {
+                    @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:MagicNumber",
+                        "checkstyle:NestedIfDepth"})
+                    @Override
+                    public Component getTableCellRendererComponent(JTable table,
+                                                                   Object value,
+                                                                   boolean isSelected,
+                                                                   boolean hasFocus,
+                                                                   int row,
+                                                                   int column
+                    ) {
+                        super.getTableCellRendererComponent(
+                            table, value, isSelected, hasFocus, row, column
+                        );
+                        if (value instanceof Plugin plugin) {
+                            boolean hasUpdate = Boolean.parseBoolean(
+                                plugin.getProperty(PluginUpdateChecker.PLUGIN_HAS_UPDATE)
+                            );
+
+                            // Append visual text metadata descriptors cleanly
+                            setText(plugin.getVersion() + (hasUpdate ? " (Update Available)" : ""));
+
+                            // Apply prominent component styling cues to immediately capture user focus
+                            if (hasUpdate && !isSelected) {
+                                setBackground(new Color(235, 247, 235)); // High contrast soft alert tint
+                                setForeground(new Color(20, 110, 20));     // Clear emphasis readable font color
+                            } else if (!isSelected) {
+                                setBackground(table.getBackground());
+                                setForeground(table.getForeground());
+                            }
+                        }
+                        return this;
+                    }
+                });
+
+            this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(100);
+            this.pluginsTable.getColumnModel().getColumn(2).setMaxWidth(100);
+
+            this.pluginsTable.getColumnModel().getColumn(3).setMinWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(3).setMaxWidth(60);
+
+            this.pluginsTable.getColumnModel().getColumn(4).setMinWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(4).setMaxWidth(60);
 
             ButtonColumn uninstallColumn = new ButtonColumn(
                 new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
@@ -164,11 +215,11 @@ public class PluginsPanel extends KPanel {
                     fireUninstallationEvent(plugin);
                 });
 
-            pluginsTable.getColumnModel().getColumn(3).setCellRenderer(uninstallColumn);
-            pluginsTable.getColumnModel().getColumn(3).setCellEditor(uninstallColumn);
+            pluginsTable.getColumnModel().getColumn(5).setCellRenderer(uninstallColumn);
+            pluginsTable.getColumnModel().getColumn(5).setCellEditor(uninstallColumn);
 
-            this.pluginsTable.getColumnModel().getColumn(3).setMinWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(3).setMaxWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(5).setMinWidth(60);
+            this.pluginsTable.getColumnModel().getColumn(5).setMaxWidth(60);
 
             this.pluginsTable.getSelectionModel().addListSelectionListener(_ -> {
                 int row = this.pluginsTable.getSelectedRow();

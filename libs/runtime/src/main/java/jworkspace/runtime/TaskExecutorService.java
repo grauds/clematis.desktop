@@ -1,4 +1,4 @@
-package jworkspace.runtime.downloader;
+package jworkspace.runtime;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2025 Anton Troshin
@@ -24,7 +24,18 @@ package jworkspace.runtime.downloader;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-public interface IDownloadLogListener {
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-    void log(String message);
+public class TaskExecutorService {
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(3);
+
+    public void start(AbstractTask task) {
+        executor.submit(task);
+    }
+
+    public void shutdown() {
+        executor.shutdownNow();
+    }
 }

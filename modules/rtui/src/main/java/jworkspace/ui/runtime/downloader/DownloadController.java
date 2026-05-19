@@ -29,8 +29,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.TaskExecutorService;
 import jworkspace.runtime.downloader.DownloadItem;
-import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.downloader.DownloadStatus;
 import jworkspace.runtime.downloader.DownloadTask;
 import jworkspace.runtime.downloader.IDownloadListener;
@@ -40,10 +40,10 @@ import lombok.Getter;
 public abstract class DownloadController implements IDownloadListener {
 
     private final DownloadTableModel model;
-    private final DownloadService service;
+    private final TaskExecutorService service;
 
     public DownloadController(DownloadTableModel model,
-                              DownloadService service
+                              TaskExecutorService service
     ) {
         this.model = model;
         this.service = service;
@@ -56,15 +56,13 @@ public abstract class DownloadController implements IDownloadListener {
     public void start(int row) {
         DownloadItem item = model.getItem(row);
         if (item.getStatus() == DownloadStatus.QUEUED) {
-            service.start(new DownloadTask(
-                item,
-                this,
-                Path.of(
-                    ServiceLocator.getInstance().getProfilesManager().getCurrentProfilePath().toString(),
-                    DownloadTask.DEFAULT_PATH
-                ),
-                row
+            DownloadTask task = item.getTask();
+            task.setListener(this);
+            task.setPath(Path.of(
+                ServiceLocator.getInstance().getProfilesManager().getCurrentProfilePath().toString(),
+                DownloadTask.DEFAULT_PATH
             ));
+            service.start(task);
         }
     }
 
@@ -73,7 +71,7 @@ public abstract class DownloadController implements IDownloadListener {
         item.getCancelled().set(true);
         item.addLog("Download canceled by user.");
         item.setStatus(DownloadStatus.CANCELED);
-        update(row);
+        update(item);
     }
 
     public void remove(int row) throws IOException {
@@ -91,7 +89,8 @@ public abstract class DownloadController implements IDownloadListener {
     }
 
     @Override
-    public void update(int row) {
+    public void update(DownloadItem item) {
+        int row = this.model.getItems().indexOf(item);
         this.model.updateRow(row);
     }
 

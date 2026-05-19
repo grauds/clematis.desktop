@@ -1,4 +1,4 @@
-package jworkspace.runtime;
+package jworkspace.runtime.logging;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import jworkspace.runtime.AbstractTask;
+
 public final class TaskLogAdapter implements LogStreamProvider {
 
     // Keep a shared map of broadcasters per task instance to prevent split pipelines
@@ -41,7 +43,7 @@ public final class TaskLogAdapter implements LogStreamProvider {
 
     @Override
     public String getLogs() {
-        return task != null ? task.getLogsText() : "";
+        return task != null ? task.getLogs() : "";
     }
 
     @Override
@@ -67,6 +69,7 @@ public final class TaskLogAdapter implements LogStreamProvider {
      * Use this when a specific UI panel or view is destroyed.
      */
     @SuppressWarnings("checkstyle:NestedIfDepth")
+    @Override
     public void removeStreamListener(Consumer<String> listener) {
         if (task == null || listener == null) {
             return;

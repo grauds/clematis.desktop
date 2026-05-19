@@ -22,6 +22,7 @@ public class ShellHelper {
     private static final String TEST_SHELL_CLASS = "jworkspace/ui/TestShell.class";
     private static final String TEST_SHELL = "jworkspace.ui.TestShell";
 
+    private static final String TEST_SHELL_TITLE = "Test shell title";
     private static final String TEST_SHELL_NAME = "Test shell";
     private static final String TEST_SHELL_DESCRIPTION = "Test shell description";
     private static final String TEST_SHELL_VERSION = "1.0.0";
@@ -54,13 +55,15 @@ public class ShellHelper {
     private static Manifest getManifest() {
 
         PluginDTO plugin = new PluginDTO(TEST_SHELL_CLASS,
+            TEST_SHELL_TITLE,
             TEST_SHELL_NAME,
             WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
             PluginDTO.PLUGIN_LEVEL_ANY,
             TEST_SHELL_DESCRIPTION,
             TEST_SHELL_ICON,
             TEST_SHELL_VERSION,
-            TEST_SHELL_HELP_URL);
+            TEST_SHELL_HELP_URL
+        );
 
         return PluginDTO.getManifest(plugin);
     }
@@ -68,6 +71,7 @@ public class ShellHelper {
     private static Manifest getChildManifest() {
 
         PluginDTO plugin = new PluginDTO(CHILD_TEST_SHELL_CLASS,
+            TEST_SHELL_TITLE,
             CHILD_TEST_SHELL_NAME,
             WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN,
             PluginDTO.PLUGIN_LEVEL_ANY,

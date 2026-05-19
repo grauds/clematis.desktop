@@ -1,4 +1,4 @@
-package jworkspace.runtime;
+package jworkspace.runtime.logging;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 
+import jworkspace.runtime.AbstractTask;
 import lombok.extern.java.Log;
 
 /**

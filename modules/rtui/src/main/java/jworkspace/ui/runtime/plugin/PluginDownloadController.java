@@ -35,8 +35,8 @@ import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
 import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 
 import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.TaskExecutorService;
 import jworkspace.runtime.downloader.DownloadItem;
-import jworkspace.runtime.downloader.DownloadService;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.plugins.ShellsLoader;
@@ -46,14 +46,13 @@ import jworkspace.ui.runtime.downloader.DownloadTableModel;
 public class PluginDownloadController extends DownloadController {
 
     public PluginDownloadController(DownloadTableModel model,
-                                    DownloadService service) {
+                                    TaskExecutorService service) {
         super(model, service);
     }
 
 
     @Override
-    public void finished(int row) {
-        DownloadItem item = getModel().getItem(row);
+    public void finished(DownloadItem item) {
         Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
         KMessageDialog messageDialog = new KMessageDialog(parent);
 

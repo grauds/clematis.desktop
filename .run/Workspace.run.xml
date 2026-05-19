@@ -3,7 +3,7 @@
     <option name="ALTERNATIVE_JRE_PATH" value="homebrew-25" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="jworkspace.Workspace" />
-    <module name="clematis.jworkspace.main" />
+    <module name="clematis.desktop.app.main" />
     <option name="VM_PARAMETERS" value="-Dsun.java2d.opengl=true -Dsun.java2d.metal=false -Dapple.awt.live-resize=false" />
     <extension name="coverage">
       <pattern>

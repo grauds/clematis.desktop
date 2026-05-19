@@ -36,7 +36,7 @@ public class PluginsTableModel extends AbstractTableModel {
 
     private final List<Plugin> plugins;
     private final String[] columns = {
-        "Plugin", "Type", "Level", "Remove"
+        "Plugin", "Version", "Build", "Type", "Level", "Remove"
     };
 
     public PluginsTableModel(List<Plugin> plugins) {
@@ -61,8 +61,8 @@ public class PluginsTableModel extends AbstractTableModel {
     @Override
     public Class<?> getColumnClass(int col) {
         return switch (col) {
-            case 0 -> Plugin.class;
-            case 1, 2, 3 -> String.class;
+            case 0, 1 -> Plugin.class;
+            case 2, 3, 4, 5 -> String.class;
             default -> Object.class;
         };
     }
@@ -81,7 +81,7 @@ public class PluginsTableModel extends AbstractTableModel {
     @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public boolean isCellEditable(int row, int column) {
-        return column == 3 && WorkspacePluginLocator.PLUGIN_LEVEL_USER.equalsIgnoreCase(
+        return column == 5 && WorkspacePluginLocator.PLUGIN_LEVEL_USER.equalsIgnoreCase(
             this.plugins.get(row).getLevel()
         );
     }
@@ -92,9 +92,11 @@ public class PluginsTableModel extends AbstractTableModel {
         Plugin i = plugins.get(row);
         return switch (col) {
             case 0 -> i;
-            case 1 -> i.getType();
-            case 2 -> i.getLevel();
-            case 3 -> "";
+            case 1 -> i;
+            case 2 -> i.getBuildNumber();
+            case 3 -> i.getType();
+            case 4 -> i.getLevel();
+            case 5 -> "";
             default -> null;
         };
     }

@@ -45,10 +45,17 @@ public class ReportPanel extends AbstractReportPanel implements IPluginSelection
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
     void createReport(Plugin plugin) {
         String props = "<font color=\"black\">"
-            + "<b>"
-            + LangResource.getString("Name") + ": "
+            + "<h1>"
+            + plugin.getTitle()
+            + "</h1>"
+            + "<br><b>"
+            + LangResource.getString("Short Name") + ": "
             + "</b>"
             + plugin.getName()
+            + "<br><b>"
+            + LangResource.getString("Description") + ": "
+            + "</b>"
+            + plugin.getDescription()
             + "<br><b>"
             + LangResource.getString("Type") + ": "
             + "</b>"

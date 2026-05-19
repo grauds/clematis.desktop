@@ -226,6 +226,9 @@ public final class Plugin extends PluginDTO {
                 case PLUGIN_NAME:
                     setName(v);
                     break;
+                case PLUGIN_TITLE:
+                    setTitle(v);
+                    break;
                 case PLUGIN_LEVEL:
                     // ANY plugin level can be used anywhere, the others' have to match
                     if (!(PluginDTO.PLUGIN_LEVEL_ANY.equalsIgnoreCase(v)

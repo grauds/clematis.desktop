@@ -42,8 +42,8 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
 import jworkspace.runtime.AbstractTask;
-import jworkspace.runtime.LogStreamProvider;
-import jworkspace.runtime.TaskLogAdapter;
+import jworkspace.runtime.logging.LogStreamProvider;
+import jworkspace.runtime.logging.TaskLogAdapter;
 import jworkspace.ui.logging.LogViewerPanel;
 
 public final class ProcessLogInternalFrame extends JInternalFrame {

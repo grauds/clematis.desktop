@@ -34,7 +34,7 @@ import java.util.Date;
 
 import jdk.jshell.JShell;
 import jworkspace.runtime.AbstractTask;
-import jworkspace.runtime.LogReaderThread;
+import jworkspace.runtime.logging.LogReaderThread;
 import lombok.NonNull;
 import lombok.Setter;
 /**
@@ -119,7 +119,7 @@ public final class JShellProcess extends AbstractTask {
             }
 
             // Start background thread to redirect internal JShell stdout/stderr to getLogs()
-            new LogReaderThread(inputStreamBridge, this.getLogs()).start();
+            new LogReaderThread(inputStreamBridge, this.getLogsOutputStream()).start();
 
             // Block the poolExecutor thread until stop() is explicitly called
             synchronized (exitLock) {

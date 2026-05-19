@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.hyperrealm.kiwi.util.KiwiUtils.MILLISEC_IN_SECOND;
 import com.hyperrealm.kiwi.runtime.Task;
@@ -41,6 +42,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class AbstractTask extends Task {
+
+    public static final char EOL = '\n';
 
     private String name;
     private Date startTime;
@@ -57,7 +60,7 @@ public abstract class AbstractTask extends Task {
         this::getElapsedTime
     );
 
-    private OutputStream logs = new BufferedOutputStream(liveStream);
+    private OutputStream logsOutputStream = new BufferedOutputStream(liveStream);
 
     public AbstractTask(String name) {
         this.name = name;
@@ -78,14 +81,37 @@ public abstract class AbstractTask extends Task {
         return (System.currentTimeMillis() - getStartTime().getTime()) / MILLISEC_IN_SECOND;
     }
 
-    public String getLogsText() {
+    public Date getStartTime() {
+        if (startTime == null) {
+            startTime = new Date();
+        }
+        return startTime;
+    }
+
+    public String getLogs() {
         synchronized (logLock) {
             try {
-                logs.flush();
+                logsOutputStream.flush();
             } catch (IOException ignored) {
                 // Ignore flush issues
             }
             return logBuffer.toString(StandardCharsets.UTF_8);
+        }
+    }
+
+    /**
+     * Reads historical logs from a disk file and loads them directly into the task's log buffer.
+     * Bypasses time-formatting logic and listener notifications.
+     *
+     * @param logs the logs to set
+     */
+    public void setLogs(String logs) {
+        synchronized (logLock) {
+            // Ensure any currently active buffered stream data is committed before appending
+            try {
+                this.logsOutputStream.flush();
+                this.logBuffer.write(logs.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException ignored) {}
         }
     }
 
@@ -98,7 +124,32 @@ public abstract class AbstractTask extends Task {
                 () -> logLock,
                 this::getElapsedTime
             );
-            this.logs = new BufferedOutputStream(liveStream);
+            this.logsOutputStream = new BufferedOutputStream(liveStream);
+        }
+    }
+
+    /**
+     * Helper method to route a text line directly into the AbstractTask logging framework.
+     */
+    @SuppressWarnings("checkstyle:MultipleStringLiterals")
+    public void log(String message) {
+        if (message == null || message.isEmpty()) {
+            return;
+        }
+        try {
+            // Split by system line breaks to handle multi-line messages safely
+            String[] lines = message.split("\\r?\\n");
+
+            for (String line : lines) {
+                // Append exactly one newline character so processByte() triggers flushCurrentLine()
+                String terminatedLine = line + "\n";
+                this.getLogsOutputStream().write(terminatedLine.getBytes(StandardCharsets.UTF_8));
+            }
+
+            // Flush once at the end of the message batch
+            this.getLogsOutputStream().flush();
+        } catch (Exception ignored) {
+            // Suppress streaming write failures to prevent task interruption
         }
     }
 
@@ -111,8 +162,8 @@ public abstract class AbstractTask extends Task {
      */
     private static final class LiveLogOutputStream extends OutputStream {
         private final OutputStream target;
-        private final java.util.function.Supplier<Object> lockProvider;
-        private final java.util.function.Supplier<Long> elapsedTimeProvider;
+        private final Supplier<Object> lockProvider;
+        private final Supplier<Long> elapsedTimeProvider;
         private Consumer<String> listener;
 
         // Accumulates incoming bytes until a complete line delimiter (\n) is found
@@ -120,8 +171,8 @@ public abstract class AbstractTask extends Task {
 
         LiveLogOutputStream(
             OutputStream target,
-            java.util.function.Supplier<Object> lockProvider,
-            java.util.function.Supplier<Long> elapsedTimeProvider
+            Supplier<Object> lockProvider,
+            Supplier<Long> elapsedTimeProvider
         ) {
             this.target = target;
             this.lockProvider = lockProvider;
@@ -158,7 +209,7 @@ public abstract class AbstractTask extends Task {
             lineAccumulator.write(sign);
 
             // Look for a newline marker character to finalize a complete line
-            if (sign == '\n') {
+            if (sign == EOL) {
                 flushCurrentLine();
             }
         }
@@ -198,7 +249,7 @@ public abstract class AbstractTask extends Task {
             synchronized (lockProvider.get()) {
                 // If the stream closes but the last line didn't end with a newline, flush it anyway
                 if (lineAccumulator.size() > 0) {
-                    lineAccumulator.write('\n');
+                    lineAccumulator.write(EOL);
                     flushCurrentLine();
                 }
                 target.close();

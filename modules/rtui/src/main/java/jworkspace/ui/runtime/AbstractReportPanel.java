@@ -80,7 +80,7 @@ public abstract class AbstractReportPanel extends KPanel {
 
             Font font = label.getFont();
             label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
-            String sb = "<html><body style='width: 100%;'><b>Select a running task from the list</b><br><br></html>";
+            String sb = "<html><body style='width: 100%;'><b>Select an item from the list</b><br><br></html>";
             label.setText(sb);
         }
         return label;

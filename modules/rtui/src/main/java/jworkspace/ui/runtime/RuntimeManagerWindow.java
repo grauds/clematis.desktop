@@ -28,18 +28,15 @@ package jworkspace.ui.runtime;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Image;
-import java.awt.Insets;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.border.EmptyBorder;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
+import com.hyperrealm.kiwi.ui.KTabbedPane;
 import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
 import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
@@ -76,19 +73,11 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         super();
 
         this.pluginContext = pluginContext;
-        JSplitPane splitPane = new JSplitPane(
-            JSplitPane.HORIZONTAL_SPLIT,
-            pluginsPanel,
-            pluginsDownloaderPanel
-        );
-        splitPane.setBorder(new EmptyBorder(new Insets(0, 0, 0, 0)));
-        splitPane.setOpaque(false);
-        splitPane.setContinuousLayout(true);
-        splitPane.setOneTouchExpandable(true);
 
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.add("Plugins", splitPane);
+        KTabbedPane tabbedPane = new KTabbedPane();
+        tabbedPane.add("Plugins", pluginsPanel);
         tabbedPane.add("Processes", new ProcessesPanel());
+        tabbedPane.add("Downloader", pluginsDownloaderPanel);
 
         this.setLayout(new BorderLayout());
 

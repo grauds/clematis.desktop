@@ -19,29 +19,36 @@ processResources {
 dependencies {
 
     compileOnly project(':api')
-    compileOnly project(':jworkspace')
+    compileOnly project(':app')
 
     implementation project(':ui-api')
     implementation project(':widgets')
 
     implementation "org.jdom:jdom2:2.0.6.1"
-    testImplementation project(':jworkspace')
+    testImplementation project(':app')
 }
 
 jar {
     def buildNumber = System.getenv("GITHUB_RUN_NUMBER") ?: System.getenv("BUILD_NUMBER") ?: "LOCAL"
     def buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date())
     manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Build-Number': buildNumber,
+                'Build-Date': buildDate
+        )
         attributes([
                  'Build-Number': buildNumber,
                  'Build-Date': buildDate,
+                 "PluginTitle": "Java Workspace Desktop",
                  "PluginName": jar.archiveBaseName.get(),
                  "PluginLevel": "SYSTEM",
                  "PluginType": "Plugin",
                  "PluginDescription": jar.archiveClassifier.get(),
                  "PluginIcon": "jworkspace/ui/images/desktop/desktop.png",
                  "PluginVersion": jar.archiveVersion.get(),
-                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/tree/master/modules/ui",
+                 "PluginHelpURL": "https://github.com/grauds/clematis.desktop/",
         ], "jworkspace.ui.WorkspaceGUI.class")
     }
     from {
