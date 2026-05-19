@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           # Finds the main library jar, ignoring documentation or source jars if they exist
-          JAR_PATH=$(find ui/build/libs -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
+          JAR_PATH=$(find modules/ui/build/libs -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
           if [ -f "$JAR_PATH" ]; then
             mkdir -p staging
             cp "$JAR_PATH" "staging/ui_${{ steps.get_version.outputs.version }}.jar"
