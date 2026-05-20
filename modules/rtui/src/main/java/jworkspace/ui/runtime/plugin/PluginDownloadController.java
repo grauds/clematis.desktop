@@ -38,6 +38,7 @@ import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.TaskExecutorService;
 import jworkspace.runtime.downloader.DownloadItem;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
+import jworkspace.ui.WorkspaceError;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.plugins.ShellsLoader;
 import jworkspace.ui.runtime.downloader.DownloadController;
@@ -54,7 +55,7 @@ public class PluginDownloadController extends DownloadController {
     @Override
     public void finished(DownloadItem item) {
         Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
-        KMessageDialog messageDialog = new KMessageDialog(parent);
+
 
         // Construct the plugin from the downloaded file
         Plugin plugin = null;
@@ -64,9 +65,7 @@ public class PluginDownloadController extends DownloadController {
             );
 
         } catch (PluginException e) {
-            messageDialog.setMessage(
-                String.format("Error loading the plugin: %s.", e.getMessage())
-            );
+            WorkspaceError.exception(String.format("Error loading the plugin: %s.", e.getMessage()), e);
         }
 
         if (plugin != null) {

@@ -98,6 +98,14 @@ public abstract class AbstractJvmGraphMonitor extends KPanel {
         return new Dimension(200, 100);
     }
 
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
+    }
+
     @Override
     public void addNotify() {
         super.addNotify();

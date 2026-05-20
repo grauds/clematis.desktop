@@ -29,8 +29,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -60,6 +58,7 @@ import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 import com.hyperrealm.kiwi.plugin.PluginException;
 import com.hyperrealm.kiwi.ui.KPanel;
+import com.hyperrealm.kiwi.ui.KScrollPane;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import static jworkspace.runtime.downloader.DownloadTask.DEFAULT_PATH;
@@ -77,6 +76,8 @@ import jworkspace.ui.logging.LogViewerPanel;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
 import jworkspace.ui.runtime.downloader.DownloadTableModel;
 import jworkspace.ui.runtime.downloader.ProgressBarRenderer;
+import jworkspace.ui.runtime.plugin.reports.DownloadedPluginReport;
+import jworkspace.ui.runtime.plugin.reports.PluginReport;
 import jworkspace.ui.widgets.ButtonColumn;
 
 public class PluginsDownloaderPanel extends KPanel {
@@ -89,8 +90,8 @@ public class PluginsDownloaderPanel extends KPanel {
 
     private DownloadTableModel model;
     private JTable table;
-    private JLabel installerLabel;
     private LogViewerPanel logViewer;
+    private final PluginReport pluginReport = new DownloadedPluginReport();
 
     private final Map<Path, Plugin> pluginsCache = new HashMap<>();
     private Path selectedCompletedFile;
@@ -101,7 +102,7 @@ public class PluginsDownloaderPanel extends KPanel {
         @Override
         public void finished(DownloadItem item) {
             super.finished(item);
-            PluginsDownloaderPanel.this.switchInstallerLabel();
+            PluginsDownloaderPanel.this.downloadItemSelected();
         }
     };
 
@@ -124,7 +125,14 @@ public class PluginsDownloaderPanel extends KPanel {
         splitPane.setOneTouchExpandable(true);
         c.add(splitPane, BorderLayout.CENTER);
 
-        add(c, BorderLayout.CENTER);
+        JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitter.setOneTouchExpandable(true);
+        splitter.setContinuousLayout(true);
+        splitter.setLeftComponent(c);
+
+        splitter.setRightComponent(new KScrollPane(pluginReport));
+
+        add(splitter, BorderLayout.CENTER);
     }
 
     private LogViewerPanel getLogViewer() {
@@ -175,7 +183,7 @@ public class PluginsDownloaderPanel extends KPanel {
 
             this.table.getSelectionModel().addListSelectionListener(_ -> {
                 switchLogs();
-                switchInstallerLabel();
+                downloadItemSelected();
             });
         }
         return table;
@@ -286,50 +294,6 @@ public class PluginsDownloaderPanel extends KPanel {
         return l;
     }
 
-    @SuppressWarnings("checkstyle:MultipleStringLiterals")
-    private JLabel getInstallerLabel() {
-
-        if (installerLabel == null) {
-            installerLabel = new JLabel();
-
-            installerLabel.setBackground(Color.white);
-            installerLabel.setOpaque(true);
-            installerLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            installerLabel.setIcon(new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                .getResourceAsImage("images/installer_big.png")));
-
-            String sb = "<html><font color=black>"
-                + "Install a downloaded plugin" + "</font><br><font size=\"-2\" color=black><i>"
-                + "Select a plugin from the list of downloaded plugins" + "</i></font></html>";
-
-            installerLabel.setText(sb);
-
-            installerLabel.setForeground(Color.black);
-            installerLabel.setMinimumSize(installerLabel.getPreferredSize());
-            installerLabel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-            installerLabel.setHorizontalAlignment(JLabel.CENTER);
-
-            installerLabel.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    if (PluginsDownloaderPanel.this.selectedCompletedFile != null
-                        && PluginsDownloaderPanel.this.pluginsCache.containsKey(
-                            PluginsDownloaderPanel.this.selectedCompletedFile
-                    )) {
-                        PluginDownloadController.installPlugin(
-                            PluginsDownloaderPanel.this.selectedCompletedFile,
-                            PluginsDownloaderPanel.this.pluginsCache.get(
-                                PluginsDownloaderPanel.this.selectedCompletedFile
-                            )
-                        );
-                    }
-                }
-            });
-        }
-
-        return installerLabel;
-    }
-
     private void switchLogs() {
         int row = table.getSelectedRow();
         if (row >= 0) {
@@ -343,7 +307,7 @@ public class PluginsDownloaderPanel extends KPanel {
     }
 
     @SuppressWarnings("checkstyle:NestedIfDepth")
-    private void switchInstallerLabel() {
+    private void downloadItemSelected() {
         int row = table.getSelectedRow();
         if (row >= 0) {
             DownloadItem item = ((DownloadTableModel) table.getModel()).getItem(row);
@@ -361,27 +325,14 @@ public class PluginsDownloaderPanel extends KPanel {
                         );
                         pluginsCache.putIfAbsent(item.getCompletedFile(), plugin);
                     }
-                    String sb = "<html><font color=black>"
-                        + "Install " + plugin.toString()
-                        + "</font><br>"
-                        + "<font size=\"-2\" color=black><i>Restart is required</i></font></html>";
-
-                    getInstallerLabel().setText(sb);
                     this.selectedCompletedFile = item.getCompletedFile();
+                    this.pluginReport.createReport(plugin);
                 } catch (PluginException e) {
-                    String sb = "<html><font color=black>"
-                        + "The selected download doesn't contain a valid plugin"
-                        + "</font><br><font size=\"-2\" color=black></font></html>";
-
-                    getInstallerLabel().setText(sb);
+                    this.pluginReport.clearReport();
                 }
             }
         } else {
-            String sb = "<html><font color=black>"
-                + "Install a downloaded plugin" + "</font><br><font size=\"-2\" color=black><i>"
-                + "Select a plugin from the list of downloaded plugins" + "</i></font></html>";
-
-            getInstallerLabel().setText(sb);
+            this.pluginReport.clearReport();
             this.selectedCompletedFile = null;
         }
     }

@@ -44,7 +44,7 @@ jpackage {
     vendor = "Anton Troshin"
 
     input = new File("build/libs")
-    mainJar = "jworkspace-2.0.0-SNAPSHOT.jar"
+    mainJar = "app-2.0.0-SNAPSHOT.jar"
     mainClass = "jworkspace.Workspace"
     runtimeImage.set(layout.projectDirectory.dir(System.getProperty("java.home")))
 

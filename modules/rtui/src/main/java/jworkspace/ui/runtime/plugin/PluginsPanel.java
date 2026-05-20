@@ -51,7 +51,8 @@ import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.runtime.plugin.PluginUpdateChecker;
 import jworkspace.ui.runtime.LangResource;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
-import jworkspace.ui.widgets.ButtonColumn;
+import jworkspace.ui.runtime.plugin.reports.InstalledPluginReport;
+import jworkspace.ui.runtime.plugin.reports.PluginReport;
 
 public class PluginsPanel extends KPanel {
 
@@ -60,7 +61,6 @@ public class PluginsPanel extends KPanel {
     private JTable pluginsTable = null;
 
     private final List<IPluginSelectionListener> listeners = new ArrayList<>();
-    private final List<IPluginUninstallActionListener> uninstallActionListeners = new ArrayList<>();
 
     public PluginsPanel() {
 
@@ -69,35 +69,25 @@ public class PluginsPanel extends KPanel {
         setLayout(new BorderLayout());
         add(createPluginsLabel(), BorderLayout.NORTH);
 
-        JSplitPane splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitter.setOneTouchExpandable(true);
         splitter.setContinuousLayout(true);
-        splitter.setTopComponent(new JScrollPane(getPluginsTable()));
+        splitter.setLeftComponent(new JScrollPane(getPluginsTable()));
 
-        ReportPanel reportPanel = new ReportPanel();
-        splitter.setBottomComponent(reportPanel);
+        PluginReport pluginReport = new InstalledPluginReport();
+        splitter.setRightComponent(pluginReport);
         add(splitter, BorderLayout.CENTER);
 
-        this.addPluginSelectionListener(reportPanel);
+        this.addPluginSelectionListener(pluginReport);
     }
 
     public void addPluginSelectionListener(IPluginSelectionListener l) {
         this.listeners.add(l);
     }
 
-    public void addPluginUninstallListener(IPluginUninstallActionListener l) {
-        this.uninstallActionListeners.add(l);
-    }
-
     private void fireSelectionEvent(Plugin p) {
         for (IPluginSelectionListener l : listeners) {
             l.pluginSelected(p);
-        }
-    }
-
-    private void fireUninstallationEvent(Plugin p) {
-        for (IPluginUninstallActionListener l : uninstallActionListeners) {
-            l.pluginUninstallSelected(p);
         }
     }
 
@@ -130,6 +120,7 @@ public class PluginsPanel extends KPanel {
         if (pluginsTable == null) {
             this.pluginsTable = new JTable(new PluginsTableModel(new ArrayList<>()));
             this.pluginsTable.setRowHeight(35);
+            this.pluginsTable.getColumnModel().getColumn(0).setMinWidth(200);
             this.pluginsTable.getColumnModel().getColumn(0)
                 .setCellRenderer(new DefaultTableCellRenderer() {
                     @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:MagicNumber",
@@ -159,7 +150,7 @@ public class PluginsPanel extends KPanel {
                     }
                 });
 
-            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(300);
+            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(200);
             this.pluginsTable.getColumnModel().getColumn(1)
                 .setCellRenderer(new DefaultTableCellRenderer() {
                     @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:MagicNumber",
@@ -200,26 +191,6 @@ public class PluginsPanel extends KPanel {
 
             this.pluginsTable.getColumnModel().getColumn(3).setMinWidth(60);
             this.pluginsTable.getColumnModel().getColumn(3).setMaxWidth(60);
-
-            this.pluginsTable.getColumnModel().getColumn(4).setMinWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(4).setMaxWidth(60);
-
-            ButtonColumn uninstallColumn = new ButtonColumn(
-                new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-                    .getResourceAsImage("images/remove.png")
-                ),
-                (row, _) -> {
-                    PluginsTableModel model = (PluginsTableModel) pluginsTable.getModel();
-                    Plugin plugin = model.getItem(row);
-                    fireUninstallationEvent(plugin);
-                });
-
-            pluginsTable.getColumnModel().getColumn(5).setCellRenderer(uninstallColumn);
-            pluginsTable.getColumnModel().getColumn(5).setCellEditor(uninstallColumn);
-
-            this.pluginsTable.getColumnModel().getColumn(5).setMinWidth(60);
-            this.pluginsTable.getColumnModel().getColumn(5).setMaxWidth(60);
-
             this.pluginsTable.getSelectionModel().addListSelectionListener(_ -> {
                 int row = this.pluginsTable.getSelectedRow();
                 if (row < 0) {

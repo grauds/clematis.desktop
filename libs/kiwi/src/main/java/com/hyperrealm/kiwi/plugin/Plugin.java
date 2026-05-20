@@ -152,6 +152,17 @@ public final class Plugin extends PluginDTO {
             // create the classloader
 
             if (instantiate) {
+
+                String level = pluginManifest.attrs().getValue(PluginDTO.PLUGIN_LEVEL);
+                // ANY plugin level can be used anywhere, the others' have to match
+                if (!(PluginDTO.PLUGIN_LEVEL_ANY.equalsIgnoreCase(level)
+                    || (getLevel() != null && !getLevel().isEmpty() && getLevel().equalsIgnoreCase(level)))
+                ) {
+                    throw new PluginException(
+                        String.format("Plugin level mismatch: %s loaded as %s", level, getLevel())
+                    );
+                }
+
                 loader = locator.createClassLoader();
                 loader.addJarFile(jarFile);
 
@@ -230,14 +241,6 @@ public final class Plugin extends PluginDTO {
                     setTitle(v);
                     break;
                 case PLUGIN_LEVEL:
-                    // ANY plugin level can be used anywhere, the others' have to match
-                    if (!(PluginDTO.PLUGIN_LEVEL_ANY.equalsIgnoreCase(v)
-                        || (getLevel() != null && !getLevel().isEmpty() && getLevel().equalsIgnoreCase(v)))
-                    ) {
-                        throw new PluginException(
-                            String.format("Plugin level mismatch: %s loaded as %s", v, getLevel())
-                        );
-                    }
                     break;
                 case PLUGIN_TYPE:
                     setType(v);

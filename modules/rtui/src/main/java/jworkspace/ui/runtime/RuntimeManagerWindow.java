@@ -26,10 +26,9 @@ package jworkspace.ui.runtime;
 */
 
 import java.awt.BorderLayout;
-import java.awt.Frame;
+import java.awt.Color;
 import java.awt.Image;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,18 +36,13 @@ import javax.swing.ImageIcon;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.KTabbedPane;
-import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
-import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 import com.hyperrealm.kiwi.util.ResourceLoader;
 
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.plugin.WorkspacePluginContext;
-import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.api.cpanel.CButton;
 import jworkspace.ui.api.views.DefaultCompoundView;
-import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.runtime.monitor.MonitorPanel;
-import jworkspace.ui.runtime.plugin.IPluginUninstallActionListener;
 import jworkspace.ui.runtime.plugin.PluginsDownloaderPanel;
 import jworkspace.ui.runtime.plugin.PluginsPanel;
 import jworkspace.ui.runtime.process.ProcessesPanel;
@@ -59,8 +53,7 @@ import jworkspace.ui.runtime.process.ProcessesPanel;
  *
  * @author Anton Troshin
  */
-public class RuntimeManagerWindow extends DefaultCompoundView
-    implements IPluginUninstallActionListener {
+public class RuntimeManagerWindow extends DefaultCompoundView {
 
     private static final String RUNTIME_MANAGER = LangResource.getString("message#240");
 
@@ -78,15 +71,12 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         tabbedPane.add("Plugins", pluginsPanel);
         tabbedPane.add("Processes", new ProcessesPanel());
         tabbedPane.add("Downloader", pluginsDownloaderPanel);
+        tabbedPane.setOpaque(true);
+        tabbedPane.setBackground(Color.WHITE);
 
         this.setLayout(new BorderLayout());
-
         this.add(tabbedPane, BorderLayout.CENTER);
         this.add(new MonitorPanel(), BorderLayout.EAST);
-
-        tabbedPane.setOpaque(false);
-
-        pluginsPanel.addPluginUninstallListener(this);
 
         setName(RUNTIME_MANAGER);
     }
@@ -136,33 +126,5 @@ public class RuntimeManagerWindow extends DefaultCompoundView
         listData.addAll(ServiceLocator.getInstance().getSystemPlugins());
         listData.addAll(ServiceLocator.getInstance().getUserPlugins());
         pluginsPanel.setPlugins(listData);
-    }
-
-    @Override
-    public void pluginUninstallSelected(Plugin p) {
-        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
-        KQuestionDialog questionDialog = new KQuestionDialog(
-            parent
-        ) {
-            @Override
-            protected boolean accept() {
-                KMessageDialog messageDialog = new KMessageDialog(parent);
-                try {
-                    if (WorkspacePluginLocator.uninstallPlugin(Path.of(p.getJarFile()))) {
-                        messageDialog.setMessage("Deleted successfully.");
-                    } else {
-                        messageDialog.setMessage(String.format("File %s doesn't exist.", p.getJarFile()));
-                    }
-                } catch (IOException e) {
-                    messageDialog.setMessage(
-                        String.format("Error deleting the file: %s. %s", p.getJarFile(), e.getMessage())
-                    );
-                }
-                messageDialog.setVisible(true);
-                return true;
-            }
-        };
-        questionDialog.setMessage(String.format("Are you sure to uninstall %s?", p));
-        questionDialog.setVisible(true);
     }
 }

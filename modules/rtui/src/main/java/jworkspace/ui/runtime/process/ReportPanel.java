@@ -48,8 +48,10 @@ public class ReportPanel extends AbstractReportPanel implements IProcessSelectio
             + "</b>"
             + (task.getStartTime() != null ? task.getStartTime().toString() : "")
             + "<br>";
+        String sb = "<body style='" + "text-align:center;" + "font-family:sans-serif;'>"
+            + "<div>" + props + "</div>";
         layoutReport(
-            props,
+            sb,
             new ImageIcon(
                 new ResourceLoader(RuntimeManagerWindow.class).getResourceAsImage("images/process.png")
             )

@@ -49,11 +49,18 @@ jar {
                  'Build-Date': buildDate,
                  "PluginTitle": "Plugin and Runtime Manager",
                  "PluginName": jar.archiveBaseName.get(),
+                 "PluginDescription": "This plugin controls other plugins by" +
+                         " updating, uninstalling, or downloading new plugins " +
+                         "from any target URL, usually it should be a Github repo release link." +
+                         "The registered network " +
+                         "links are dynamically tracked and utilized to download " +
+                         "and apply software updates.",
                  "PluginLevel": "SYSTEM",
                  "PluginType": "UI",
-                 "PluginDescription": jar.archiveClassifier.get(),
                  "PluginIcon": "jworkspace/ui/runtime/images/runtime.png",
                  "PluginIconBig": "jworkspace/ui/runtime/images/runtime_big.png",
+                 "PluginDashboard": "/jworkspace/ui/runtime/images/dashboard.png",
+                 "PluginSettings":  "/jworkspace/ui/runtime/images/dashboard.png",
                  "PluginVersion": jar.archiveVersion.get(),
                  "PluginHelpURL": "https://github.com/grauds/clematis.desktop/",
         ], "jworkspace.ui.runtime.RuntimeManagerWindow.class")

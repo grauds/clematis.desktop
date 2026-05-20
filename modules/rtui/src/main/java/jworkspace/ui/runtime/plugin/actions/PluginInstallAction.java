@@ -1,7 +1,9 @@
-package jworkspace.ui.runtime.plugin;
+package jworkspace.ui.runtime.plugin.actions;
+
+
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 2025 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,9 +26,31 @@ package jworkspace.ui.runtime.plugin;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+
+import java.awt.event.ActionEvent;
+import java.nio.file.Path;
+
+import javax.swing.AbstractAction;
+
 import com.hyperrealm.kiwi.plugin.Plugin;
 
-public interface IPluginUninstallActionListener {
+import jworkspace.ui.runtime.plugin.PluginDownloadController;
 
-    void pluginUninstallSelected(Plugin p);
+public class PluginInstallAction extends AbstractAction {
+
+    private final Plugin plugin;
+
+    public PluginInstallAction(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (this.plugin != null && this.plugin.getJarFile() != null) {
+            PluginDownloadController.installPlugin(
+                Path.of(this.plugin.getJarFile()),
+                this.plugin
+            );
+        }
+    }
 }

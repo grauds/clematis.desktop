@@ -53,6 +53,11 @@ public class MonitorPanel extends KPanel {
 
         setLayout(new BorderLayout());
         add(new HeaderPanel(), BorderLayout.NORTH);
-        add(new Dashboard(monitors), BorderLayout.CENTER);
+
+        KPanel holder = new KPanel();
+        holder.setLayout(new BorderLayout());
+        holder.add(new Dashboard(monitors), BorderLayout.NORTH);
+
+        add(holder, BorderLayout.CENTER);
     }
 }

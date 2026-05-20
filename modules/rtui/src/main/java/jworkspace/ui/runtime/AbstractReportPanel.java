@@ -27,6 +27,7 @@ package jworkspace.ui.runtime;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.io.IOException;
 
@@ -54,8 +55,10 @@ public abstract class AbstractReportPanel extends KPanel {
     protected AbstractReportPanel() {
         super();
         setLayout(new BorderLayout(5, 5));
+        setPreferredSize(new Dimension(420, 100));
         JScrollPane scrollPane = new JScrollPane(getLabel());
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -80,10 +83,15 @@ public abstract class AbstractReportPanel extends KPanel {
 
             Font font = label.getFont();
             label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
-            String sb = "<html><body style='width: 100%;'><b>Select an item from the list</b><br><br></html>";
-            label.setText(sb);
+
+            clearReport();
         }
         return label;
+    }
+
+    public void clearReport() {
+        String sb = "<html><body style='width: 100%;'><b>Select an item from the list</b><br><br></html>";
+        label.setText(sb);
     }
 
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
@@ -91,20 +99,16 @@ public abstract class AbstractReportPanel extends KPanel {
         HTMLDocument doc = (HTMLDocument) getLabel().getDocument();
         HTMLEditorKit kit = (HTMLEditorKit) getLabel().getEditorKit();
         try {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><body style='")
-                .append("text-align:center;")
-                .append("font-family:sans-serif;'>");
-            sb.append("<div>")
-                .append(html)
-                .append("</div>");
-
-            sb.append("</body></html>");
+            String sb = "<html>"
+                + "<body style=\"font-family: sans-serif;"
+                + " background-color: #ffffff; color: #24292e; margin: 10px; width: 420px;\">"
+                + html
+                + "</body></html>";
             doc.remove(0, doc.getLength());
             if (icon != null) {
                 getLabel().insertIcon(icon);
             }
-            kit.insertHTML(doc, doc.getLength(), sb.toString(), 0, 0, null);
+            kit.insertHTML(doc, doc.getLength(), sb, 0, 0, null);
             getLabel().setCaretPosition(0);
         } catch (BadLocationException | IOException ex) {
             /* ignore */

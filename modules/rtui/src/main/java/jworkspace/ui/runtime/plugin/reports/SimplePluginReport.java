@@ -1,7 +1,7 @@
-package jworkspace.ui.runtime.plugin;
+package jworkspace.ui.runtime.plugin.reports;
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 2025 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -24,7 +24,12 @@ package jworkspace.ui.runtime.plugin;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -35,63 +40,35 @@ import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.plugins.ShellsLoader;
 import jworkspace.ui.runtime.AbstractReportPanel;
-import jworkspace.ui.runtime.LangResource;
 
-public class ReportPanel extends AbstractReportPanel implements IPluginSelectionListener {
+public class SimplePluginReport extends AbstractReportPanel {
 
-    /**
-     * Create a plugin report
-     */
+    private String htmlTemplate = "";
+
+    public SimplePluginReport() {
+        super();
+        loadHtmlTemplate();
+    }
+
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
-    void createReport(Plugin plugin) {
-        String props = "<font color=\"black\">"
-            + "<h1>"
-            + plugin.getTitle()
-            + "</h1>"
-            + "<br><b>"
-            + LangResource.getString("Short Name") + ": "
-            + "</b>"
-            + plugin.getName()
-            + "<br><b>"
-            + LangResource.getString("Description") + ": "
-            + "</b>"
-            + plugin.getDescription()
-            + "<br><b>"
-            + LangResource.getString("Type") + ": "
-            + "</b>"
-            + plugin.getType()
-            + "<br><b>"
-            + LangResource.getString("Version") + ": "
-            + "</b>"
-            + plugin.getVersion()
-            + "<br><b>"
-            + LangResource.getString("Build") + ": "
-            + "</b>"
-            + plugin.getBuildNumber()
-            + "<br><b>"
-            + LangResource.getString("Build Date") + ": "
-            + "</b>"
-            + plugin.getBuildDate()
-            + "<br><b>"
-            + LangResource.getString("Class") + ": "
-            + "</b>"
-            + plugin.getClassName()
-            + "<br><b>"
-            + LangResource.getString("Loaded") + ": "
-            + "</b>"
-            + plugin.isLoaded()
-            + "<br><b>"
-            + LangResource.getString("Jar") + ": "
-            + "</b>"
-            + plugin.getJarFile()
-            + "<br><b>"
-            + LangResource.getString("Home") + ": "
-            + "</b><a href=\""
-            + plugin.getHelpURL().toString()
-            + "\">" + plugin.getHelpURL() + "</a>"
-            + "<br>";
+    private void loadHtmlTemplate() {
+        try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(
+                Objects.requireNonNull(
+                    getClass().getResourceAsStream("/jworkspace/ui/runtime/simple_plugin_report_template.html")
+                ),
+                StandardCharsets.UTF_8
+            )
+        )) {
+            htmlTemplate = reader.lines().collect(Collectors.joining("\n"));
+        } catch (Exception e) {
+            htmlTemplate = "<html><body>Error loading report layout template.</body></html>";
+        }
+    }
 
-        StringBuilder sb = new StringBuilder(props);
+    @SuppressWarnings("checkstyle:MultipleStringLiterals")
+    protected String assembleReport(Plugin plugin) {
+        StringBuilder sb = new StringBuilder();
         if (!plugin.getProperties().isEmpty()) {
             sb.append("<br>");
             sb.append("--------------------");
@@ -109,6 +86,24 @@ public class ReportPanel extends AbstractReportPanel implements IPluginSelection
             sb.append("</font>");
         }
 
+        return htmlTemplate
+            .replace("${title}", plugin.getTitle())
+            .replace("${type}", plugin.getType())
+            .replace("${level}", plugin.getLevel())
+            .replace("${jar}", plugin.getJarFile())
+            .replace("${home}", plugin.getHelpURL().toString())
+            .replace("${className}", plugin.getClassName())
+            .replace("${version}", plugin.getVersion())
+            .replace("${buildNumber}", plugin.getBuildNumber())
+            .replace("${buildDate}", plugin.getBuildDate().toString())
+            .replace("${imgCaption2}", "Settings Panel")
+            .replace("${properties}", sb.toString());
+    }
+
+    public void createReport(Plugin plugin) {
+
+        String finalHtml = assembleReport(plugin);
+
         Icon icon = plugin.getIcon();
         if (icon == null && plugin.getType().equals(ShellsLoader.PLUGIN_TYPE_UI)) {
             icon = new ImageIcon(getResourceManager().getImage("shell_big.png"));
@@ -117,11 +112,8 @@ public class ReportPanel extends AbstractReportPanel implements IPluginSelection
         } else if (icon == null) {
             icon = new ImageIcon(getResourceManager().getImage("unknown_big.png"));
         }
-        layoutReport(sb.toString(), icon);
+
+        layoutReport(finalHtml, icon);
     }
 
-    @Override
-    public void pluginSelected(Plugin p) {
-        createReport(p);
-    }
 }

@@ -223,46 +223,57 @@ public class PluginUpdateChecker {
         "checkstyle:ReturnCount"
     })
     public static boolean isUpdateAvailable(VersionInfo local, VersionInfo remote) {
-        boolean isLocalDev = local.buildNumber.startsWith("LOC") || local.buildNumber.equals("DEV");
-        boolean isRemoteDev = remote.buildNumber.startsWith("LOC") || remote.buildNumber.equals("DEV");
-
-        if (isLocalDev && !isRemoteDev && !remote.buildNumber.isEmpty()) {
-            return true;
-        }
-        if (isRemoteDev) {
-            return false;
-        }
-
-        try {
-            int localNum = Integer.parseInt(local.buildNumber);
-            int remoteNum = Integer.parseInt(remote.buildNumber);
-            if (remoteNum > localNum) {
-                return true;
-            }
-            if (remoteNum < localNum) {
-                return false;
-            }
-        } catch (NumberFormatException ignored) {}
-
+        // Always compare semantic versions first
         String[] localParts = local.version.replace("-SNAPSHOT", "").split("\\.");
         String[] remoteParts = remote.version.replace("-SNAPSHOT", "").split("\\.");
 
         int length = Math.max(localParts.length, remoteParts.length);
         for (int i = 0; i < length; i++) {
-            int localPart = i < localParts.length ? Integer.parseInt(localParts[i].replaceAll("\\D", "")) : 0;
-            int remotePart = i < remoteParts.length ? Integer.parseInt(remoteParts[i].replaceAll("\\D", "")) : 0;
+            int localPart = i < localParts.length
+                ? Integer.parseInt(localParts[i].replaceAll("\\D", "")) : 0;
+            int remotePart = i < remoteParts.length
+                ? Integer.parseInt(remoteParts[i].replaceAll("\\D", "")) : 0;
 
             if (remotePart > localPart) {
-                return true;
+                return true;  // Newer remote version is always an update
             }
             if (remotePart < localPart) {
-                return false;
+                return false; // Remote is older than local
             }
         }
 
+        // Versions are equal. Compare build dates next.
         if (!remote.buildDate.isEmpty() && !local.buildDate.isEmpty()) {
-            return remote.buildDate.compareTo(local.buildDate) > 0;
+            int dateCompare = remote.buildDate.compareTo(local.buildDate);
+            if (dateCompare > 0) {
+                return true;  // Remote is newer
+            }
+            if (dateCompare < 0) {
+                return false; // Local is newer
+            }
         }
+
+        // Versions and dates are equal. Compare build numbers.
+        boolean isLocalDev = local.buildNumber.startsWith("LOC") || local.buildNumber.equals("DEV");
+        boolean isRemoteDev = remote.buildNumber.startsWith("LOC") || remote.buildNumber.equals("DEV");
+
+        // Local developer builds always override the remote build number
+        if (isLocalDev) {
+            return false;
+        }
+        // Remote dev builds win over any formal local build
+        if (isRemoteDev) {
+            return true;
+        }
+
+        // Compare formal numeric builds
+        try {
+            if (!local.buildNumber.isEmpty() && !remote.buildNumber.isEmpty()) {
+                int localNum = Integer.parseInt(local.buildNumber);
+                int remoteNum = Integer.parseInt(remote.buildNumber);
+                return remoteNum > localNum;
+            }
+        } catch (NumberFormatException ignored) {}
 
         return false;
     }
