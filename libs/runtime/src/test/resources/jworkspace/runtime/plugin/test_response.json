@@ -76,8 +76,8 @@
       "url": "https://api.github.com/repos/grauds/clematis.desktop/releases/assets/421866577",
       "id": 421866577,
       "node_id": "RA_kwDOAfdfBM4ZJSxR",
-      "name": "Clematis.Java.Workspace-2.0.0.pkg",
-      "label": "Clematis Java Workspace-2.0.0.pkg",
+      "name": "Clematis.Java.Workspace_2.0.0.pkg",
+      "label": "Clematis Java Workspace_2.0.0.pkg",
       "uploader": {
         "login": "github-actions[bot]",
         "id": 41898282,
