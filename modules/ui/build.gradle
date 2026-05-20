@@ -45,7 +45,13 @@ jar {
                  "PluginName": jar.archiveBaseName.get(),
                  "PluginLevel": "SYSTEM",
                  "PluginType": "Plugin",
-                 "PluginDescription": jar.archiveClassifier.get(),
+                 "PluginDescription": "The default user interface, provides a set of desktop panels,"
+                         + " which can be switched and customized. Each desktop can have shortcuts to"
+                         + " launch native and java programs in separate processes, intercept and save logs."
+                         + " The user interface is also extendable via the same plugin mechanism as the main "
+                         + " application.",
+                 "PluginDashboard": "/jworkspace/ui/images/dashboard.png",
+                 "PluginSettings":  "/jworkspace/ui/images/dashboard.png",
                  "PluginIcon": "jworkspace/ui/images/desktop/desktop.png",
                  "PluginVersion": jar.archiveVersion.get(),
                  "PluginHelpURL": "https://github.com/grauds/clematis.desktop/",
