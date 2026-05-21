@@ -21,7 +21,7 @@ The basis, however, is the following modules:
 1. **Workspace** - the entry point and a controller of a lifecycle [docs](./libs/api/README.md)
 2. **Profiles** - to manage user data and configuration  [docs](./libs/profiles/README.md)
 3. **Runtime** - plugins installer, updater and launcher of third-party applications (with OS command line)  [docs](./libs/runtime/README.md)
-4. Default inmplementation of UI is [Workspace Desktop](./modules/ui/README.md)
+4. Default implementation of UI is [Workspace Desktop](./modules/ui/README.md)
 
    
 ## License
