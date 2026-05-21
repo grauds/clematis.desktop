@@ -1,6 +1,7 @@
 import java.text.SimpleDateFormat
 
 plugins {
+    id 'maven-publish'
     id 'org.panteleyev.jpackageplugin' version '2.0.1'
 }
 
@@ -75,3 +76,22 @@ jpackage {
 
     destination = new File("build/dist")
 } dependsOn(build)
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/grauds/clematis.desktop"
+            credentials {
+                username = System.getenv("USERNAME")
+                password = System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            artifactId = 'core'
+            from(components.java)
+        }
+    }
+}
