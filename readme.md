@@ -16,12 +16,11 @@ Now it is a pet project and a useful tool for my daily job.
 ## Modules
 
 The architecture of the application is modular, its functionality is extendable via plugins.
-The basis, however, is the following four modules:
+The basis, however, is the following modules:
 
 1. **Workspace** - the entry point and a controller of a lifecycle [docs](./libs/api/README.md)
 2. **Profiles** - to manage user data and configuration  [docs](./libs/profiles/README.md)
-3. **Runtime** - plugins installer, launcher of third-party applications (with OS command line)  [docs](./libs/runtime/README.md) 
-4. **Installer** - an installer of third-party java applications and libraries  [docs](./libs/installer/README.md)
+3. **Runtime** - plugins installer, updater and launcher of third-party applications (with OS command line)  [docs](./libs/runtime/README.md) 
 
    
 ## License
