@@ -4,6 +4,8 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'org.clematis'
+
 dependencies {
     compileOnly project(':app')
 }
