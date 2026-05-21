@@ -1,5 +1,9 @@
 import java.text.SimpleDateFormat
 
+plugins {
+    id 'maven-publish'
+}
+
 dependencies {
     compileOnly project(':app')
 }
@@ -19,4 +23,23 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/grauds/clematis.desktop"
+            credentials {
+                username = System.getenv("USERNAME")
+                password = System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            artifactId = 'ui-api'
+            from(components.java)
+        }
+    }
 }

@@ -1,13 +1,14 @@
 # Clematis Java Workspace
 
-[![Package and Publish App (JDK 25)](https://github.com/grauds/clematis.desktop/actions/workflows/release.yml/badge.svg)](https://github.com/grauds/clematis.desktop/actions/workflows/release.yml)
+[![Installer Publish](https://github.com/grauds/clematis.desktop/actions/workflows/release.yml/badge.svg)](https://github.com/grauds/clematis.desktop/actions/workflows/release.yml)
+[![Gradle Package](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/grauds/clematis.desktop/actions/workflows/gradle-publish.yml)
 [![License](https://img.shields.io/badge/License-GPLv2%202.0-blue.svg)](libs/kiwi/src/main/resources/com/hyperrealm/kiwi/html/gpl.html)
 
 <img src="./docs/logo.png" alt="logo" width="600"/>
 
 ## Introduction
 
-Clematis Java Workspace is a project for Master Degree at MIPT (Moscow Institute of Physics and Technology) started back in September'98. It has the long history, the first version of it was awarded as a Java Konkurs 2006 finalist.  
+Clematis Java Workspace is a project for Master Degree at MIPT (Moscow Institute of Physics and Technology) started back in September'98. It has a long history, the first version of it was awarded as a Java Konkurs 2006 finalist.  
 
 <img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="700"/>
 
