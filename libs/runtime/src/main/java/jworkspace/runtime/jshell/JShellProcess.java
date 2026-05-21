@@ -45,8 +45,9 @@ public final class JShellProcess extends AbstractTask {
     @Setter
     private JShell jshell;
 
-    private final PipedOutputStream outputRedirector = new PipedOutputStream();
     private final PipedInputStream inputStreamBridge = new PipedInputStream();
+    private final PipedOutputStream outputRedirector = new PipedOutputStream();
+
     private final Object exitLock = new Object();
     private volatile boolean isRunning;
 
