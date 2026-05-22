@@ -42,7 +42,7 @@ publishing {
     }
     publications {
         gpr(MavenPublication) {
-            artifactId = 'desktop.api'
+            artifactId = 'core-api'
             from(components.java)
         }
     }
