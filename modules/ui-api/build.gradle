@@ -7,7 +7,10 @@ plugins {
 group = 'org.clematis'
 
 dependencies {
+    compileOnly project(':api')
     compileOnly project(':app')
+
+    implementation project(':widgets')
 }
 
 jar {

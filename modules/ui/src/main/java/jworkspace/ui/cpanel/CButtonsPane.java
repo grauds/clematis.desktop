@@ -60,7 +60,7 @@ import javax.swing.plaf.metal.MetalButtonUI;
 import com.hyperrealm.kiwi.ui.KPanel;
 
 import jworkspace.ui.api.cpanel.CButton;
-import jworkspace.ui.util.SwingUtils;
+import jworkspace.ui.api.util.ActionUtils;
 
 /**
  * Class {@link CButtonsPane} is an invisible layer that actually deals with buttons and
@@ -156,7 +156,7 @@ class CButtonsPane extends KPanel implements Scrollable, PropertyChangeListener 
      * Adds action to this buttons pane layout
      */
     CButton addButton(Action a) {
-        CButton button = SwingUtils.createCButtonFromAction(a);
+        CButton button = ActionUtils.createCButtonFromAction(a);
         add(button);
         return button;
     }

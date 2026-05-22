@@ -57,10 +57,10 @@ import static jworkspace.ui.widgets.GlassOutlinePane.DRAGGING_PROPERTY;
 import jworkspace.ui.api.ITextConstants;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.api.cpanel.CButton;
+import jworkspace.ui.api.util.ActionUtils;
 import jworkspace.ui.api.views.AbstractViewsManager;
 import jworkspace.ui.cpanel.ControlPanel;
 import jworkspace.ui.profiles.LoginPanel;
-import jworkspace.ui.util.SwingUtils;
 import jworkspace.ui.widgets.GlassOutlinePane;
 import jworkspace.users.LoginValidator;
 import lombok.Getter;
@@ -333,7 +333,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              *  My details
              */
-            JMenuItem myDetails = SwingUtils.createMenuItem(actions.getAction(
+            JMenuItem myDetails = ActionUtils.createMenuItem(actions.getAction(
                 MenuActions.MY_DETAILS_ACTION_NAME)
             );
             myDetails.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
@@ -341,14 +341,14 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Settings
              */
-            JMenuItem settings = SwingUtils.createMenuItem(
+            JMenuItem settings = ActionUtils.createMenuItem(
                 actions.getAction(MenuActions.SETTINGS_ACTION_NAME)
             );
             wmenu.add(settings);
             /*
              * Show the control panel
              */
-            JCheckBoxMenuItem showControlPanel = SwingUtils.createCheckboxMenuItem(
+            JCheckBoxMenuItem showControlPanel = ActionUtils.createCheckboxMenuItem(
                 actions.getAction(MenuActions.SHOW_PANEL_ACTION_NAME)
             );
             showControlPanel.setSelected(getControlPanel().isVisible());
@@ -358,7 +358,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Help
              */
-            JMenuItem help = SwingUtils.createMenuItem(
+            JMenuItem help = ActionUtils.createMenuItem(
                 actions.getAction(MenuActions.HELP_ACTION_NAME)
             );
             help.setEnabled(false);
@@ -366,7 +366,7 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * About
              */
-            JMenuItem about = SwingUtils.createMenuItem(
+            JMenuItem about = ActionUtils.createMenuItem(
                 actions.getAction(MenuActions.ABOUT_ACTION_NAME)
             );
             wmenu.add(about);
@@ -374,14 +374,14 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
             /*
              * Log off
              */
-            JMenuItem logOff = SwingUtils.createMenuItem(
+            JMenuItem logOff = ActionUtils.createMenuItem(
                 actions.getAction(MenuActions.LOGOFF_ACTION_NAME)
             );
             wmenu.add(logOff);
             /*
              * Exit
              */
-            JMenuItem exit = SwingUtils.createMenuItem(
+            JMenuItem exit = ActionUtils.createMenuItem(
                 actions.getAction(MenuActions.EXIT_ACTION_NAME)
             );
             exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_DOWN_MASK));
@@ -574,17 +574,6 @@ public class MainFrame extends KFrame implements PropertyChangeListener {
         }
         log.info("Saved workspace frame");
     }
-
-    /**
-     * Set the background texture.
-     *
-     * @param image The image to use as the background
-     *              texture for the frame.
-     */
-    /*public void setTexture(Image image) {
-        super.setTexture(image);
-        getContentPane().repaint();
-    }*/
 
     /**
      * Switches the control panel on and off.

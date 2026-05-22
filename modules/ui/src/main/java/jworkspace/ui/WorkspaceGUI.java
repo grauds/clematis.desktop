@@ -67,7 +67,6 @@ import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.dialog.ClematisLogoPanel;
 import jworkspace.ui.plugins.PluginsLoaderComponent;
 import jworkspace.ui.widgets.ClassCache;
-import jworkspace.ui.widgets.ResourceAnchor;
 import jworkspace.users.LoginValidator;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.ProfilesManager;
@@ -466,8 +465,8 @@ public class WorkspaceGUI implements IWorkspaceUI {
                     ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                         getImage("desktop/desktop_big.png"));
                     JOptionPane.showMessageDialog(getFrame(),
-                        jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
-                        jworkspace.ui.widgets.ResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
+                        ResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop"),
+                        ResourceAnchor.getString("WorkspaceGUI.intWnd.onlyOnDesktop.title"),
                         JOptionPane.INFORMATION_MESSAGE, icon);
                 }
             }

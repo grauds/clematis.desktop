@@ -1,8 +1,14 @@
-package jworkspace.ui.widgets;
+package jworkspace.ui.util;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2018 Anton Troshin
+   Copyright (C) 2026 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -25,35 +31,24 @@ package jworkspace.ui.widgets;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+public class ImageUtils {
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
+    private ImageUtils() {}
 
-import lombok.extern.java.Log;
-
-/**
- * @author Anton Troshin
- */
-@Log
-public class ResourceAnchor {
-
-    private static ResourceBundle resources = null;
-
-    private ResourceAnchor() {}
-
-    public static String getString(String id) {
-
-        String message = id;
-        try {
-            if (resources == null) {
-                resources = ResourceBundle.getBundle("i18n/strings");
-            }
-            message = resources.getString(id);
-        } catch (MissingResourceException ex) {
-            log.log(Level.INFO, "Cannot find resource:" + id);
+    public static ImageIcon toImageIcon(Icon icon) {
+        if (icon instanceof ImageIcon imageIcon) {
+            return imageIcon;
         }
 
-        return message;
+        int w = icon.getIconWidth();
+        int h = icon.getIconHeight();
+
+        // Create a BufferedImage and paint the icon into it
+        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+        icon.paintIcon(null, g2, 0, 0);
+        g2.dispose();
+
+        return new ImageIcon(image);
     }
 }

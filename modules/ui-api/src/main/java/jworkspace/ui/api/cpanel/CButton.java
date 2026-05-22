@@ -38,9 +38,7 @@ import javax.swing.Icon;
 
 import com.hyperrealm.kiwi.ui.KButton;
 
-/**
- *
- */
+
 public class CButton extends KButton {
     /**
      * The highlighted color.

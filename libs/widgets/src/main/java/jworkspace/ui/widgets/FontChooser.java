@@ -49,6 +49,7 @@ import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.ui.dialog.ComponentDialog;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jworkspace.ui.ResourceAnchor;
 
 /**
  * @author Anton Troshin

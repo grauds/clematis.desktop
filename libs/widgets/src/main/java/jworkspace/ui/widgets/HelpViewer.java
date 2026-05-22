@@ -53,6 +53,8 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 import com.hyperrealm.kiwi.util.ResourceLoader;
+
+import jworkspace.ui.ResourceAnchor;
 /**
  * jEdit's HTML viewer. It uses a Swing JEditorPane to display the HTML,
  * and implements a URL history.

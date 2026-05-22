@@ -45,6 +45,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.hyperrealm.kiwi.ui.KFileChooser;
 import com.hyperrealm.kiwi.ui.dialog.KFileChooserDialog;
 
+import jworkspace.ui.ResourceAnchor;
 import lombok.extern.java.Log;
 
 /**

@@ -1,4 +1,4 @@
-package jworkspace.ui.widgets;
+package jworkspace.ui.util;
 
 import java.awt.AWTEvent;
 import java.awt.Color;

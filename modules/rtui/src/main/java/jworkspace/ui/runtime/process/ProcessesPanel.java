@@ -49,10 +49,10 @@ import com.hyperrealm.kiwi.util.ResourceLoader;
 import jworkspace.runtime.AbstractTask;
 import jworkspace.runtime.logging.LogStreamProvider;
 import jworkspace.runtime.logging.TaskLogAdapter;
+import jworkspace.ui.api.util.ActionUtils;
 import jworkspace.ui.logging.LogViewerPanel;
 import jworkspace.ui.runtime.LangResource;
 import jworkspace.ui.runtime.RuntimeManagerWindow;
-import jworkspace.ui.util.SwingUtils;
 
 public class ProcessesPanel extends KPanel {
 
@@ -214,9 +214,15 @@ public class ProcessesPanel extends KPanel {
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
 
-        toolbar.add(SwingUtils.createButtonFromAction(actions.getAction(ProcessesActions.START_ACTION_NAME)));
-        toolbar.add(SwingUtils.createButtonFromAction(actions.getAction(ProcessesActions.KILL_ACTION_NAME)));
-        toolbar.add(SwingUtils.createButtonFromAction(actions.getAction(ProcessesActions.COPY_LOG_ACTION_NAME)));
+        toolbar.add(ActionUtils.createButtonFromAction(
+            actions.getAction(ProcessesActions.START_ACTION_NAME))
+        );
+        toolbar.add(ActionUtils.createButtonFromAction(
+            actions.getAction(ProcessesActions.KILL_ACTION_NAME))
+        );
+        toolbar.add(ActionUtils.createButtonFromAction(
+            actions.getAction(ProcessesActions.COPY_LOG_ACTION_NAME))
+        );
 
         return toolbar;
     }

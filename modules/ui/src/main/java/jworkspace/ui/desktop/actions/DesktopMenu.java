@@ -28,7 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 
-import static jworkspace.ui.util.SwingUtils.createMenuItem;
+import static jworkspace.ui.api.util.ActionUtils.createMenuItem;
 import jworkspace.ui.api.action.UISwitchListener;
 import jworkspace.ui.desktop.IDesktopActions;
 import lombok.Getter;
