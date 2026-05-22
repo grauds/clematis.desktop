@@ -277,7 +277,7 @@ public class PluginsDownloaderPanel extends KPanel {
         l.setBackground(Color.white);
         l.setOpaque(true);
         l.setIcon(new ImageIcon(new ResourceLoader(RuntimeManagerWindow.class)
-            .getResourceAsImage("images/shells.png")));
+            .getResourceAsImage("images/downloader.png")));
 
         String sb = "<html><font color=black>"
             + "Plugins Downloader" + "</font><br><font size=\"-2\" color=black><i>"

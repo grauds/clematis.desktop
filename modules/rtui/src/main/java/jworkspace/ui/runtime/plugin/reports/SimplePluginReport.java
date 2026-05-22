@@ -106,9 +106,9 @@ public class SimplePluginReport extends AbstractReportPanel {
 
         Icon icon = plugin.getIcon();
         if (icon == null && plugin.getType().equals(ShellsLoader.PLUGIN_TYPE_UI)) {
-            icon = new ImageIcon(getResourceManager().getImage("shell_big.png"));
+            icon = new ImageIcon(getResourceManager().getImage("windows.png"));
         } else if (icon == null && plugin.getType().equals(WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN)) {
-            icon = new ImageIcon(getResourceManager().getImage("plugin_big.png"));
+            icon = new ImageIcon(getResourceManager().getImage("plugin.png"));
         } else if (icon == null) {
             icon = new ImageIcon(getResourceManager().getImage("unknown_big.png"));
         }

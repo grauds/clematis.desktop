@@ -28,10 +28,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.border.EtchedBorder;
+import javax.swing.border.EmptyBorder;
 
 import com.hyperrealm.kiwi.ui.KPanel;
 import com.hyperrealm.kiwi.util.ResourceLoader;
@@ -63,6 +64,7 @@ public class HeaderPanel extends KPanel {
 
         l.setOpaque(true);
         l.setBackground(Color.white);
+        l.setBorder(new EmptyBorder(new Insets(0, 5, 0, 5)));
 
         l.setIcon(new ImageIcon(
             new ResourceLoader(RuntimeManagerWindow.class)
@@ -84,8 +86,6 @@ public class HeaderPanel extends KPanel {
         l.setPreferredSize(size);
         l.setMinimumSize(size);
         l.setMaximumSize(size);
-
-        l.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
         l.setHorizontalAlignment(JLabel.CENTER);
         l.setHorizontalTextPosition(JLabel.RIGHT);
