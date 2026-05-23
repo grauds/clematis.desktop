@@ -39,6 +39,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import javax.swing.SwingWorker;
+
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
 
@@ -279,18 +281,25 @@ public class PluginUpdateChecker {
     }
 
     public static void findUpdates(List<Plugin> plugins) {
-        for (Plugin plugin : plugins) {
-            try {
-                plugin.getProperties().put(
-                    PLUGIN_HAS_UPDATE,
-                    checkUpdateAvailable(plugin)
-                );
-            } catch (Exception e) {
-                log.warning(
-                    String.format("Can't find an update for %s, %s ", plugin.toString(), e.getMessage())
-                );
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                for (Plugin plugin : plugins) {
+                    try {
+                        plugin.getProperties().put(
+                            PLUGIN_HAS_UPDATE,
+                            checkUpdateAvailable(plugin)
+                        );
+                    } catch (Exception e) {
+                        log.warning(
+                            String.format("Can't find an update for %s, %s ", plugin.toString(), e.getMessage())
+                        );
+                    }
+                }
+                return null;
             }
-        }
+        };
+        worker.execute();
     }
 
     public record VersionInfo(String version, String buildNumber, String buildDate) {
