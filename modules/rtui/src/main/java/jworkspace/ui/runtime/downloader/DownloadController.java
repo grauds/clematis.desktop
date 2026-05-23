@@ -34,6 +34,7 @@ import jworkspace.runtime.downloader.DownloadItem;
 import jworkspace.runtime.downloader.DownloadStatus;
 import jworkspace.runtime.downloader.DownloadTask;
 import jworkspace.runtime.downloader.IDownloadListener;
+import jworkspace.ui.WorkspaceError;
 import lombok.Getter;
 
 @Getter
@@ -74,9 +75,13 @@ public abstract class DownloadController implements IDownloadListener {
         update(item);
     }
 
-    public void remove(int row) throws IOException {
+    public void remove(int row) {
         DownloadItem item = model.getItem(row);
-        Files.deleteIfExists(item.getCompletedFile());
+        try {
+            Files.deleteIfExists(item.getCompletedFile());
+        } catch (IOException e) {
+            WorkspaceError.exception("Cannot delete downloaded file.", e);
+        }
         model.removeRow(row);
     }
 
