@@ -50,8 +50,6 @@ jpackage {
     runtimeImage.set(layout.projectDirectory.dir(System.getProperty("java.home")))
 
     javaOptions = [
-            '-Dsun.java2d.opengl=true',
-            '-Dsun.java2d.metal=false',
             '-Dapple.awt.live-resize=false'
     ]
 
