@@ -116,7 +116,6 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
 
     private final ScrollingDesktopManager manager;
 
-
     @Getter
     private final DesktopTheme theme = new DesktopTheme();
 
@@ -230,7 +229,7 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
             component.setName(DESKTOP_NAME_DEFAULT);
         }
 
-        JInternalFrame existing = findFrame(component.getName());
+        JInternalFrame existing = findFrame(component);
         if (unique && existing != null && displayImmediately) {
             getDesktopManager().activateFrame(existing);
             return;
@@ -310,11 +309,9 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
     /**
      * Find frame with specified title.
      */
-    private JInternalFrame findFrame(String title) {
-        JInternalFrame[] internalFrames = getAllFrames();
-
-        for (JInternalFrame internalFrame : internalFrames) {
-            if (internalFrame.getTitle().equals(title)) {
+    private JInternalFrame findFrame(JComponent component) {
+        for (JInternalFrame internalFrame : getAllFrames()) {
+            if (internalFrame.getContentPane().getComponent(0) == component) {
                 return internalFrame;
             }
         }
