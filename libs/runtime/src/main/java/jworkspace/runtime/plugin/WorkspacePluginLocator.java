@@ -54,6 +54,7 @@ import com.hyperrealm.kiwi.plugin.PluginLocator;
 
 import lombok.NonNull;
 import lombok.extern.java.Log;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * @author Anton Troshin
@@ -123,7 +124,7 @@ public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext
     }
 
     public static void installPlugin(Path from, Path to) throws IOException {
-        Files.copy(from, to);
+        Files.copy(from, to, REPLACE_EXISTING);
     }
 
     public static boolean uninstallPlugin(Path plugin) throws IOException {
