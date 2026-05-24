@@ -24,6 +24,7 @@ package jworkspace.runtime.plugin;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +55,6 @@ import com.hyperrealm.kiwi.plugin.PluginLocator;
 
 import lombok.NonNull;
 import lombok.extern.java.Log;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * @author Anton Troshin
