@@ -28,6 +28,7 @@ package jworkspace.ui.api.views;
 
 import java.io.IOException;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 
@@ -55,14 +56,19 @@ public abstract class AbstractViewsManager extends KPanel {
      *
      * @param panel              javax.swing.JComponent
      * @param displayImmediately if the view will be displayed right after it is added
-     * @param register           if the view has to be unique
      */
-    public abstract void addView(IView panel, boolean displayImmediately, boolean register);
+    public abstract void addView(IView panel, boolean displayImmediately);
+
+    /**
+     * Remove view from all other desktop panes
+     * @param view to find and remove
+     */
+    public abstract void removeView(JComponent view);
 
     /**
      * Deletes current view.
      */
-    public abstract void deleteCurrentView();
+    public abstract void removeCurrentView();
 
     /**
      * Returns buttons for content manager

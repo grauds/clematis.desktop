@@ -40,12 +40,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -100,7 +100,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * The collection of views in current system.
      */
-    private final List<IView> views = new Vector<>();
+    private final List<IView> views = new ArrayList<>();
     /**
      * The number of current panel.
      */
@@ -169,29 +169,6 @@ public class ViewsManager extends AbstractViewsManager {
                 return;
             }
             addDesktop(result);
-        }
-    }
-
-    /**
-     * Remove view
-     */
-    public void removeView() {
-
-        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
-
-        if (parent != null) {
-            int result;
-
-            ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
-                getImage("desktop/remove.png"));
-
-            result = JOptionPane.showConfirmDialog(parent,
-                WorkspaceResourceAnchor.getString("ViewsManager.removeView.message"),
-                WorkspaceResourceAnchor.getString("ViewsManager.removeView.title"),
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
-            if (result == JOptionPane.YES_OPTION) {
-                deleteCurrentView();
-            }
         }
     }
 
@@ -389,9 +366,9 @@ public class ViewsManager extends AbstractViewsManager {
     }
 
     /**
-     * Deletes current desktop.
+     * Deletes current view
      */
-    public void deleteCurrentView() {
+    public void removeCurrentView() {
 
         if (views.size() == 1) {
             JOptionPane.showMessageDialog(
@@ -425,7 +402,7 @@ public class ViewsManager extends AbstractViewsManager {
     public IView[] getAllViews() {
         IView[] all = new IView[views.size()];
         for (int i = 0; i < all.length; i++) {
-            all[i] = views.remove(i);
+            all[i] = views.get(i);
         }
         return all;
     }
@@ -444,7 +421,8 @@ public class ViewsManager extends AbstractViewsManager {
      * Returns current component.
      */
     public IView getCurrentView() {
-        return views.get(currentView);
+        return (!views.isEmpty() && currentView < views.size())
+            ? views.get(currentView) : null;
     }
 
     /**
@@ -480,7 +458,7 @@ public class ViewsManager extends AbstractViewsManager {
             JMenu[] menus = views.get(currentView).getMenu();
             if (menus != null) {
                 Map<String, Object> lparam = new HashMap<>();
-                List<JMenu> vmenus = new Vector<>(Arrays.asList(menus));
+                List<JMenu> vmenus = new ArrayList<>(Arrays.asList(menus));
                 lparam.put(IView.MENUS_PARAMETER, vmenus);
                 lparam.put(IView.FLAG_PARAMETER, Boolean.FALSE);
                 ServiceLocator
@@ -511,7 +489,7 @@ public class ViewsManager extends AbstractViewsManager {
             if (menus != null) {
                 Map<String, Object> lparam = new HashMap<>();
 
-                List<JMenu> vmenus = new Vector<>();
+                List<JMenu> vmenus = new ArrayList<>();
                 Collections.addAll(vmenus, menus);
 
                 lparam.put(IView.MENUS_PARAMETER, vmenus);
@@ -605,7 +583,7 @@ public class ViewsManager extends AbstractViewsManager {
     }
 
     /**
-     * Finds equal view and returns found.
+     * Finds equal view and returns the result
      */
     private IView getView(IView newView) {
         for (IView view : views) {
@@ -742,7 +720,7 @@ public class ViewsManager extends AbstractViewsManager {
     /**
      * Adds view to collection.
      */
-    public void addView(IView view, boolean displayImmediately, boolean register) {
+    public void addView(IView view, boolean displayImmediately) {
 
         if (!(view instanceof JComponent)) {
             throw new IllegalArgumentException(WorkspaceResourceAnchor.getString("View should be a JComponent"));
@@ -768,6 +746,44 @@ public class ViewsManager extends AbstractViewsManager {
 
         UIManager.addPropertyChangeListener(new UISwitchListener((JComponent) view));
         update();
+    }
+
+    /**
+     * Remove view from all other desktop panes
+     * @param view to find and remove
+     */
+    public void removeView(JComponent view) {
+        Desktop currentDesktop = getCurrentDesktop();
+        for (IView v : this.views) {
+            if (v instanceof Desktop desktopView && v != currentDesktop) {
+                desktopView.removeView(view);
+            }
+            // todo: else remove view from the stack
+        }
+    }
+
+    /**
+     * Remove view
+     */
+    public void removeView() {
+
+        Frame parent = DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame();
+
+        if (parent != null) {
+            int result;
+
+            ImageIcon icon = new ImageIcon(
+                WorkspaceGUI.getResourceManager().getImage("desktop/remove.png")
+            );
+            result = JOptionPane.showConfirmDialog(parent,
+                WorkspaceResourceAnchor.getString("ViewsManager.removeView.message"),
+                WorkspaceResourceAnchor.getString("ViewsManager.removeView.title"),
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon
+            );
+            if (result == JOptionPane.YES_OPTION) {
+                removeCurrentView();
+            }
+        }
     }
 
     /**
@@ -828,28 +844,33 @@ public class ViewsManager extends AbstractViewsManager {
 
             int size = dataStream.readInt();
 
-            for (int i = 0; i < size; i++) {
+            if (size > 0) {
+                for (int i = 0; i < size; i++) {
 
-                // get desktop data path
-                String viewSavePath = getPath() + File.separator + VIEW + i;
+                    // get desktop data path
+                    String viewSavePath = getPath() + File.separator + VIEW + i;
 
-                // load a desktop
-                Desktop desktop = new Desktop();
-                desktop.setPath(viewSavePath);
-                desktop.load();
+                    // load a desktop
+                    Desktop desktop = new Desktop();
+                    desktop.setPath(viewSavePath);
+                    desktop.load();
 
-                // add desktop to the layout
-                addDesktop(desktop, false);
+                    // add desktop to the layout
+                    addDesktop(desktop, false);
+                }
+
+                // Add header panel
+                setCurrentView(0); // todo save current view number
+                add(getHeaderPanel(), getHeaderPanel().getOrientation());
+            } else {
+                create();
             }
-
-            // Add header panel
-            setCurrentView(0); // todo save current view number
-            add(getHeaderPanel(), getHeaderPanel().getOrientation());
 
             update();
 
         } catch (IOException e) {
             // Assemble default configuration.
+            WorkspaceError.exception(WorkspaceResourceAnchor.getString("ViewsManager.load.failed"), e);
             create();
             update();
         }

@@ -431,10 +431,9 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
             if (lparam instanceof Map<?, ?> map
                 && map.get(IView.VIEW_PARAMETER) instanceof IView view
-                && map.get(IView.DISPLAY_PARAMETER) instanceof Boolean display
-                && map.get(IView.REGISTER_PARAMETER) instanceof Boolean register) {
+                && map.get(IView.DISPLAY_PARAMETER) instanceof Boolean display) {
 
-                getFrame().getContentManager().addView(view, display, register);
+                getFrame().getContentManager().addView(view, display);
             }
         }
     }
@@ -454,13 +453,12 @@ public class WorkspaceGUI implements IWorkspaceUI {
             if ((lparam instanceof Map<?, ?> map)
                 && map.get(IView.VIEW_PARAMETER) instanceof JComponent view
                 && map.get(IView.DISPLAY_PARAMETER) instanceof Boolean display
-                && map.get(IView.REGISTER_PARAMETER) instanceof Boolean register
             ) {
 
                 IView currentView = getFrame().getContentManager().getCurrentView();
-
                 if (currentView instanceof Desktop desktop) {
-                    desktop.addView(view, display, register);
+                    getFrame().getContentManager().removeView(view);
+                    desktop.addView(view, display);
                 } else {
                     ImageIcon icon = new ImageIcon(WorkspaceGUI.getResourceManager().
                         getImage("desktop/desktop_big.png"));
@@ -516,18 +514,18 @@ public class WorkspaceGUI implements IWorkspaceUI {
 
         @Override
         public int getCode() {
-            return IView.DISPLAY_AS_FRAME;
+            return IView.DISPLAY_AS_FRAME_EVENT;
         }
 
         public void processEvent(Integer event, Object lparam, Object rparam) {
 
             if (lparam instanceof Map<?, ?> map
-                && map.get(IView.FRAME_PARAMETER) instanceof Frame frameParameter
+                && map.get(IView.VIEW_PARAMETER) instanceof Frame view
             ) {
 
-                displayedFrames.add(frameParameter);
-                frameParameter.addWindowListener(new FrameCloseListener(frameParameter));
-                frameParameter.setVisible(true);
+                displayedFrames.add(view);
+                view.addWindowListener(new FrameCloseListener(view));
+                view.setVisible(true);
             }
         }
     }

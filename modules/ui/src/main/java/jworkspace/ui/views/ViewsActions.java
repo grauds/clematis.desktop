@@ -259,7 +259,7 @@ public class ViewsActions implements ITextConstants {
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, icon);
 
                 if (result == JOptionPane.YES_OPTION) {
-                    manager.deleteCurrentView();
+                    manager.removeCurrentView();
                 }
             }
         }

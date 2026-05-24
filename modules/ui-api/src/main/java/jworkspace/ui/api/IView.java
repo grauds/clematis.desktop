@@ -53,31 +53,26 @@ public interface IView extends IWorkspaceComponent {
     /**
      * Event to show a view as a controlled frame
      */
-    int DISPLAY_AS_FRAME = 1003;
+    int DISPLAY_AS_FRAME_EVENT = 1003;
     /**
-     *
-     */
-    String FRAME_PARAMETER = "frame";
-    /**
-     *
+     * Top menu to display for the view which is to be shown, except for
+     * views shown in an internal frame
      */
     String MENUS_PARAMETER = "menus";
     /**
-     *
+     * Switch menu parameter, should be true if menu is to be added, false - to be removed
      */
     String FLAG_PARAMETER = "flag";
     /**
-     *
+     * Instance of view - a JFC component to add to the user interface
      */
     String VIEW_PARAMETER = "view";
     /**
-     *
+     * Display immediately means that Workspace will try to either activate
+     * the internal frame with the view, or find the view in the deck of
+     * views in the multiview manager.
      */
     String DISPLAY_PARAMETER = "display";
-    /**
-     *
-     */
-    String REGISTER_PARAMETER = "register";
 
     /**
      * View activated or deactivated

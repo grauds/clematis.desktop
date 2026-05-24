@@ -224,13 +224,13 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
      * Desktop places each new view into JInternalFrame.
      * There can be only one frame with a given title by now.
      */
-    public void addView(JComponent component, boolean displayImmediately, boolean unique) {
+    public void addView(JComponent component, boolean displayImmediately) {
         if (component.getName() == null) {
             component.setName(DESKTOP_NAME_DEFAULT);
         }
 
         JInternalFrame existing = findFrame(component);
-        if (unique && existing != null && displayImmediately) {
+        if (existing != null && displayImmediately) {
             getDesktopManager().activateFrame(existing);
             return;
         }
@@ -307,9 +307,9 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
     public void create() {}
 
     /**
-     * Find frame with specified title.
+     * Find frame with the specified component added to its content pane
      */
-    private JInternalFrame findFrame(JComponent component) {
+    public JInternalFrame findFrame(JComponent component) {
         for (JInternalFrame internalFrame : getAllFrames()) {
             if (internalFrame.getContentPane().getComponent(0) == component) {
                 return internalFrame;
@@ -637,6 +637,13 @@ public class Desktop extends JDesktopPane implements IView, ClipboardOwner {
             frame.toBack();
         }
         return retval;
+    }
+
+    public void removeView(JComponent c) {
+        JInternalFrame vf = findFrame(c);
+        if (vf != null) {
+            this.remove(vf);
+        }
     }
 
     public void remove(Component c) {
