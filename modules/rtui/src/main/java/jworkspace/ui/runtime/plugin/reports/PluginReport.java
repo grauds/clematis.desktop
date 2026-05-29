@@ -134,7 +134,9 @@ public class PluginReport extends SimplePluginReport implements IPluginSelection
         this.pluginUpdateAction = new PluginUpdateAction(plugin, this);
 
         URL dashboardUrl = plugin.getProperties().getProperty(PLUGIN_DASHBOARD_IMAGE_PATH) != null
-            ? getClass().getResource(plugin.getProperties().getProperty(PLUGIN_DASHBOARD_IMAGE_PATH)) : null;
+            ? plugin.getPluginObject().getClass().getResource(
+                plugin.getProperties().getProperty(PLUGIN_DASHBOARD_IMAGE_PATH)
+        ) : null;
 
         if (dashboardUrl != null) {
             finalHtml = finalHtml
