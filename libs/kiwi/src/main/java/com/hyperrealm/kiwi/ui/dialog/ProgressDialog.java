@@ -19,8 +19,8 @@
 
 package com.hyperrealm.kiwi.ui.dialog;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 
 import javax.swing.Icon;
@@ -131,17 +131,20 @@ public class ProgressDialog extends KDialog implements ProgressObserver {
         main.add("North", label);
 
         KPanel p = new KPanel();
-        p.setLayout(new FlowLayout(FlowLayout.LEFT, DEFAULT_PADDING, DEFAULT_PADDING));
+        // FIXED: Changed FlowLayout to BorderLayout so the center component stretches 100%
+        p.setLayout(new BorderLayout(DEFAULT_PADDING, DEFAULT_PADDING));
 
         iconLabel = new KLabel(KiwiUtils.getResourceManager().getIcon("ani-gear.gif"));
-        p.add(iconLabel);
+        // FIXED: Placed icon on the left (West)
+        p.add(BorderLayout.WEST, iconLabel);
 
         bar = new JProgressBar();
         bar.setMinimum(0);
         bar.setMaximum(ComponentDialog.MAXIMUM);
         bar.setValue(0);
         bar.setOpaque(false);
-        p.add(bar);
+        // FIXED: Placed bar in Center so it expands to take up all remaining width
+        p.add(BorderLayout.CENTER, bar);
 
         main.add(CENTER_POSITION, p);
 
@@ -192,7 +195,12 @@ public class ProgressDialog extends KDialog implements ProgressObserver {
      * @param message The message to display in the dialog.
      */
 
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment"})
     public void setMessage(String message) {
+        // FIXED: Added 300 character cap and ellipsis trimming
+        if (message != null && message.length() > 300) {
+            message = message.substring(0, 300) + "...";
+        }
         label.setText(message);
         pack();
     }

@@ -74,7 +74,7 @@ public class ConsoleLauncher {
      */
     @SuppressWarnings("regexp")
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
-    public static void main(String[] args) {
+    static void main(String[] args) {
 
         Console console = System.console();
         String userName = "root";

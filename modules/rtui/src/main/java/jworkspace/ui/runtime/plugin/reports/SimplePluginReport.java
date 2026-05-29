@@ -40,8 +40,18 @@ import static jworkspace.ui.WorkspaceGUI.getResourceManager;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.plugins.ShellsLoader;
 import jworkspace.ui.runtime.AbstractReportPanel;
+import lombok.Getter;
+import lombok.Setter;
 
 public class SimplePluginReport extends AbstractReportPanel {
+
+    @Getter
+    @Setter
+    protected Plugin plugin;
+
+    @Getter
+    @Setter
+    protected Icon icon;
 
     private String htmlTemplate = "";
 
@@ -67,42 +77,47 @@ public class SimplePluginReport extends AbstractReportPanel {
     }
 
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
-    protected String assembleReport(Plugin plugin) {
+    protected String assembleReport() {
         StringBuilder sb = new StringBuilder();
-        if (!plugin.getProperties().isEmpty()) {
+        if (getPlugin() != null && !getPlugin().getProperties().isEmpty()) {
             sb.append("<br>");
-            sb.append("--------------------");
-            Enumeration<Object> en = plugin.getProperties().keys();
+            Enumeration<Object> en = getPlugin().getProperties().keys();
             while (en.hasMoreElements()) {
                 String key = (String) en.nextElement();
-                sb.append("<br><b>");
-                sb.append(key);
-                sb.append("</b>: ");
-                sb.append(plugin.getProperty(key, "none"));
-                sb.append("</b>");
+                if (getPlugin().getProperty(key, "") != null
+                    && !getPlugin().getProperty(key, "").isEmpty()
+                ) {
+                    sb.append("<br><b>");
+                    sb.append(key);
+                    sb.append("</b>: ");
+                    sb.append(getPlugin().getProperty(key, ""));
+                    sb.append("</b>");
+                }
             }
             sb.append("<br>");
-            sb.append("--------------------");
             sb.append("</font>");
         }
 
-        return htmlTemplate
-            .replace("${title}", plugin.getTitle())
-            .replace("${type}", plugin.getType())
-            .replace("${level}", plugin.getLevel())
-            .replace("${jar}", plugin.getJarFile())
-            .replace("${home}", plugin.getHelpURL().toString())
-            .replace("${className}", plugin.getClassName())
-            .replace("${version}", plugin.getVersion())
-            .replace("${buildNumber}", plugin.getBuildNumber())
-            .replace("${buildDate}", plugin.getBuildDate().toString())
-            .replace("${imgCaption2}", "Settings Panel")
-            .replace("${properties}", sb.toString());
+        if (getPlugin() != null) {
+            return htmlTemplate
+                .replace("${title}", getPlugin().getTitle())
+                .replace("${type}", getPlugin().getType())
+                .replace("${level}", getPlugin().getLevel())
+                .replace("${jar}", getPlugin().getJarFile())
+                .replace("${home}", getPlugin().getHelpURL().toString())
+                .replace("${className}", getPlugin().getClassName())
+                .replace("${version}", getPlugin().getVersion())
+                .replace("${buildNumber}", getPlugin().getBuildNumber())
+                .replace("${buildDate}", getPlugin().getBuildDate().toString())
+                .replace("${imgCaption2}", "Settings Panel")
+                .replace("${properties}", sb.toString());
+        } else {
+            return "";
+        }
     }
 
+    @SuppressWarnings("checkstyle:HiddenField")
     public void createReport(Plugin plugin) {
-
-        String finalHtml = assembleReport(plugin);
 
         Icon icon = plugin.getIcon();
         if (icon == null && plugin.getType().equals(ShellsLoader.PLUGIN_TYPE_UI)) {
@@ -113,7 +128,21 @@ public class SimplePluginReport extends AbstractReportPanel {
             icon = new ImageIcon(getResourceManager().getImage("unknown_big.png"));
         }
 
+        setIcon(icon);
+        setPlugin(plugin);
+
+        String finalHtml = assembleReport();
         layoutReport(finalHtml, icon);
     }
 
+    @Override
+    public void repaint() {
+        if (this.plugin != null) {
+            String finalHtml = assembleReport();
+            layoutReport(finalHtml, icon);
+        } else {
+            clearReport();
+        }
+        super.repaint();
+    }
 }

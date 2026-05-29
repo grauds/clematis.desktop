@@ -43,6 +43,7 @@ import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.plugins.ShellsLoader;
 import jworkspace.ui.runtime.downloader.DownloadController;
 import jworkspace.ui.runtime.downloader.DownloadTableModel;
+import jworkspace.ui.runtime.plugin.dialog.PluginDialog;
 
 public class PluginDownloadController extends DownloadController {
 

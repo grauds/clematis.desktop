@@ -65,10 +65,9 @@ public class WorkspaceTest {
         testProfile.setPassword(password);
         profilesManager.add(testProfile);
 
-        Assertions.assertEquals(1, Objects.requireNonNull(testFolder.getRoot().listFiles()).length);
-
+        // last_user.txt and users.txt
+        Assertions.assertEquals(2, Objects.requireNonNull(testFolder.getRoot().listFiles()).length);
         Workspace.start(testProfileName, password, basePath);
-
     }
 
     @AfterEach

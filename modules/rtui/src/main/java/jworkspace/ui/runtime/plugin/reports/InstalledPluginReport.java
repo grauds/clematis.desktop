@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hyperrealm.kiwi.plugin.Plugin;
+import jworkspace.runtime.plugin.WorkspacePluginLocator;
 
 public class InstalledPluginReport extends PluginReport {
 
@@ -57,11 +57,12 @@ public class InstalledPluginReport extends PluginReport {
     }
 
     @Override
-    public String assembleReport(Plugin plugin) {
-        String finalHtml = super.assembleReport(plugin);
+    public String assembleReport() {
+        Object del = plugin.getProperties().get(WorkspacePluginLocator.PLUGIN_DELETED);
+        boolean deleted = del != null ? (Boolean) del : false;
 
-        finalHtml = finalHtml +  htmlRemoveTemplate;
-
+        String finalHtml = super.assembleReport();
+        finalHtml = finalHtml + (deleted ? "Plugin is deleted, restart is required" : htmlRemoveTemplate);
         return finalHtml;
     }
 }

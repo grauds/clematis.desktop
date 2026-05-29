@@ -94,7 +94,6 @@ public class PluginsDownloaderPanel extends KPanel {
     private final PluginReport pluginReport = new DownloadedPluginReport();
 
     private final Map<Path, Plugin> pluginsCache = new HashMap<>();
-    private Path selectedCompletedFile;
 
     private final PluginDownloadController downloadController = new PluginDownloadController(
         getModel(), new TaskExecutorService()
@@ -325,7 +324,6 @@ public class PluginsDownloaderPanel extends KPanel {
                         );
                         pluginsCache.putIfAbsent(item.getCompletedFile(), plugin);
                     }
-                    this.selectedCompletedFile = item.getCompletedFile();
                     this.pluginReport.createReport(plugin);
                 } catch (PluginException e) {
                     this.pluginReport.clearReport();
@@ -333,7 +331,6 @@ public class PluginsDownloaderPanel extends KPanel {
             }
         } else {
             this.pluginReport.clearReport();
-            this.selectedCompletedFile = null;
         }
     }
 

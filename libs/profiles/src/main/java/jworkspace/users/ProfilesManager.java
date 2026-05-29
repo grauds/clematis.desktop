@@ -28,6 +28,7 @@ package jworkspace.users;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ import lombok.extern.java.Log;
 @SuppressWarnings("unused")
 public class ProfilesManager implements Comparator<Profile> {
 
+    public static final String LAST_USED_USERNAME_FILE = "last_user.txt";
     private static final String DEFAULT_USER_NAME = "root";
 
     private static final String USERS = "users";
@@ -208,6 +210,14 @@ public class ProfilesManager implements Comparator<Profile> {
             return;
         }
         profile.save(getBasePath());
+        // save to the last used profile
+        try {
+            Files.write(
+                getBasePath().resolve(LAST_USED_USERNAME_FILE), profile.getUserName().getBytes()
+            );
+        } catch (IOException e) {
+            log.warning("Could not save username to file: " + e.getMessage());
+        }
     }
 
     public void login(String name, String password) throws ProfileOperationException {

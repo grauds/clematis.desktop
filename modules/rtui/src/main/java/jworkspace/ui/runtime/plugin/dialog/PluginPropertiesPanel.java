@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime.plugin;
+package jworkspace.ui.runtime.plugin.dialog;
 /* ----------------------------------------------------------------------------
    Java Workspace
    Copyright (C) 2026 Anton Troshin
@@ -93,7 +93,7 @@ public class PluginPropertiesPanel extends KPanel implements ActionListener {
     }
 
     public void setData(Plugin data) {
-        pluginReport.createReport(data);
+        this.pluginReport.createReport(data);
     }
 
     public boolean isAllUsers() {

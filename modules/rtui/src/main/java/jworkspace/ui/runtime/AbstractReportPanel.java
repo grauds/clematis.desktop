@@ -29,6 +29,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.io.IOException;
 
 import javax.swing.Icon;
@@ -50,54 +51,54 @@ import com.hyperrealm.kiwi.ui.KPanel;
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals"})
 public abstract class AbstractReportPanel extends KPanel {
 
-    private JTextPane label = null;
+    private JTextPane textPane = null;
 
     protected AbstractReportPanel() {
         super();
         setLayout(new BorderLayout(5, 5));
         setPreferredSize(new Dimension(420, 100));
-        JScrollPane scrollPane = new JScrollPane(getLabel());
+        JScrollPane scrollPane = new JScrollPane(getTextPane());
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")
-    protected JTextPane getLabel() {
+    protected JTextPane getTextPane() {
 
-        if (label == null) {
-            label = new JTextPane();
+        if (textPane == null) {
+            textPane = new JTextPane();
 
-            label.setContentType("text/html");
-            label.setBackground(Color.white);
-            label.setOpaque(true);
-            label.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-            label.setEditable(false);
-            label.setCaret(new DefaultCaret() {
+            textPane.setContentType("text/html");
+            textPane.setBackground(Color.white);
+            textPane.setOpaque(true);
+            textPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+            textPane.setEditable(false);
+            textPane.setCaret(new DefaultCaret() {
                 @Override
-                public void paint(java.awt.Graphics g) {
+                public void paint(Graphics g) {
                     // Do nothing - prevents the cursor from being drawn
                 }
             });
-            label.setBorder(new EmptyBorder(15, 10, 3, 10));
+            textPane.setBorder(new EmptyBorder(15, 10, 3, 10));
 
-            Font font = label.getFont();
-            label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
+            Font font = textPane.getFont();
+            textPane.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()));
 
             clearReport();
         }
-        return label;
+        return textPane;
     }
 
     public void clearReport() {
         String sb = "<html><body style='width: 100%;'><b>Select an item from the list</b><br><br></html>";
-        label.setText(sb);
+        getTextPane().setText(sb);
     }
 
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
     protected void layoutReport(String html, Icon icon) {
-        HTMLDocument doc = (HTMLDocument) getLabel().getDocument();
-        HTMLEditorKit kit = (HTMLEditorKit) getLabel().getEditorKit();
+        HTMLDocument doc = (HTMLDocument) getTextPane().getDocument();
+        HTMLEditorKit kit = (HTMLEditorKit) getTextPane().getEditorKit();
         try {
             String sb = "<html>"
                 + "<body style=\"font-family: sans-serif;"
@@ -106,16 +107,13 @@ public abstract class AbstractReportPanel extends KPanel {
                 + "</body></html>";
             doc.remove(0, doc.getLength());
             if (icon != null) {
-                getLabel().insertIcon(icon);
+                getTextPane().insertIcon(icon);
             }
             kit.insertHTML(doc, doc.getLength(), sb, 0, 0, null);
-            getLabel().setCaretPosition(0);
+            getTextPane().setCaretPosition(0);
         } catch (BadLocationException | IOException ex) {
             /* ignore */
         }
-
-        revalidate();
-        repaint();
     }
 
 }

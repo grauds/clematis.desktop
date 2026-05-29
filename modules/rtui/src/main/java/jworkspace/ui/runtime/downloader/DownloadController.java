@@ -70,7 +70,7 @@ public abstract class DownloadController implements IDownloadListener {
     public void cancel(int row) {
         DownloadItem item = model.getItem(row);
         item.getCancelled().set(true);
-        item.addLog("Download canceled by user.");
+        item.log("Download canceled by user.");
         item.setStatus(DownloadStatus.CANCELED);
         update(item);
     }

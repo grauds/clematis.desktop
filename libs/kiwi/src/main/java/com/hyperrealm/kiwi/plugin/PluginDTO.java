@@ -93,6 +93,8 @@ public class PluginDTO {
 
     protected URL helpURL = null;
 
+    private VersionInfo updateVersion;
+
     PluginDTO(String level, String jarFile) {
         this.level = level;
         this.jarFile = jarFile;
@@ -156,4 +158,5 @@ public class PluginDTO {
         manifest.getEntries().put(plugin.getClassName(), attributes);
         return manifest;
     }
+
 }

@@ -21,6 +21,8 @@ package com.hyperrealm.kiwi.runtime;
 
 import java.util.ArrayList;
 
+import javax.swing.Icon;
+
 /**
  * This class represents an asynchronous task whose progress can be tracked
  * by a <code>ProgressObserver</code>.
@@ -73,6 +75,36 @@ public abstract class Task implements Runnable {
     public final void removeProgressObserver(ProgressObserver observer) {
         synchronized (observers) {
             observers.remove(observer);
+        }
+    }
+
+    /**
+     * Notify all observers about a new icon from the task.
+     *
+     * @param icon to send to the observers
+     */
+
+    protected final void notifyObservers(Icon icon) {
+
+        synchronized (observers) {
+            for (ProgressObserver observer : observers) {
+                observer.setIcon(icon);
+            }
+        }
+    }
+
+    /**
+     * Notify all observers about a new message from the task.
+     *
+     * @param message to send to the observers
+     */
+
+    protected final void notifyObservers(String message) {
+
+        synchronized (observers) {
+            for (ProgressObserver observer : observers) {
+                observer.setMessage(message);
+            }
         }
     }
 

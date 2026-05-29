@@ -1,22 +1,19 @@
 package jworkspace;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.kohsuke.args4j.ExampleMode.ALL;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginException;
 
 import jworkspace.config.ServiceLocator;
 import jworkspace.runtime.RuntimeManager;
-import jworkspace.runtime.plugin.PluginUpdateChecker;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.users.Profile;
 import jworkspace.users.ProfileOperationException;
@@ -87,12 +84,26 @@ public class Workspace {
         Workspace.start(name, password, Paths.get(path).resolve(HOME_DIR));
     }
 
+    @SuppressWarnings("checkstyle:ParameterAssignment")
     public static void start(String name, String password, @NonNull Path root)
         throws ProfileOperationException, IOException, PluginException {
         /*
          * Create system plugins
          */
         ServiceLocator.getInstance().loadSystemPlugins(root);
+        /*
+         * Try to load the last used username
+         */
+        if (name == null || name.isEmpty()) {
+            try {
+                Path path = root.resolve(ProfilesManager.LAST_USED_USERNAME_FILE);
+                if (Files.exists(path)) {
+                    name = new String(Files.readAllBytes(path)).trim();
+                }
+            } catch (IOException e) {
+                log.warning("Could not read saved username: " + e.getMessage());
+            }
+        }
         /*
          * Start a user session
          */
@@ -123,16 +134,11 @@ public class Workspace {
         ServiceLocator.getInstance().getUserPlugins().addAll(
             ServiceLocator.getInstance().loadPlugins(profilePath, WorkspacePluginLocator.PLUGIN_LEVEL_USER)
         );
-        /*
-         * Validate plugins updates
-         */
-        List<Plugin> plugins = new ArrayList<>(ServiceLocator.getInstance().getUserPlugins());
-        plugins.addAll(ServiceLocator.getInstance().getSystemPlugins());
-        PluginUpdateChecker.findUpdates(plugins);
     }
 
     public static void endSession() {
-        if (ServiceLocator.getInstance().getProfilesManager().userLogged()) {
+        ProfilesManager profilesManager = ServiceLocator.getInstance().getProfilesManager();
+        if (profilesManager.userLogged()) {
             /*
              * Save amd reset all user plugins
              */
@@ -154,13 +160,14 @@ public class Workspace {
             /*
              * Logout from the current profile
              */
-            ServiceLocator.getInstance().getProfilesManager().logout();
+            profilesManager.logout();
             /*
              * Set workspace user directory to workspace base directory
              */
             ServiceLocator.getInstance().getPluginLocator().getContext().setUserDir(
-                ServiceLocator.getInstance().getProfilesManager().getBasePath()
+                profilesManager.getBasePath()
             );
+
         }
     }
 

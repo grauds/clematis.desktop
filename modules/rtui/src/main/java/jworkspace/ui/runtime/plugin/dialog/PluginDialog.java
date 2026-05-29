@@ -1,4 +1,4 @@
-package jworkspace.ui.runtime.plugin;
+package jworkspace.ui.runtime.plugin.dialog;
 
 import java.awt.Dimension;
 import java.awt.Frame;

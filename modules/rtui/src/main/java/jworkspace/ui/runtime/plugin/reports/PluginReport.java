@@ -40,11 +40,11 @@ import jworkspace.runtime.plugin.PluginUpdateChecker;
 import jworkspace.ui.runtime.plugin.IPluginSelectionListener;
 import jworkspace.ui.runtime.plugin.actions.PluginInstallAction;
 import jworkspace.ui.runtime.plugin.actions.PluginUninstallAction;
+import jworkspace.ui.runtime.plugin.actions.PluginUpdateAction;
 
 public class PluginReport extends SimplePluginReport implements IPluginSelectionListener {
 
     public static final String PLUGIN_DASHBOARD_IMAGE_PATH = "PluginDashboard";
-   // public static final String PLUGIN_SETTINGS_IMAGE_PATH = "PluginSettings";
 
     private String htmlImagesTemplate = "";
     private String htmlDescriptionTemplate = "";
@@ -52,6 +52,7 @@ public class PluginReport extends SimplePluginReport implements IPluginSelection
 
     private PluginInstallAction pluginInstallAction;
     private PluginUninstallAction pluginUninstallAction;
+    private PluginUpdateAction pluginUpdateAction;
 
     @SuppressWarnings("checkstyle:MagicNumber")
     public PluginReport() {
@@ -61,12 +62,14 @@ public class PluginReport extends SimplePluginReport implements IPluginSelection
         loadHtmlDescriptionTemplate();
         loadHtmlUpdateTemplate();
 
-        getLabel().addHyperlinkListener(e -> {
+        getTextPane().addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 if ("uninstall://trigger".equals(e.getDescription()) && pluginUninstallAction != null) {
                     pluginUninstallAction.actionPerformed(null);
                 } else if ("install://trigger".equals(e.getDescription()) && pluginInstallAction != null) {
                     pluginInstallAction.actionPerformed(null);
+                } else if ("update://trigger".equals(e.getDescription()) && pluginUpdateAction != null) {
+                    pluginUpdateAction.actionPerformed(null);
                 }
             }
         });
@@ -122,30 +125,34 @@ public class PluginReport extends SimplePluginReport implements IPluginSelection
     }
 
     @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:CyclomaticComplexity"})
-    public String assembleReport(Plugin plugin) {
+    public String assembleReport() {
 
-        String finalHtml = super.assembleReport(plugin);
+        String finalHtml = super.assembleReport();
 
         this.pluginInstallAction = new PluginInstallAction(plugin);
-        this.pluginUninstallAction = new PluginUninstallAction(plugin);
+        this.pluginUninstallAction = new PluginUninstallAction(plugin, this);
+        this.pluginUpdateAction = new PluginUpdateAction(plugin, this);
 
         URL dashboardUrl = plugin.getProperties().getProperty(PLUGIN_DASHBOARD_IMAGE_PATH) != null
             ? getClass().getResource(plugin.getProperties().getProperty(PLUGIN_DASHBOARD_IMAGE_PATH)) : null;
-      //  URL settingsUrl = plugin.getProperties().getProperty(PLUGIN_SETTINGS_IMAGE_PATH) != null
-      //      ? getClass().getResource(plugin.getProperties().getProperty(PLUGIN_SETTINGS_IMAGE_PATH)) : null;
 
         if (dashboardUrl != null) {
             finalHtml = finalHtml
                 + htmlImagesTemplate
                         .replace("${imgUrl1}", dashboardUrl.toExternalForm())
                         .replace("${imgCaption1}", "Main View");
-                //.replace("${imgUrl2}", settingsUrl != null ? settingsUrl.toExternalForm() : "")
         }
 
         Object o = plugin.getProperties().get(PluginUpdateChecker.PLUGIN_HAS_UPDATE);
         boolean hasUpdate = o != null ? (Boolean) o : false;
         if (hasUpdate) {
-            finalHtml = finalHtml + htmlUpdateTemplate;
+            finalHtml = finalHtml + htmlUpdateTemplate.replace(
+                "${new_version}", plugin.getUpdateVersion().version()
+                    + ", date: "
+                    + plugin.getUpdateVersion().buildDate()
+                    + ", build: "
+                    + plugin.getUpdateVersion().buildNumber()
+            );
         }
 
         boolean hasDescription = plugin.getDescription() != null && !plugin.getDescription().trim().isEmpty();

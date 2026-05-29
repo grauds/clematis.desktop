@@ -65,7 +65,8 @@ import jworkspace.ui.api.IView;
 import jworkspace.ui.config.DesktopServiceLocator;
 import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.dialog.ClematisLogoPanel;
-import jworkspace.ui.plugins.PluginsLoaderComponent;
+import jworkspace.ui.plugins.ShellsLoader;
+import jworkspace.ui.resources.TaskTrackerComponent;
 import jworkspace.ui.widgets.ClassCache;
 import jworkspace.users.LoginValidator;
 import jworkspace.users.ProfileOperationException;
@@ -284,7 +285,7 @@ public class WorkspaceGUI implements IWorkspaceUI {
         /*
          * Load plugins for UI
          */
-        new PluginsLoaderComponent().loadPlugins();
+        new TaskTrackerComponent(new ShellsLoader(), "Loading plugins").runAndTrack();
         /*
          * Hide logo screen
          */

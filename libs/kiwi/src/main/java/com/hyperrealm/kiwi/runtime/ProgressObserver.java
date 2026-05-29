@@ -19,6 +19,8 @@
 
 package com.hyperrealm.kiwi.runtime;
 
+import javax.swing.Icon;
+
 /**
  * This class defines the behavior of an object that wishes to receive
  * periodic updates on the progress of a lengthy task.
@@ -35,4 +37,16 @@ public interface ProgressObserver {
      */
 
     void setProgress(int progress);
+
+    /**
+     * Set the message to progress observer
+     * @param message to send to a progress observer
+     */
+    void setMessage(String message);
+
+    /**
+     * Set the icon to progress observer
+     * @param icon to send to a progress observer
+     */
+    void setIcon(Icon icon);
 }

@@ -1,6 +1,5 @@
 package jworkspace.runtime.plugin;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Objects;
@@ -14,8 +13,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.hyperrealm.kiwi.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.VersionInfo;
 
 import static jworkspace.runtime.plugin.PluginUpdateChecker.MAPPER;
+import static jworkspace.runtime.plugin.PluginUpdateChecker.extractAsset;
+import static jworkspace.runtime.plugin.PluginUpdateChecker.isUpdateAvailable;
 
 class PluginUpdateCheckerTest {
 
@@ -27,41 +29,41 @@ class PluginUpdateCheckerTest {
     @DisplayName("Should detect update when local build is LOCAL and remote is a tracking number")
     void testIsUpdateAvailableWithLocalDevBuild() {
         // Local is a development snapshot build number
-        PluginUpdateChecker.VersionInfo local =
-            new PluginUpdateChecker.VersionInfo("2.0.0-SNAPSHOT", "LOCAL", "2026-05-17T12:00:00Z");
+        VersionInfo local =
+            new VersionInfo("2.0.0-SNAPSHOT", "LOCAL", "2026-05-17T12:00:00Z");
         // Remote is an active production build number from CI
-        PluginUpdateChecker.VersionInfo remote =
-            new PluginUpdateChecker.VersionInfo("2.0.0", "45", "2026-05-17T15:00:00Z");
+        VersionInfo remote =
+            new VersionInfo("2.0.0", "45", "2026-05-17T15:00:00Z");
 
-        assertTrue(PluginUpdateChecker.isUpdateAvailable(local, remote),
+        assertTrue(isUpdateAvailable(local, remote),
             "An update should be available if the local instance is a development build");
     }
 
     @Test
     @DisplayName("Should not detect update if remote is also a LOCAL development build")
     void testIsUpdateAvailableWithBothLocalAndRemoteDevBuilds() {
-        PluginUpdateChecker.VersionInfo local =
-            new PluginUpdateChecker.VersionInfo("2.0.0-SNAPSHOT", "LOCAL", "2026-05-17T12:00:00Z");
-        PluginUpdateChecker.VersionInfo remote =
-            new PluginUpdateChecker.VersionInfo("2.0.0-SNAPSHOT", "LOCAL", "2026-05-17T12:00:00Z");
+        VersionInfo local =
+            new VersionInfo("2.0.0-SNAPSHOT", "LOCAL", "2026-05-17T12:00:00Z");
+        VersionInfo remote =
+            new VersionInfo("2.0.0-SNAPSHOT", "LOCAL", "2026-05-17T12:00:00Z");
 
-        assertFalse(PluginUpdateChecker.isUpdateAvailable(local, remote),
+        assertFalse(isUpdateAvailable(local, remote),
             "Should not flag an update if the remote target is just another local asset");
     }
 
     @Test
     @DisplayName("Should compare numeric build tracking values directly")
     void testIsUpdateAvailableWithNumericBuildNumbers() {
-        PluginUpdateChecker.VersionInfo local =
-            new PluginUpdateChecker.VersionInfo("2.0.0", "10", "2026-05-10T00:00:00Z");
-        PluginUpdateChecker.VersionInfo remoteNewer =
-            new PluginUpdateChecker.VersionInfo("2.0.0", "12", "2026-05-12T00:00:00Z");
-        PluginUpdateChecker.VersionInfo remoteOlder =
-            new PluginUpdateChecker.VersionInfo("2.0.0", "8", "2026-05-08T00:00:00Z");
+        VersionInfo local =
+            new VersionInfo("2.0.0", "10", "2026-05-10T00:00:00Z");
+        VersionInfo remoteNewer =
+            new VersionInfo("2.0.0", "12", "2026-05-12T00:00:00Z");
+        VersionInfo remoteOlder =
+            new VersionInfo("2.0.0", "8", "2026-05-08T00:00:00Z");
 
-        assertTrue(PluginUpdateChecker.isUpdateAvailable(local, remoteNewer),
+        assertTrue(isUpdateAvailable(local, remoteNewer),
             "Build #12 should be newer than Build #10");
-        assertFalse(PluginUpdateChecker.isUpdateAvailable(local, remoteOlder),
+        assertFalse(isUpdateAvailable(local, remoteOlder),
             "Build #8 should not be newer than Build #10");
     }
 
@@ -70,24 +72,24 @@ class PluginUpdateCheckerTest {
     @DisplayName("Should fall back to semantic version text matrices if build numbers match")
     void testIsUpdateAvailableWithSemanticFallback() {
         // Build numbers match, but structural versions differ
-        PluginUpdateChecker.VersionInfo local =
-            new PluginUpdateChecker.VersionInfo("2.0.0", "50", "2026-05-17T00:00:00Z");
-        PluginUpdateChecker.VersionInfo remoteNewer =
-            new PluginUpdateChecker.VersionInfo("2.1.0", "50", "2026-05-17T00:00:00Z");
-        PluginUpdateChecker.VersionInfo remoteOlder =
-            new PluginUpdateChecker.VersionInfo("1.9.5", "50", "2026-05-17T00:00:00Z");
+        VersionInfo local =
+            new VersionInfo("2.0.0", "50", "2026-05-17T00:00:00Z");
+        VersionInfo remoteNewer =
+            new VersionInfo("2.1.0", "50", "2026-05-17T00:00:00Z");
+        VersionInfo remoteOlder =
+            new VersionInfo("1.9.5", "50", "2026-05-17T00:00:00Z");
 
-        assertTrue(PluginUpdateChecker.isUpdateAvailable(local, remoteNewer),
+        assertTrue(isUpdateAvailable(local, remoteNewer),
             "v2.1.0 should trigger an update over v2.0.0");
-        assertFalse(PluginUpdateChecker.isUpdateAvailable(local, remoteOlder),
+        assertFalse(isUpdateAvailable(local, remoteOlder),
             "v1.9.5 should be ignored compared to v2.0.0");
     }
 
     @SuppressWarnings("checkstyle:MultipleStringLiterals")
-    @Test
     @DisplayName("Should extract download URL matching dynamic versioned jar assets")
-    void testVersionedJarAssetExtractionLogic() throws IOException {
-        // Arrange: Load mock JSON from your specific classpath directory path
+    void testVersionedJarAssetExtractionLogic() throws Exception {
+
+        // Load mock JSON
         GitHubReleaseDTO release;
         try (InputStream is = PluginUpdateCheckerTest.class
             .getClassLoader().getResourceAsStream("jworkspace/runtime/plugin/test_response.json")
@@ -101,9 +103,7 @@ class PluginUpdateCheckerTest {
         String searchPluginName = "Clematis.Java.Workspace";
         String expectedExtension = ".pkg"; // Align with the mock file assets extension
 
-        // Act: Run the exact business logic extracted from your production method
-        PluginUpdateChecker.RemoteAssetInfo result
-            = PluginUpdateChecker.extractAsset(release, searchPluginName, expectedExtension);
+        VersionInfo result = extractAsset(release, searchPluginName, expectedExtension);
 
         // Assert: Verify the extracted information matches the payload expectations
         assertNotNull(result, "The asset extraction engine returned null for the target plugin context.");
@@ -114,7 +114,7 @@ class PluginUpdateCheckerTest {
                 "Failed to parse and extract the Gradle version segment from the asset name field."),
             () -> assertEquals("https://github.com/grauds/clematis.desktop/releases/download/"
                     + "latest/Clematis.Java.Workspace-2.0.0.pkg",
-                result.downloadUrl(),
+                result.url().toString(),
                 "Failed to target and extract the matching browser download URL payload mapping.")
         );
     }

@@ -27,6 +27,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
@@ -54,8 +55,7 @@ import com.hyperrealm.kiwi.util.KiwiUtils;
  * @author Mark Lindner
  */
 
-public class StatusBar extends KPanel implements ProgressObserver,
-    ActionListener {
+public class StatusBar extends KPanel implements ProgressObserver, ActionListener {
 
     private static final Border SOFT_BEVEL_BORDER = new SoftBevelBorder(SoftBevelBorder.LOWERED);
 
@@ -231,6 +231,16 @@ public class StatusBar extends KPanel implements ProgressObserver,
         meter.setValue(percent);
     }
 
+    @Override
+    public void setMessage(String message) {
+        setText(message);
+    }
+
+    @Override
+    public void setIcon(Icon icon) {
+        // no icons in the status bar at the present instance
+    }
+
     /**
      * Set the text to be displayed in the status bar. The status bar will be
      * cleared when the delay expires.
@@ -285,7 +295,7 @@ public class StatusBar extends KPanel implements ProgressObserver,
     }
 
     /**
-     * This method is public as an implementation side-effect.
+     * This method is public as an implementation side effect.
      */
 
     public void actionPerformed(ActionEvent evt) {

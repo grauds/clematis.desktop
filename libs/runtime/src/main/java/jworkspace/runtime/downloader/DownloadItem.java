@@ -24,6 +24,7 @@ package jworkspace.runtime.downloader;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -50,6 +51,7 @@ public class DownloadItem implements Comparable<DownloadItem> {
 
     private final UUID id = UUID.randomUUID();
 
+    /** Wrapping task to get/set logs from/to */
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private final DownloadTask task = new DownloadTask(this);
@@ -109,7 +111,7 @@ public class DownloadItem implements Comparable<DownloadItem> {
      * Creates a new download item and initializes its log.
      */
     public DownloadItem() {
-        addLog("Task created.");
+        log("Task created.");
     }
 
     /**
@@ -145,7 +147,7 @@ public class DownloadItem implements Comparable<DownloadItem> {
      *
      * @param message log message
      */
-    public void addLog(String message) {
+    public void log(String message) {
         getTask().log(LocalTime.now().withNano(0) + " " + message);
     }
 
@@ -197,7 +199,7 @@ public class DownloadItem implements Comparable<DownloadItem> {
     public synchronized void createTempFile() throws IOException {
         if (tempFile == null) {
             tempFile = Files.createTempFile("download-", ".part");
-            addLog("Temporary file created: " + tempFile);
+            log("Temporary file created: " + tempFile);
         }
     }
 
@@ -230,10 +232,10 @@ public class DownloadItem implements Comparable<DownloadItem> {
         Path targetFile = Files.createDirectories(targetDirectory).resolve(fileName);
         completedFile = targetFile;
 
-        Files.move(tempFile, targetFile);
+        Files.move(tempFile, targetFile, REPLACE_EXISTING);
         tempFile = null;
 
-        addLog("Download finalized: " + completedFile);
+        log("Download finalized: " + completedFile);
     }
 
     /**
@@ -243,7 +245,7 @@ public class DownloadItem implements Comparable<DownloadItem> {
         try {
             if (tempFile != null) {
                 Files.deleteIfExists(tempFile);
-                addLog("Temporary file deleted");
+                log("Temporary file deleted");
             }
         } catch (IOException ignored) {
             // Best-effort cleanup

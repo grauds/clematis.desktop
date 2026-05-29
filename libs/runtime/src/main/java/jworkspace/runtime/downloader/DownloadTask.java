@@ -93,8 +93,11 @@ public final class DownloadTask extends AbstractTask {
         try {
             // Transition the item into the active downloading state
             item.setStatus(DownloadStatus.DOWNLOADING);
-            log("Starting download: " + item.getUrl());
-            listener.update(this.getItem());
+
+            String message = "Starting download: " + item.getUrl();
+            log(message);
+            notifyObservers(message);
+            notifyDownloadListener();
 
             // Create URL connection from the item URL
             URL url = URI.create(item.getUrl()).toURL();
@@ -103,6 +106,7 @@ public final class DownloadTask extends AbstractTask {
             // Retrieve the expected content length (it may be -1 if unknown)
             long total = conn.getContentLengthLong();
             log(String.format("Content length resolved: %d bytes", total));
+            notifyObservers("Content length resolved: " + total);
             item.createTempFile();
 
             // Tracks the progress percentage intervals to avoid spamming the log files
@@ -126,8 +130,8 @@ public final class DownloadTask extends AbstractTask {
                         item.cleanupTempFile();
                         item.setStatus(DownloadStatus.CANCELED);
                         log("Download task was canceled by user request.");
-
-                        listener.update(this.getItem());
+                        notifyObservers("Download task was canceled by user request.");
+                        notifyDownloadListener();
                         return;
                     }
 
@@ -149,35 +153,56 @@ public final class DownloadTask extends AbstractTask {
                             log(String.format(
                                 "Download progress: %d%% (%d/%d bytes)", currentPercent, downloaded, total)
                             );
+                            notifyObservers(
+                                String.format(
+                                    "Download progress: %d%% (%d/%d bytes)", currentPercent, downloaded, total)
+                            );
+                            notifyObservers(currentPercent == 100 ? 99 : currentPercent);
                             lastLoggedPercent = currentPercent;
                         }
                     }
-
-                    // Notify listener about progress changes
-                    listener.update(this.getItem());
+                    notifyDownloadListener();
                 }
             }
 
             // Download completed successfully
             item.completeDownload(path);
             item.setStatus(DownloadStatus.COMPLETED);
-            log("Download pipeline closed successfully. File saved to destination: " + path.toAbsolutePath());
 
-            listener.update(this.getItem());
-            listener.finished(this.getItem());
+            log("Download pipeline closed successfully. File saved to destination: " + path.toAbsolutePath());
+            notifyObservers("Download pipeline closed successfully. File saved to destination: "
+                + path.toAbsolutePath()
+            );
+            notifyObservers(100);
+            notifyDownloadListener();
+            notifyFinishedDownloadListener();
 
         } catch (Exception e) {
             // Any exception is treated as a download failure
             item.cleanupTempFile();
             item.setStatus(DownloadStatus.FAILED);
-            log("Download failed, error: " + e.getMessage());
 
-            listener.update(this.getItem());
+            log("Download failed, error: " + e.getMessage());
+            notifyObservers("Download failed, error: " + e.getMessage());
+            notifyObservers(100);
+            notifyDownloadListener();
         } finally {
             // Cleanly close out the stream buffers to flush any trailing lines out to listeners
             try {
                 this.getLogsOutputStream().close();
             } catch (Exception ignored) {}
+        }
+    }
+
+    private void notifyDownloadListener() {
+        if (listener != null) {
+            listener.update(this.getItem());
+        }
+    }
+
+    private void notifyFinishedDownloadListener() {
+        if (listener != null) {
+            listener.finished(this.getItem());
         }
     }
 

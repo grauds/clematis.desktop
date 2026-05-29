@@ -30,8 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hyperrealm.kiwi.plugin.Plugin;
-
 public class DownloadedPluginReport extends PluginReport {
 
     private String htmlInstallDownloadTemplate = "";
@@ -57,8 +55,8 @@ public class DownloadedPluginReport extends PluginReport {
     }
 
     @Override
-    public String assembleReport(Plugin plugin) {
-        String finalHtml =  super.assembleReport(plugin);
+    public String assembleReport() {
+        String finalHtml =  super.assembleReport();
         finalHtml = finalHtml + htmlInstallDownloadTemplate;
         return finalHtml;
     }

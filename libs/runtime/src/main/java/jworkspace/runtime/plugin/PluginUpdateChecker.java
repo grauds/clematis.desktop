@@ -24,15 +24,11 @@ package jworkspace.runtime.plugin;
    anton.troshin@gmail.com
   ----------------------------------------------------------------------------
 */
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -43,6 +39,7 @@ import javax.swing.SwingWorker;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.plugin.PluginDTO;
+import com.hyperrealm.kiwi.plugin.VersionInfo;
 
 import lombok.extern.java.Log;
 import tools.jackson.databind.ObjectMapper;
@@ -56,10 +53,7 @@ public class PluginUpdateChecker {
 
     private PluginUpdateChecker() {}
 
-    @SuppressWarnings({
-        "checkstyle:MultipleStringLiterals",
-        "checkstyle:NestedIfDepth"
-    })
+    @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:NestedIfDepth", "checkstyle:ReturnCount"})
     public static boolean checkUpdateAvailable(PluginDTO plugin) throws Exception {
         if (plugin == null) {
             return false;
@@ -73,7 +67,9 @@ public class PluginUpdateChecker {
             localBuildDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(plugin.getBuildDate());
         }
 
-        VersionInfo localInfo = new VersionInfo(localVersion, localBuildNum, localBuildDateStr);
+        VersionInfo localInfo = new VersionInfo(
+            localVersion, localBuildNum, localBuildDateStr, URI.create("file:" + plugin.getJarFile()).toURL()
+        );
 
         // Fallback or dynamic repository extraction logic parsing
         String repoPath = "grauds/clematis.desktop";
@@ -89,16 +85,19 @@ public class PluginUpdateChecker {
         }
 
         // Resolve dynamic metadata from GitHub API
-        RemoteAssetInfo remoteAsset = getLatestReleaseAsset(repoPath, plugin.getName());
-        if (remoteAsset == null) {
-            throw new IOException("Could not resolve asset metadata from the GitHub API release pipeline.");
+        VersionInfo remoteInfo = getLatestReleaseAsset(repoPath, plugin.getName());
+        if (remoteInfo == null) {
+            log.warning("Could not resolve asset metadata from the GitHub API release pipeline.");
+            return false;
         }
 
-        // Fetch Manifest parameters securely from the streaming target URL
-        VersionInfo remoteInfo = fetchRemoteVersion(remoteAsset.downloadUrl());
-
         // Process update evaluation algorithm
-        return isUpdateAvailable(localInfo, remoteInfo);
+        if (isUpdateAvailable(localInfo, remoteInfo)) {
+            plugin.setUpdateVersion(remoteInfo);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -111,7 +110,7 @@ public class PluginUpdateChecker {
         "checkstyle:MultipleStringLiterals",
         "checkstyle:MagicNumber"
     })
-    public static RemoteAssetInfo getLatestReleaseAsset(String repoPath, String pluginName) {
+    public static VersionInfo getLatestReleaseAsset(String repoPath, String pluginName) {
         if (pluginName == null || repoPath == null || repoPath.isEmpty()) {
             return null;
         }
@@ -144,7 +143,8 @@ public class PluginUpdateChecker {
      * Shared extraction logic made package-private so it can be thoroughly unit tested.
      */
     @SuppressWarnings("checkstyle:ReturnCount")
-    static RemoteAssetInfo extractAsset(GitHubReleaseDTO release, String pluginName, String extension) {
+    static VersionInfo extractAsset(GitHubReleaseDTO release, String pluginName, String extension)
+        throws Exception {
         if (release == null || release.assets() == null || pluginName == null) {
             return null;
         }
@@ -159,11 +159,7 @@ public class PluginUpdateChecker {
             String assetName = asset.name().toLowerCase();
 
             if (assetName.startsWith(assetPrefix) && assetName.endsWith(extension)) {
-                String version = asset.name().substring(
-                    assetPrefix.length(),
-                    asset.name().length() - extension.length()
-                );
-                return new RemoteAssetInfo(asset.browserDownloadUrl(), version);
+                return fetchRemoteVersion(asset.browserDownloadUrl());
             }
         }
         return null;
@@ -173,8 +169,8 @@ public class PluginUpdateChecker {
      * Downloads and parses the manifest header directly from the online binary JAR stream.
      */
     @SuppressWarnings("checkstyle:MagicNumber")
-    public static VersionInfo fetchRemoteVersion(String jarUrlString) throws Exception {
-        URL url = URI.create(jarUrlString).toURL();
+    public static VersionInfo fetchRemoteVersion(String urlString) throws Exception {
+        URL url = URI.create(urlString).toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(10000);
         conn.setReadTimeout(10000);
@@ -195,27 +191,7 @@ public class PluginUpdateChecker {
             String buildNumber = attr.getValue("Build-Number");
             String buildDate = attr.getValue("Build-Date");
 
-            return new VersionInfo(version, buildNumber, buildDate);
-        }
-    }
-
-    /**
-     * Checks, validates, and acts as the download orchestrator.
-     * Saves the artifact to the designated local path if an update is found.
-     */
-    @SuppressWarnings({"checkstyle:ReturnCount", "checkstyle:MultipleStringLiterals", "checkstyle:NestedIfDepth"})
-    public static void downloadUpdate(String localDownloadDirectory,
-                                      RemoteAssetInfo remoteAsset
-    ) throws Exception {
-
-        // Extract file name sequence from download endpoint URL
-        String fileName = remoteAsset.downloadUrl().substring(remoteAsset.downloadUrl().lastIndexOf('/') + 1);
-        File destinationFile = Paths.get(localDownloadDirectory, fileName).toFile();
-
-        // Download file direct to disk location mapping
-        URL url = URI.create(remoteAsset.downloadUrl()).toURL();
-        try (InputStream in = url.openStream()) {
-            Files.copy(in, destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return new VersionInfo(version, buildNumber, buildDate, url);
         }
     }
 
@@ -226,8 +202,8 @@ public class PluginUpdateChecker {
     })
     public static boolean isUpdateAvailable(VersionInfo local, VersionInfo remote) {
         // Always compare semantic versions first
-        String[] localParts = local.version.replace("-SNAPSHOT", "").split("\\.");
-        String[] remoteParts = remote.version.replace("-SNAPSHOT", "").split("\\.");
+        String[] localParts = local.version().replace("-SNAPSHOT", "").split("\\.");
+        String[] remoteParts = remote.version().replace("-SNAPSHOT", "").split("\\.");
 
         int length = Math.max(localParts.length, remoteParts.length);
         for (int i = 0; i < length; i++) {
@@ -245,8 +221,8 @@ public class PluginUpdateChecker {
         }
 
         // Versions are equal. Compare build dates next.
-        if (!remote.buildDate.isEmpty() && !local.buildDate.isEmpty()) {
-            int dateCompare = remote.buildDate.compareTo(local.buildDate);
+        if (!remote.buildDate().isEmpty() && !local.buildDate().isEmpty()) {
+            int dateCompare = remote.buildDate().compareTo(local.buildDate());
             if (dateCompare > 0) {
                 return true;  // Remote is newer
             }
@@ -256,8 +232,8 @@ public class PluginUpdateChecker {
         }
 
         // Versions and dates are equal. Compare build numbers.
-        boolean isLocalDev = local.buildNumber.startsWith("LOC") || local.buildNumber.equals("DEV");
-        boolean isRemoteDev = remote.buildNumber.startsWith("LOC") || remote.buildNumber.equals("DEV");
+        boolean isLocalDev = local.buildNumber().startsWith("LOC") || local.buildNumber().equals("DEV");
+        boolean isRemoteDev = remote.buildNumber().startsWith("LOC") || remote.buildNumber().equals("DEV");
 
         // Local developer builds always override the remote build number
         if (isLocalDev) {
@@ -270,9 +246,9 @@ public class PluginUpdateChecker {
 
         // Compare formal numeric builds
         try {
-            if (!local.buildNumber.isEmpty() && !remote.buildNumber.isEmpty()) {
-                int localNum = Integer.parseInt(local.buildNumber);
-                int remoteNum = Integer.parseInt(remote.buildNumber);
+            if (!local.buildNumber().isEmpty() && !remote.buildNumber().isEmpty()) {
+                int localNum = Integer.parseInt(local.buildNumber());
+                int remoteNum = Integer.parseInt(remote.buildNumber());
                 return remoteNum > localNum;
             }
         } catch (NumberFormatException ignored) {}
@@ -302,14 +278,5 @@ public class PluginUpdateChecker {
         worker.execute();
     }
 
-    public record VersionInfo(String version, String buildNumber, String buildDate) {
-        public VersionInfo(String version, String buildNumber, String buildDate) {
-            this.version = version != null ? version : "0.0.0";
-            this.buildNumber = buildNumber != null ? buildNumber.trim().toUpperCase() : "LOCAL";
-            this.buildDate = buildDate != null ? buildDate : "";
-        }
-    }
-
-    public record RemoteAssetInfo(String downloadUrl, String version) {}
 }
 

@@ -35,15 +35,19 @@ import com.hyperrealm.kiwi.plugin.Plugin;
 import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
 import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 
+import static jworkspace.runtime.plugin.WorkspacePluginLocator.PLUGIN_DELETED;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.config.DesktopServiceLocator;
+import jworkspace.ui.runtime.plugin.reports.PluginReport;
 
 public class PluginUninstallAction extends AbstractAction {
 
     private final Plugin p;
+    private final PluginReport pluginReport;
 
-    public PluginUninstallAction(Plugin p) {
+    public PluginUninstallAction(Plugin p, PluginReport pluginReport) {
         this.p = p;
+        this.pluginReport = pluginReport;
     }
 
     @Override
@@ -58,6 +62,10 @@ public class PluginUninstallAction extends AbstractAction {
                 try {
                     if (WorkspacePluginLocator.uninstallPlugin(Path.of(p.getJarFile()))) {
                         messageDialog.setMessage("Deleted successfully.");
+                        PluginUninstallAction.this.p.getProperties().put(
+                            PLUGIN_DELETED, true
+                        );
+                        pluginReport.repaint();
                     } else {
                         messageDialog.setMessage(String.format("File %s doesn't exist.", p.getJarFile()));
                     }

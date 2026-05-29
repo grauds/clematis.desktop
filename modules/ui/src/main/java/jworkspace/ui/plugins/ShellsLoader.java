@@ -26,9 +26,9 @@ package jworkspace.ui.plugins;
 */
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Icon;
 import javax.swing.UIManager;
 
 import com.hyperrealm.kiwi.plugin.Plugin;
@@ -40,6 +40,7 @@ import static jworkspace.config.ServiceLocator.PLUGINS_DIRECTORY;
 import static jworkspace.runtime.plugin.WorkspacePluginLocator.PLUGIN_TYPE_PLUGIN;
 import jworkspace.WorkspaceResourceAnchor;
 import jworkspace.config.ServiceLocator;
+import jworkspace.runtime.plugin.PluginUpdateChecker;
 import jworkspace.runtime.plugin.WorkspacePluginLocator;
 import jworkspace.ui.MainFrame;
 import jworkspace.ui.WorkspaceError;
@@ -77,17 +78,11 @@ public class ShellsLoader extends Task {
     /** Constant representing 100% progress */
     static final int PROGRESS_COMPLETED = 100;
 
-    /** Reference to the progress dialog used to show progress messages and percentage */
-    private final ProgressDialog progressDialog;
-
     /**
      * Constructor for ShellsLoader.
-     *
-     * @param progressDialog Progress dialog to show progress updates, can be null
      */
-    public ShellsLoader(ProgressDialog progressDialog) {
+    public ShellsLoader() {
         super();
-        this.progressDialog = progressDialog;
     }
 
     public static Path path(boolean allUsers, Plugin plugin) {
@@ -146,31 +141,30 @@ public class ShellsLoader extends Task {
 
         // If no plugins were found, show a message and complete the task
         if (plugins.isEmpty()) {
-            showMessageInProgressDialog(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));
+            notifyObservers(WorkspaceResourceAnchor.getString("WorkspaceGUI.shells.notFound"));
             notifyObservers(PROGRESS_COMPLETED);
         } else {
 
             // Initialize the progress dialog and notify observers
-            setPercentInProgressDialog(0);
             notifyObservers(0);
 
             // Load and install each plugin
             for (int i = 0; i < plugins.size(); i++) {
                 // Update message in progress dialog
-                showMessageInProgressDialog(
+                notifyObservers(
                     WorkspaceResourceAnchor.getString("WorkspaceGUI.shell.loading")
                         + ITextConstants.LOG_SPACE + plugins.get(i).getName()
                 );
 
                 log.info("Loading " + plugins.get(i).getName() + ITextConstants.LOG_FINISH);
-                showIconInProgressDialog(plugins.get(i).getIcon());
+                notifyObservers(plugins.get(i).getIcon());
 
                 try {
                     // Install the plugin into the workspace
                     installPlugin(plugins.get(i));
 
                     String installedMessage = "Installed " + plugins.get(i).getName() + ITextConstants.LOG_FINISH;
-                    showMessageInProgressDialog(installedMessage);
+                    notifyObservers(installedMessage);
                     log.info(installedMessage);
                 } catch (Exception | Error ex) {
                     // Handle plugin load failures gracefully
@@ -181,46 +175,17 @@ public class ShellsLoader extends Task {
 
                 // Update progress percentage
                 int percent = i * PROGRESS_COMPLETED / plugins.size();
-                setPercentInProgressDialog(percent);
                 notifyObservers(percent);
             }
+            /*
+             * Validate plugins updates
+             */
+            List<Plugin> pluginsToUpdate = new ArrayList<>(ServiceLocator.getInstance().getUserPlugins());
+            pluginsToUpdate.addAll(ServiceLocator.getInstance().getSystemPlugins());
+            PluginUpdateChecker.findUpdates(pluginsToUpdate);
 
             // Finalize progress
-            setPercentInProgressDialog(PROGRESS_COMPLETED);
             notifyObservers(PROGRESS_COMPLETED);
-        }
-    }
-
-    /**
-     * Sets the progress percentage in the progress dialog.
-     *
-     * @param percent Progress value (0-100)
-     */
-    private void setPercentInProgressDialog(int percent) {
-        if (this.progressDialog != null) {
-            this.progressDialog.setProgress(percent);
-        }
-    }
-
-    /**
-     * Displays a message in the progress dialog.
-     *
-     * @param message Message to display
-     */
-    private void showMessageInProgressDialog(String message) {
-        if (this.progressDialog != null && message != null) {
-            this.progressDialog.setMessage(message);
-        }
-    }
-
-    /**
-     * Displays an icon in the progress dialog.
-     *
-     * @param icon Icon to display
-     */
-    private void showIconInProgressDialog(Icon icon) {
-        if (this.progressDialog != null && icon != null) {
-            this.progressDialog.setIcon(icon);
         }
     }
 

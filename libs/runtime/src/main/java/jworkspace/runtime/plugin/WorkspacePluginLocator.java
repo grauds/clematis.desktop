@@ -62,6 +62,7 @@ import lombok.extern.java.Log;
 @Log
 public class WorkspacePluginLocator extends PluginLocator<WorkspacePluginContext> {
 
+    public static final String PLUGIN_DELETED = "Deleted";
     public static final String PLUGIN_LEVEL_USER = "USER";
     public static final String PLUGIN_LEVEL_SYSTEM = "SYSTEM";
     public static final String PLUGIN_TYPE_PLUGIN = "PLUGIN";
