@@ -67,7 +67,6 @@ import jworkspace.ui.desktop.Desktop;
 import jworkspace.ui.dialog.ClematisLogoPanel;
 import jworkspace.ui.plugins.ShellsLoader;
 import jworkspace.ui.resources.TaskTrackerComponent;
-import jworkspace.ui.widgets.ClassCache;
 import jworkspace.users.LoginValidator;
 import jworkspace.users.ProfileOperationException;
 import jworkspace.users.ProfilesManager;
@@ -262,11 +261,6 @@ public class WorkspaceGUI implements IWorkspaceUI {
          * Set texture on
          */
         setTextureVisible(DesktopServiceLocator.getInstance().getUiConfig().isTextureVisible());
-
-        /*
-         * Create heavy dialogs and store them in the cache
-         */
-        ClassCache.createFileChoosers();
 
         try (
             FileInputStream inputFile = new FileInputStream(

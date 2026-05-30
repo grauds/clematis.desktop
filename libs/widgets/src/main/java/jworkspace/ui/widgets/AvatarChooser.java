@@ -50,14 +50,14 @@ public class AvatarChooser extends KPanel implements ActionListener {
     private KButton deleteButton;
     private KButton confirmButton; // The OK button
 
-    // New physical zoom buttons
     private KButton zoomInButton;
     private KButton zoomOutButton;
 
     private Avatar avatar;
     private final ImageIcon noIcon;
-    private ImageIcon rawUncroppedIcon;
 
+    // Crucial: This variable preserves the RAW, pristine unscaled image file permanently
+    private ImageIcon rawUncroppedIcon;
     private boolean isNewUnclippedImage = false;
 
     public AvatarChooser(ImageIcon noIcon) {
@@ -67,12 +67,9 @@ public class AvatarChooser extends KPanel implements ActionListener {
 
         ButtonPanel buttonPanel = new ButtonPanel();
         buttonPanel.addButton(getAddButton());
-
-        // Add the zoom buttons and confirmation button to the panel line
         buttonPanel.addButton(getZoomInButton());
         buttonPanel.addButton(getZoomOutButton());
         buttonPanel.addButton(getConfirmButton());
-
         buttonPanel.addButton(getDeleteButton());
 
         add(getAvatar(), BorderLayout.CENTER);
@@ -108,7 +105,6 @@ public class AvatarChooser extends KPanel implements ActionListener {
         return confirmButton;
     }
 
-    // Lazy initialization for the Zoom In button
     public KButton getZoomInButton() {
         if (zoomInButton == null) {
             zoomInButton = new KButton("+");
@@ -118,7 +114,6 @@ public class AvatarChooser extends KPanel implements ActionListener {
         return zoomInButton;
     }
 
-    // Lazy initialization for the Zoom Out button
     public KButton getZoomOutButton() {
         if (zoomOutButton == null) {
             zoomOutButton = new KButton("-");
@@ -143,28 +138,35 @@ public class AvatarChooser extends KPanel implements ActionListener {
         if (e.getSource() == this.addButton) {
             Image image = ClassCache.chooseImage(this);
             if (image != null) {
+                // 1. Store the RAW, pristine unscaled image immediately
                 rawUncroppedIcon = new ImageIcon(image);
                 isNewUnclippedImage = true;
 
                 getAvatar().resetTransformations();
-                scaleInitialImage(rawUncroppedIcon);
+                // 2. Set the unscaled icon directly onto the workspace.
+                // The Avatar component handles scaling internally via paintComponent!
+                getAvatar().setIcon(rawUncroppedIcon);
                 getAvatar().setEditable(true);
             }
         } else if (e.getSource() == this.zoomInButton) {
             if (getAvatar().isEditable()) {
-                // Increase scale by 10%, capping it at a maximum value of 10.0
                 double currentScale = getAvatar().getImageScale();
-                getAvatar().setImageScale(Math.min(10.0, currentScale * 1.1));
+                getAvatar().setImageScale(Math.clamp(currentScale * 1.1, 0.1, 10.0));
             }
         } else if (e.getSource() == this.zoomOutButton) {
             if (getAvatar().isEditable()) {
-                // Decrease scale by 10%, capping it at a minimum value of 0.1
                 double currentScale = getAvatar().getImageScale();
-                getAvatar().setImageScale(Math.max(0.1, currentScale * 0.9));
+                getAvatar().setImageScale(Math.clamp(currentScale * 0.9, 0.1, 10.0));
             }
         } else if (e.getSource() == this.confirmButton) {
             if (getAvatar().isEditable() && isNewUnclippedImage) {
+
+                // Process Your Upload Pipeline first using the raw image data:
+                // uploadUnscaledImagePayload(this.rawUncroppedIcon);
+
+                // Extract the cropped composition thumbnail for local client UI previewing
                 ImageIcon cropped = getAvatar().getCroppedIcon();
+
                 getAvatar().resetTransformations();
                 getAvatar().setIcon(cropped);
                 getAvatar().setEditable(false);
@@ -181,53 +183,42 @@ public class AvatarChooser extends KPanel implements ActionListener {
         repaint();
     }
 
-    /**
-     * Controls button visibility rules based on editing states.
-     */
     private void updateButtonStates() {
         boolean showEditingControls = isNewUnclippedImage && getAvatar().getIcon() != noIcon;
 
-        // Toggle visibility for OK, Zoom In, and Zoom Out buttons all at once
+        // Toggle UI visibility rules smoothly
         getConfirmButton().setVisible(showEditingControls);
         getZoomInButton().setVisible(showEditingControls);
         getZoomOutButton().setVisible(showEditingControls);
 
-        // Ensure layout container re-aligns elements when hidden/shown
         if (getConfirmButton().getParent() != null) {
             getConfirmButton().getParent().revalidate();
         }
     }
 
     public void setIcon(ImageIcon icon) {
-        rawUncroppedIcon = icon;
-        isNewUnclippedImage = false;
+        this.rawUncroppedIcon = icon;
+        this.isNewUnclippedImage = false;
         getAvatar().resetTransformations();
         getAvatar().setEditable(false);
-        scaleInitialImage(icon);
+
+        if (icon == null) {
+            getAvatar().setIcon(noIcon);
+        } else {
+            getAvatar().setIcon(icon);
+        }
         updateButtonStates();
     }
 
-    private void scaleInitialImage(ImageIcon photo) {
-        if (photo == null || photo == noIcon) {
-            getAvatar().setIcon(noIcon);
-            return;
+    /**
+     * Exposes the true unscaled icon data for your network upload routines.
+     * If editing is complete, it falls back to the current avatar preview state.
+     */
+    public ImageIcon getRawUnscaledIcon() {
+        if (rawUncroppedIcon != null) {
+            return rawUncroppedIcon;
         }
-
-        int iw = photo.getIconWidth();
-        int ih = photo.getIconHeight();
-
-        double xScale = (double) MAX_PORTRAIT_WIDTH / iw;
-        double yScale = (double) MAX_PORTRAIT_HEIGHT / ih;
-        double scale = Math.max(xScale, yScale);
-
-        if (scale < 1.0) {
-            int targetWidth = (int) (iw * scale);
-            int targetHeight = (int) (ih * scale);
-            Image scaledImg = photo.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
-            getAvatar().setIcon(new ImageIcon(scaledImg));
-        } else {
-            getAvatar().setIcon(photo);
-        }
+        return getIcon();
     }
 
     public ImageIcon getIcon() {

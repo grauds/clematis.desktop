@@ -33,7 +33,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -276,18 +275,49 @@ public final class ClassCache {
             : null;
     }
 
-    public static void createFileChoosers() {
-        // Trigger lazy-loading explicitly if required early
-        Objects.requireNonNull(getFileChooserInstance());
-        Objects.requireNonNull(getIconChooserInstance());
-    }
-
-    // Thread-safe Lazy Initialization Holders (Virtual Thread Safe / No Synchronized Locks)
     private static class FileChooserHolder {
         private static final JFileChooser INSTANCE = new JFileChooser();
     }
 
     private static class IconChooserHolder {
-        private static final JFileChooser INSTANCE = new JFileChooser();
+        private static final JFileChooser INSTANCE = createIconChooser();
+        private static FilePreviewer previewer;
+
+        private static JFileChooser createIconChooser() {
+            JFileChooser chooser = new JFileChooser(ResourceAnchor.getString("Cache.chooseIcon"));
+
+            // Setup accessory and custom view
+            previewer = new FilePreviewer(chooser);
+            chooser.setAccessory(previewer);
+            chooser.setFileView(new WorkspaceFileView());
+
+            // Setup the image format extensions filter
+            WorkspaceFileFilter ff = new WorkspaceFileFilter(
+                new String[]{"gif", "jpg", "jpeg", "png", "ico", "bmp", "psd", "tga", "cur", "tiff", "xpm"},
+                ResourceAnchor.getString("Cache.allFormats")
+            );
+            ff.setExtensionListInDescription(false);
+            chooser.addChoosableFileFilter(ff);
+
+            return chooser;
+        }
+
+        @SuppressWarnings("checkstyle:NestedIfDepth")
+        public static JFileChooser getIconChooserInstance(String path) {
+            if (path != null) {
+                File file = new File(path);
+                if (file.exists()) {
+                    INSTANCE.setSelectedFile(file);
+                    INSTANCE.setCurrentDirectory(file);
+                } else {
+                    INSTANCE.setSelectedFile(null);
+                    if (previewer != null) {
+                        previewer.reset();
+                    }
+                }
+            }
+            return INSTANCE;
+        }
     }
+
 }

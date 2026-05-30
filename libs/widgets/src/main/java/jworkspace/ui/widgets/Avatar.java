@@ -52,8 +52,7 @@ import lombok.Setter;
 public class Avatar extends JComponent {
 
     private ImageIcon icon;
-    private int borderSize;
-
+    private int borderSize = 0;
     private double imageScale = 1.0;
     private int offsetX = 0;
     private int offsetY = 0;
@@ -106,6 +105,17 @@ public class Avatar extends JComponent {
         });
     }
 
+    public void setIcon(ImageIcon icon) {
+        this.icon = icon;
+        resetTransformations();
+        repaint();
+    }
+
+    public void setBorderSize(int borderSize) {
+        this.borderSize = borderSize;
+        repaint();
+    }
+
     public void resetTransformations() {
         this.imageScale = 1.0;
         this.offsetX = 0;
@@ -129,18 +139,20 @@ public class Avatar extends JComponent {
         BufferedImage croppedImage = new BufferedImage(diameter, diameter, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = croppedImage.createGraphics();
 
-        // High Quality Rendering Context
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
+        // Fill the circle matching the canvas bounding coordinates
         g2d.fillOval(0, 0, diameter, diameter);
         g2d.setComposite(AlphaComposite.SrcIn);
 
+        // Calculate base bounding size centered inside a 0-indexed canvas matching 'diameter'
         Rectangle baseSize = getAutoSize(icon, diameter);
         int finalWidth = (int) (baseSize.width * imageScale);
         int finalHeight = (int) (baseSize.height * imageScale);
 
+        // Fix: Coordinates must center around the (diameter / 2) origin, ignoring parent UI layouts
         int finalX = baseSize.x + offsetX - (int) ((finalWidth - baseSize.width) / 2.0);
         int finalY = baseSize.y + offsetY - (int) ((finalHeight - baseSize.height) / 2.0);
 
@@ -152,6 +164,9 @@ public class Avatar extends JComponent {
 
     @Override
     protected void paintComponent(Graphics grphcs) {
+        // Always execute background super pipeline calls first
+        super.paintComponent(grphcs);
+
         if (icon != null) {
             int width = getWidth();
             int height = getHeight();
@@ -168,7 +183,6 @@ public class Avatar extends JComponent {
             BufferedImage img = new BufferedImage(diameter, diameter, BufferedImage.TYPE_INT_ARGB);
             Graphics2D imageG2D = img.createGraphics();
 
-            // Critical: Enable multi-pass bicubic filtering for clean scaling output
             imageG2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             imageG2D.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             imageG2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -192,20 +206,19 @@ public class Avatar extends JComponent {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
+            // Fix: Render the border background rings underneath the raster image buffer
             if (borderSize > 0) {
-                diameter += border;
                 g2.setColor(getForeground());
-                g2.fillOval(x, y, diameter, diameter);
+                g2.fillOval(x, y, diameter + border, diameter + border);
             }
 
             if (isOpaque()) {
                 g2.setColor(getBackground());
-                diameter -= border;
                 g2.fillOval(x + borderSize, y + borderSize, diameter, diameter);
             }
+
             g2.drawImage(img, x + borderSize, y + borderSize, null);
         }
-        super.paintComponent(grphcs);
     }
 
     private Rectangle getAutoSize(Icon image, int size) {
@@ -214,6 +227,7 @@ public class Avatar extends JComponent {
 
         double xScale = (double) size / iw;
         double yScale = (double) size / ih;
+        // Cover strategy: guarantee whole square mask is fully covered
         double scale = Math.max(xScale, yScale);
 
         int width = Math.max(1, (int) (scale * iw));
@@ -225,3 +239,4 @@ public class Avatar extends JComponent {
         return new Rectangle(x, y, width, height);
     }
 }
+
