@@ -112,7 +112,7 @@ public class WorkspaceFileView extends FileView {
     }
 
     /**
-     * Adds a human readable description of the file.
+     * Adds a human-readable description of the file.
      */
     public void putDescription(File f, String fileDescription) {
         fileDescriptions.put(f, fileDescription);
@@ -127,7 +127,7 @@ public class WorkspaceFileView extends FileView {
     }
 
     /**
-     * Adds a human readable type description for files of the type of
+     * Adds a human-readable type description for files of the type of
      * the passed in file. Based on "dot" extension strings, e.g: ".gif".
      * Case is ignored.
      */
@@ -136,7 +136,7 @@ public class WorkspaceFileView extends FileView {
     }
 
     /**
-     * Adds a human readable type description for files. Based on "dot"
+     * Adds a human-readable type description for files. Based on "dot"
      * extension strings, e.g: ".gif". Case is ignored.
      */
     private void putTypeDescription(String extension, String typeDescription) {

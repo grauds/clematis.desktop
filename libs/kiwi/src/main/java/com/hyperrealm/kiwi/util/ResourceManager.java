@@ -340,7 +340,7 @@ public class ResourceManager {
 
         Image image = getImage(name);
         if (image != null) {
-            icon = new ImageIcon();
+            icon = new ImageIcon(image);
             icons.put(name, icon);
         }
         return (icon);
