@@ -67,13 +67,21 @@ jpackage {
         icon = file("installer/win/AppIcon.ico")
         winDirChooser = true
         winShortcut = true
+
+        println "CURRENT PATH FOR WIX: " + System.getenv("PATH")
     }
     // Linux
     else {
         type = "deb"
         linuxShortcut = true
     }
-} dependsOn(build)
+}
+
+tasks.named('jpackage') {
+    dependsOn tasks.named('jar')
+    dependsOn tasks.named('build')
+    outputs.upToDateWhen { false }
+}
 
 publishing {
     repositories {

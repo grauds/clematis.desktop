@@ -45,7 +45,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run jpackage Task via Gradle
-        run: ./gradlew :app:jpackage --info --stacktrace
+        run: ./gradlew :app:clean :app:jpackage --info --stacktrace
 
       - name: Upload Installer to GitHub Release
         uses: softprops/action-gh-release@v2
