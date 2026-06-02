@@ -44,7 +44,9 @@ jpackage {
     appVersion = "2.0.0"
     vendor = "Anton Troshin"
 
-    input = new File("build/libs")
+    input = new File("${layout.buildDirectory.get()}/libs")
+    destination = new File("${layout.buildDirectory.get()}/dist")
+
     mainJar = "app-2.0.0-SNAPSHOT.jar"
     mainClass = "jworkspace.Workspace"
     runtimeImage.set(layout.projectDirectory.dir(System.getProperty("java.home")))
@@ -71,8 +73,6 @@ jpackage {
         type = "deb"
         linuxShortcut = true
     }
-
-    destination = new File("build/dist")
 } dependsOn(build)
 
 publishing {
