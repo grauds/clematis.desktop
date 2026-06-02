@@ -36,15 +36,16 @@ jobs:
 
       - name: Add WiX Toolset to PATH
         if: matrix.os == 'windows-latest'
-        run: echo "C:\Program Files (x86)\WiX Toolset v3.14\bin" >> $GITHUB_PATH
-        shell: bash
+        run: |
+          echo "C:\Program Files (x86)\WiX Toolset v3.14\bin" >> $env:GITHUB_PATH
+        shell: pwsh
 
       - name: Grant Execute Permission for Gradle Wrapper
         if: matrix.os != 'windows-latest'
         run: chmod +x ./gradlew
 
       - name: Run jpackage Task via Gradle
-        run: ./gradlew :app:jpackage
+        run: ./gradlew :app:jpackage --info --stacktrace
 
       - name: Upload Installer to GitHub Release
         uses: softprops/action-gh-release@v2
