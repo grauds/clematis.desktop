@@ -163,12 +163,16 @@ subprojects {
 }
 
 dependencies {
+    jacocoAggregation project(':app')
     jacocoAggregation project(':api')
     jacocoAggregation project(':kiwi')
     jacocoAggregation project(':installer')
     jacocoAggregation project(':runtime')
     jacocoAggregation project(':profiles')
     jacocoAggregation project(':ui')
+    jacocoAggregation project(':ui-api')
+    jacocoAggregation project(':rtui')
+    jacocoAggregation project(':plaf')
 }
 
 

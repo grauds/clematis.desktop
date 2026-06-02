@@ -34,7 +34,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y fakeroot rpm
 
+      - name: Add WiX Toolset to PATH
+        if: matrix.os == 'windows-latest'
+        run: echo "C:\Program Files (x86)\WiX Toolset v3.14\bin" >> $GITHUB_PATH
+        shell: bash
+
       - name: Grant Execute Permission for Gradle Wrapper
+        if: matrix.os != 'windows-latest'
         run: chmod +x ./gradlew
 
       - name: Run jpackage Task via Gradle
@@ -45,9 +51,10 @@ jobs:
         with:
           tag_name: ${{ github.event.release.tag_name || 'latest' }}
           files: |
-            app/build/**/*.exe
-            app/build/**/*.msi
-            app/build/**/*.dmg
-            app/build/**/*.deb
+            app/build/dist/**/*.exe
+            app/build/dist/**/*.msi
+            app/build/dist/**/*.dmg
+            app/build/dist/**/*.deb
+            app/build/dist/**/*.pkg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
