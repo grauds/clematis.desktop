@@ -12,7 +12,35 @@ Clematis Java Workspace is a project for Master Degree at MIPT (Moscow Institute
 
 <img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="700"/>
 
-Now it is a pet project and a useful tool for my daily job.
+### Downloads & Installation
+
+Get the latest version of the application for your operating system.
+
+| Operating System | Installer / Architecture | Link                                                                                                                        |
+|:-----------------|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------|
+| **🍏 macOS**     | Apple Silicon (`arm64`)  | [Download DMG](https://github.com/grauds/clematis.desktop/releases/download/latest/Clematis.Java.Workspace-2.0.0.pkg)       |
+|                  | Intel (`x64`)            | [Download DMG](https://github.com/grauds/clematis.desktop/releases/download/latest/Clematis.Java.Workspace-2.0.0.pkg)       |
+| **🐧 Linux**     | Ubuntu / Debian (`.deb`) | [Download DEB](https://github.com/grauds/clematis.desktop/releases/download/latest/clematis-java-workspace_2.0.0_amd64.deb) |
+| **Sources**      |                          | [Download ZIP](https://github.com/grauds/clematis.desktop/archive/refs/tags/latest.zip) |
+
+*Check out the [Full Releases Page](https://github.com/grauds/clematis.desktop/releases/tag/latest).*
+
+---
+
+#### 🍏 macOS Installation
+
+1. Download the `.dmg` file matching your Mac architecture from the table above.
+2. Double-click the downloaded `.dmg` file.
+3. Drag the application icon into your **Applications** folder.
+
+---
+
+#### 🐧 Linux Installation
+
+##### Debian / Ubuntu
+```bash
+sudo dpkg -i clematis-java-workspace_2.0.0_amd64.deb
+```
 
 ## Modules
 
@@ -22,15 +50,12 @@ The basis, however, is the following modules:
 1. **Workspace** - the entry point and a controller of a lifecycle [docs](./libs/api/README.md)
 2. **Profiles** - to manage user data and configuration  [docs](./libs/profiles/README.md)
 3. **Runtime** - plugins installer, updater and launcher of third-party applications (with OS command line)  [docs](./libs/runtime/README.md)
-4. Default implementation of UI is [Workspace Desktop](./modules/ui/README.md)
+4. The default implementation of UI is [Workspace Desktop](./modules/ui/README.md)
 
    
 ## License
 
 Clematis Desktop is licensed under GNU GENERAL PUBLIC LICENSE, v2.
-
-Some plugins are licensed under the
-[Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
 
 ## Build
 
