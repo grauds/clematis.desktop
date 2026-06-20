@@ -140,16 +140,21 @@ public final class ProcessLogInternalFrame extends JInternalFrame {
     private void cleanupAndClose() {
         stateMonitorTimer.stop();
 
-        // Disconnect the stream pipeline to avoid memory leaks
+        // Disconnect the UI log viewer immediately to stop rendering streams
         if (logViewerPanel != null) {
             logViewerPanel.switchLogs(null);
         }
 
+        // Move potential blocking I/O and process destruction off the EDT
         if (process != null && process.isAlive()) {
-            process.stop();
+            new Thread(() -> {
+                process.stop(); // Executes safely on a background thread
+                // Dispose of the UI component back on the EDT once the process releases
+                SwingUtilities.invokeLater(this::dispose);
+            }, "Process-Cleanup-Thread").start();
+        } else {
+            this.dispose();
         }
-
-        this.dispose();
     }
 }
 
