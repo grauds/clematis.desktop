@@ -277,6 +277,7 @@ public class DesktopShortcutsLayer extends KPanel {
                 .getRuntimeManager()
                 .run(
                     shortcut.getCommandLine(),
+                    shortcut.getWorkingDirectory(),
                     mode
                 );
             switch (mode) {

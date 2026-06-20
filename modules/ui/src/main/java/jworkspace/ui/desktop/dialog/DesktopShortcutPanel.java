@@ -38,6 +38,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -76,7 +77,7 @@ import jworkspace.ui.widgets.ImageRenderer;
 @SuppressWarnings("MagicNumber")
 public class DesktopShortcutPanel extends KPanel implements ActionListener {
 
-    private JTextField tName, tScriptedMethod, tNativeCommand, tSourceScript, tJavaApp, field;
+    private JTextField tName, tScriptedMethod, tNativeCommand, tSourceScript, tJavaApp, tWorkingDirectory;
 
     private final JTextArea tDesc;
 
@@ -97,17 +98,24 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         JTabbedPane tabbedPane = new JTabbedPane();
         setLayout(new BorderLayout());
 
-        tabbedPane.add(WorkspaceResourceAnchor.getString("DesktopIconPanel.imagePanel.title"),
-            createFirstPanel());
-        tabbedPane.add(WorkspaceResourceAnchor.getString("DesktopIconPanel.commandPanel.title"),
-            createModesPanel());
+        tabbedPane.add(
+            WorkspaceResourceAnchor.getString("DesktopIconPanel.imagePanel.title"),
+            createFirstPanel()
+        );
+        tabbedPane.add(
+            WorkspaceResourceAnchor.getString("DesktopIconPanel.commandPanel.title"),
+            createModesPanel()
+        );
 
         tDesc = new JTextArea(7, 1);
         tDesc.setLineWrap(true);
         tDesc.setWrapStyleWord(true);
 
-        tabbedPane.add(WorkspaceResourceAnchor.getString("DesktopIconPanel.descPanel.title"),
-            new JScrollPane(tDesc));
+        tabbedPane.add(
+            WorkspaceResourceAnchor.getString("DesktopIconPanel.descPanel.title"),
+            new JScrollPane(tDesc)
+        );
+
         tabbedPane.setOpaque(false);
         disableAllOnModesPanel();
         add(tabbedPane, BorderLayout.CENTER);
@@ -150,7 +158,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         } else if (o == bWdBrowse) {
             File dir = ClassCache.chooseDirectory(DesktopServiceLocator.getInstance().getWorkspaceGUI().getFrame());
             if (dir != null) {
-                field.setText(dir.getAbsolutePath());
+                tWorkingDirectory.setText(dir.getAbsolutePath());
             }
         } else if (o == bNativeBrowse) {
             JFileChooser chooser = ClassCache.getFileChooser(
@@ -189,7 +197,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
             disableAllOnModesPanel();
             mode = IRuntime.NATIVE_COMMAND_MODE;
             tNativeCommand.setEnabled(true);
-            field.setEnabled(true);
+            tWorkingDirectory.setEnabled(true);
             bNativeBrowse.setEnabled(true);
             bWdBrowse.setEnabled(true);
         }
@@ -302,30 +310,43 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         GridBagLayout gb = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         modesPanel.setLayout(gb);
+        modesPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 0;
+        // Create a sub-panel specifically for the bordered group
+        KPanel groupPanel = new KPanel();
+        GridBagLayout groupGb = new GridBagLayout();
+        GridBagConstraints groupGbc = new GridBagConstraints();
+        groupPanel.setLayout(groupGb);
 
+        // Apply the titled border only to the group sub-panel
+        groupPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "Action"
+            ),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+
+        groupGbc.anchor = GridBagConstraints.NORTHWEST;
+        groupGbc.fill = GridBagConstraints.HORIZONTAL;
+        groupGbc.weightx = 0;
+
+        // --- Add Radio Buttons and fields to the groupPanel ---
         ButtonGroup bg = new ButtonGroup();
         rb3 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.javaApp"));
         rb3.addActionListener(this);
         rb3.setOpaque(false);
-        gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.FIRST_INSETS;
+        groupGbc.gridwidth = 1;
+        groupGbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb3);
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(rb3, gbc);
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(rb3, groupGbc);
 
         KPanel p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
-//        p1.setPreferredSize(new Dimension(150, 20));
-
         tJavaApp = new JTextField(15);
- //       tJavaApp.setPreferredSize(new Dimension(150, 20));
         tJavaApp.setOpaque(false);
         tJavaApp.setEditable(false);
-
         p1.add(BorderLayout.CENTER, tJavaApp);
 
         bAppBrowse = new KButton(ITextConstants.DOTS);
@@ -334,45 +355,40 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         bAppBrowse.setDefaultCapable(false);
         p1.add(BorderLayout.EAST, bAppBrowse);
 
-        gbc.weightx = 1;
-        gbc.insets = KiwiUtils.LAST_INSETS;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(p1, gbc);
+        groupGbc.weightx = 1;
+        groupGbc.insets = KiwiUtils.LAST_INSETS;
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(p1, groupGbc);
 
         rb1 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.bshConsole"));
         rb1.addActionListener(this);
         rb1.setOpaque(false);
-        gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.FIRST_INSETS;
+        groupGbc.gridwidth = 1;
+        groupGbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb1);
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(rb1, gbc);
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(rb1, groupGbc);
 
         tScriptedMethod = new JTextField(15);
- //       tScriptedMethod.setPreferredSize(new Dimension(150, 20));
-        gbc.weightx = 1;
-        gbc.insets = KiwiUtils.LAST_INSETS;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(tScriptedMethod, gbc);
+        groupGbc.weightx = 1;
+        groupGbc.insets = KiwiUtils.LAST_INSETS;
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(tScriptedMethod, groupGbc);
 
         rb2 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.bshFile"));
         rb2.addActionListener(this);
         rb2.setOpaque(false);
-        gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.FIRST_INSETS;
+        groupGbc.gridwidth = 1;
+        groupGbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb2);
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(rb2, gbc);
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(rb2, groupGbc);
 
         KPanel p0 = new KPanel();
         p0.setLayout(new BorderLayout(5, 5));
- //       p0.setPreferredSize(new Dimension(150, 20));
-
         tSourceScript = new JTextField(15);
- //       tSourceScript.setPreferredSize(new Dimension(150, 20));
         tSourceScript.setOpaque(false);
         tSourceScript.setEditable(false);
-
         p0.add(BorderLayout.CENTER, tSourceScript);
 
         bScriptBrowse = new KButton(ITextConstants.DOTS);
@@ -381,60 +397,64 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         bScriptBrowse.setDefaultCapable(false);
         p0.add(BorderLayout.EAST, bScriptBrowse);
 
-        gbc.weightx = 1;
-        gbc.insets = KiwiUtils.LAST_INSETS;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(p0, gbc);
+        groupGbc.weightx = 1;
+        groupGbc.insets = KiwiUtils.LAST_INSETS;
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(p0, groupGbc);
 
         rb4 = new JRadioButton(WorkspaceResourceAnchor.getString("DesktopIconPanel.categ.native"));
         rb4.addActionListener(this);
         rb4.setOpaque(false);
-        gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.FIRST_INSETS;
+        groupGbc.gridwidth = 1;
+        groupGbc.insets = KiwiUtils.FIRST_INSETS;
         bg.add(rb4);
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(rb4, gbc);
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(rb4, groupGbc);
 
         p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
- //       p1.setPreferredSize(new Dimension(150, 20));
-
         tNativeCommand = new JTextField(15);
- //       tNativeCommand.setPreferredSize(new Dimension(150, 20));
         tNativeCommand.setOpaque(false);
         tNativeCommand.setEditable(true);
-
         p1.add(BorderLayout.CENTER, tNativeCommand);
 
         bNativeBrowse = new KButton(ITextConstants.DOTS);
-        bNativeBrowse.setToolTipText(WorkspaceResourceAnchor.getString(
-            IDesktop.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE));
+        bNativeBrowse.setToolTipText(
+            WorkspaceResourceAnchor.getString(IDesktop.DESKTOP_ICON_PANEL_NATIVE_COMMAND_BROWSE)
+        );
         bNativeBrowse.addActionListener(this);
         bNativeBrowse.setDefaultCapable(false);
         p1.add(BorderLayout.EAST, bNativeBrowse);
 
-        gbc.weightx = 1;
-        gbc.insets = KiwiUtils.LAST_INSETS;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        modesPanel.add(p1, gbc);
+        groupGbc.weightx = 1;
+        groupGbc.insets = KiwiUtils.LAST_INSETS;
+        groupGbc.gridwidth = GridBagConstraints.REMAINDER;
+        groupPanel.add(p1, groupGbc);
 
+
+        // --- Layout the main modesPanel ---
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Add the bordered group panel to the top
+        gbc.weightx = 1;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.insets = new java.awt.Insets(0, 0, 10, 0);
+        modesPanel.add(groupPanel, gbc);
+
+        // Add Working Directory elements below the bordered panel
         JLabel l = new JLabel(WorkspaceResourceAnchor.getString("DesktopIconPanel.native.wd"));
         l.setOpaque(false);
-        gbc.gridwidth = 1;
-        gbc.insets = KiwiUtils.FIRST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.insets = KiwiUtils.FIRST_INSETS;
         modesPanel.add(l, gbc);
 
         p1 = new KPanel();
         p1.setLayout(new BorderLayout(5, 5));
- //       p1.setPreferredSize(new Dimension(150, 20));
-
-        field = new JTextField(15);
- //       field.setPreferredSize(new Dimension(150, 20));
-        field.setOpaque(false);
-        field.setEditable(true);
-
-        p1.add(BorderLayout.CENTER, field);
+        tWorkingDirectory = new JTextField(15);
+        tWorkingDirectory.setOpaque(false);
+        tWorkingDirectory.setEditable(true);
+        p1.add(BorderLayout.CENTER, tWorkingDirectory);
 
         bWdBrowse = new KButton(ITextConstants.DOTS);
         bWdBrowse.setToolTipText(WorkspaceResourceAnchor.getString("DesktopIconPanel.native.wd.browse"));
@@ -442,12 +462,9 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         bWdBrowse.setDefaultCapable(false);
         p1.add(BorderLayout.EAST, bWdBrowse);
 
-        gbc.weightx = 1;
         gbc.insets = KiwiUtils.LAST_INSETS;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         modesPanel.add(p1, gbc);
-
-        modesPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         return modesPanel;
     }
@@ -484,8 +501,7 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
 
             tNativeCommand.setEnabled(true);
             tNativeCommand.setText(desktopShortcut.getCommandLine());
-            field.setText(desktopShortcut.getWorkingDirectory());
-            field.setEnabled(true);
+            tWorkingDirectory.setText(desktopShortcut.getWorkingDirectory());
             bNativeBrowse.setEnabled(true);
             bWdBrowse.setEnabled(true);
             rb4.setSelected(true);
@@ -500,7 +516,6 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
         tJavaApp.setEnabled(false);
         bNativeBrowse.setEnabled(false);
         tNativeCommand.setEnabled(false);
-        field.setEnabled(false);
         bWdBrowse.setEnabled(false);
     }
 
@@ -521,8 +536,9 @@ public class DesktopShortcutPanel extends KPanel implements ActionListener {
             desktopShortcut.setCommandLine(tJavaApp.getText());
         } else if (mode == IRuntime.NATIVE_COMMAND_MODE) {
             desktopShortcut.setCommandLine(tNativeCommand.getText());
-            desktopShortcut.setWorkingDirectory(field.getText());
         }
+
+        desktopShortcut.setWorkingDirectory(tWorkingDirectory.getText());
         return (true);
     }
 }

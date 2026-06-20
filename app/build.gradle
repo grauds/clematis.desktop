@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.clematis'
-version = '2.0.0-SNAPSHOT'
+version = '2.0.0'
 
 dependencies {
 
@@ -47,7 +47,7 @@ jpackage {
     input = new File("${layout.buildDirectory.get()}/libs")
     destination = new File("${layout.buildDirectory.get()}/dist")
 
-    mainJar = "app-2.0.0-SNAPSHOT.jar"
+    mainJar = "app-2.0.0.jar"
     mainClass = "jworkspace.Workspace"
     runtimeImage.set(layout.projectDirectory.dir(System.getProperty("java.home")))
 
