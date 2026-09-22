@@ -40,7 +40,7 @@ Get the latest version of the application for your operating system.
 | **🐧 Linux**     | Ubuntu / Debian (`.deb`) | [Download DEB](https://github.com/grauds/clematis.desktop/releases/download/latest/clematis-java-workspace_2.0.0_amd64.deb) |
 | **Sources**      |                          | [Download ZIP](https://github.com/grauds/clematis.desktop/archive/refs/tags/latest.zip) |
 
-*Check out the [Full Releases Page](https://github.com/grauds/clematis.desktop/releases/tag/latest).*
+*Check out the [Full Releases Page](https://github.com/grauds/clematis.desktop/releases/).*
 
 ---
 
