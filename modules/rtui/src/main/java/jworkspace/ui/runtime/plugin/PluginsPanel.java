@@ -152,7 +152,7 @@ public class PluginsPanel extends KPanel {
                     }
                 });
 
-            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(200);
+            this.pluginsTable.getColumnModel().getColumn(1).setMinWidth(100);
             this.pluginsTable.getColumnModel().getColumn(1).setCellRenderer(new PluginTableCellRenderer());
 
             this.pluginsTable.getColumnModel().getColumn(2).setMinWidth(100);
