@@ -8,7 +8,11 @@
 
 ## Introduction
 
-Clematis Java Workspace is a project for Master Degree at MIPT (Moscow Institute of Physics and Technology) started back in September'98. It has a long history, the first version of it was awarded as a Java Konkurs 2006 finalist.  
+Clematis Java Workspace is a modular application platform designed to simplify how you deploy, extend, and integrate software using Java on desktop. 
+
+* **Launch** — Use the Clematis Desktop component to create shortcuts for Java applications, native applications, or jShell scripts. You can easily configure and install these applications and scripts using the Installer component.
+* **Extend** — Build your application with loosely coupled modules (plugins) to extend functionality as needed. This repository includes two default plugins: the Clematis Desktop user interface and the Runtime Manager.
+* **Integrate** — Deploy plugins as either invisible background services or extensions to the user interface. This flexibility allows you to create a completely integrated working environment tailored to your customers needs.
 
 <img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="700"/>
 
