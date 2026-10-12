@@ -47,13 +47,12 @@ tasks.named('jar') {
 def osName = System.getProperty('os.name').toLowerCase()
 jpackage {
     appName = "Clematis Java Workspace"
-    appVersion = project.version
     vendor = "Anton Troshin"
 
     input = new File("${layout.buildDirectory.get()}/libs")
     destination = new File("${layout.buildDirectory.get()}/dist")
 
-    mainJar = "app-${appVersion}.jar"
+    mainJar = "app-${project.version}.jar"
     mainClass = "jworkspace.Workspace"
     runtimeImage.set(layout.projectDirectory.dir(System.getProperty("java.home")))
 

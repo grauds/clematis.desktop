@@ -54,8 +54,8 @@ public class WorkspaceTest {
 
     @Test
     public void testVersion() {
-        Assertions.assertEquals("2.0.1", Workspace.getVersion());
-        Assertions.assertEquals("Java Workspace 2.0.1", Workspace.VERSION);
+        Assertions.assertEquals("2.0.2", Workspace.getVersion());
+        Assertions.assertEquals("Java Workspace 2.0.2", Workspace.VERSION);
     }
 
     @Test
