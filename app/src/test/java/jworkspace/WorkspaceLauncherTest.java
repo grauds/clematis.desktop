@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +18,7 @@ import org.junit.rules.TemporaryFolder;
 public class WorkspaceLauncherTest {
 
     private static final String LIB_DIR = "lib";
-    private static final String ARTIFACT = "jworkspace-2.0.0-SNAPSHOT.jar";
+    private static final String ARTIFACT = "jworkspace-2.0.2.jar";
     private final TemporaryFolder testFolder = new TemporaryFolder();
 
     @BeforeEach

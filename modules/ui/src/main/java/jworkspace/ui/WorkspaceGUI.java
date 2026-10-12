@@ -2,7 +2,7 @@ package jworkspace.ui;
 
 /* ----------------------------------------------------------------------------
    Java Workspace
-   Copyright (C) 1999-2003, 2019 Anton Troshin
+   Copyright (C) 1999-2019 Anton Troshin
 
    This file is part of Java Workspace.
 
@@ -73,7 +73,7 @@ import jworkspace.users.ProfilesManager;
 import lombok.extern.java.Log;
 
 /**
- * Desktop based user interface
+ * Desktop-based user interface
  *
  * @author Anton Troshin
  */

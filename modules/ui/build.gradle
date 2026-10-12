@@ -1,18 +1,10 @@
 import java.text.SimpleDateFormat
 
 processResources {
-
     def expandedFiles = ['config/application.properties']
-
-    from ('src/main/resources') {
-        include expandedFiles
+    filesMatching(expandedFiles) {
         expand(project.properties)
     }
-    from ('src/main/resources') {
-        exclude expandedFiles
-    }
-
-    into 'build/main/resources'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 

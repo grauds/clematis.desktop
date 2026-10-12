@@ -1,20 +1,11 @@
 import java.text.SimpleDateFormat
 
 processResources {
-
     def expandedFiles = ['config/application.properties']
-
-    from ('src/main/resources') {
-        include expandedFiles
+    filesMatching(expandedFiles) {
         expand(project.properties)
     }
-    from ('src/main/resources') {
-        exclude expandedFiles
-    }
-
-    into 'build/main/resources'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
 }
 
 dependencies {
@@ -73,7 +64,8 @@ jar {
 
 tasks.register('deployToPlugins', Copy) {
     from jar
-    into "${System.getProperty("user.home")}/.jworkspace/shells/"
+   // into "${System.getProperty("user.home")}/.jworkspace/shells/"
+    into "${project.rootDir}/.jworkspace/shells/"
 }
 
 deployToPlugins.dependsOn(assemble)

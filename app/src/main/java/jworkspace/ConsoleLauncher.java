@@ -154,7 +154,7 @@ public class ConsoleLauncher {
                     }
                 }));
             }
-            sb.append("jworkspace-2.0.0-SNAPSHOT.jar");
+            sb.append("jworkspace-2.0.2.jar");
             sb.insert(0, "java -Djava.library.path="
                 + lib.getName()
                 + " -classpath "

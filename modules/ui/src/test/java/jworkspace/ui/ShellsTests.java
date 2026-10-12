@@ -98,6 +98,13 @@ public class ShellsTests {
     }
 
     @Test
+    public void testImagesAvailable() {
+        Assertions.assertNotNull(WorkspaceGUI.getResourceManager().getImage("jw_16x16.png"));
+        Assertions.assertNotNull(WorkspaceGUI.getResourceManager().getImage("dashboard.png"));
+        Assertions.assertNotNull(WorkspaceGUI.getResourceManager().getImage("desktop/desktop.png"));
+    }
+
+    @Test
     public void testConfig() {
 
         UIConfig uiConfig = new UIConfig(testFolder.getRoot().toPath().resolve(WorkspaceGUI.CONFIG_FILE).toFile());

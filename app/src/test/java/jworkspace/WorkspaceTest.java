@@ -53,6 +53,12 @@ public class WorkspaceTest {
     }
 
     @Test
+    public void testVersion() {
+        Assertions.assertEquals("2.0.2", Workspace.getVersion());
+        Assertions.assertEquals("Java Workspace 2.0.2", Workspace.VERSION);
+    }
+
+    @Test
     public void testBeginWork() throws ProfileOperationException, PluginException, IOException {
         Path basePath = Path.of(testFolder.getRoot().getPath());
 

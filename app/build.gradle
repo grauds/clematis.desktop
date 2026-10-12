@@ -6,7 +6,13 @@ plugins {
 }
 
 group = 'org.clematis'
-version = '2.0.0'
+processResources {
+    def props = [version: project.version]
+    inputs.properties(props)
+    filesMatching('version.properties') {
+        expand(props)
+    }
+}
 
 dependencies {
 
@@ -41,13 +47,13 @@ tasks.named('jar') {
 def osName = System.getProperty('os.name').toLowerCase()
 jpackage {
     appName = "Clematis Java Workspace"
-    appVersion = "2.0.0"
+    appVersion = project.version
     vendor = "Anton Troshin"
 
     input = new File("${layout.buildDirectory.get()}/libs")
     destination = new File("${layout.buildDirectory.get()}/dist")
 
-    mainJar = "app-2.0.0.jar"
+    mainJar = "app-${appVersion}.jar"
     mainClass = "jworkspace.Workspace"
     runtimeImage.set(layout.projectDirectory.dir(System.getProperty("java.home")))
 

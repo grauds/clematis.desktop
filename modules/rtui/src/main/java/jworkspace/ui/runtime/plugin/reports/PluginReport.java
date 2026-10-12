@@ -146,7 +146,7 @@ public class PluginReport extends SimplePluginReport implements IPluginSelection
         }
 
         Object o = plugin.getProperties().get(PluginUpdateChecker.PLUGIN_HAS_UPDATE);
-        boolean hasUpdate = o != null ? (Boolean) o : false;
+        boolean hasUpdate = o != null && (Boolean) o;
         if (hasUpdate) {
             finalHtml = finalHtml + htmlUpdateTemplate.replace(
                 "${new_version}", plugin.getUpdateVersion().version()

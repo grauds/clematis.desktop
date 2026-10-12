@@ -19,9 +19,11 @@ package jworkspace;
   ----------------------------------------------------------------------------
  */
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 import static org.kohsuke.args4j.ExampleMode.ALL;
 import org.kohsuke.args4j.CmdLineException;
@@ -47,7 +49,7 @@ import lombok.extern.java.Log;
 })
 public class Workspace {
 
-    public static final String VERSION = "Java Workspace 2.0.0";
+    public static final String VERSION = "Java Workspace " + getVersion();
 
     public static final String HOME_DIR = ".jworkspace";
 
@@ -220,6 +222,29 @@ public class Workspace {
 
     public static Workspace getInstance() {
         return Workspace.InstanceHolder.WORKSPACE;
+    }
+
+    @SuppressWarnings("checkstyle:ReturnCount")
+    public static String getVersion() {
+        try (InputStream stream = Workspace.class.getResourceAsStream("/version.properties")) {
+            if (stream != null) {
+                Properties properties = new Properties();
+                properties.load(stream);
+                String version = properties.getProperty("version");
+                if (version != null && !version.trim().isEmpty() && !version.contains("${")) {
+                    return version.trim();
+                }
+            }
+        } catch (IOException e) {
+            log.warning("Could not read version properties: " + e.getMessage());
+        }
+
+        String pkgVersion = Workspace.class.getPackage().getImplementationVersion();
+        if (pkgVersion != null && !pkgVersion.trim().isEmpty()) {
+            return pkgVersion.trim();
+        }
+
+        return "";
     }
 
     private static final class InstanceHolder {
