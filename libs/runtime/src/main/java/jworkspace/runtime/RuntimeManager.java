@@ -27,10 +27,11 @@ package jworkspace.runtime;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -39,8 +40,11 @@ import java.util.concurrent.TimeUnit;
 import jworkspace.api.EventsDispatcher;
 import jworkspace.api.IRuntime;
 import jworkspace.api.IWorkspaceListener;
-import jworkspace.runtime.jshell.JShellProcess;
 import jworkspace.runtime.process.JavaProcess;
+import jworkspace.runtime.strategies.IExecutionStrategy;
+import jworkspace.runtime.strategies.JShellMethodStrategy;
+import jworkspace.runtime.strategies.JShellSnippetStrategy;
+import jworkspace.runtime.strategies.NativeCommandStrategy;
 import lombok.Getter;
 
 /**
@@ -75,6 +79,11 @@ public class RuntimeManager {
      * runtime tasks managed by this system.
      */
     private final List<AbstractTask> tasks = Collections.synchronizedList(new ArrayList<>());
+
+    /**
+     * Strategy map for routing different execution modes to their respective handlers.
+     */
+    private final Map<Integer, IExecutionStrategy> strategies = new HashMap<>();
 
     /**
      * Constructs a new {@code RuntimeManager} with a fully customized internal thread pool pool.
@@ -119,6 +128,12 @@ public class RuntimeManager {
                 eventsDispatcher.fireEvent(IRuntime.AFTER_EXECUTE_EVENT, r, t);
             }
         };
+
+        // Initialize strategy map for different execution modes
+        strategies.put(IRuntime.JAVA_APP_MODE, new NativeCommandStrategy());
+        strategies.put(IRuntime.NATIVE_COMMAND_MODE, new NativeCommandStrategy());
+        strategies.put(IRuntime.SCRIPTED_METHOD_MODE, new JShellMethodStrategy());
+        strategies.put(IRuntime.SCRIPTED_FILE_MODE, new JShellSnippetStrategy());
     }
 
     /**
@@ -170,14 +185,11 @@ public class RuntimeManager {
      */
     @SuppressWarnings("checkstyle:InnerAssignment")
     public AbstractTask run(String command, String workingDir, int mode) throws IOException {
-        AbstractTask task;
-        switch (mode) {
-            case IRuntime.JAVA_APP_MODE, IRuntime.NATIVE_COMMAND_MODE -> task = run(command, workingDir);
-            case IRuntime.SCRIPTED_METHOD_MODE -> task = eval(command, workingDir);
-            case IRuntime.SCRIPTED_FILE_MODE -> task = evalSnippet(command, workingDir);
-            default -> throw new IllegalStateException("Unexpected value: " + mode);
+        IExecutionStrategy strategy = strategies.get(mode);
+        if (strategy == null) {
+            throw new IllegalStateException("Unexpected value: " + mode);
         }
-        return task;
+        return strategy.execute(command, workingDir, this::take);
     }
 
     /**
@@ -190,21 +202,7 @@ public class RuntimeManager {
      * @throws IOException if engine instance loading, mapping, or initialization scripts fail
      */
     public AbstractTask eval(String command, String workingDir) throws IOException {
-        // Initialize an isolated evaluation context with a unique time-based identity string
-        JShellProcess process = JShellProcess.createAndInitialize(
-            String.valueOf(System.currentTimeMillis())
-        );
-        take(process);
-
-        // Dynamically override Java's internal working directory configuration context inside the instance
-        if (workingDir != null && !workingDir.isBlank()) {
-            // Escapes Windows backslashes so paths don't collapse into invalid escape control characters
-            process.execute("System.setProperty(\"user.dir\", \""
-                + workingDir.replace("\\", "\\\\") + "\");");
-        }
-        process.execute(command);
-
-        return process;
+        return strategies.get(IRuntime.SCRIPTED_METHOD_MODE).execute(command, workingDir, this::take);
     }
 
     /**
@@ -217,26 +215,7 @@ public class RuntimeManager {
      * @throws IOException if script reading, target resolution, or engine execution fails
      */
     public AbstractTask evalSnippet(String command, String workingDir) throws IOException {
-        JShellProcess process = JShellProcess.createAndInitialize(
-            String.valueOf(System.currentTimeMillis())
-        );
-        take(process);
-
-        Path scriptPath = Path.of(command);
-
-        // If the file parameter path isn't absolute, safely re-anchor it using the assigned working directory
-        if (workingDir != null && !workingDir.isBlank() && !scriptPath.isAbsolute()) {
-            scriptPath = Path.of(workingDir).resolve(scriptPath);
-        }
-
-        // Apply environment folder re-anchoring to the scripting runtime context
-        if (workingDir != null && !workingDir.isBlank()) {
-            process.execute("System.setProperty(\"user.dir\", \""
-                + workingDir.replace("\\", "\\\\") + "\");");
-        }
-        process.execute(scriptPath);
-
-        return process;
+        return strategies.get(IRuntime.SCRIPTED_FILE_MODE).execute(command, workingDir, this::take);
     }
 
     /**
