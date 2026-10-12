@@ -8,39 +8,13 @@
 
 ## Introduction
 
-Clematis Java Workspace is a project for Master Degree at MIPT (Moscow Institute of Physics and Technology) started back in September'98. It has a long history, the first version of it was awarded as a Java Konkurs 2006 finalist.  
+Clematis Java Workspace is a modular application platform designed to simplify how you deploy, extend, and integrate software using Java on desktop. 
+
+* **Launch** — Use the Clematis Desktop component to create shortcuts for Java applications, native applications, or jShell scripts. You can easily configure and install these applications and scripts using the Installer component.
+* **Extend** — Build your application with loosely coupled modules (plugins) to extend functionality as needed. This repository includes two default plugins: the Clematis Desktop user interface and the Runtime Manager.
+* **Integrate** — Deploy plugins as either invisible background services or extensions to the user interface. This flexibility allows you to create a completely integrated working environment tailored to your customers needs.
 
 <img src="./docs/overview.png" alt="workspace_component_life_cycle.png" width="700"/>
-
-### Downloads & Installation
-
-Get the latest version of the application for your operating system.
-
-| Operating System | Installer / Architecture | Link                                                                                                                        |
-|:-----------------|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------|
-| **🍏 macOS**     | Apple Silicon (`arm64`)  | [Download DMG](https://github.com/grauds/clematis.desktop/releases/download/latest/Clematis.Java.Workspace-2.0.0.pkg)       |
-|                  | Intel (`x64`)            | [Download DMG](https://github.com/grauds/clematis.desktop/releases/download/latest/Clematis.Java.Workspace-2.0.0.pkg)       |
-| **🐧 Linux**     | Ubuntu / Debian (`.deb`) | [Download DEB](https://github.com/grauds/clematis.desktop/releases/download/latest/clematis-java-workspace_2.0.0_amd64.deb) |
-| **Sources**      |                          | [Download ZIP](https://github.com/grauds/clematis.desktop/archive/refs/tags/latest.zip) |
-
-*Check out the [Full Releases Page](https://github.com/grauds/clematis.desktop/releases/tag/latest).*
-
----
-
-#### 🍏 macOS Installation
-
-1. Download the `.dmg` file matching your Mac architecture from the table above.
-2. Double-click the downloaded `.dmg` file.
-3. Drag the application icon into your **Applications** folder.
-
----
-
-#### 🐧 Linux Installation
-
-##### Debian / Ubuntu
-```bash
-sudo dpkg -i clematis-java-workspace_2.0.0_amd64.deb
-```
 
 ## Modules
 
@@ -52,6 +26,42 @@ The basis, however, is the following modules:
 3. **Runtime** - plugins installer, updater and launcher of third-party applications (with OS command line)  [docs](./libs/runtime/README.md)
 4. The default implementation of UI is [Workspace Desktop](./modules/ui/README.md)
 
+## Plugins
+
+1. **Java Source Editor** - an editor with ability to compile the code, detect errors and run code on demand, [repository](https://github.com/grauds/clematis.desktop.sed)
+2. **Visual XML Editor** - a WYSIWYG XML editor with translates visual text formatting to document tree on-the-fly, [repository](https://github.com/grauds/clematis.desktop.xed)
+
+Use direct URLs to plugin files in release section with Clematis Desktop plugin downloader and installer. 
+
+## Downloads & Installation
+
+Get the latest version of the application for your operating system.
+
+| Operating System | Installer / Architecture | Link                                                                                                                        |
+|:-----------------|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------|
+| **🍏 macOS**     | Apple Silicon (`arm64`)  | [Download DMG](https://github.com/grauds/clematis.desktop/releases/download/latest/Clematis.Java.Workspace-2.0.0.pkg)       |
+|                  | Intel (`x64`)            | [Download DMG](https://github.com/grauds/clematis.desktop/releases/download/latest/Clematis.Java.Workspace-2.0.0.pkg)       |
+| **🐧 Linux**     | Ubuntu / Debian (`.deb`) | [Download DEB](https://github.com/grauds/clematis.desktop/releases/download/latest/clematis-java-workspace_2.0.0_amd64.deb) |
+| **Sources**      |                          | [Download ZIP](https://github.com/grauds/clematis.desktop/archive/refs/tags/latest.zip) |
+
+*Check out the [Full Releases Page](https://github.com/grauds/clematis.desktop/releases/).*
+
+---
+
+### 🍏 macOS Installation
+
+1. Download the `.dmg` file matching your Mac architecture from the table above.
+2. Double-click the downloaded `.dmg` file.
+3. Drag the application icon into your **Applications** folder.
+
+---
+
+### 🐧 Linux Installation
+
+#### Debian / Ubuntu
+```bash
+sudo dpkg -i clematis-java-workspace_2.0.0_amd64.deb
+```
    
 ## License
 
