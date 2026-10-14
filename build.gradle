@@ -10,10 +10,6 @@ plugins {
     id 'com.github.jk1.dependency-license-report' version '2.5'
 }
 
-repositories {
-    mavenCentral()
-}
-
 group = 'org.clematis'
 version = '2.0.1'
 
@@ -30,10 +26,6 @@ subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.spotbugs'
-
-    repositories {
-        mavenCentral()
-    }
 
     java {
         sourceCompatibility = JavaVersion.VERSION_25

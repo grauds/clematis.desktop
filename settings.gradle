@@ -30,16 +30,22 @@ project(':rtui').projectDir = file('modules/rtui')
 include 'plaf'
 project(':plaf').projectDir = file('modules/plaf')
 
-//include 'instui'
-//project(':instui').projectDir = file('plugins/instui')
-
-//
-//include 'launcher'
-//project(':launcher').projectDir = file('plugins/launcher')
-//
-//include 'net'
-//project(':net').projectDir = file('plugins/net')
-//
-//include 'sed'
-//project(':sed').projectDir = file('plugins/sed')
-
+dependencyResolutionManagement {
+    repositories {
+        // Check if the pipeline explicitly requested Artifactory
+        def useArtifactory = System.getenv("USE_ARTIFACTORY") == "true"
+        if (useArtifactory) {
+            maven {
+                url "http://192.168.1.174:8082/artifactory/maven-central-proxy"
+                allowInsecureProtocol = true
+                credentials {
+                    username = providers.gradleProperty("artifactory_user").orNull ?: System.getenv("ARTIFACTORY_USER")
+                    password = providers.gradleProperty("artifactory_password").orNull ?: System.getenv("ARTIFACTORY_PASSWORD")
+                }
+            }
+        } else {
+            // Fallback for GitHub Actions
+            mavenCentral()
+        }
+    }
+}
