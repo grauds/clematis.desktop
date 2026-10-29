@@ -14,7 +14,7 @@ pipeline {
                                                  passwordVariable: 'ARTIFACTORY_PASSWORD',
                                                  usernameVariable: 'ARTIFACTORY_USER')]) {
                     withEnv(['USE_ARTIFACTORY=true']) {
-                        sh './gradlew clean build -Djava.awt.headless=true'
+                        sh './gradlew clean build'
                     }
                 }
             }
