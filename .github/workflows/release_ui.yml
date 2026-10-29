@@ -46,7 +46,7 @@ jobs:
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Compile Library Jar
-        run: ./gradlew :ui:jar -Pversion=${{ steps.get_version.outputs.version }}
+        run: ./gradlew :ui:jar -Pversion=${{ steps.get_version.outputs.version }} -Djava.awt.headless=true
 
       - name: Rename and Stage Jar File
         shell: bash
