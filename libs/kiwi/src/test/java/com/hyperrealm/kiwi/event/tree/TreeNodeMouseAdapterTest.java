@@ -2,12 +2,22 @@
 package com.hyperrealm.kiwi.event.tree;
 
 import java.awt.event.MouseEvent;
+
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.*;
 
+
+@SuppressWarnings("checkstyle:MagicNumber")
 class TreeNodeMouseAdapterTest {
 
     private TreeNodeMouseAdapter adapter;

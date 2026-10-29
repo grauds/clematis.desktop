@@ -49,7 +49,7 @@ public class BackupFileOutputStream extends FileOutputStream {
 
     public static final String BAK = ".bak";
 
-    private static final String TMP = ".tmp";
+    static final String TMP = ".tmp";
 
     private File tempFile, backupFile;
 

@@ -35,6 +35,16 @@ java {
     //withJavadocJar()
 }
 
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+    }
+}
+
 publishing {
     repositories {
         maven {

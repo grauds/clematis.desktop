@@ -54,7 +54,7 @@ public final class BitString {
      * @param length The length.
      */
 
-    private BitString(int length) {
+    BitString(int length) {
         if (length < 0) {
             throw (new IllegalArgumentException());
         }

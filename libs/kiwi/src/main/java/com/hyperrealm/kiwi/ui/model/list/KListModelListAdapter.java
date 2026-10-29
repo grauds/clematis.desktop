@@ -54,7 +54,7 @@ public class KListModelListAdapter<E> extends KListModelAdapter<E> implements Li
      * Construct a new <code>KListModelListAdapter</code>.
      */
 
-    protected KListModelListAdapter() {
+    public KListModelListAdapter() {
         renderer = new KListModelListCellRenderer<>();
     }
 

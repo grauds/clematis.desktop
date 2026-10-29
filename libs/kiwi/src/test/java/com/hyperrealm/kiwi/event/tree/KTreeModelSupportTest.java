@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("checkstyle:MagicNumber")
 class KTreeModelSupportTest {
 
     private final Object source = new Object();

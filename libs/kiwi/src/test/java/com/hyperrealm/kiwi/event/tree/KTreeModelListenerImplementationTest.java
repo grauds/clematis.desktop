@@ -5,7 +5,30 @@ import org.junit.jupiter.api.Test;
 
 class KTreeModelListenerImplementationTest {
 
+
+    @Test
+    void testListenerImplementation() {
+        // Arrange
+        TestKTreeModelListener listener = new TestKTreeModelListener();
+        KTreeModelEvent event = new KTreeModelEvent(new Object());
+
+        // Act
+        listener.nodesAdded(event);
+        listener.nodesRemoved(event);
+        listener.nodesChanged(event);
+        listener.structureChanged(event);
+        listener.dataChanged(event);
+
+        // Assert
+        assertTrue(listener.nodesAddedCalled);
+        assertTrue(listener.nodesRemovedCalled);
+        assertTrue(listener.nodesChangedCalled);
+        assertTrue(listener.structureChangedCalled);
+        assertTrue(listener.dataChangedCalled);
+    }
+
     private static class TestKTreeModelListener implements KTreeModelListener {
+
         private boolean nodesAddedCalled = false;
         private boolean nodesRemovedCalled = false;
         private boolean nodesChangedCalled = false;
@@ -36,26 +59,5 @@ class KTreeModelListenerImplementationTest {
         public void dataChanged(KTreeModelEvent evt) {
             dataChangedCalled = true;
         }
-    }
-
-    @Test
-    void testListenerImplementation() {
-        // Arrange
-        TestKTreeModelListener listener = new TestKTreeModelListener();
-        KTreeModelEvent event = new KTreeModelEvent(new Object());
-
-        // Act
-        listener.nodesAdded(event);
-        listener.nodesRemoved(event);
-        listener.nodesChanged(event);
-        listener.structureChanged(event);
-        listener.dataChanged(event);
-
-        // Assert
-        assertTrue(listener.nodesAddedCalled);
-        assertTrue(listener.nodesRemovedCalled);
-        assertTrue(listener.nodesChangedCalled);
-        assertTrue(listener.structureChangedCalled);
-        assertTrue(listener.dataChangedCalled);
     }
 }
