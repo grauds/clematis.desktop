@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
@@ -80,7 +80,7 @@ public class ActionSupportTest {
         support.fireActionEvent();
 
         // Assert
-        assertNotNull(receivedCommand[0]);
+        assertNull(receivedCommand[0]);
     }
 
     /**

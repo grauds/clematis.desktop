@@ -39,7 +39,7 @@ public class DialogDismissEventTest {
     @Test
     public void testConstructorWithSourceAndType() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
 
         // Act
         DialogDismissEvent event = new DialogDismissEvent(
@@ -58,7 +58,7 @@ public class DialogDismissEventTest {
     @Test
     public void testConstructorWithSourceTypeAndUserObject() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
         Object userObject = new Object();
 
         // Act
@@ -78,7 +78,7 @@ public class DialogDismissEventTest {
     @Test
     public void testOkDismissalType() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
 
         // Act
         DialogDismissEvent event = new DialogDismissEvent(
@@ -95,7 +95,7 @@ public class DialogDismissEventTest {
     @Test
     public void testCancelDismissalType() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
 
         // Act
         DialogDismissEvent event = new DialogDismissEvent(
@@ -112,7 +112,7 @@ public class DialogDismissEventTest {
     @Test
     public void testIsCancelledReflectsType() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
 
         // Act & Assert - OK case
         DialogDismissEvent okEvent = new DialogDismissEvent(
@@ -135,7 +135,7 @@ public class DialogDismissEventTest {
     @Test
     public void testNullUserObject() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
 
         // Act
         DialogDismissEvent event = new DialogDismissEvent(
@@ -151,7 +151,7 @@ public class DialogDismissEventTest {
     @Test
     public void testUserObjectReturned() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
         String userObject = "test data";
 
         // Act
@@ -169,7 +169,7 @@ public class DialogDismissEventTest {
     @Test
     public void testSourceIsCorrectDialog() {
         // Arrange
-        Dialog mockDialog = new Dialog(null, "Test", java.awt.Dialog.ModalityType.MODELESS);
+        Dialog mockDialog = new Dialog(null, "Test", Dialog.ModalityType.MODELESS);
 
         // Act
         DialogDismissEvent event = new DialogDismissEvent(

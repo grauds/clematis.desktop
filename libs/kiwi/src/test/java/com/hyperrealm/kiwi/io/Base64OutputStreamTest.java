@@ -17,9 +17,9 @@ package com.hyperrealm.kiwi.io;
    along with this library; if not, see <http://www.gnu.org/licenses/>.
    ----------------------------------------------------------------------------\
 */
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,9 +32,6 @@ import org.junit.Test;
 @SuppressWarnings({"checkstyle:MultipleStringLiterals", "checkstyle:MagicNumber"})
 public class Base64OutputStreamTest {
 
-    /**
-     * Test encoding a simple string.
-     */
     @Test
     public void testEncodeSimpleString() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -48,9 +45,6 @@ public class Base64OutputStreamTest {
         assertEquals("SGVsbG8=\n", encoded);
     }
 
-    /**
-     * Test encoding a single byte.
-     */
     @Test
     public void testEncodeSingleByte() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -61,9 +55,6 @@ public class Base64OutputStreamTest {
         assertEquals("QQ==\n", encoded);
     }
 
-    /**
-     * Test encoding two bytes.
-     */
     @Test
     public void testEncodeTwoBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -75,9 +66,6 @@ public class Base64OutputStreamTest {
         assertEquals("SGU=\n", encoded);
     }
 
-    /**
-     * Test encoding three bytes.
-     */
     @Test
     public void testEncodeThreeBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -90,40 +78,29 @@ public class Base64OutputStreamTest {
         assertEquals("SGVs\n", encoded);
     }
 
-    /**
-     * Test that flush writes remaining data.
-     */
     @Test
     public void testFlushWritesRemaining() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Base64OutputStream b64out = new Base64OutputStream(out);
-        b64out.write(65); // Only one byte, not a full chunk
+        b64out.write(65);
         b64out.flush();
         String encoded = out.toString();
         assertFalse(encoded.isEmpty());
         assertTrue(encoded.contains("QQ=="));
     }
 
-    /**
-     * Test 64-column wrapping behavior.
-     */
     @Test
     public void testSixtyFourColumnWrapping() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Base64OutputStream b64out = new Base64OutputStream(out);
-        // Write enough bytes to trigger wrapping (18 tuples per line = 54 bytes)
         for (int i = 0; i < 55; i++) {
             b64out.write(65);
         }
         b64out.flush();
         String encoded = out.toString();
-        // Should have at least one newline from wrapping
         assertTrue(encoded.contains("\n"));
     }
 
-    /**
-     * Test round-trip encode/decode.
-     */
     @Test
     public void testRoundTrip() throws IOException {
         String original = "The quick brown fox jumps over the lazy dog";
@@ -134,26 +111,16 @@ public class Base64OutputStreamTest {
         }
         b64out.flush();
 
-        // Decode using Base64Codec
         String encoded = out.toString();
-        String stripped = encoded.replace("\n", "");
-        byte[] encodedBytes = stripped.getBytes();
-        byte[] decoded = new byte[encodedBytes.length * 3 / 4];
-        int pos = 0;
-        for (int i = 0; i < encodedBytes.length; i += 4) {
-            pos += com.hyperrealm.kiwi.text.Base64Codec.decode(decoded, pos, encodedBytes, i);
-        }
-        assertEquals(original, new String(decoded, 0, pos));
+        // Uses the standard modern JDK decoder directly for cleaner testing
+        byte[] decodedBytes = Base64.getMimeDecoder().decode(encoded.getBytes());
+        assertEquals(original, new String(decodedBytes));
     }
 
-    /**
-     * Test encoding binary data.
-     */
     @Test
     public void testBinaryData() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Base64OutputStream b64out = new Base64OutputStream(out);
-        // Write binary data with various byte values
         for (int i = 0; i < 256; i++) {
             b64out.write(i);
         }
@@ -162,9 +129,6 @@ public class Base64OutputStreamTest {
         assertFalse(encoded.isEmpty());
     }
 
-    /**
-     * Test encoding zero bytes.
-     */
     @Test
     public void testZeroBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

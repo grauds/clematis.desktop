@@ -11,7 +11,7 @@ plugins {
 }
 
 group = 'org.clematis'
-version = '2.0.1'
+version = '2.0.2'
 
 import com.github.jk1.license.render.JsonReportRenderer
 licenseReport {
@@ -50,6 +50,7 @@ subprojects {
         testImplementation "junit:junit:4.13.2"
         testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
         testImplementation "org.junit.jupiter:junit-jupiter-engine:5.10.0"
+        testImplementation "org.junit.vintage:junit-vintage-engine:5.10.0"
         testImplementation "org.mockito:mockito-core:5.22.0"
 
         testRuntimeOnly "org.junit.platform:junit-platform-launcher"

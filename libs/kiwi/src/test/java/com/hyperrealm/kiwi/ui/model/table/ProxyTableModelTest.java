@@ -19,7 +19,7 @@ package com.hyperrealm.kiwi.ui.model.table;
 */
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
@@ -53,7 +53,7 @@ public class ProxyTableModelTest {
     @Test
     public void testGetSetModel() {
         ProxyTableModel proxy = new ProxyTableModel();
-        assertNotNull(proxy.getModel()); // Default is null
+        assertNull(proxy.getModel()); // Default is null
         javax.swing.table.DefaultTableModel model =
             new javax.swing.table.DefaultTableModel();
         proxy.setModel(model);

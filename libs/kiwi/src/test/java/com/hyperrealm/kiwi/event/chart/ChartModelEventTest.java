@@ -18,9 +18,15 @@ package com.hyperrealm.kiwi.event.chart;
    ----------------------------------------------------------------------------
 */
 
+import java.util.EventObject;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import org.junit.Test;
+
+import com.hyperrealm.kiwi.ui.graph.Chart;
+import com.hyperrealm.kiwi.ui.model.chart.ChartModel;
+import com.hyperrealm.kiwi.ui.model.chart.DefaultChartModel;
 
 /**
  * Unit tests for {@link ChartModelEvent}.
@@ -33,11 +39,10 @@ public class ChartModelEventTest {
     @Test
     public void testEventSourceIsChartModel() {
         // Arrange
-        Object mockModel = new Object();
+        ChartModel mockModel = new DefaultChartModel(new Chart());
 
         // Act
-        ChartModelEvent event = new ChartModelEvent(
-            (com.hyperrealm.kiwi.ui.model.chart.ChartModel) mockModel);
+        ChartModelEvent event = new ChartModelEvent(mockModel);
 
         // Assert
         assertEquals(mockModel, event.getSource());
@@ -49,14 +54,13 @@ public class ChartModelEventTest {
     @Test
     public void testExtendsEventObject() {
         // Arrange
-        Object mockModel = new Object();
+        ChartModel mockModel = new DefaultChartModel(new Chart());
 
         // Act
-        ChartModelEvent event = new ChartModelEvent(
-            (com.hyperrealm.kiwi.ui.model.chart.ChartModel) mockModel);
+        ChartModelEvent event = new ChartModelEvent(mockModel);
 
         // Assert
-        assertEquals(java.util.EventObject.class, event.getClass().getSuperclass());
+        assertEquals(EventObject.class, event.getClass().getSuperclass());
     }
 
     /**
@@ -64,10 +68,6 @@ public class ChartModelEventTest {
      */
     @Test
     public void testNullSource() {
-        // Act
-        ChartModelEvent event = new ChartModelEvent(null);
-
-        // Assert
-        assertNull(event.getSource());
+        assertThrows(IllegalArgumentException.class, () -> new ChartModelEvent(null));
     }
 }

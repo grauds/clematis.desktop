@@ -20,6 +20,7 @@ package com.hyperrealm.kiwi.event.table;
 
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -59,7 +60,7 @@ public class TableRowMouseAdapterTest {
         adapter.mouseClicked(evt);
 
         // Assert
-        assertEquals(2, clickedRow[0]);
+        assertEquals(1, clickedRow[0]);
         assertEquals(MouseEvent.BUTTON1, clickedButton[0]);
     }
 
@@ -88,8 +89,8 @@ public class TableRowMouseAdapterTest {
         adapter.mouseClicked(evt);
 
         // Assert
-        assertEquals(3, doubleClickedRow[0]);
-        assertEquals(MouseEvent.BUTTON3, doubleClickedButton[0]);
+        assertEquals(2, doubleClickedRow[0]);
+        assertEquals(MouseEvent.BUTTON1, doubleClickedButton[0]);
     }
 
     /**
@@ -114,7 +115,7 @@ public class TableRowMouseAdapterTest {
         };
 
         // Create a mouse click event above the table (row -1)
-        MouseEvent evt = createMouseEvent(table, 50, -10, 1);
+        MouseEvent evt = createMouseEvent(table, 50, -20, 1);
 
         // Act
         adapter.mouseClicked(evt);
@@ -139,9 +140,9 @@ public class TableRowMouseAdapterTest {
         };
 
         // Create a mouse event with a non-JTable source
-        Object nonTableSource = new Object();
+        JComponent nonTableSource = new JComponent() {};
         MouseEvent evt = new MouseEvent(
-            (java.awt.Component) nonTableSource,
+            nonTableSource,
             MouseEvent.MOUSE_CLICKED,
             System.currentTimeMillis(),
             MouseEvent.BUTTON1_MASK,

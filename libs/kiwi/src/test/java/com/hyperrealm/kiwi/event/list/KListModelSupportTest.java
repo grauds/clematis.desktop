@@ -171,11 +171,11 @@ public class KListModelSupportTest {
         KListModelListener listener = new KListModelListener() {
             @Override
             public void itemsAdded(final KListModelEvent evt) {
-                index[0] = evt.getStartIndex();
             }
 
             @Override
             public void itemsRemoved(final KListModelEvent evt) {
+                index[0] = evt.getStartIndex();
             }
 
             @Override
@@ -209,12 +209,12 @@ public class KListModelSupportTest {
         KListModelListener listener = new KListModelListener() {
             @Override
             public void itemsAdded(final KListModelEvent evt) {
-                startIndex[0] = evt.getStartIndex();
-                endIndex[0] = evt.getEndIndex();
             }
 
             @Override
             public void itemsRemoved(final KListModelEvent evt) {
+                startIndex[0] = evt.getStartIndex();
+                endIndex[0] = evt.getEndIndex();
             }
 
             @Override
@@ -250,9 +250,6 @@ public class KListModelSupportTest {
         KListModelListener listener = new KListModelListener() {
             @Override
             public void itemsAdded(final KListModelEvent evt) {
-                startIndex[0] = evt.getStartIndex();
-                endIndex[0] = evt.getEndIndex();
-                field[0] = evt.getField();
             }
 
             @Override
@@ -261,6 +258,9 @@ public class KListModelSupportTest {
 
             @Override
             public void itemsChanged(final KListModelEvent evt) {
+                startIndex[0] = evt.getStartIndex();
+                endIndex[0] = evt.getEndIndex();
+                field[0] = evt.getField();
             }
 
             @Override
@@ -292,8 +292,6 @@ public class KListModelSupportTest {
         KListModelListener listener = new KListModelListener() {
             @Override
             public void itemsAdded(final KListModelEvent evt) {
-                startIndex[0] = evt.getStartIndex();
-                field[0] = evt.getField();
             }
 
             @Override
@@ -302,6 +300,8 @@ public class KListModelSupportTest {
 
             @Override
             public void itemsChanged(final KListModelEvent evt) {
+                startIndex[0] = evt.getStartIndex();
+                field[0] = evt.getField();
             }
 
             @Override
@@ -319,7 +319,7 @@ public class KListModelSupportTest {
     }
 
     /**
-     * Tests firing data changed event.
+     * Tests firing data-changed event.
      */
     @Test
     public void testFireDataChanged() {
@@ -333,9 +333,6 @@ public class KListModelSupportTest {
         KListModelListener listener = new KListModelListener() {
             @Override
             public void itemsAdded(final KListModelEvent evt) {
-                startIndex[0] = evt.getStartIndex();
-                endIndex[0] = evt.getEndIndex();
-                field[0] = evt.getField();
             }
 
             @Override
@@ -348,6 +345,9 @@ public class KListModelSupportTest {
 
             @Override
             public void dataChanged(final KListModelEvent evt) {
+                startIndex[0] = evt.getStartIndex();
+                endIndex[0] = evt.getEndIndex();
+                field[0] = evt.getField();
             }
         };
         support.addListModelListener(listener);
@@ -355,7 +355,7 @@ public class KListModelSupportTest {
         // Act
         support.fireDataChanged();
 
-        // Assert - data changed event has -1 for all indices
+        // Assert - data-changed event has -1 for all indices
         assertEquals(-1, startIndex[0]);
         assertEquals(-1, endIndex[0]);
         assertEquals(-1, field[0]);

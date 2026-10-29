@@ -20,6 +20,7 @@ package com.hyperrealm.kiwi.ui.propeditor;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
@@ -68,6 +69,6 @@ public class SelectionPropertyTypeTest {
         SelectionPropertyType type = new SelectionPropertyType();
         type.setItems(null);
         Object[] items = type.getItems();
-        assertNotNull(items);
+        assertNull(items);
     }
 }

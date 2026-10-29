@@ -17,23 +17,67 @@ package com.hyperrealm.kiwi.ui.model.tree;
    along with this library; if not, see <http://www.gnu.org/licenses/>.
    ----------------------------------------------------------------------------\
 */
+import javax.swing.Icon;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.hyperrealm.kiwi.ui.model.ImmutableModelException;
+import com.hyperrealm.kiwi.ui.model.datasource.TreeDataSource;
+
 /**
  * Unit tests for {@link ExternalKTreeModel}.
  */
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class ExternalKTreeModelTest {
 
+    private ExternalKTreeModel<String> model;
+
+    @Before
+    public void beforeEach() {
+        model = new ExternalKTreeModel<>(
+            new TreeDataSource<>() {
+
+                @Override
+                public String getRoot() {
+                    return "";
+                }
+
+                @Override
+                public String[] getChildren(String node) {
+                    return new String[0];
+                }
+
+                @Override
+                public Object getValueForProperty(String node, String property) {
+                    return null;
+                }
+
+                @Override
+                public boolean isExpandable(String node) {
+                    return false;
+                }
+
+                @Override
+                public Icon getIcon(String node, boolean expanded) {
+                    return null;
+                }
+
+                @Override
+                public String getLabel(String node) {
+                    return "";
+                }
+            }
+        );
+    }
+
     /**
-     * Test delegation to external model.
+     * Test delegation to the external model.
      */
     @Test
     public void testDelegation() {
-        ExternalKTreeModel<String> model = new ExternalKTreeModel<>(null);
         // Should not throw with null source
         assertNotNull(model);
     }
@@ -43,7 +87,6 @@ public class ExternalKTreeModelTest {
      */
     @Test
     public void testSetRootThrows() {
-        ExternalKTreeModel<String> model = new ExternalKTreeModel<>(null);
         assertThrows(ImmutableModelException.class, () -> model.setRoot("root"));
     }
 
@@ -52,7 +95,6 @@ public class ExternalKTreeModelTest {
      */
     @Test
     public void testRemoveChildrenThrows() {
-        ExternalKTreeModel<String> model = new ExternalKTreeModel<>(null);
         assertThrows(ImmutableModelException.class, () -> model.removeChildren("root"));
     }
 
@@ -61,7 +103,6 @@ public class ExternalKTreeModelTest {
      */
     @Test
     public void testRemoveChildThrows() {
-        ExternalKTreeModel<String> model = new ExternalKTreeModel<>(null);
         assertThrows(ImmutableModelException.class, () -> model.removeChild("root", 0));
     }
 
@@ -70,7 +111,6 @@ public class ExternalKTreeModelTest {
      */
     @Test
     public void testAddChildThrows() {
-        ExternalKTreeModel<String> model = new ExternalKTreeModel<>(null);
         assertThrows(ImmutableModelException.class, () -> model.addChild("root", "child"));
     }
 
@@ -79,7 +119,6 @@ public class ExternalKTreeModelTest {
      */
     @Test
     public void testUpdateNodeThrows() {
-        ExternalKTreeModel<String> model = new ExternalKTreeModel<>(null);
         assertThrows(ImmutableModelException.class, () -> model.updateNode("node"));
     }
 
@@ -88,7 +127,6 @@ public class ExternalKTreeModelTest {
      */
     @Test
     public void testUpdateChildrenThrows() {
-        ExternalKTreeModel<String> model = new ExternalKTreeModel<>(null);
         assertThrows(ImmutableModelException.class, () -> model.updateChildren("parent"));
     }
 }

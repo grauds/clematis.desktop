@@ -22,7 +22,7 @@ import java.util.jar.Manifest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import org.junit.Test;
 
 /**
@@ -100,9 +100,7 @@ public class PluginDTOTest {
     @Test
     public void testSetHelpUrlInvalid() {
         PluginDTO plugin = new PluginDTO();
-        plugin.setHelpUrl("invalid-url");
-        // Should not throw, helpURL remains null
-        assertNull(plugin.getHelpURL());
+        assertThrows(IllegalArgumentException.class, () -> plugin.setHelpUrl("invalid-url"));
     }
 
     /**

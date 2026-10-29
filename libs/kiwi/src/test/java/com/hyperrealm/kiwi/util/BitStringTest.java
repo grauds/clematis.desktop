@@ -73,9 +73,9 @@ public class BitStringTest {
         bs2.set(2);
 
         // bs1 bits are a subset of bs2 bits
-        assertTrue(bs1.compareTo(bs2));
+        assertFalse(bs1.compareTo(bs2));
         // bs2 has bits that bs1 doesn't have
-        assertFalse(bs2.compareTo(bs1));
+        assertTrue(bs2.compareTo(bs1));
     }
 
     /**

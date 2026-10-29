@@ -440,6 +440,7 @@ public class DefaultKTreeModel<T> implements KTreeModel<T> {
 
             int ct = children.size();
             children.add(child);
+            setExpandable(true);
             support.fireNodeAdded(object, ct);
         }
 
@@ -459,6 +460,7 @@ public class DefaultKTreeModel<T> implements KTreeModel<T> {
             }
 
             children.add(indexInt, child);
+            setExpandable(true);
             support.fireNodeAdded(object, indexInt);
         }
 
@@ -471,6 +473,9 @@ public class DefaultKTreeModel<T> implements KTreeModel<T> {
                 children.remove(index);
                 destroyNode(child);
                 childCount--;
+                if (childCount == 0) {
+                    setExpandable(false);
+                }
                 support.fireNodeRemoved(object, index);
             }
         }
@@ -490,6 +495,7 @@ public class DefaultKTreeModel<T> implements KTreeModel<T> {
 
                 children.clear();
                 childCount = 0;
+                setExpandable(false);
                 support.fireNodesRemoved(object, 0, --ct);
             }
         }
@@ -532,13 +538,13 @@ public class DefaultKTreeModel<T> implements KTreeModel<T> {
             return (expandable);
         }
 
-        /* set the expandable flag */
+        /* determine if this node is expandable */
 
         void setExpandable(boolean flag) {
             expandable = flag;
         }
 
-        /* determine if this node is expandable */
+        /* set the expandable flag */
 
         public TreeNode getParent() {
             return (parent);

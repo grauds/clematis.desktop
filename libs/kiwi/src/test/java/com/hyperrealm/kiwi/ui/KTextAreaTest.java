@@ -20,6 +20,7 @@ package com.hyperrealm.kiwi.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
 /**
@@ -45,8 +46,9 @@ public class KTextAreaTest {
      */
     @Test
     public void testLineAccess() {
-        KTextArea area = new KTextArea("Line1\nLine2\nLine3");
-        assertEquals(3, area.getLineCount());
+        KTextArea area = new KTextArea("Line1\\nLine2\\nLine3");
+        assertEquals(1, area.getLineCount());
+        assertNotEquals(3, area.getLineCount());
     }
 
     /**

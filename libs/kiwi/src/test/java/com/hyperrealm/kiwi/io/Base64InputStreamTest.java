@@ -111,7 +111,8 @@ public class Base64InputStreamTest {
     @Test
     public void testNonBase64CharactersIgnored() throws IOException {
         // Arrange - Base64 with random non-Base64 characters interspersed
-        String encoded = "S!G@V#s$b$L%g&0=";
+        // Hello SGVsbG8
+        String encoded = "S!G@V#s$b$%G&8=";
         ByteArrayInputStream bais = new ByteArrayInputStream(encoded.getBytes());
         Base64InputStream bis = new Base64InputStream(bais);
 

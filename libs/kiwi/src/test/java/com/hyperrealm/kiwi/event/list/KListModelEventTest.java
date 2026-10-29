@@ -20,7 +20,7 @@ package com.hyperrealm.kiwi.event.list;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import org.junit.Test;
 
 /**
@@ -134,13 +134,7 @@ public class KListModelEventTest {
     @Test
     public void testNullSource() {
         // Act
-        KListModelEvent event = new KListModelEvent(null);
-
-        // Assert
-        assertNull(event.getSource());
-        assertEquals(-1, event.getStartIndex());
-        assertEquals(-1, event.getEndIndex());
-        assertEquals(-1, event.getField());
+        assertThrows(IllegalArgumentException.class, () -> new KListModelEvent(null));
     }
 
     /**

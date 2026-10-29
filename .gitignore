@@ -69,3 +69,4 @@ logs/
 users/
 .vscode/settings.json
 /.vscode/
+/.gigacode/

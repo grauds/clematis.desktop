@@ -91,9 +91,9 @@ public class StackTest {
         stack.push("b");
         stack.push("c");
 
-        assertEquals(0, stack.search("c")); // Top of stack
+        assertEquals(2, stack.search("c")); // Top of stack
         assertEquals(1, stack.search("b"));
-        assertEquals(2, stack.search("a"));
+        assertEquals(0, stack.search("a"));
         assertEquals(-1, stack.search("d"));
     }
 

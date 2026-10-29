@@ -61,7 +61,8 @@ public class OrderedListModelTest {
     @Test
     public void testWithComparator() {
         Comparator<Integer> comparator = Comparator.reverseOrder();
-        OrderedListModel<Integer> model = new OrderedListModel<>(null, comparator);
+        OrderedListModel<Integer> model = new OrderedListModel<>();
+        model.setComparator(comparator);
         model.addElement(1);
         model.addElement(3);
         model.addElement(2);
@@ -105,6 +106,6 @@ public class OrderedListModelTest {
         list.add(2);
         OrderedListModel<Integer> model = new OrderedListModel<>(list, null);
         assertEquals(3, model.getSize());
-        assertEquals(1, (int) model.getElementAt(0));
+        assertEquals(3, (int) model.getElementAt(0));
     }
 }

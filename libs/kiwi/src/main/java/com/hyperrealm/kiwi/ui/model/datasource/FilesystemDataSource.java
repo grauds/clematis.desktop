@@ -26,6 +26,7 @@ import java.util.Date;
 
 import javax.swing.Icon;
 
+import com.hyperrealm.kiwi.text.FormatConstants;
 import com.hyperrealm.kiwi.ui.model.ModelProperties;
 import com.hyperrealm.kiwi.util.KiwiUtils;
 import com.hyperrealm.kiwi.util.LocaleData;
@@ -318,12 +319,12 @@ public class FilesystemDataSource implements TreeDataSource<Object> {
             } else if (property.equals(DATE_COLUMN)) {
 
                 date.setTime(f.lastModified());
-                ret = lm.formatDate(date, lm.MEDIUM);
+                ret = lm.formatDate(date, FormatConstants.MEDIUM);
 
             } else if (property.equals(TIME_COLUMN)) {
 
                 date.setTime(f.lastModified());
-                ret = lm.formatTime(date, lm.SHORT);
+                ret = lm.formatTime(date, FormatConstants.SHORT);
 
             } else {
 

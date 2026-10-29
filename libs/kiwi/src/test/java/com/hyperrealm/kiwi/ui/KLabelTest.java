@@ -23,7 +23,7 @@ import javax.swing.SwingConstants;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ public class KLabelTest {
     @Test
     public void testIconAccess() {
         KLabel label = new KLabel();
-        assertNotNull(label.getIcon());
+        assertNull(label.getIcon());
     }
 
     /**

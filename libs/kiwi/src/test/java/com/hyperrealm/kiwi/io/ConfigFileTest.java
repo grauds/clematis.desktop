@@ -127,7 +127,9 @@ public class ConfigFileTest {
         cf.store();
 
         assertTrue(nestedFile.exists());
-        assertNotNull(new ConfigFile(nestedFile, "Test").getProperty("key"));
+        cf = new ConfigFile(nestedFile, "Test");
+        cf.load();
+        assertNotNull(cf.getProperty("key"));
     }
 
     /**

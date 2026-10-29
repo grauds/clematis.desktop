@@ -30,7 +30,7 @@ import org.junit.Test;
 public class Base64CodecTest {
 
     /**
-     * Test encode/decode round-trip for simple string.
+     * Test encode/decode a round-trip for a simple string.
      */
     @Test
     public void testEncodeDecodeRoundTrip() {
