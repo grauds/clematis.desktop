@@ -14,7 +14,9 @@ pipeline {
                                                  passwordVariable: 'ARTIFACTORY_PASSWORD',
                                                  usernameVariable: 'ARTIFACTORY_USER')]) {
                     withEnv(['USE_ARTIFACTORY=true']) {
-                        sh './gradlew clean build'
+                        wrap([$class: 'Xvfb', autoDisplayName: true]) {
+                            sh './gradlew clean build'
+                        }
                     }
                 }
             }
